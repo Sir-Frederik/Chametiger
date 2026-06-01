@@ -10,6 +10,13 @@ from pathlib import Path
 from datetime import datetime
 
 try:
+    from PIL import Image, ImageTk
+
+    HAS_PIL = True
+except ImportError:
+    HAS_PIL = False
+
+try:
     from tkcalendar import DateEntry
 
     HAS_CALENDAR = True
@@ -575,8 +582,22 @@ class SlotDialog(tk.Toplevel):
         )
         row += 1
 
-        self._preview_lbl = tk.Label(self, bg=BG, fg=FG2, font=("Segoe UI Italic", 8))
-        self._preview_lbl.grid(row=row, column=0, columnspan=3, padx=16, pady=2)
+        self._preview_photo = None
+        self._preview_frame = tk.Frame(self, bg=BG)
+        self._preview_frame.grid(
+            row=row, column=0, columnspan=3, sticky="w", padx=16, pady=2
+        )
+        self._preview_img_label = tk.Label(self._preview_frame, bg=BG)
+        self._preview_img_label.pack(side="left")
+        self._preview_lbl = tk.Label(
+            self._preview_frame,
+            bg=BG,
+            fg=FG2,
+            font=("Segoe UI Italic", 8),
+            anchor="w",
+            justify="left",
+        )
+        self._preview_lbl.pack(side="left", padx=(8, 0))
         row += 1
         self._image.trace_add("write", self._update_preview)
         self._update_preview()
@@ -603,13 +624,38 @@ class SlotDialog(tk.Toplevel):
         if path:
             self._image.set(path)
 
+    def _clear_preview_image(self):
+        self._preview_photo = None
+        self._preview_img_label.config(image="", text="")
+
     def _update_preview(self, *_):
-        p = self._image.get()
+        p = self._image.get().strip()
         if p and Path(p).is_file():
-            self._preview_lbl.config(text=f"✔  {Path(p).name}", fg=SUCCESS)
+            if HAS_PIL:
+                try:
+                    img = Image.open(p)
+                    img.thumbnail((80, 80), Image.Resampling.LANCZOS)
+                    self._preview_photo = ImageTk.PhotoImage(img)
+                    self._preview_img_label.config(image=self._preview_photo, text="")
+                except Exception:
+                    self._clear_preview_image()
+                    self._preview_lbl.config(
+                        text=f"✔  {Path(p).name} (anteprima non disponibile)",
+                        fg=SUCCESS,
+                    )
+                else:
+                    self._preview_lbl.config(text=f"✔  {Path(p).name}", fg=SUCCESS)
+            else:
+                self._clear_preview_image()
+                self._preview_lbl.config(
+                    text=f"✔  {Path(p).name}",
+                    fg=SUCCESS,
+                )
         elif p:
+            self._clear_preview_image()
             self._preview_lbl.config(text="⚠  File non trovato", fg=DANGER)
         else:
+            self._clear_preview_image()
             self._preview_lbl.config(text="")
 
     def _validate_time(self, t: str) -> bool:
