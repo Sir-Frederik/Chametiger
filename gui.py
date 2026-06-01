@@ -1,5 +1,5 @@
 """
-ChamerTiger — Editor grafico della configurazione
+ chameTiger — Editor grafico della configurazione
 Richiede: tkinter (stdlib), tkcalendar (pip install tkcalendar)
 """
 
@@ -82,7 +82,7 @@ def apply_theme(dark: bool):
 class ChameleonEditor(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("ChamerTiger — Editor Configurazione")
+        self.title(" chameTiger — Editor Configurazione")
         self.geometry("920x680")
         self.minsize(800, 560)
         self.configure(bg=BG)
@@ -178,7 +178,7 @@ class ChameleonEditor(tk.Tk):
         header.pack(fill="x", padx=16)
         tk.Label(
             header,
-            text="🦎  ChamerTiger",
+            text="🦎   chameTiger",
             bg=BG,
             fg=ACCENT,
             font=("Segoe UI Semibold", 16),

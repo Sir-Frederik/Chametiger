@@ -1,7 +1,7 @@
 @echo off
 cd /d "%~dp0"
 
-echo Avvio ChamerTiger...
+echo Avvio  chameTiger...
 
 :: Avvia app.py in background (tray)
 start "" pythonw.exe app.py

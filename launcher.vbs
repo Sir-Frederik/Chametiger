@@ -1,4 +1,4 @@
-' ChamerTiger Launcher — avvia app.py (tray) e gui.py senza finestra nera
+'  chameTiger Launcher — avvia app.py (tray) e gui.py senza finestra nera
 
 Dim oShell
 Set oShell = CreateObject("WScript.Shell")
