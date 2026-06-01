@@ -1,10 +1,11 @@
 """
- chameTiger — Editor grafico della configurazione
+   Chametiger — Editor grafico della configurazione
 Richiede: tkinter (stdlib), tkcalendar (pip install tkcalendar)
 """
 
 import json
 import tkinter as tk
+from PIL import Image, ImageTk 
 from tkinter import ttk, filedialog, messagebox, simpledialog
 from pathlib import Path
 from datetime import datetime
@@ -79,10 +80,11 @@ def apply_theme(dark: bool):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
-class ChameleonEditor(tk.Tk):
+class  ChameleonEditor(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title(" chameTiger — Editor Configurazione")
+        self.title("Chametiger — Editor Configurazione")
+        self.iconbitmap(BASE_DIR / "icon.ico")
         self.geometry("920x680")
         self.minsize(800, 560)
         self.configure(bg=BG)
@@ -176,9 +178,10 @@ class ChameleonEditor(tk.Tk):
         # Header
         header = tk.Frame(self, bg=BG, pady=12)
         header.pack(fill="x", padx=16)
+        
         tk.Label(
             header,
-            text="🦎   chameTiger",
+            text="Chametiger",
             bg=BG,
             fg=ACCENT,
             font=("Segoe UI Semibold", 16),
@@ -824,5 +827,5 @@ class SpecialDaysEditor(tk.Frame):
 
 # ═══════════════════════════════════════════════════════════════════════════════
 if __name__ == "__main__":
-    app = ChameleonEditor()
+    app =  ChameleonEditor()
     app.mainloop()

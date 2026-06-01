@@ -1,4 +1,4 @@
-# 🦎 chameTiger
+# 🦎 Chametiger
 
 Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno** e al **giorno della settimana**.
 

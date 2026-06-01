@@ -1,5 +1,5 @@
 """
- chameTiger — Wallpaper scheduler per ora + giorno della settimana
+   Chametiger — Wallpaper scheduler per ora + giorno della settimana
 Richiede: pystray, Pillow, pywin32
 """
 
@@ -25,7 +25,7 @@ except ImportError:
 # ── Percorsi ─────────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).parent.resolve()
 CONFIG_FILE = BASE_DIR / "config.json"
-APP_NAME = " chameTiger"
+APP_NAME = "   Chametiger"
 REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 
 # ── Costanti giorno ───────────────────────────────────────────────────────────
@@ -183,7 +183,7 @@ def make_tray_icon() -> Image.Image:
     return Image.open(BASE_DIR / "icon.ico")
 
 
-class  chameTigerTray:
+class    ChametigerTray:
     def __init__(self):
         self.config = load_config()
         self._stop_event = threading.Event()
@@ -235,7 +235,7 @@ class  chameTigerTray:
             "✓ Avvio con Windows" if is_autostart_enabled() else "  Avvio con Windows"
         )
         return pystray.Menu(
-            Item(" chameTiger", None, enabled=False),
+            Item("   Chametiger", None, enabled=False),
             pystray.Menu.SEPARATOR,
             Item("Applica adesso", self._apply_now),
             Item("Apri editor config", self._open_editor),
@@ -267,5 +267,5 @@ class  chameTigerTray:
 
 # ═══════════════════════════════════════════════════════════════════════════════
 if __name__ == "__main__":
-    app =  chameTigerTray()
+    app =    ChametigerTray()
     app.run()
