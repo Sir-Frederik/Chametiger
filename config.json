@@ -142,7 +142,14 @@
         "label": "tramonto"
       }
     ],
-    "wednesday": null,
+    "wednesday": [
+      {
+        "from": "10:00",
+        "to": "11:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/pepe-le-pew-cartoon-looney-tunes-wallpaper-preview.jpg",
+        "label": "pepé"
+      }
+    ],
     "thursday": [
       {
         "from": "20:00",
@@ -219,7 +226,6 @@
     ]
   },
   "special_days": {
-    "2025-12-25": [],
     "2026-01-01": [
       {
         "from": "00:00",
