@@ -1,4 +1,4 @@
-# 🦎 ChamerTiger
+# 🦎 Chametiger
 
 Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno** e al **giorno della settimana**.
 
@@ -7,7 +7,7 @@ Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorn
 ## Struttura del progetto
 
 ```
-chameleon_plus/
+
 ├── app.py          ← Applicazione principale (tray + scheduler)
 ├── gui.py          ← Editor grafico della configurazione
 ├── config.json     ← Configurazione degli sfondi
@@ -27,7 +27,7 @@ chameleon_plus/
 ### 2. Dipendenze
 
 ```bash
-pip install -r requirements.txt
+py -m pip install -r requirements.txt
 ```
 
 > `tkcalendar` è opzionale: se non installato, la selezione data nei giorni speciali
