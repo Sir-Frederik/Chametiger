@@ -81,12 +81,6 @@
         "label": "19"
       },
       {
-        "from": "20:00",
-        "to": "21:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/bugs-tiff-copy.jpg",
-        "label": "20"
-      },
-      {
         "from": "21:00",
         "to": "22:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/storage emulated 0 Android data com.miui.gallery cache SecurityShare 1779963011577.jpg",
@@ -146,6 +140,18 @@
         "to": "21:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/Meep.jpg",
         "label": "tramonto"
+      },
+      {
+        "from": "16:00",
+        "to": "17:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/924657-1920x1080-desktop-1080p-looney-tunes-wallpaper-image.jpg",
+        "label": "16"
+      },
+      {
+        "from": "10:00",
+        "to": "11:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/looney-tunes-running-in-circle-rqhityxqh60p3i8w.jpg",
+        "label": "10"
       }
     ],
     "wednesday": [
@@ -160,13 +166,19 @@
         "to": "18:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/elmer-fudd-rabbit-season-tz2uhpzx30dv7wvi.webp",
         "label": "17"
+      },
+      {
+        "from": "20:00",
+        "to": "21:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/923945-3840x2160-desktop-4k-looney-tunes-characters-background.jpg",
+        "label": "tramonto"
       }
     ],
     "thursday": [
       {
         "from": "20:00",
         "to": "21:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/923945-3840x2160-desktop-4k-looney-tunes-characters-background.jpg",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/bugs-tiff-copy.jpg",
         "label": "tramonto"
       },
       {
@@ -174,6 +186,12 @@
         "to": "04:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/Looney-Tunes.jpg",
         "label": "2AM"
+      },
+      {
+        "from": "16:00",
+        "to": "17:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/duffyduck01.jpg",
+        "label": "16"
       }
     ],
     "friday": [
@@ -200,7 +218,7 @@
       {
         "from": "20:00",
         "to": "21:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/wile_1024x768.jpg",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/amour-parisienne.jpg",
         "label": "tramonto"
       },
       {
