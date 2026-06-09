@@ -251,12 +251,12 @@ class    ChametigerTray:
         if not is_autostart_enabled():
             enable_autostart()
 
-        # Avvia il thread scheduler
-        t = threading.Thread(target=self._run_scheduler, daemon=True)
-        t.start()
-
         # Applica subito
         self._apply_now(None, None)
+
+        # Avvia il thread scheduler (dopo applicazione iniziale)
+        t = threading.Thread(target=self._run_scheduler, daemon=True)
+        t.start()
 
         # Avvia il tray
         self._icon = pystray.Icon(
