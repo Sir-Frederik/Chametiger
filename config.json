@@ -132,6 +132,12 @@
         "to": "21:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/fudd_daffy-1_copy.jpg",
         "label": "Tramonto"
+      },
+      {
+        "from": "22:00",
+        "to": "23:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/il_fullxfull.4159234032_5urv.jpg",
+        "label": "22"
       }
     ],
     "tuesday": [
@@ -146,6 +152,12 @@
         "to": "17:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/924657-1920x1080-desktop-1080p-looney-tunes-wallpaper-image.jpg",
         "label": "16"
+      },
+      {
+        "from": "22:00",
+        "to": "23:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/il_fullxfull.4159234032_5urv.jpg",
+        "label": "22"
       }
     ],
     "wednesday": [
