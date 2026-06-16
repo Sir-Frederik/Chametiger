@@ -178,6 +178,12 @@
         "to": "21:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/923945-3840x2160-desktop-4k-looney-tunes-characters-background.jpg",
         "label": "tramonto"
+      },
+      {
+        "from": "22:00",
+        "to": "23:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/Bye-Bye-Bunny-A-Looney-Tunes-Musical.jpg",
+        "label": "22"
       }
     ],
     "thursday": [
