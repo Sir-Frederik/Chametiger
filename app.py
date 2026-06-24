@@ -11,6 +11,14 @@ import ctypes
 import threading
 import subprocess
 import winreg
+import socket
+
+def resolve_path(config: dict, filename: str) -> str:
+    hostname  = socket.gethostname()
+    path_map  = config.get("path_map", {})
+    base_path = path_map.get(hostname, config.get("base_path", ""))
+    return str(Path(base_path) / filename)
+
 from datetime import datetime
 from pathlib import Path
 
@@ -85,21 +93,21 @@ def resolve_wallpaper(config: dict) -> str | None:
     if special:
         for slot in special:
             if time_in_slot(now, slot):
-                return slot["image"]
+                return resolve_path(config, slot["image"])
 
     # 2. Override per giorno della settimana
     override = config.get("overrides", {}).get(day_name)
     if override:
         for slot in override:
             if time_in_slot(now, slot):
-                return slot["image"]
+                return resolve_path(config, slot["image"])
 
     # 3. Schedule base weekday / weekend
     schedule_key = "weekend" if day_name in WEEKEND else "weekday"
     schedule = config.get("schedules", {}).get(schedule_key, [])
     for slot in schedule:
         if time_in_slot(now, slot):
-            return slot["image"]
+            return resolve_path(config, slot["image"])
 
     return None
 
