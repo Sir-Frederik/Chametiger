@@ -5,7 +5,7 @@ Richiede: tkinter (stdlib), tkcalendar (pip install tkcalendar)
 
 import json
 import tkinter as tk
-from PIL import Image, ImageTk 
+from PIL import Image, ImageTk
 from tkinter import ttk, filedialog, messagebox, simpledialog
 from pathlib import Path
 from datetime import datetime
@@ -80,7 +80,7 @@ def apply_theme(dark: bool):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
-class  ChameleonEditor(tk.Tk):
+class ChameleonEditor(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Chametiger — Editor Configurazione")
@@ -178,7 +178,7 @@ class  ChameleonEditor(tk.Tk):
         # Header
         header = tk.Frame(self, bg=BG, pady=12)
         header.pack(fill="x", padx=16)
-        
+
         tk.Label(
             header,
             text="Chametiger",
@@ -473,7 +473,7 @@ class SlotEditor(tk.Frame):
         return self._tree.index(sel[0])
 
     def _add_slot(self):
-        dlg = SlotDialog(self, title="Nuovo slot")
+        dlg = SlotDialog(self, title="Nuovo slot", config_data=self.config_data)
         if dlg.result:
             self._get_slots().append(dlg.result)
             self._refresh_tree()
@@ -483,7 +483,12 @@ class SlotEditor(tk.Frame):
         if idx is None:
             return
         slots = self._get_slots()
-        dlg = SlotDialog(self, title="Modifica slot", initial=slots[idx])
+        dlg = SlotDialog(
+            self,
+            title="Modifica slot",
+            initial=slots[idx],
+            config_data=self.config_data,
+        )
         if dlg.result:
             slots[idx] = dlg.result
             self._refresh_tree()
@@ -524,12 +529,19 @@ class SlotEditor(tk.Frame):
 
 
 class SlotDialog(tk.Toplevel):
-    def __init__(self, parent, title="Slot", initial: dict | None = None):
+    def __init__(
+        self,
+        parent,
+        title="Slot",
+        initial: dict | None = None,
+        config_data: dict | None = None,
+    ):
         super().__init__(parent)
         self.title(title)
         self.resizable(False, False)
         self.configure(bg=BG)
         self.result: dict | None = None
+        self.config_data: dict | None = config_data
 
         initial = initial or {}
         row = 0
@@ -632,7 +644,19 @@ class SlotDialog(tk.Toplevel):
         self._preview_img_label.config(image="", text="")
 
     def _update_preview(self, *_):
-        p = self._image.get().strip()
+        p = self._image.get()
+        # risolvi il percorso relativo con base_path se necessario
+        if p and not Path(p).is_absolute():
+            if self.config_data:
+                import socket
+
+                base = self.config_data.get("path_map", {}).get(
+                    socket.gethostname(),
+                    self.config_data.get("base_path", ""),
+                )
+                p = str(Path(base) / p) if base else str(BASE_DIR / p)
+            else:
+                p = str(BASE_DIR / p)
         if p and Path(p).is_file():
             if HAS_PIL:
                 try:
@@ -827,5 +851,5 @@ class SpecialDaysEditor(tk.Frame):
 
 # ═══════════════════════════════════════════════════════════════════════════════
 if __name__ == "__main__":
-    app =  ChameleonEditor()
+    app = ChameleonEditor()
     app.mainloop()
