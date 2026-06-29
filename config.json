@@ -4,7 +4,6 @@
     "FedericoAsus": "C:/Users/Asus/Pictures/Temi"
   },
   "check_interval_minutes": 7,
-
   "schedules": {
     "weekday": [
       {
@@ -147,9 +146,7 @@
       {
         "from": "15:00",
         "to": "16:00",
-
         "image": "Looney tunes/duckdodgers2.jpg",
-
         "label": "15:00"
       }
     ],
@@ -261,6 +258,12 @@
         "to": "17:00",
         "image": "Looney tunes/1_OTG-erZOJOFMCkp7O-hO_Q.jpg",
         "label": "16"
+      },
+      {
+        "from": "13:00",
+        "to": "14:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/tazlaunch.jpg",
+        "label": "13"
       }
     ],
     "saturday": [
