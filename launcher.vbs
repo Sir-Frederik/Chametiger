@@ -1,19 +1,16 @@
-'    Chametiger Launcher — avvia app.py (tray) e gui.py senza finestra nera
+' ChamerTiger Launcher — Asus
 
 Dim oShell
 Set oShell = CreateObject("WScript.Shell")
 
-' Percorso della cartella dove si trova questo file
 Dim scriptDir
 scriptDir = Left(WScript.ScriptFullName, InStrRev(WScript.ScriptFullName, "\"))
 
-' Avvia il tray in background (pythonw = nessuna console)
-oShell.Run "pythonw.exe """ & scriptDir & "app.py""", 0, False
+Dim pythonw
+pythonw = "C:\Users\Asus\AppData\Local\Programs\Python\Python313\pythonw.exe"
 
-' Pausa 2 secondi
+oShell.Run """" & pythonw & """ """ & scriptDir & "app.py""", 0, False
 WScript.Sleep 2000
-
-' Avvia la GUI (pythonw per non avere finestra nera)
-oShell.Run "pythonw.exe """ & scriptDir & "gui.py""", 0, False
+oShell.Run """" & pythonw & """ """ & scriptDir & "gui.py""", 0, False
 
 Set oShell = Nothing
