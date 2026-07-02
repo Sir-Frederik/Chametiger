@@ -226,6 +226,12 @@
         "to": "23:00",
         "image": "Looney tunes/duckddogers1.jpg",
         "label": "22"
+      },
+      {
+        "from": "10:00",
+        "to": "11:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/looney-tunes-running-in-circle-rqhityxqh60p3i8w.jpg",
+        "label": "10"
       }
     ],
     "friday": [
