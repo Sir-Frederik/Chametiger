@@ -45,7 +45,7 @@
       {
         "from": "13:00",
         "to": "14:00",
-        "image": "Looney tunes/cf8179cf31d376308a7cbe87c83c38bf.jpg",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/looney-workLunch.jpg",
         "label": "13"
       },
       {
@@ -148,12 +148,6 @@
         "to": "16:00",
         "image": "Looney tunes/duckdodgers2.jpg",
         "label": "15:00"
-      },
-      {
-        "from": "13:00",
-        "to": "14:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/tazlaunch.jpg",
-        "label": "13"
       }
     ],
     "tuesday": [
@@ -212,6 +206,12 @@
         "to": "17:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/speedy.png",
         "label": "16"
+      },
+      {
+        "from": "13:00",
+        "to": "14:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/cf8179cf31d376308a7cbe87c83c38bf.jpg",
+        "label": "13"
       }
     ],
     "thursday": [

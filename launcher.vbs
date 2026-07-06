@@ -7,7 +7,7 @@ Dim scriptDir
 scriptDir = Left(WScript.ScriptFullName, InStrRev(WScript.ScriptFullName, "\"))
 
 Dim pythonw
-pythonw = "C:\Users\Asus\AppData\Local\Programs\Python\Python313\pythonw.exe"
+pythonw = "C:\Users\feder\AppData\Local\Python\pythoncore-3.14-64\pythonw.exe"
 
 oShell.Run """" & pythonw & """ """ & scriptDir & "app.py""", 0, False
 WScript.Sleep 2000
