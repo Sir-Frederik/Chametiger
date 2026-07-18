@@ -1,31 +1,23 @@
 """
-   Chametiger — Wallpaper scheduler per ora + giorno della settimana
+Chametiger — Wallpaper scheduler per ora + giorno della settimana
 Richiede: pystray, Pillow, pywin32
 """
 
 import sys
 import os
 import json
-import time
 import ctypes
 import threading
 import subprocess
 import winreg
 import socket
-
-def resolve_path(config: dict, filename: str) -> str:
-    hostname  = socket.gethostname()
-    path_map  = config.get("path_map", {})
-    base_path = path_map.get(hostname, config.get("base_path", ""))
-    return str(Path(base_path) / filename)
-
 from datetime import datetime
 from pathlib import Path
 
 try:
     import pystray
     from pystray import MenuItem as Item
-    from PIL import Image, ImageDraw
+    from PIL import Image
 except ImportError:
     print("Dipendenze mancanti. Esegui: pip install pystray Pillow pywin32")
     sys.exit(1)
@@ -33,7 +25,7 @@ except ImportError:
 # ── Percorsi ─────────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).parent.resolve()
 CONFIG_FILE = BASE_DIR / "config.json"
-APP_NAME = "   Chametiger"
+APP_NAME = "Chametiger"
 REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 
 # ── Costanti giorno ───────────────────────────────────────────────────────────
@@ -59,6 +51,36 @@ def load_config() -> dict:
         return json.load(f)
 
 
+def resolve_path(config: dict, filename: str) -> str:
+    """
+    Risolve il percorso dell'immagine.
+    - Percorso relativo  → concatenato alla cartella base del PC corrente
+    - Percorso assoluto  → ri-mappato sulla cartella base del PC corrente,
+                           se inizia con una delle basi conosciute
+    """
+    hostname = socket.gethostname()
+    path_map = config.get("path_map", {})
+    default_base = config.get("base_path", "")
+    base_path = path_map.get(hostname, default_base)
+
+    if not Path(filename).is_absolute():
+        return str(Path(base_path) / filename)
+
+    # Percorso assoluto: prova a togliere una base conosciuta e rimappare
+    normalized = filename.replace("\\", "/")
+    known_bases = [default_base] + list(path_map.values())
+    for kb in known_bases:
+        if not kb:
+            continue
+        kb_norm = kb.replace("\\", "/").rstrip("/") + "/"
+        if normalized.lower().startswith(kb_norm.lower()):
+            relative = normalized[len(kb_norm) :]
+            return str(Path(base_path) / relative)
+
+    # Base sconosciuta: lascia il percorso invariato
+    return filename
+
+
 def parse_time(t: str) -> tuple[int, int]:
     """Converte 'HH:MM' in (hour, minute)."""
     h, m = t.split(":")
@@ -79,34 +101,52 @@ def time_in_slot(now: datetime, slot: dict) -> bool:
         return now >= start or now <= end
 
 
+def _first_match(slots, now: datetime) -> dict | None:
+    """Ritorna il primo slot che copre l'orario corrente, o None."""
+    if not slots:
+        return None
+    for slot in slots:
+        if time_in_slot(now, slot):
+            return slot
+    return None
+
+
 def resolve_wallpaper(config: dict) -> str | None:
     """
     Determina il percorso dell'immagine da usare adesso.
-    Priorità: special_days > override giorno > schedule weekday/weekend
+    Priorità:
+      1. special_days (data esatta)
+      2. overrides    (giorno della settimana)
+      3. schedules    (weekday / weekend)
+      4. fallback     (weekday, se il weekend non copre l'orario)
     """
     now = datetime.now()
     today_key = now.strftime("%Y-%m-%d")  # es. "2026-06-01"
     day_name = WEEKDAYS[now.weekday()]  # es. "monday"
 
+    schedules = config.get("schedules", {})
+
     # 1. Giorno speciale (data esatta)
-    special = config.get("special_days", {}).get(today_key)
-    if special:
-        for slot in special:
-            if time_in_slot(now, slot):
-                return resolve_path(config, slot["image"])
+    slot = _first_match(config.get("special_days", {}).get(today_key), now)
+    if slot:
+        return resolve_path(config, slot["image"])
 
     # 2. Override per giorno della settimana
-    override = config.get("overrides", {}).get(day_name)
-    if override:
-        for slot in override:
-            if time_in_slot(now, slot):
-                return resolve_path(config, slot["image"])
+    slot = _first_match(config.get("overrides", {}).get(day_name), now)
+    if slot:
+        return resolve_path(config, slot["image"])
 
     # 3. Schedule base weekday / weekend
     schedule_key = "weekend" if day_name in WEEKEND else "weekday"
-    schedule = config.get("schedules", {}).get(schedule_key, [])
-    for slot in schedule:
-        if time_in_slot(now, slot):
+    slot = _first_match(schedules.get(schedule_key, []), now)
+    if slot:
+        return resolve_path(config, slot["image"])
+
+    # 4. Fallback: weekend senza copertura → usa lo schedule weekday
+    if schedule_key == "weekend":
+        slot = _first_match(schedules.get("weekday", []), now)
+        if slot:
+            print("[INFO] Nessuno slot weekend attivo, uso il fallback weekday.")
             return resolve_path(config, slot["image"])
 
     return None
@@ -164,9 +204,7 @@ def is_autostart_enabled() -> bool:
 
 
 def enable_autostart():
-    key = winreg.OpenKey(
-        winreg.HKEY_CURRENT_USER, REGISTRY_KEY, 0, winreg.KEY_SET_VALUE
-    )
+    key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, REGISTRY_KEY, 0, winreg.KEY_SET_VALUE)
     winreg.SetValueEx(key, APP_NAME, 0, winreg.REG_SZ, get_exe_path())
     winreg.CloseKey(key)
     print("[OK] Avvio automatico abilitato.")
@@ -187,11 +225,13 @@ def disable_autostart():
 # ═══════════════════════════════════════════════════════════════════════════════
 #  System Tray
 # ═══════════════════════════════════════════════════════════════════════════════
+
+
 def make_tray_icon() -> Image.Image:
     return Image.open(BASE_DIR / "icon.ico")
 
 
-class    ChametigerTray:
+class ChametigerTray:
     def __init__(self):
         self.config = load_config()
         self._stop_event = threading.Event()
@@ -224,6 +264,8 @@ class    ChametigerTray:
             wallpaper = resolve_wallpaper(self.config)
             if wallpaper:
                 set_wallpaper(wallpaper)
+            else:
+                print("[INFO] Nessuno slot attivo al momento.")
         except Exception as e:
             print(f"[ERR] Apply now: {e}")
 
@@ -243,7 +285,7 @@ class    ChametigerTray:
             "✓ Avvio con Windows" if is_autostart_enabled() else "  Avvio con Windows"
         )
         return pystray.Menu(
-            Item("   Chametiger", None, enabled=False),
+            Item("Chametiger", None, enabled=False),
             pystray.Menu.SEPARATOR,
             Item("Applica adesso", self._apply_now),
             Item("Apri editor config", self._open_editor),
@@ -275,5 +317,5 @@ class    ChametigerTray:
 
 # ═══════════════════════════════════════════════════════════════════════════════
 if __name__ == "__main__":
-    app =    ChametigerTray()
+    app = ChametigerTray()
     app.run()
