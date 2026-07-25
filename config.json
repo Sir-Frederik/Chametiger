@@ -127,7 +127,14 @@
         "label": "alba"
       }
     ],
-    "weekend": []
+    "weekend": [
+      {
+        "from": "9:00",
+        "to": "19:00",
+        "image": "C:/Users/Asus/Pictures/Temi/Looney tunes/looney-tunes-surfing-with-sharks-i9tpr68o5pex1uwz.jpg",
+        "label": "estate giorno"
+      }
+    ]
   },
   "overrides": {
     "monday": [
@@ -362,7 +369,7 @@
       {
         "from": "20:00",
         "to": "21:00",
-        "image": "Looney tunes/923948-3840x2160-desktop-4k-looney-tunes-characters-background.jpg",
+        "image": "C:/Users/Asus/Pictures/Temi/Looney tunes/IFA8300Sylvester_TweetyOPConPrintedBG_ATicketToCrime_1944x_master.jpg",
         "label": "tramonto"
       },
       {
