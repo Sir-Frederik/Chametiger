@@ -142,12 +142,12 @@
       },
       {
         "from": "15:00",
-        "to": "21:00",
+        "to": "19:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/bugsbunnybeach.jpg",
         "label": "Estate tramonto"
       },
       {
-        "from": "21:00",
+        "from": "20:00",
         "to": "23:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/pepè-love-sea.jpg",
         "label": "Estate sera"
@@ -163,8 +163,8 @@
   "overrides": {
     "monday": [
       {
-        "from": "20:00",
-        "to": "21:00",
+        "from": "19:00",
+        "to": "20:00",
         "image": "Looney tunes/fudd_daffy-1_copy.jpg",
         "label": "Tramonto"
       },
@@ -219,8 +219,8 @@
         "label": "16"
       },
       {
-        "from": "20:00",
-        "to": "21:00",
+        "from": "19:00",
+        "to": "20:00",
         "image": "Looney tunes/Meep.jpg",
         "label": "tramonto"
       },
@@ -257,15 +257,15 @@
         "label": "17"
       },
       {
-        "from": "20:00",
-        "to": "21:00",
+        "from": "19:00",
+        "to": "20:00",
         "image": "Looney tunes/923945-3840x2160-desktop-4k-looney-tunes-characters-background.jpg",
         "label": "tramonto"
       },
       {
         "from": "22:00",
         "to": "23:00",
-        "image": "Looney tunes/Bye-Bye-Bunny-A-Looney-Tunes-Musical.jpg",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/Bye-Bye-Bunny-A-Looney-Tunes-Musical.jpg",
         "label": "22"
       },
       {
@@ -301,16 +301,16 @@
         "label": "15"
       },
       {
-        "from": "20:00",
-        "to": "21:00",
+        "from": "19:00",
+        "to": "20:00",
         "image": "Looney tunes/bugs-tiff-copy.jpg",
         "label": "tramonto"
       },
       {
-        "from": "22:00",
-        "to": "23:00",
+        "from": "21:00",
+        "to": "22:00",
         "image": "Looney tunes/duckddogers1.jpg",
-        "label": "22"
+        "label": "21"
       },
       {
         "from": "02:00",
@@ -327,8 +327,8 @@
     ],
     "friday": [
       {
-        "from": "20:00",
-        "to": "21:00",
+        "from": "19:00",
+        "to": "20:00",
         "image": "Looney tunes/58c0906b563f8614c0ae3a25b270cc8d080c1cd39ffeaaab43961073e05dbc63._SX1080_FMjpg_.jpg",
         "label": "tramonto"
       },
