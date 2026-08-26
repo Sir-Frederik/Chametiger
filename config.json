@@ -15,7 +15,7 @@
       {
         "from": "08:00",
         "to": "9:00",
-        "image": "Looney tunes/4ef3f70d148f76aa2d5f2f8db178f5d4.jpg",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/IFA8300Sylvester_TweetyOPConPrintedBG_ATicketToCrime_1944x_master.jpg",
         "label": "8"
       },
       {
@@ -81,7 +81,7 @@
       {
         "from": "19:00",
         "to": "20:00",
-        "image": "Looney tunes/wp1916229.jpg",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/wabbit_season_with_gun_expanded.jpg",
         "label": "19"
       },
       {
@@ -93,7 +93,7 @@
       {
         "from": "22:00",
         "to": "23:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/pepè-love-sea.jpg",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/marv_space_extended.jpg",
         "label": "22"
       },
       {
@@ -162,12 +162,6 @@
   },
   "overrides": {
     "monday": [
-      {
-        "from": "19:00",
-        "to": "20:00",
-        "image": "Looney tunes/fudd_daffy-1_copy.jpg",
-        "label": "Tramonto"
-      },
       {
         "from": "22:00",
         "to": "23:00",
