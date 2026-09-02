@@ -390,6 +390,38 @@
         "image": "Looney tunes/Bugs_b_day.jpg",
         "label": "Compleanno"
       }
+    ],
+    "2026-09-02": [
+      {
+        "from": "08:00",
+        "to": "12:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/Coyote Vs. Acme.jpg",
+        "label": "Coyote"
+      },
+      {
+        "from": "12:00",
+        "to": "15:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/tv-show-looney-tunes-wile-e-coyote-and-the-road-runner-wallpaper-822172604d460e4b0a58c29500c8e9b2.jpg",
+        "label": ""
+      },
+      {
+        "from": "15:00",
+        "to": "18:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/wile_e__coyote_captures_a_mine_by_aran_munich_d2usosx-fullview.jpg",
+        "label": ""
+      },
+      {
+        "from": "18:00",
+        "to": "20:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/Meep.jpg",
+        "label": ""
+      },
+      {
+        "from": "20:00",
+        "to": "0:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/Looney-Tunes-Background-Art.jpg",
+        "label": ""
+      }
     ]
   }
 }
