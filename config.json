@@ -227,7 +227,7 @@
       {
         "from": "23:00",
         "to": "00:00",
-        "image": "Looney tunes/il_fullxfull.4159234032_5urv.jpg",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote moon jump.jpeg",
         "label": "23"
       },
       {
@@ -436,7 +436,7 @@
       },
       {
         "from": "20:00",
-        "to": "0:00",
+        "to": "22:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/Looney-Tunes-Background-Art.jpg",
         "label": ""
       },
@@ -451,6 +451,12 @@
         "to": "12:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/923945-3840x2160-desktop-4k-looney-tunes-characters-background.jpg",
         "label": ""
+      },
+      {
+        "from": "22:00",
+        "to": "01:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote moon jump.jpeg",
+        "label": "notte"
       }
     ],
     "2026-09-03": [
@@ -480,9 +486,9 @@
       },
       {
         "from": "20:00",
-        "to": "0:00",
+        "to": "22:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/Looney-Tunes-Background-Art.jpg",
-        "label": ""
+        "label": "20"
       },
       {
         "from": "17:00",
@@ -495,6 +501,12 @@
         "to": "12:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/923945-3840x2160-desktop-4k-looney-tunes-characters-background.jpg",
         "label": ""
+      },
+      {
+        "from": "22:00",
+        "to": "01:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote moon jump.jpeg",
+        "label": "notte"
       }
     ]
   }
