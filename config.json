@@ -135,13 +135,13 @@
     ],
     "weekend": [
       {
-        "from": "9:00",
-        "to": "12:00",
+        "from": "8:00",
+        "to": "11:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/looney-tunes-surfing-with-sharks-i9tpr68o5pex1uwz.jpg",
-        "label": "estate giorno"
+        "label": "estate mattina"
       },
       {
-        "from": "12:00",
+        "from": "13:00",
         "to": "15:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/daffy-porky-submarine.jpg",
         "label": "Estate pomeriggio"
@@ -163,6 +163,12 @@
         "to": "02:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/FB_IMG_1728080541343.jpg",
         "label": "Estate notte"
+      },
+      {
+        "from": "11:00",
+        "to": "13:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/Daffy_beach.jpg",
+        "label": "Estate giorno"
       }
     ]
   },
@@ -377,7 +383,7 @@
     ],
     "saturday": [
       {
-        "from": "08:00",
+        "from": "10:00",
         "to": "11:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/IFA8300Sylvester_TweetyOPConPrintedBG_ATicketToCrime_1944x_master.jpg",
         "label": ""
@@ -385,7 +391,7 @@
     ],
     "sunday": [
       {
-        "from": "13:00",
+        "from": "14:00",
         "to": "15:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/wile_e__coyote_captures_a_mine_by_aran_munich_d2usosx-fullview.jpg",
         "label": ""
