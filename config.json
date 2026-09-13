@@ -121,7 +121,7 @@
         "label": "01"
       },
       {
-        "from": "02:00",
+        "from": "03:00",
         "to": "05:00",
         "image": "Looney tunes/48460a97a048c6502d5c0ff033ab801f.jpg",
         "label": "Notte fonda"
@@ -131,6 +131,12 @@
         "to": "07:00",
         "image": "Looney tunes/Looney-Tunes-Background-Art.jpg",
         "label": "alba"
+      },
+      {
+        "from": "03:00",
+        "to": "12:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/backroomss.jpg",
+        "label": "02:00"
       }
     ],
     "weekend": [
