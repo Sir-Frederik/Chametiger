@@ -1,7 +1,8 @@
 {
   "base_path": "G:/Altri computer/Asus/Temi",
   "path_map": {
-    "FedericoAsus": "C:/Users/Asus/Pictures/Temi"
+    "FedericoAsus": "C:/Users/Asus/Pictures/Temi",
+    "Federico": "G:/Altri computer/Asus/Temi/Looney tunes"
   },
   "check_interval_minutes": 7,
   "schedules": {
@@ -527,5 +528,1022 @@
         "label": "notte"
       }
     ]
+  },
+  "mode": "random",
+  "tags": [
+    "mattino",
+    "lavoro",
+    "pranzo",
+    "smart",
+    "ufficio",
+    "pomeriggio",
+    "tramonto",
+    "crepuscolo",
+    "alba",
+    "sera",
+    "notte",
+    "spettacolo",
+    "weekend",
+    "svago",
+    "estate",
+    "inverno",
+    "autunno",
+    "primavera",
+    "natale",
+    "sport",
+    "horror",
+    "jolly"
+  ],
+  "image_library": {
+    "0_6e916880-e31e-4a7e-84c7-bd6fa4841bac (1).jpg": [],
+    "1491917627-797-1525-par-for-the-course.jpg": [
+      "mattino",
+      "pomeriggio",
+      "sport",
+      "svago",
+      "weekend"
+    ],
+    "28157068917085.5b6da7f251381.jpg": [
+      "jolly"
+    ],
+    "43967d68dd8fffb7f75d639485013726.jpg": [
+      "horror",
+      "notte",
+      "sera",
+      "crepuscolo",
+      "autunno"
+    ],
+    "4ef3f70d148f76aa2d5f2f8db178f5d4.jpg": [
+      "pomeriggio",
+      "sport",
+      "smart",
+      "mattino"
+    ],
+    "923948-3840x2160-desktop-4k-looney-tunes-characters-background.jpg": [
+      "tramonto",
+      "crepuscolo"
+    ],
+    "amour-parisienne.jpg": [
+      "pomeriggio",
+      "primavera",
+      "inverno"
+    ],
+    "b9755ceff63a485f83f7cc431eb8f719.jpg": [],
+    "backroomms.webp": [],
+    "backrooms_daffy_bugs_gossamer.jpg": [
+      "horror",
+      "notte",
+      "jolly"
+    ],
+    "basket.jpg": [
+      "pomeriggio",
+      "estate",
+      "primavera",
+      "autunno",
+      "sport",
+      "svago"
+    ],
+    "bracco_foghorn_leghorn_fattoria.jpg": [
+      "mattino",
+      "lavoro"
+    ],
+    "bugs_cassetta_postale_autunno.jpg": [
+      "autunno",
+      "tramonto",
+      "primavera"
+    ],
+    "bugs_compleanno_festa.jpg": [
+      "svago"
+    ],
+    "bugs_daffy_bar_notte.jpg": [
+      "notte"
+    ],
+    "bugs_daffy_rabbit_season.jpg": [
+      "autunno",
+      "pomeriggio",
+      "mattino"
+    ],
+    "bugs_notte_parco_coniglietti.jpg": [
+      "sera",
+      "spettacolo"
+    ],
+    "bugs_sdraio_spiaggia_carote.jpg": [
+      "estate",
+      "svago",
+      "weekend",
+      "tramonto",
+      "pomeriggio",
+      "mattino"
+    ],
+    "bugs_smoking_palco_rose.jpg": [
+      "spettacolo"
+    ],
+    "bugs_taz_cassa_pericolo.jpeg": [
+      "pomeriggio"
+    ],
+    "bugs_yosemite_sam_pesca_barca.jpg": [
+      "tramonto",
+      "svago",
+      "sport",
+      "alba"
+    ],
+    "cane_pastore_coyote_burrone.jpg": [
+      "tramonto",
+      "alba",
+      "autunno",
+      "estate",
+      "primavera",
+      "lavoro"
+    ],
+    "casetta_scogliera_notturna.jpg": [
+      "notte",
+      "sera"
+    ],
+    "collage_locandine_classiche.jpg": [
+      "jolly",
+      "lavoro"
+    ],
+    "coyote_caduta_vuoto.jpg": [
+      "tramonto"
+    ],
+    "coyote_esplosione_binario.jpg": [
+      "mattino",
+      "pomeriggio"
+    ],
+    "coyote_razzo_tramonto_deserto.jpg": [
+      "tramonto"
+    ],
+    "coyote_roadrunner_corsa_nomi_latini.jpg": [
+      "pranzo"
+    ],
+    "coyote_roadrunner_forchetta_deserto.jpg": [
+      "pomeriggio"
+    ],
+    "coyote_sagoma_salto_luna.jpeg": [
+      "notte"
+    ],
+    "coyote_sub_mina_squalo.jpg": [
+      "estate",
+      "mattino",
+      "pomeriggio"
+    ],
+    "coyote_travestito_pecora_gregge.jpg": [
+      "alba",
+      "mattino",
+      "tramonto",
+      "lavoro"
+    ],
+    "coyotexlobo.jpg": [],
+    "CULwH3.jpg": [
+      "horror",
+      "crepuscolo",
+      "notte",
+      "sera"
+    ],
+    "d701b8e489615b83daa2f201ff5e087f3e5f2d07bd7a714f1f3c12b8a9a6ae57._SX1080_FMjpg_.jpg": [
+      "horror",
+      "crepuscolo",
+      "notte",
+      "sera"
+    ],
+    "Daffy and Porky/0d8ff237ad7050b5ed4088d9a8d17ef9_2.png": [
+      "spettacolo"
+    ],
+    "Daffy and Porky/19fad16133ff7bbfcf25717cb1d6bda4_w1200.jpg": [],
+    "Daffy and Porky/202.png": [
+      "lavoro",
+      "mattino"
+    ],
+    "Daffy and Porky/270fa50320cbdb5489b2996adc607034ed251a75.jpg": [],
+    "Daffy and Porky/2G5QPreQoklVJcbXlRRelWkxlfv.jpg": [
+      "sera"
+    ],
+    "Daffy and Porky/469875290_8719423838153995_2592515850667698560_n.jpg": [
+      "notte",
+      "horror"
+    ],
+    "Daffy and Porky/469910274_8719423748154004_9106807984728137363_n.jpg": [
+      "mattino"
+    ],
+    "Daffy and Porky/483669378_1004992818276557_3914514963323049268_n.jpg": [],
+    "Daffy and Porky/484109607_959074925985609_3681128393341350131_n.jpg": [],
+    "Daffy and Porky/484631544_1318850809377730_5597637368188575646_n.jpg": [],
+    "Daffy and Porky/485088247_2663074947227455_8040668032314877732_n.jpg": [],
+    "Daffy and Porky/7bc7d7f44dfe64bcf30055e9de452abace7e08a9.jpg": [
+      "alba",
+      "mattino",
+      "smart"
+    ],
+    "Daffy and Porky/chrome/Daffy-Duck-Porky-Pig-Poster-021725-2d3696a03d1e4d8cb9cf27e10b56e9b6.png": [],
+    "Daffy and Porky/chrome/daffy.png": [],
+    "Daffy and Porky/chrome/Immagine.png": [],
+    "Daffy and Porky/chrome/Immagine2.png": [],
+    "Daffy and Porky/chrome/photo.jpg": [],
+    "Daffy and Porky/chrome/sfondo 1.png": [],
+    "Daffy and Porky/chrome/sfondo 2.png": [],
+    "Daffy and Porky/chrome/tab dark.png": [],
+    "Daffy and Porky/chrome/tab.png": [],
+    "Daffy and Porky/Daffy-Duck-Porky-Pig-021725-2w-0aa539820f8f47198ef935d653e1bbb3.webp": [],
+    "Daffy and Porky/daffy_porky_leva_sala_macchine.jpg": [
+      "lavoro",
+      "pomeriggio"
+    ],
+    "Daffy and Porky/daytheearthblewup.jpg": [
+      "horror",
+      "crepuscolo",
+      "notte",
+      "sera"
+    ],
+    "Daffy and Porky/GPOoNNJWQAAl0hV.png": [
+      "pranzo",
+      "smart",
+      "weekend"
+    ],
+    "Daffy and Porky/GXSWNMIXUAAByzX.jpg": [
+      "alba",
+      "mattino",
+      "weekend",
+      "smart"
+    ],
+    "Daffy and Porky/GXSWNSiXsAAxibf.jpeg": [
+      "mattino"
+    ],
+    "Daffy and Porky/hq720.jpg": [
+      "lavoro",
+      "pomeriggio",
+      "mattino"
+    ],
+    "Daffy and Porky/k8cmBaq6ggMynwfGm5PWU3Zs2Qt.jpg": [],
+    "Daffy and Porky/lt.png": [
+      "sera"
+    ],
+    "Daffy and Porky/PDMV325_A03_0240_Cp_v0223.png": [
+      "sera",
+      "crepuscolo",
+      "autunno"
+    ],
+    "Daffy and Porky/porky_daffy_moto_bazooka.jpg": [
+      "alba",
+      "mattino",
+      "lavoro"
+    ],
+    "Daffy and Porky/the end.PNG": [
+      "spettacolo"
+    ],
+    "Daffy and Porky/The-Day-The-Earth-Blew-Up-2.jpg": [
+      "horror",
+      "sera"
+    ],
+    "Daffy and Porky/The-Day-the-Earth-Blew-Up-A-Looney-Tunes-Movie-1.jpg": [],
+    "Daffy and Porky/the-day-the-earth-blew-up-a-looney-tunes-movie-saved-from-th_yrce.1200.jpg": [],
+    "Daffy and Porky/The-Day-the-Earth-Blew-Up.jpg": [],
+    "Daffy and Porky/TheDayThEarthBlewUp_239Scope_Still_29.jpg": [
+      "alba",
+      "weekend",
+      "lavoro"
+    ],
+    "Daffy and Porky/thedaytheearthblewupalooneytunesmovietrailer-ign-blogroll-1733950544517.jpg": [],
+    "Daffy and Porky/Un-avventura-spaziale-Un-film-dei-Looney-Tunes-Ecco-il-trailer-italiano.png": [],
+    "daffy_amaca_spiaggia_ukulele.jpg": [
+      "estate",
+      "svago",
+      "mattino",
+      "pomeriggio",
+      "weekend"
+    ],
+    "daffy_bugs_faccia_a_faccia.jpg": [
+      "pomeriggio",
+      "mattino",
+      "autunno",
+      "primavera"
+    ],
+    "daffy_elmer_bugs_foresta_stagione_caccia.jpg": [
+      "autunno",
+      "estate",
+      "tramonto",
+      "primavera"
+    ],
+    "duck_dodgers_porky_marvin.jpg": [
+      "sera",
+      "notte"
+    ],
+    "duffyduck01.jpg": [
+      "jolly"
+    ],
+    "elmer_bugs_daffy_caccia_foresta.jpg": [
+      "mattino",
+      "autunno",
+      "lavoro",
+      "primavera"
+    ],
+    "elmer_travestito_coniglio_rabbit_season.webp": [
+      "pomeriggio",
+      "primavera",
+      "autunno",
+      "smart",
+      "lavoro"
+    ],
+    "FB_IMG_1632947798195.jpg": [],
+    "festa_hawaiana_notturna.jpg": [
+      "crepuscolo",
+      "sera",
+      "svago",
+      "estate",
+      "weekend"
+    ],
+    "foresta_notturna.jpg": [
+      "notte"
+    ],
+    "fudd_daffy-1_copy.jpg": [
+      "tramonto"
+    ],
+    "IFA9095Hector_Sylvester_Tweety_GrannyOPConPrintedBG_1944x_master.webp": [
+      "sera",
+      "horror"
+    ],
+    "immagine1.jpg": [],
+    "loading_screen_haloween_2023-1200x695.jpg": [
+      "horror",
+      "notte",
+      "sera"
+    ],
+    "logo_looney_tunes_pattern.jpg": [
+      "jolly"
+    ],
+    "Looney tunes christmas/130999642_1023187231425147_4041612473443281886_n.jpeg": [
+      "inverno",
+      "mattino",
+      "pomeriggio",
+      "sport"
+    ],
+    "Looney tunes christmas/191f90060af15dcac4b7fd133fd8443a.jpg": [
+      "natale",
+      "notte",
+      "inverno"
+    ],
+    "Looney tunes christmas/464855310_8701904919832867_7411089918229455112_n.jpg": [
+      "natale",
+      "inverno"
+    ],
+    "Looney tunes christmas/6972f1bd3e391c53e8866e8ace548b68.png": [],
+    "Looney tunes christmas/71a8b022-50b3-405d-b7a4-15cffb1839b2.jpg": [
+      "natale",
+      "inverno",
+      "crepuscolo"
+    ],
+    "Looney tunes christmas/80c13b56c7da94f53c37bd0f9d480178.jpg": [
+      "natale",
+      "inverno"
+    ],
+    "Looney tunes christmas/a02515b6654d0d1a9f7c7edd2242c70e.jpg": [
+      "natale",
+      "inverno"
+    ],
+    "Looney tunes christmas/ba6465a82ad800354ce12f1bc739241b.jpg": [
+      "natale",
+      "notte",
+      "sera",
+      "inverno"
+    ],
+    "Looney tunes christmas/Bugs-Bunny-and-Lola-Bunny-art-ice-skating-Desktop-Wallpaper-HD-3840x2400-840x525.jpg": [
+      "inverno",
+      "mattino",
+      "pomeriggio"
+    ],
+    "Looney tunes christmas/capodanno_fuochi_artificio.jpg": [],
+    "Looney tunes christmas/chrome/30dc634e264d2a0ea7103d2d19be2e00.jpg": [
+      "natale",
+      "inverno"
+    ],
+    "Looney tunes christmas/Immagine WhatsApp 2024-12-19 ore 19.08.14_ddacbdd4.jpg": [
+      "inverno",
+      "sport",
+      "pomeriggio",
+      "mattino"
+    ],
+    "Looney tunes christmas/Immagine WhatsApp 2024-12-19 ore 19.11.15_322aed96.jpg": [],
+    "Looney tunes christmas/inadeguate/7a3ee81f0047f0adf12d8391e9d6fbc1.jpg": [],
+    "Looney tunes christmas/inadeguate/8ad28a04e750158d99565c0e801f0460.jpg": [],
+    "Looney tunes christmas/inadeguate/a5191afee2f7fd81abbbee6465352f47.jpg": [],
+    "Looney tunes christmas/looney-tunes-christmas-qerr5ww9m4cyzemj.png": [
+      "natale",
+      "mattino",
+      "inverno"
+    ],
+    "Looney tunes christmas/Snapinsta.app_131306966_726276131330416_1742053223232746609_n_1080.jpg": [
+      "natale",
+      "notte",
+      "inverno",
+      "sera"
+    ],
+    "Looney tunes christmas/Snapinsta.app_468456191_588140750284168_735763663732415432_n_1080.jpg": [
+      "sera",
+      "natale",
+      "notte",
+      "inverno"
+    ],
+    "Looney tunes christmas/taz.jpg": [
+      "natale",
+      "notte",
+      "inverno"
+    ],
+    "Looney tunes christmas/thumb-1920-446269.jpg": [
+      "inverno",
+      "sport",
+      "mattino",
+      "pomeriggio"
+    ],
+    "Looney tunes christmas/thumb-1920-468657.jpg": [
+      "mattino",
+      "alba",
+      "inverno",
+      "natale"
+    ],
+    "Looney tunes christmas/tumblr_23ba745e129bbc3e54bbf3ce1e1f2666_88f5ce44_1280.jpg": [
+      "natale",
+      "inverno"
+    ],
+    "Looney tunes christmas/vlcsnap-00002.jpg": [
+      "natale",
+      "mattino",
+      "pomeriggio",
+      "inverno"
+    ],
+    "Looney tunes christmas/WB2168-420x280h.jpg": [
+      "inverno",
+      "mattino",
+      "pomeriggio",
+      "sport"
+    ],
+    "Looney Tunes Sports/130999642_1023187231425147_4041612473443281886_n.jpeg": [],
+    "Looney Tunes Sports/1491917627-797-1525-par-for-the-course.jpg": [],
+    "Looney Tunes Sports/464907637_8723255287697830_8585212234038788753_n.jpg": [
+      "sport",
+      "jolly"
+    ],
+    "Looney Tunes Sports/465256556_8721454687877890_8514847418727839693_n.jpg": [
+      "sport",
+      "pomeriggio"
+    ],
+    "Looney Tunes Sports/4ef3f70d148f76aa2d5f2f8db178f5d4.jpg": [],
+    "Looney Tunes Sports/924365-3840x2160-desktop-4k-looney-tunes-tweety-bird-wallpaper-photo.jpg": [
+      "pomeriggio",
+      "sport",
+      "smart"
+    ],
+    "Looney Tunes Sports/Bugs-Bunny-and-Lola-Bunny-art-ice-skating-Desktop-Wallpaper-HD-3840x2400-840x525.jpg": [],
+    "Looney Tunes Sports/devwdd7-778e52b6-d8b2-4a38-ba81-1946ead17e22.jpg": [
+      "sera",
+      "sport",
+      "spettacolo"
+    ],
+    "Looney Tunes Sports/football_follies_clp.jpg": [
+      "jolly",
+      "sport"
+    ],
+    "Looney Tunes Sports/GJhlXvVWUAA291R.jpg": [
+      "jolly",
+      "sport"
+    ],
+    "Looney Tunes Sports/GJhlXvVWUAA291R2.jpg": [],
+    "Looney Tunes Sports/GOM8k-SXcAAxBnm.jpg": [
+      "sport",
+      "jolly"
+    ],
+    "Looney Tunes Sports/HD-wallpaper-daffy-bugs-warner-brothers-tv-show-bugs-bunny-looney-tunes-daffy-duck-cartoon-animacion.jpg": [
+      "alba",
+      "mattino",
+      "sport",
+      "svago",
+      "weekend"
+    ],
+    "Looney Tunes Sports/juniorsleague_1901x_7d8085ef-52a9-4511-82b4-d608f53d84b4.jpg": [
+      "sport",
+      "crepuscolo",
+      "sera"
+    ],
+    "Looney Tunes Sports/looney-tunes-surfing-with-sharks-i9tpr68o5pex1uwz.jpg": [
+      "weekend",
+      "sport",
+      "mattino",
+      "estate"
+    ],
+    "Looney Tunes Sports/papier-peint-panoramique-looney-tunes-cartoon-champions-stade-olympiquesur-mesure-muralconcept-102185.jpg": [
+      "sport",
+      "pomeriggio",
+      "mattino",
+      "smart"
+    ],
+    "Looney Tunes Sports/papier-peint-panoramique-looney-tunes-cartoon-daffy-duck-masterclass-football-goalsur-mesure-muralconcept-984354.jpg": [
+      "jolly"
+    ],
+    "Looney Tunes Sports/s-l1600-1.jpg": [
+      "sera",
+      "sport",
+      "weekend"
+    ],
+    "Looney Tunes Sports/s-l1600-2.jpg": [
+      "sera",
+      "sport",
+      "weekend"
+    ],
+    "Looney Tunes Sports/s-l1600.jpg": [],
+    "Looney Tunes Sports/TennisAnyone_LT.jpg": [
+      "sport",
+      "jolly"
+    ],
+    "Looney Tunes Sports/thumb-1920-445864.jpg": [],
+    "Looney Tunes Sports/WarnerBros_TeamUSALooneyTunes-2.jpg": [
+      "jolly",
+      "autunno",
+      "inverno",
+      "mattino",
+      "pomeriggio"
+    ],
+    "Looney Tunes Sports/WarnerBros_TeamUSALooneyTunes-jpg.jpg": [],
+    "Looney Tunes Sports/WB2168-420x280h.jpg": [],
+    "Looney-tunes-the-untouchables.webp": [
+      "horror",
+      "spettacolo",
+      "sera"
+    ],
+    "Marv_og.jpg": [],
+    "marvin_daffy_porky_astronave.jpg": [
+      "sera",
+      "notte"
+    ],
+    "marvin_guarda_terra_spazio.jpg": [
+      "notte"
+    ],
+    "marvin_k9_pianeta_alieno.jpg": [
+      "notte",
+      "sera"
+    ],
+    "marvin_pistola_raggio_luna.jpg": [
+      "crepuscolo"
+    ],
+    "maxresdefault.jpg": [
+      "alba",
+      "mattino",
+      "lavoro",
+      "inverno"
+    ],
+    "mosaico_personaggi_1.jpg": [
+      "jolly"
+    ],
+    "mosaico_personaggi_2.png": [
+      "jolly"
+    ],
+    "PcD8mSv-looney-tunes-wallpaper.jpg": [],
+    "pepe_le_pew_penelope_bosco.jpg": [
+      "alba",
+      "mattino",
+      "pomeriggio",
+      "primavera"
+    ],
+    "pepe_penelope_barca_luna_cuori.jpg": [
+      "crepuscolo",
+      "sera",
+      "primavera",
+      "inverno",
+      "estate",
+      "smart",
+      "weekend"
+    ],
+    "personaggi_cerchio_bugs_centro.jpg": [
+      "jolly"
+    ],
+    "personaggi_logo_warner_bros.jpg": [
+      "jolly"
+    ],
+    "personaggi_pausa_pranzo_trave.jpg": [
+      "pranzo",
+      "lavoro"
+    ],
+    "porky_daffy_sub_sfera_marina.jpg": [
+      "estate"
+    ],
+    "ralph_lupo_sam_pastore_pecora.jpg": [
+      "mattino",
+      "pomeriggio",
+      "primavera",
+      "estate",
+      "lavoro"
+    ],
+    "rocket-squad-1956-true-detective-2014-v0-xpohewh6zizb1.jpg": [
+      "spettacolo",
+      "sera",
+      "notte"
+    ],
+    "sfondo_deserto_notturno_binario.jpg": [
+      "notte",
+      "crepuscolo"
+    ],
+    "SnapInsta.to_465011009_537199462588431_1302831289674217324_n.jpg": [
+      "horror",
+      "notte"
+    ],
+    "speedy_gonzales_corsa_deserto.png": [
+      "mattino",
+      "pomeriggio",
+      "estate",
+      "autunno"
+    ],
+    "surf_squali_spiaggia.jpg": [
+      "estate",
+      "mattino",
+      "sport",
+      "pomeriggio"
+    ],
+    "sylvester_tom_tweety_gabbia.webp": [
+      "pranzo"
+    ],
+    "sylvester_tweety_bidoni_spazzatura.jpg": [
+      "pranzo"
+    ],
+    "sylvester_tweety_forbici_filo_luna.jpg": [
+      "notte",
+      "inverno",
+      "sera",
+      "autunno"
+    ],
+    "sylvester_tweety_spiaggia.jpg": [
+      "autunno",
+      "estate",
+      "pomeriggio"
+    ],
+    "taz_hamburger_logo.jpg": [
+      "pranzo",
+      "smart",
+      "weekend"
+    ],
+    "thats_all_folks_personaggi_palco.jpg": [
+      "spettacolo"
+    ],
+    "thats_all_folks_testo_rosso.jpg": [
+      "notte"
+    ],
+    "tumblr_3149e31097e2ddefbcd5b367e2a07626_bb5afa0a_500.png": [
+      "tramonto",
+      "autunno"
+    ],
+    "tutti_i_personaggi_poster.jpg": [
+      "alba",
+      "mattino",
+      "tramonto",
+      "smart"
+    ],
+    "tweety_sylvester_sega_albero.jpg": [
+      "pomeriggio"
+    ],
+    "ufficio_disegnatori_personaggi.jpg": [
+      "lavoro",
+      "mattino",
+      "pomeriggio"
+    ],
+    "wabbit_season_with_gun_copy.jpg": [],
+    "wile1280x1024.jpg": []
+  },
+  "random_rules": {
+    "weekday": [
+      {
+        "from": "09:00",
+        "to": "13:00",
+        "include": [
+          "lavoro",
+          "mattino"
+        ],
+        "exclude": [
+          "inverno",
+          "smart"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "13:00",
+        "to": "14:00",
+        "include": [
+          "pranzo"
+        ],
+        "exclude": [
+          "smart"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "14:00",
+        "to": "18:00",
+        "include": [
+          "pomeriggio"
+        ],
+        "exclude": [
+          "inverno",
+          "smart"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "18:00",
+        "to": "19:00",
+        "include": [
+          "jolly",
+          "pomeriggio",
+          "svago"
+        ],
+        "exclude": [
+          "inverno",
+          "notte",
+          "sera"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "19:00",
+        "to": "20:00",
+        "include": [
+          "tramonto"
+        ],
+        "exclude": [
+          "inverno"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "20:00",
+        "to": "21:00",
+        "include": [
+          "crepuscolo",
+          "jolly",
+          "sera"
+        ],
+        "exclude": [],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "21:00",
+        "to": "22:00",
+        "include": [
+          "sera",
+          "spettacolo"
+        ],
+        "exclude": [
+          "inverno"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "22:00",
+        "to": "6:00",
+        "include": [
+          "notte"
+        ],
+        "exclude": [
+          "inverno"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "6:00",
+        "to": "9:00",
+        "include": [
+          "alba",
+          "crepuscolo"
+        ],
+        "exclude": [
+          "inverno",
+          "weekend"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      }
+    ],
+    "weekend": [
+      {
+        "from": "06:00",
+        "to": "9:00",
+        "include": [
+          "alba",
+          "crepuscolo"
+        ],
+        "exclude": [
+          "inverno",
+          "lavoro"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "09:00",
+        "to": "13:00",
+        "include": [
+          "jolly",
+          "mattino",
+          "svago"
+        ],
+        "exclude": [
+          "alba",
+          "crepuscolo",
+          "inverno",
+          "lavoro",
+          "notte",
+          "pranzo",
+          "sera"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "13:00",
+        "to": "15:00",
+        "include": [
+          "pranzo"
+        ],
+        "exclude": [
+          "inverno"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "15:00",
+        "to": "19:00",
+        "include": [
+          "jolly",
+          "pomeriggio",
+          "svago"
+        ],
+        "exclude": [
+          "alba",
+          "crepuscolo",
+          "inverno",
+          "lavoro",
+          "notte",
+          "sera"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      }
+    ],
+    "overrides": {
+      "monday": [
+        {
+          "from": "09:00",
+          "to": "13:00",
+          "include": [
+            "lavoro",
+            "mattino",
+            "ufficio"
+          ],
+          "exclude": [
+            "crepuscolo",
+            "inverno",
+            "pomeriggio",
+            "pranzo",
+            "sera",
+            "tramonto"
+          ],
+          "match": "any",
+          "rotate_minutes": 60
+        },
+        {
+          "from": "13:00",
+          "to": "14:00",
+          "include": [
+            "pranzo"
+          ],
+          "exclude": [],
+          "match": "all",
+          "rotate_minutes": 60
+        },
+        {
+          "from": "14:00",
+          "to": "18:00",
+          "include": [
+            "lavoro",
+            "pomeriggio",
+            "sport"
+          ],
+          "exclude": [
+            "alba",
+            "estate",
+            "inverno",
+            "pranzo",
+            "sera",
+            "tramonto"
+          ],
+          "match": "any",
+          "rotate_minutes": 60
+        }
+      ],
+      "tuesday": [
+        {
+          "from": "15:00",
+          "to": "16:00",
+          "include": [
+            "lavoro",
+            "pomeriggio",
+            "sport",
+            "ufficio"
+          ],
+          "exclude": [
+            "alba",
+            "crepuscolo",
+            "estate",
+            "inverno",
+            "notte",
+            "pranzo",
+            "sera",
+            "smart",
+            "tramonto"
+          ],
+          "match": "any",
+          "rotate_minutes": 60
+        }
+      ],
+      "wednesday": [
+        {
+          "from": "09:00",
+          "to": "13:00",
+          "include": [
+            "lavoro",
+            "mattino",
+            "ufficio"
+          ],
+          "exclude": [
+            "crepuscolo",
+            "inverno",
+            "pomeriggio",
+            "pranzo",
+            "sera",
+            "tramonto"
+          ],
+          "match": "any",
+          "rotate_minutes": 60
+        },
+        {
+          "from": "13:00",
+          "to": "14:00",
+          "include": [
+            "pranzo"
+          ],
+          "exclude": [],
+          "match": "all",
+          "rotate_minutes": 60
+        },
+        {
+          "from": "14:00",
+          "to": "18:00",
+          "include": [
+            "lavoro",
+            "pomeriggio",
+            "sport"
+          ],
+          "exclude": [
+            "alba",
+            "estate",
+            "inverno",
+            "pranzo",
+            "sera",
+            "tramonto"
+          ],
+          "match": "any",
+          "rotate_minutes": 60
+        }
+      ],
+      "thursday": [],
+      "friday": [
+        {
+          "from": "09:00",
+          "to": "10:00",
+          "include": [
+            "jolly",
+            "sport"
+          ],
+          "exclude": [
+            "estate",
+            "inverno",
+            "notte",
+            "pomeriggio",
+            "pranzo",
+            "sera",
+            "smart",
+            "tramonto",
+            "weekend"
+          ],
+          "match": "any",
+          "rotate_minutes": 60
+        }
+      ],
+      "saturday": [],
+      "sunday": []
+    }
   }
 }

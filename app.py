@@ -1,17 +1,21 @@
 """
-Chametiger — Wallpaper scheduler per ora + giorno della settimana
+Chametiger - Wallpaper scheduler per ora + giorno della settimana
+Due modalita':
+  - "scheduled": ogni slot ha un'immagine fissa (comportamento storico)
+  - "random":    ogni slot pesca a caso tra le immagini che hanno certi tag
 Richiede: pystray, Pillow, pywin32
 """
 
 import sys
 import os
 import json
+import random
 import ctypes
 import threading
 import subprocess
 import winreg
 import socket
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 try:
@@ -27,8 +31,30 @@ BASE_DIR = Path(__file__).parent.resolve()
 CONFIG_FILE = BASE_DIR / "config.json"
 APP_NAME = "Chametiger"
 REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
+LOG_FILE = BASE_DIR / "chametiger.log"
+MAX_LOG_BYTES = 200_000
+HISTORY_FILE = BASE_DIR / "log.json"
+DEFAULT_HISTORY_DAYS = 60
 
-# ── Costanti giorno ───────────────────────────────────────────────────────────
+# log.json e' scritto sia dal thread dello scheduler sia da quello del menu tray
+_history_lock = threading.Lock()
+
+
+def log(msg: str):
+    """Scrive a schermo e su file, troncando il log quando diventa grosso."""
+    line = f"[{datetime.now():%Y-%m-%d %H:%M:%S}] {msg}"
+    print(line)
+    try:
+        if LOG_FILE.exists() and LOG_FILE.stat().st_size > MAX_LOG_BYTES:
+            old = LOG_FILE.read_text(encoding="utf-8", errors="replace")
+            LOG_FILE.write_text(old[-MAX_LOG_BYTES // 2 :], encoding="utf-8")
+        with open(LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(line + "\n")
+    except Exception:
+        pass
+
+
+# ── Costanti giorno ──────────────────────────────────────────────────────────
 WEEKDAYS = [
     "monday",
     "tuesday",
@@ -40,22 +66,47 @@ WEEKDAYS = [
 ]
 WEEKEND = {"saturday", "sunday"}
 
+MODE_SCHEDULED = "scheduled"
+MODE_RANDOM = "random"
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  Logica di scheduling
+#  Config
 # ═══════════════════════════════════════════════════════════════════════════════
+
+
+def ensure_defaults(cfg: dict) -> dict:
+    """Aggiunge le chiavi nuove se mancano, cosi' i config vecchi restano validi."""
+    cfg.setdefault("mode", MODE_SCHEDULED)
+    cfg.setdefault("tags", [])
+    cfg.setdefault("image_library", {})
+
+    rules = cfg.setdefault("random_rules", {})
+    rules.setdefault("weekday", [])
+    rules.setdefault("weekend", [])
+    rules.setdefault("overrides", {})
+    for day in WEEKDAYS:
+        rules["overrides"].setdefault(day, [])
+
+    return cfg
 
 
 def load_config() -> dict:
     with open(CONFIG_FILE, encoding="utf-8") as f:
-        return json.load(f)
+        return ensure_defaults(json.load(f))
+
+
+def is_absolute_path(p: str) -> bool:
+    """True per /percorso, C:/percorso e \\\\server/share (non dipende dall'OS)."""
+    s = str(p).replace("\\", "/")
+    return s.startswith("/") or (len(s) > 1 and s[1] == ":")
 
 
 def resolve_path(config: dict, filename: str) -> str:
     """
     Risolve il percorso dell'immagine.
-    - Percorso relativo  → concatenato alla cartella base del PC corrente
-    - Percorso assoluto  → ri-mappato sulla cartella base del PC corrente,
+    - Percorso relativo -> concatenato alla cartella base del PC corrente
+    - Percorso assoluto -> ri-mappato sulla cartella base del PC corrente,
                            se inizia con una delle basi conosciute
     """
     hostname = socket.gethostname()
@@ -63,10 +114,9 @@ def resolve_path(config: dict, filename: str) -> str:
     default_base = config.get("base_path", "")
     base_path = path_map.get(hostname, default_base)
 
-    if not Path(filename).is_absolute():
+    if not is_absolute_path(filename):
         return str(Path(base_path) / filename)
 
-    # Percorso assoluto: prova a togliere una base conosciuta e rimappare
     normalized = filename.replace("\\", "/")
     known_bases = [default_base] + list(path_map.values())
     for kb in known_bases:
@@ -77,8 +127,12 @@ def resolve_path(config: dict, filename: str) -> str:
             relative = normalized[len(kb_norm) :]
             return str(Path(base_path) / relative)
 
-    # Base sconosciuta: lascia il percorso invariato
     return filename
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Orari
+# ═══════════════════════════════════════════════════════════════════════════════
 
 
 def parse_time(t: str) -> tuple[int, int]:
@@ -97,7 +151,7 @@ def time_in_slot(now: datetime, slot: dict) -> bool:
     if start <= end:
         return start <= now <= end
     else:
-        # Fascia a cavallo della mezzanotte (es. 22:00 → 06:00)
+        # Fascia a cavallo della mezzanotte (es. 22:00 -> 06:00)
         return now >= start or now <= end
 
 
@@ -111,45 +165,319 @@ def _first_match(slots, now: datetime) -> dict | None:
     return None
 
 
-def resolve_wallpaper(config: dict) -> str | None:
+def _window(slot: dict) -> str:
+    """Fascia oraria dello slot, come appare nel log."""
+    return f"{slot.get('from', '?')}-{slot.get('to', '?')}"
+
+
+def _tags_of(rule: dict) -> str:
+    """Tag della regola casuale, in coda alla categoria. Vuoto se non ce ne sono."""
+    parts = []
+    if rule.get("include"):
+        joiner = "/" if rule.get("match", "all") == "any" else "+"
+        parts.append(joiner.join(rule["include"]))
+    if rule.get("exclude"):
+        parts.append("-" + ",-".join(rule["exclude"]))
+    return f" [{' '.join(parts)}]" if parts else ""
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Modalita' programmata
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+def resolve_scheduled(config: dict, now: datetime) -> tuple[str | None, str]:
     """
-    Determina il percorso dell'immagine da usare adesso.
-    Priorità:
+    Ritorna (percorso, categoria). La categoria e' l'etichetta della regola che
+    ha vinto, usata nel log.
+
+    Priorita':
       1. special_days (data esatta)
       2. overrides    (giorno della settimana)
       3. schedules    (weekday / weekend)
       4. fallback     (weekday, se il weekend non copre l'orario)
     """
-    now = datetime.now()
-    today_key = now.strftime("%Y-%m-%d")  # es. "2026-06-01"
-    day_name = WEEKDAYS[now.weekday()]  # es. "monday"
-
+    today_key = now.strftime("%Y-%m-%d")
+    day_name = WEEKDAYS[now.weekday()]
     schedules = config.get("schedules", {})
 
-    # 1. Giorno speciale (data esatta)
     slot = _first_match(config.get("special_days", {}).get(today_key), now)
     if slot:
-        return resolve_path(config, slot["image"])
+        cat = f"programmata, giorno speciale {today_key} {_window(slot)}"
+        return resolve_path(config, slot["image"]), cat
 
-    # 2. Override per giorno della settimana
     slot = _first_match(config.get("overrides", {}).get(day_name), now)
     if slot:
-        return resolve_path(config, slot["image"])
+        cat = f"programmata, override {day_name} {_window(slot)}"
+        return resolve_path(config, slot["image"]), cat
 
-    # 3. Schedule base weekday / weekend
     schedule_key = "weekend" if day_name in WEEKEND else "weekday"
     slot = _first_match(schedules.get(schedule_key, []), now)
     if slot:
-        return resolve_path(config, slot["image"])
+        cat = f"programmata, {schedule_key} {_window(slot)}"
+        return resolve_path(config, slot["image"]), cat
 
-    # 4. Fallback: weekend senza copertura → usa lo schedule weekday
     if schedule_key == "weekend":
         slot = _first_match(schedules.get("weekday", []), now)
         if slot:
-            print("[INFO] Nessuno slot weekend attivo, uso il fallback weekday.")
-            return resolve_path(config, slot["image"])
+            log("[INFO] Nessuno slot weekend attivo, uso il fallback weekday.")
+            cat = f"programmata, fallback weekday {_window(slot)}"
+            return resolve_path(config, slot["image"]), cat
 
+    return None, ""
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Modalita' casuale per tag
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+def image_matches_rule(image_tags, rule: dict) -> bool:
+    """
+    include: tag che l'immagine deve avere
+    exclude: tag che l'immagine non deve avere
+    match:   "all" (default) = deve avere tutti gli include
+             "any"           = ne basta uno
+    """
+    tags = set(image_tags or [])
+
+    for t in rule.get("exclude", []):
+        if t in tags:
+            return False
+
+    include = rule.get("include", [])
+    if not include:
+        return True
+
+    if rule.get("match", "all") == "any":
+        return any(t in tags for t in include)
+    return all(t in tags for t in include)
+
+
+def candidates_for_rule(config: dict, rule: dict) -> list[str]:
+    """Immagini della libreria che soddisfano la regola e che esistono su disco."""
+    library = config.get("image_library", {})
+    out = []
+    for image, tags in library.items():
+        if not image_matches_rule(tags, rule):
+            continue
+        if os.path.isfile(resolve_path(config, image)):
+            out.append(image)
+    return out
+
+
+def _rule_signature(rule: dict) -> str:
+    return "|".join(
+        [
+            str(rule.get("from", "")),
+            str(rule.get("to", "")),
+            ",".join(sorted(rule.get("include", []))),
+            ",".join(sorted(rule.get("exclude", []))),
+            str(rule.get("match", "all")),
+        ]
+    )
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Storico delle estrazioni (log.json)
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+#  Lo storico e' scritto solo da questo processo, mai dalla GUI: config.json e'
+#  quello che decidi tu, log.json e' quello che e' successo. La "priorita'" di
+#  un'immagine non viene salvata da nessuna parte, si ricalcola da qui, cosi'
+#  non puo' andare fuori sincrono con la libreria.
+
+
+def history_days(config: dict) -> int:
+    """Per quanti giorni indietro guardare. Sotto 1 giorno non ha senso."""
+    try:
+        days = int(config.get("history_days", DEFAULT_HISTORY_DAYS))
+    except (TypeError, ValueError):
+        return DEFAULT_HISTORY_DAYS
+    return days if days >= 1 else DEFAULT_HISTORY_DAYS
+
+
+def load_history() -> list[dict]:
+    """Un log.json rovinato non deve impedire all'app di partire."""
+    try:
+        with open(HISTORY_FILE, encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, list) else []
+    except FileNotFoundError:
+        return []
+    except (json.JSONDecodeError, OSError) as e:
+        log(f"[WARN] log.json illeggibile, riparto da zero: {e}")
+        return []
+
+
+def _save_history(entries: list[dict]):
+    try:
+        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+            json.dump(entries, f, indent=1, ensure_ascii=False)
+    except OSError as e:
+        log(f"[WARN] Impossibile scrivere log.json: {e}")
+
+
+def _prune_history(entries: list[dict], days: int, now: datetime) -> list[dict]:
+    """Butta le voci piu' vecchie della finestra. Le date ISO si ordinano da sole."""
+    limit = (now - timedelta(days=days)).strftime("%Y-%m-%d")
+    return [e for e in entries if e.get("day", "") >= limit]
+
+
+def _window_entry(entries: list[dict], day: str, sig: str, bucket: int) -> dict | None:
+    """L'estrazione gia' decisa per questa finestra di rotazione, se esiste."""
+    for e in entries:
+        if e.get("day") == day and e.get("rule") == sig and e.get("bucket") == bucket:
+            return e
     return None
+
+
+def _usage_counts(entries: list[dict]) -> dict[str, int]:
+    """Quante volte ogni immagine e' uscita, sommando tutte le regole."""
+    counts: dict[str, int] = {}
+    for e in entries:
+        image = e.get("image")
+        if image:
+            counts[image] = counts.get(image, 0) + 1
+    return counts
+
+
+def pick_from_rule(
+    config: dict, rule: dict, now: datetime, force_new: bool = False
+) -> str | None:
+    """
+    Sceglie un'immagine dando la precedenza a quelle uscite meno spesso.
+
+    Estrae solo dal gruppo a conteggio minimo: finche' restano immagini mai viste
+    si pesca fra quelle, e solo quando il pool e' esaurito si riparte. A parita'
+    di conteggio sorteggia.
+
+    La scelta viene memorizzata in log.json per la finestra di rotazione corrente
+    e riusata finche' la finestra non cambia. Senza questa memoria lo sfondo
+    cambierebbe a ogni giro dello scheduler: l'immagine appena estratta salirebbe
+    di conteggio e uscirebbe subito dal gruppo a priorita' massima.
+
+    force_new=True ignora la memoria ed estrae di nuovo, escludendo la corrente.
+    """
+    pool = candidates_for_rule(config, rule)
+    if not pool:
+        return None
+
+    try:
+        rotate = int(rule.get("rotate_minutes", 60))
+    except (TypeError, ValueError):
+        rotate = 60
+    if rotate < 1:
+        rotate = 60
+
+    bucket = (now.hour * 60 + now.minute) // rotate
+    day = now.strftime("%Y-%m-%d")
+    sig = _rule_signature(rule)
+
+    with _history_lock:
+        entries = load_history()
+        memo = _window_entry(entries, day, sig, bucket)
+        candidates = pool
+
+        if memo:
+            if not force_new and memo.get("image") in pool:
+                return memo["image"]
+            # o l'immagine memorizzata non e' piu' valida, o stiamo forzando:
+            # in entrambi i casi la voce va rifatta.
+            entries.remove(memo)
+            if force_new:
+                rest = [i for i in pool if i != memo.get("image")]
+                if rest:  # se il pool ha una sola immagine, si tiene quella
+                    candidates = rest
+
+        counts = _usage_counts(entries)
+        fewest = min(counts.get(i, 0) for i in candidates)
+        tier = sorted(i for i in candidates if counts.get(i, 0) == fewest)
+
+        # Il sorteggio automatico e' seedato sulla finestra: se log.json sparisce,
+        # la stessa fascia oraria ripropone la stessa immagine invece di saltare.
+        if force_new:
+            choice = random.choice(tier)
+        else:
+            choice = random.Random(f"{day}|{sig}|{bucket}").choice(tier)
+
+        entries.append(
+            {
+                "ts": now.strftime("%Y-%m-%d %H:%M:%S"),
+                "day": day,
+                "image": choice,
+                "rule": sig,
+                "bucket": bucket,
+            }
+        )
+        _save_history(_prune_history(entries, history_days(config), now))
+
+    return choice
+
+
+def resolve_random(config: dict, now: datetime) -> tuple[str | None, str]:
+    """
+    Ritorna (percorso, categoria), come resolve_scheduled.
+
+    Priorita':
+      1. special_days  (immagini fisse: a Natale vuoi quella, non una a caso)
+      2. random_rules.overrides[giorno]
+      3. random_rules.weekday / weekend
+      4. fallback weekday
+      5. fallback finale sulla modalita' programmata
+    """
+    today_key = now.strftime("%Y-%m-%d")
+    day_name = WEEKDAYS[now.weekday()]
+    rules = config.get("random_rules", {})
+
+    slot = _first_match(config.get("special_days", {}).get(today_key), now)
+    if slot:
+        cat = f"casuale, giorno speciale {today_key} {_window(slot)}"
+        return resolve_path(config, slot["image"]), cat
+
+    rule = _first_match(rules.get("overrides", {}).get(day_name), now)
+    if rule:
+        image = pick_from_rule(config, rule, now)
+        if image:
+            cat = f"casuale, override {day_name} {_window(rule)}{_tags_of(rule)}"
+            return resolve_path(config, image), cat
+        log("[WARN] Regola override senza immagini valide, proseguo.")
+
+    rules_key = "weekend" if day_name in WEEKEND else "weekday"
+    rule = _first_match(rules.get(rules_key, []), now)
+    if rule:
+        image = pick_from_rule(config, rule, now)
+        if image:
+            cat = f"casuale, {rules_key} {_window(rule)}{_tags_of(rule)}"
+            return resolve_path(config, image), cat
+        log(f"[WARN] Regola {rules_key} senza immagini valide, proseguo.")
+
+    if rules_key == "weekend":
+        rule = _first_match(rules.get("weekday", []), now)
+        if rule:
+            image = pick_from_rule(config, rule, now)
+            if image:
+                log("[INFO] Nessuna regola weekend attiva, uso il fallback weekday.")
+                cat = (
+                    f"casuale, fallback weekday {_window(rule)}{_tags_of(rule)}"
+                )
+                return resolve_path(config, image), cat
+
+    log("[INFO] Nessuna regola casuale attiva, ripiego sulla modalita' programmata.")
+    return resolve_scheduled(config, now)
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Dispatcher
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+def resolve_wallpaper(config: dict) -> tuple[str | None, str]:
+    """Ritorna (percorso, categoria) della regola attiva adesso."""
+    now = datetime.now()
+    if config.get("mode", MODE_SCHEDULED) == MODE_RANDOM:
+        return resolve_random(config, now)
+    return resolve_scheduled(config, now)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -163,10 +491,10 @@ SPIF_SENDCHANGE = 0x02
 _last_wallpaper: str = ""
 
 
-def set_wallpaper(path: str) -> bool:
+def set_wallpaper(path: str, category: str = "") -> bool:
     global _last_wallpaper
     if not path or not os.path.isfile(path):
-        print(f"[WARN] Immagine non trovata: {path}")
+        log(f"[WARN] Immagine non trovata: {path}")
         return False
     if path == _last_wallpaper:
         return False  # nessun cambiamento necessario
@@ -175,9 +503,10 @@ def set_wallpaper(path: str) -> bool:
     )
     if result:
         _last_wallpaper = path
-        print(f"[OK] Sfondo impostato: {path}")
+        suffix = f" ({category})" if category else ""
+        log(f"[OK] Sfondo impostato{suffix}: {path}")
     else:
-        print(f"[ERR] Impossibile impostare lo sfondo: {path}")
+        log(f"[ERR] Impossibile impostare lo sfondo: {path}")
     return bool(result)
 
 
@@ -204,10 +533,12 @@ def is_autostart_enabled() -> bool:
 
 
 def enable_autostart():
-    key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, REGISTRY_KEY, 0, winreg.KEY_SET_VALUE)
+    key = winreg.OpenKey(
+        winreg.HKEY_CURRENT_USER, REGISTRY_KEY, 0, winreg.KEY_SET_VALUE
+    )
     winreg.SetValueEx(key, APP_NAME, 0, winreg.REG_SZ, get_exe_path())
     winreg.CloseKey(key)
-    print("[OK] Avvio automatico abilitato.")
+    log("[OK] Avvio automatico abilitato.")
 
 
 def disable_autostart():
@@ -217,7 +548,7 @@ def disable_autostart():
         )
         winreg.DeleteValue(key, APP_NAME)
         winreg.CloseKey(key)
-        print("[OK] Avvio automatico disabilitato.")
+        log("[OK] Avvio automatico disabilitato.")
     except FileNotFoundError:
         pass
 
@@ -236,24 +567,38 @@ class ChametigerTray:
         self.config = load_config()
         self._stop_event = threading.Event()
         self._icon = None
+        self._no_slot_logged = False
 
-    # ── Thread principale del polling ─────────────────────────────────────────
+    def _report_no_slot(self, always: bool = False):
+        """
+        Logga l'assenza di slot attivi.
+
+        Lo scheduler passa always=False: la riga compare una volta sola e non si
+        ripete a ogni ciclo, finche' non torna attivo uno slot. Le azioni manuali
+        passano always=True, perche' un click vuole sempre un riscontro.
+        """
+        if always or not self._no_slot_logged:
+            log("[INFO] Nessuno slot attivo al momento.")
+        self._no_slot_logged = True
+
+    # ── Thread principale del polling ────────────────────────────────────────
     def _run_scheduler(self):
         while not self._stop_event.is_set():
             try:
                 self.config = load_config()  # rilegge la config ad ogni ciclo
-                wallpaper = resolve_wallpaper(self.config)
+                wallpaper, category = resolve_wallpaper(self.config)
                 if wallpaper:
-                    set_wallpaper(wallpaper)
+                    self._no_slot_logged = False
+                    set_wallpaper(wallpaper, category)
                 else:
-                    print("[INFO] Nessuno slot attivo al momento.")
+                    self._report_no_slot()
             except Exception as e:
-                print(f"[ERR] Scheduler: {e}")
+                log(f"[ERR] Scheduler: {e}")
 
             interval = self.config.get("check_interval_minutes", 5) * 60
             self._stop_event.wait(interval)
 
-    # ── Azioni menu tray ──────────────────────────────────────────────────────
+    # ── Azioni menu tray ─────────────────────────────────────────────────────
     def _open_editor(self, icon, item):
         editor_path = BASE_DIR / "gui.py"
         subprocess.Popen([sys.executable, str(editor_path)])
@@ -261,13 +606,71 @@ class ChametigerTray:
     def _apply_now(self, icon, item):
         try:
             self.config = load_config()
-            wallpaper = resolve_wallpaper(self.config)
+            wallpaper, category = resolve_wallpaper(self.config)
             if wallpaper:
-                set_wallpaper(wallpaper)
+                self._no_slot_logged = False
+                set_wallpaper(wallpaper, category)
             else:
-                print("[INFO] Nessuno slot attivo al momento.")
+                self._report_no_slot(always=True)
         except Exception as e:
-            print(f"[ERR] Apply now: {e}")
+            log(f"[ERR] Apply now: {e}")
+
+    def _shuffle_now(self, icon, item):
+        """Forza una nuova estrazione ignorando la finestra di rotazione."""
+        try:
+            self.config = load_config()
+            if self.config.get("mode") != MODE_RANDOM:
+                log("[INFO] Estrazione disponibile solo in modalita' casuale.")
+                return
+
+            now = datetime.now()
+            day_name = WEEKDAYS[now.weekday()]
+            rules = self.config.get("random_rules", {})
+
+            category = ""
+            rule = _first_match(rules.get("overrides", {}).get(day_name), now)
+            if rule:
+                category = f"override {day_name}"
+            if not rule:
+                key = "weekend" if day_name in WEEKEND else "weekday"
+                rule = _first_match(rules.get(key, []), now)
+                if rule:
+                    category = key
+            if not rule and day_name in WEEKEND:
+                rule = _first_match(rules.get("weekday", []), now)
+                if rule:
+                    category = "fallback weekday"
+
+            if not rule:
+                log("[INFO] Nessuna regola casuale attiva adesso.")
+                return
+
+            image = pick_from_rule(self.config, rule, now, force_new=True)
+            if not image:
+                log("[WARN] Nessuna immagine valida per la regola attiva.")
+                return
+
+            category = (
+                f"estrazione forzata, {category} {_window(rule)}{_tags_of(rule)}"
+            )
+            set_wallpaper(resolve_path(self.config, image), category)
+        except Exception as e:
+            log(f"[ERR] Shuffle: {e}")
+
+    def _toggle_mode(self, icon, item):
+        """Passa da programmata a casuale e viceversa, salvando nel config."""
+        try:
+            cfg = load_config()
+            cfg["mode"] = (
+                MODE_RANDOM if cfg.get("mode") == MODE_SCHEDULED else MODE_SCHEDULED
+            )
+            with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+                json.dump(cfg, f, indent=2, ensure_ascii=False)
+            self.config = cfg
+            log(f"[OK] Modalita': {cfg['mode']}")
+            self._apply_now(None, None)
+        except Exception as e:
+            log(f"[ERR] Cambio modalita': {e}")
 
     def _toggle_autostart(self, icon, item):
         if is_autostart_enabled():
@@ -279,36 +682,50 @@ class ChametigerTray:
         self._stop_event.set()
         icon.stop()
 
-    # ── Build menu ────────────────────────────────────────────────────────────
+    # ── Build menu ───────────────────────────────────────────────────────────
+    def _current_mode(self) -> str:
+        try:
+            return load_config().get("mode", MODE_SCHEDULED)
+        except Exception:
+            return MODE_SCHEDULED
+
     def _build_menu(self):
-        autostart_label = lambda item: (
-            "✓ Avvio con Windows" if is_autostart_enabled() else "  Avvio con Windows"
-        )
+        def mode_label(item):
+            if self._current_mode() == MODE_RANDOM:
+                return "Modalita': casuale"
+            return "Modalita': programmata"
+
+        def autostart_label(item):
+            return (
+                "* Avvio con Windows"
+                if is_autostart_enabled()
+                else "  Avvio con Windows"
+            )
+
         return pystray.Menu(
             Item("Chametiger", None, enabled=False),
             pystray.Menu.SEPARATOR,
             Item("Applica adesso", self._apply_now),
+            Item("Cambia immagine adesso", self._shuffle_now),
             Item("Apri editor config", self._open_editor),
             pystray.Menu.SEPARATOR,
+            Item(mode_label, self._toggle_mode),
             Item(autostart_label, self._toggle_autostart),
             pystray.Menu.SEPARATOR,
             Item("Esci", self._quit),
         )
 
-    # ── Entry point ───────────────────────────────────────────────────────────
+    # ── Entry point ──────────────────────────────────────────────────────────
     def run(self):
-        # Abilita autostart di default al primo avvio
         if not is_autostart_enabled():
             enable_autostart()
 
-        # Applica subito
+        log(f"Avvio Chametiger. Modalita': {self.config.get('mode')}")
         self._apply_now(None, None)
 
-        # Avvia il thread scheduler (dopo applicazione iniziale)
         t = threading.Thread(target=self._run_scheduler, daemon=True)
         t.start()
 
-        # Avvia il tray
         self._icon = pystray.Icon(
             APP_NAME, make_tray_icon(), APP_NAME, self._build_menu()
         )
