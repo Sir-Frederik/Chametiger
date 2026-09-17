@@ -332,16 +332,53 @@ class ChametigerEditor(tk.Tk):
             font=("Segoe UI", 10),
         ).pack(side="left", padx=12)
 
+        # ── Immagine "mascotte" appoggiata sulla linea superiore delle tab ─────
+        HEADER_BG_IMAGE_FILE = BASE_DIR / "mascotte.png"
+        HEADER_BG_IMAGE_SCALE = 6  # 2 = dimezza, 3 = un terzo, ecc.
+        MASCOT_GAP = 8  # spazio in pixel tra il badge "Modalità" e la mascotte
+
+        mascot_width = 0
+        if HAS_PIL and HEADER_BG_IMAGE_FILE.is_file():
+            try:
+                header_bg_img = Image.open(HEADER_BG_IMAGE_FILE)
+                # crop() elimina i margini trasparenti del PNG, che altrimenti
+                # occuperebbero spazio coprendo il badge "Modalità".
+                header_bg_img = header_bg_img.crop(header_bg_img.getbbox())
+                new_size = (
+                    header_bg_img.width // HEADER_BG_IMAGE_SCALE,
+                    header_bg_img.height // HEADER_BG_IMAGE_SCALE,
+                )
+                header_bg_img = header_bg_img.resize(new_size, Image.LANCZOS)
+                # self._header_bg_image tiene un riferimento forte all'immagine:
+                # senza, Tkinter la "garbage-collecta" e sparisce dallo schermo.
+                self._header_bg_image = ImageTk.PhotoImage(header_bg_img)
+                mascot_width = new_size[0]
+            except Exception:
+                self._header_bg_image = None
+
+        # padx a destra = larghezza mascotte: il badge si sposta alla sua sinistra
         self._mode_badge = tk.Label(header, bg=BG, font=("Segoe UI Semibold", 10))
-        self._mode_badge.pack(side="right")
+        self._mode_badge.pack(
+            side="right", padx=(0, mascot_width + MASCOT_GAP if mascot_width else 0)
+        )
         self._refresh_mode_badge()
 
         nb = ttk.Notebook(self)
         nb.pack(fill="both", expand=True, padx=16, pady=(0, 8))
 
+        # place(in_=nb, ...) usa il Notebook come riferimento: relx=1.0 = bordo
+        # destro, rely=0.0 = bordo superiore (la linea delle tab); anchor="se"
+        # mette l'angolo in basso a destra dell'immagine su quel punto.
+        if mascot_width:
+            header_bg_label = tk.Label(self, image=self._header_bg_image, bg=BG, bd=0)
+            header_bg_label.place(in_=nb, relx=1.0, rely=0.0, anchor="se")
+
         self._build_scheduled_area(nb)
         self._build_random_area(nb)
         self._build_settings_tab(nb)
+        nb.select(
+            2
+        )  # tab predefinita all'avvio: 0=Programmata, 1=Casuale, 2=Impostazioni
 
         footer = tk.Frame(self, bg=BG, pady=8)
         footer.pack(fill="x", padx=16)
