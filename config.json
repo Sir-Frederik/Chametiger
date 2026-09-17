@@ -1,5 +1,5 @@
 {
-  "base_path": "G:/Altri computer/Asus/Temi",
+  "base_path": "G:/Altri computer/Asus/Temi/Looney tunes",
   "path_map": {
     "FedericoAsus": "C:/Users/Asus/Pictures/Temi",
     "Federico": "G:/Altri computer/Asus/Temi/Looney tunes"
@@ -1545,5 +1545,6 @@
       "saturday": [],
       "sunday": []
     }
-  }
+  },
+  "history_days": 60
 }
