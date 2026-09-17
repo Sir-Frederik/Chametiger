@@ -291,6 +291,12 @@
         "to": "14:00",
         "image": "G:/Altri computer/Asus/Temi/Looney tunes/sylvester_tweety_bidoni_spazzatura.jpg",
         "label": "13"
+      },
+      {
+        "from": "15:00",
+        "to": "16:00",
+        "image": "G:/Altri computer/Asus/Temi/Looney tunes/basket.jpg",
+        "label": "15"
       }
     ],
     "thursday": [
