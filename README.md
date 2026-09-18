@@ -1,6 +1,8 @@
 # 🦎 Chametiger
 
-**v2.0**
+**v2.1**
+Aggiunta sincronizzazione tra pc diversi.
+
 
 Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno** e al **giorno della settimana**.
 

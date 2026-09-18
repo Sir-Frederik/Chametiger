@@ -15,7 +15,7 @@ import threading
 import subprocess
 import winreg
 import socket
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 try:
@@ -35,6 +35,9 @@ LOG_FILE = BASE_DIR / "chametiger.log"
 MAX_LOG_BYTES = 200_000
 HISTORY_FILE = BASE_DIR / "log.json"
 DEFAULT_HISTORY_DAYS = 60
+# Origine del conteggio delle finestre. NON cambiarla mai dopo il primo avvio:
+# spostarla trasla l'intero mazzo e i PC gia' allineati si disallineano.
+EPOCH = date(2026, 1, 1)
 
 # log.json e' scritto sia dal thread dello scheduler sia da quello del menu tray
 _history_lock = threading.Lock()
@@ -332,14 +335,51 @@ def _window_entry(entries: list[dict], day: str, sig: str, bucket: int) -> dict 
     return None
 
 
-def _usage_counts(entries: list[dict]) -> dict[str, int]:
-    """Quante volte ogni immagine e' uscita, sommando tutte le regole."""
-    counts: dict[str, int] = {}
-    for e in entries:
-        image = e.get("image")
-        if image:
-            counts[image] = counts.get(image, 0) + 1
-    return counts
+def _window_ordinal(rule: dict, now: datetime, rotate: int) -> int:
+    """
+    Numero progressivo della finestra, contando solo quelle che la regola copre.
+    Se contassimo il tempo assoluto, le ore in cui la regola non e' attiva
+    farebbero avanzare il mazzo e salterebbero delle immagini.
+    """
+    sh, sm = parse_time(rule["from"])
+    eh, em = parse_time(rule["to"])
+    start = sh * 60 + sm
+    end = eh * 60 + em
+    if end <= start:
+        end += 1440  # fascia a cavallo della mezzanotte
+
+    per_giorno = max(1, -(-(end - start) // rotate))
+
+    cur = now.hour * 60 + now.minute
+    giorno = now.date()
+    if cur < start:  # oltre la mezzanotte: la finestra e' iniziata ieri
+        cur += 1440
+        giorno -= timedelta(days=1)
+
+    offset = min((cur - start) // rotate, per_giorno - 1)
+    return (giorno - EPOCH).days * per_giorno + offset
+
+
+def _mazzo(pool: list[str], sig: str, giro: int) -> list[str]:
+    """
+    L'ordine delle immagini per un giro completo. Deterministico: due PC con la
+    stessa libreria e la stessa regola ottengono lo stesso mazzo senza parlarsi.
+    """
+    m = sorted(pool)
+    if len(m) <= 2:
+        return m  # con una o due immagini l'unica sequenza sensata e' l'alternanza
+
+    random.Random(f"{sig}|{giro}").shuffle(m)
+
+    # Evita che l'ultima carta di un giro e la prima del successivo coincidano.
+    # Si scambiano le posizioni 0 e 1 e non 0 e ultima, altrimenti la correzione
+    # cambierebbe la carta finale e il controllo diventerebbe ricorsivo.
+    prec = sorted(pool)
+    random.Random(f"{sig}|{giro - 1}").shuffle(prec)
+    if m[0] == prec[-1]:
+        m[0], m[1] = m[1], m[0]
+
+    return m
 
 
 def pick_from_rule(
@@ -359,7 +399,7 @@ def pick_from_rule(
 
     force_new=True ignora la memoria ed estrae di nuovo, escludendo la corrente.
     """
-    pool = candidates_for_rule(config, rule)
+    pool = sorted(candidates_for_rule(config, rule))
     if not pool:
         return None
 
@@ -370,49 +410,49 @@ def pick_from_rule(
     if rotate < 1:
         rotate = 60
 
-    bucket = (now.hour * 60 + now.minute) // rotate
     day = now.strftime("%Y-%m-%d")
     sig = _rule_signature(rule)
+    bucket = (now.hour * 60 + now.minute) // rotate
+
+    giro, posizione = divmod(_window_ordinal(rule, now, rotate), len(pool))
+    scelta = _mazzo(pool, sig, giro)[posizione]
 
     with _history_lock:
         entries = load_history()
         memo = _window_entry(entries, day, sig, bucket)
-        candidates = pool
 
-        if memo:
-            if not force_new and memo.get("image") in pool:
-                return memo["image"]
-            # o l'immagine memorizzata non e' piu' valida, o stiamo forzando:
-            # in entrambi i casi la voce va rifatta.
-            entries.remove(memo)
-            if force_new:
-                rest = [i for i in pool if i != memo.get("image")]
-                if rest:  # se il pool ha una sola immagine, si tiene quella
-                    candidates = rest
-
-        counts = _usage_counts(entries)
-        fewest = min(counts.get(i, 0) for i in candidates)
-        tier = sorted(i for i in candidates if counts.get(i, 0) == fewest)
-
-        # Il sorteggio automatico e' seedato sulla finestra: se log.json sparisce,
-        # la stessa fascia oraria ripropone la stessa immagine invece di saltare.
         if force_new:
-            choice = random.choice(tier)
+            corrente = memo.get("image") if memo else scelta
+            rest = [i for i in pool if i != corrente]
+            if rest:
+                scelta = random.choice(rest)
+            if memo:
+                entries.remove(memo)
+            forzata = True
         else:
-            choice = random.Random(f"{day}|{sig}|{bucket}").choice(tier)
+            if memo:
+                # un'estrazione manuale vale fino alla fine della sua finestra
+                if memo.get("forced") and memo.get("image") in pool:
+                    return memo["image"]
+                # finestra gia' registrata con la stessa immagine: niente da scrivere
+                if memo.get("image") == scelta:
+                    return scelta
+                entries.remove(memo)
+            forzata = False
 
         entries.append(
             {
                 "ts": now.strftime("%Y-%m-%d %H:%M:%S"),
                 "day": day,
-                "image": choice,
+                "image": scelta,
                 "rule": sig,
                 "bucket": bucket,
+                "forced": forzata,
             }
         )
         _save_history(_prune_history(entries, history_days(config), now))
 
-    return choice
+    return scelta
 
 
 def resolve_random(config: dict, now: datetime) -> tuple[str | None, str]:
@@ -458,9 +498,7 @@ def resolve_random(config: dict, now: datetime) -> tuple[str | None, str]:
             image = pick_from_rule(config, rule, now)
             if image:
                 log("[INFO] Nessuna regola weekend attiva, uso il fallback weekday.")
-                cat = (
-                    f"casuale, fallback weekday {_window(rule)}{_tags_of(rule)}"
-                )
+                cat = f"casuale, fallback weekday {_window(rule)}{_tags_of(rule)}"
                 return resolve_path(config, image), cat
 
     log("[INFO] Nessuna regola casuale attiva, ripiego sulla modalita' programmata.")
@@ -650,9 +688,7 @@ class ChametigerTray:
                 log("[WARN] Nessuna immagine valida per la regola attiva.")
                 return
 
-            category = (
-                f"estrazione forzata, {category} {_window(rule)}{_tags_of(rule)}"
-            )
+            category = f"estrazione forzata, {category} {_window(rule)}{_tags_of(rule)}"
             set_wallpaper(resolve_path(self.config, image), category)
         except Exception as e:
             log(f"[ERR] Shuffle: {e}")
