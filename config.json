@@ -555,7 +555,6 @@
     "jolly"
   ],
   "image_library": {
-    "0_6e916880-e31e-4a7e-84c7-bd6fa4841bac (1).jpg": [],
     "1491917627-797-1525-par-for-the-course.jpg": [
       "mattino",
       "pomeriggio",
@@ -588,8 +587,6 @@
       "primavera",
       "inverno"
     ],
-    "b9755ceff63a485f83f7cc431eb8f719.jpg": [],
-    "backroomms.webp": [],
     "backrooms_daffy_bugs_gossamer.jpg": [
       "horror",
       "notte",
@@ -693,7 +690,6 @@
       "tramonto",
       "lavoro"
     ],
-    "coyotexlobo.jpg": [],
     "CULwH3.jpg": [
       "horror",
       "crepuscolo",
@@ -725,9 +721,6 @@
     "Daffy and Porky/469910274_8719423748154004_9106807984728137363_n.jpg": [
       "mattino"
     ],
-    "Daffy and Porky/483669378_1004992818276557_3914514963323049268_n.jpg": [],
-    "Daffy and Porky/484109607_959074925985609_3681128393341350131_n.jpg": [],
-    "Daffy and Porky/484631544_1318850809377730_5597637368188575646_n.jpg": [],
     "Daffy and Porky/485088247_2663074947227455_8040668032314877732_n.jpg": [],
     "Daffy and Porky/7bc7d7f44dfe64bcf30055e9de452abace7e08a9.jpg": [
       "alba",
@@ -836,14 +829,6 @@
       "lavoro",
       "primavera"
     ],
-    "elmer_travestito_coniglio_rabbit_season.webp": [
-      "pomeriggio",
-      "primavera",
-      "autunno",
-      "smart",
-      "lavoro"
-    ],
-    "FB_IMG_1632947798195.jpg": [],
     "festa_hawaiana_notturna.jpg": [
       "crepuscolo",
       "sera",
@@ -857,11 +842,6 @@
     "fudd_daffy-1_copy.jpg": [
       "tramonto"
     ],
-    "IFA9095Hector_Sylvester_Tweety_GrannyOPConPrintedBG_1944x_master.webp": [
-      "sera",
-      "horror"
-    ],
-    "immagine1.jpg": [],
     "loading_screen_haloween_2023-1200x695.jpg": [
       "horror",
       "notte",
@@ -910,7 +890,9 @@
       "mattino",
       "pomeriggio"
     ],
-    "Looney tunes christmas/capodanno_fuochi_artificio.jpg": [],
+    "Looney tunes christmas/capodanno_fuochi_artificio.jpg": [
+      "inverno"
+    ],
     "Looney tunes christmas/chrome/30dc634e264d2a0ea7103d2d19be2e00.jpg": [
       "natale",
       "inverno"
@@ -975,8 +957,12 @@
       "pomeriggio",
       "sport"
     ],
-    "Looney Tunes Sports/130999642_1023187231425147_4041612473443281886_n.jpeg": [],
-    "Looney Tunes Sports/1491917627-797-1525-par-for-the-course.jpg": [],
+    "Looney Tunes Sports/130999642_1023187231425147_4041612473443281886_n.jpeg": [
+      "sport"
+    ],
+    "Looney Tunes Sports/1491917627-797-1525-par-for-the-course.jpg": [
+      "mattino"
+    ],
     "Looney Tunes Sports/464907637_8723255287697830_8585212234038788753_n.jpg": [
       "sport",
       "jolly"
@@ -1047,12 +1033,10 @@
       "sport",
       "weekend"
     ],
-    "Looney Tunes Sports/s-l1600.jpg": [],
     "Looney Tunes Sports/TennisAnyone_LT.jpg": [
       "sport",
       "jolly"
     ],
-    "Looney Tunes Sports/thumb-1920-445864.jpg": [],
     "Looney Tunes Sports/WarnerBros_TeamUSALooneyTunes-2.jpg": [
       "jolly",
       "autunno",
@@ -1061,13 +1045,9 @@
       "pomeriggio"
     ],
     "Looney Tunes Sports/WarnerBros_TeamUSALooneyTunes-jpg.jpg": [],
-    "Looney Tunes Sports/WB2168-420x280h.jpg": [],
-    "Looney-tunes-the-untouchables.webp": [
-      "horror",
-      "spettacolo",
-      "sera"
+    "Looney Tunes Sports/WB2168-420x280h.jpg": [
+      "sport"
     ],
-    "Marv_og.jpg": [],
     "marvin_daffy_porky_astronave.jpg": [
       "sera",
       "notte"
@@ -1094,7 +1074,9 @@
     "mosaico_personaggi_2.png": [
       "jolly"
     ],
-    "PcD8mSv-looney-tunes-wallpaper.jpg": [],
+    "PcD8mSv-looney-tunes-wallpaper.jpg": [
+      "horror"
+    ],
     "pepe_le_pew_penelope_bosco.jpg": [
       "alba",
       "mattino",
@@ -1155,9 +1137,6 @@
       "sport",
       "pomeriggio"
     ],
-    "sylvester_tom_tweety_gabbia.webp": [
-      "pranzo"
-    ],
     "sylvester_tweety_bidoni_spazzatura.jpg": [
       "pranzo"
     ],
@@ -1201,8 +1180,92 @@
       "mattino",
       "pomeriggio"
     ],
-    "wabbit_season_with_gun_copy.jpg": [],
-    "wile1280x1024.jpg": []
+    "wile1280x1024.jpg": [],
+    "amusement_park.png": [
+      "estate"
+    ],
+    "bugs_daffy_scrivania_ufficio.jpg": [
+      "lavoro"
+    ],
+    "daffy_cacciatori.png": [
+      "autunno"
+    ],
+    "daffy_hollywood_donald.png": [
+      "spettacolo"
+    ],
+    "daffy_venditore.png": [
+      "lavoro"
+    ],
+    "foghorn_taz_inseguimento.png": [
+      "mattino"
+    ],
+    "Looney tunes christmas/inadeguate/1520f0839f8f82f960461469bf5d3f38.jpg": [],
+    "looney-tunes-art-opening.jpg": [
+      "jolly"
+    ],
+    "LOONEY_TUNES_PARATA_HOLLYWOOD.png": [
+      "spettacolo"
+    ],
+    "marv_space_extended2.jpg": [
+      "notte"
+    ],
+    "marvin_amateurs.jpg": [
+      "notte"
+    ],
+    "paris.png": [
+      "pomeriggio"
+    ],
+    "psicologo_beep_beep.png": [
+      "lavoro"
+    ],
+    "quincy_jones_recordings.jpg": [
+      "spettacolo"
+    ],
+    "ralph_chuck_jones.jpg": [
+      "lavoro"
+    ],
+    "speedy_gonzales_amore.png": [
+      "inverno"
+    ],
+    "taz_bugs_daffy_foghorn_processo.png": [
+      "lavoro"
+    ],
+    "taz_bugs_pentola.jpg": [
+      "pranzo"
+    ],
+    "taz_cafè.png": [
+      "pomeriggio"
+    ],
+    "taz_golf.png": [
+      "sport"
+    ],
+    "whats_opera_doc.jpg": [
+      "spettacolo"
+    ],
+    "willy_beep_beep_zoom_and_bored.jpg": [
+      "tramonto"
+    ],
+    "0_6e916880-e31e-4a7e-84c7-bd6fa4841bac (1).jpg": [],
+    "b9755ceff63a485f83f7cc431eb8f719.jpg": [],
+    "coyotexlobo.jpg": [],
+    "Daffy and Porky/483669378_1004992818276557_3914514963323049268_n.jpg": [],
+    "Daffy and Porky/484109607_959074925985609_3681128393341350131_n.jpg": [],
+    "Daffy and Porky/484631544_1318850809377730_5597637368188575646_n.jpg": [],
+    "Looney Tunes Sports/bagged_by_boony_bugs.jpg": [
+      "autunno"
+    ],
+    "Looney Tunes Sports/bugs_bunny_baseball.jpg": [
+      "crepuscolo"
+    ],
+    "Looney Tunes Sports/hockey.png": [
+      "sport"
+    ],
+    "Looney Tunes Sports/pepè_scii_inverno.png": [
+      "inverno"
+    ],
+    "Looney Tunes Sports/willy_golf.jpg": [
+      "primavera"
+    ]
   },
   "random_rules": {
     "weekday": [
