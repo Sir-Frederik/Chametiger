@@ -163,7 +163,6 @@ class ChametigerEditor(tk.Tk):
         self.title("Chametiger - Editor Configurazione")
         self.geometry("1040x720")
         self.minsize(900, 600)
-        self.configure(bg=BG)
 
         try:
             self.iconbitmap(ICON_FILE)
@@ -172,6 +171,15 @@ class ChametigerEditor(tk.Tk):
 
         self.config_data: dict = {}
         self._load_config()
+        self._rebuild_ui()
+
+    def _rebuild_ui(self):
+        # I widget leggono i colori globali (BG, FG, ...) solo quando vengono creati,
+        # quindi per cambiare tema bisogna ricrearli tutti.
+        apply_theme(self.config_data.get("theme", "dark") == "dark")
+        for child in self.winfo_children():
+            child.destroy()
+        self.configure(bg=BG)
         self._apply_styles()
         self._build_ui()
 
@@ -381,7 +389,9 @@ class ChametigerEditor(tk.Tk):
         )  # tab predefinita all'avvio: 0=Programmata, 1=Casuale, 2=Impostazioni
 
         footer = tk.Frame(self, bg=BG, pady=8)
-        footer.pack(fill="x", padx=16)
+        # before=nb: il footer riceve il suo spazio prima del Notebook, cosi'
+        # non viene schiacciato quando il contenuto di una tab e' molto alto.
+        footer.pack(side="bottom", fill="x", padx=16, before=nb)
 
         def open_terminal():
             try:
@@ -753,7 +763,9 @@ class ChametigerEditor(tk.Tk):
             inner, text="Tema interfaccia:", bg=BG, fg=FG, font=("Segoe UI", 10)
         ).grid(row=7, column=0, sticky="w", pady=8)
 
-        self._theme_var = tk.StringVar(value="Scuro")
+        self._theme_var = tk.StringVar(
+            value="Chiaro" if self.config_data.get("theme") == "light" else "Scuro"
+        )
         ttk.Combobox(
             inner,
             textvariable=self._theme_var,
@@ -763,8 +775,15 @@ class ChametigerEditor(tk.Tk):
         ).grid(row=7, column=1, padx=12, sticky="w")
 
         def apply_and_restart():
-            apply_theme(self._theme_var.get() == "Scuro")
-            messagebox.showinfo("Tema", "Riavvia la GUI per applicare il tema.")
+            self.config_data["theme"] = (
+                "dark" if self._theme_var.get() == "Scuro" else "light"
+            )
+            # after_idle: non distruggere il pulsante mentre sta ancora gestendo il click
+            self.after_idle(self._rebuild_ui)
+            messagebox.showinfo(
+                "Tema",
+                "Tema applicato.\nPremi \"Salva configurazione\" per mantenerlo ai prossimi avvii.",
+            )
 
         ttk.Button(inner, text="Applica", command=apply_and_restart).grid(
             row=7, column=2, padx=4
