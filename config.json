@@ -583,9 +583,10 @@
       "crepuscolo"
     ],
     "amour-parisienne.jpg": [
-      "pomeriggio",
       "primavera",
-      "inverno"
+      "inverno",
+      "tramonto",
+      "crepuscolo"
     ],
     "backrooms_daffy_bugs_gossamer.jpg": [
       "horror",
@@ -984,7 +985,6 @@
       "spettacolo"
     ],
     "Looney Tunes Sports/football_follies_clp.jpg": [
-      "jolly",
       "sport"
     ],
     "Looney Tunes Sports/GJhlXvVWUAA291R.jpg": [
@@ -1012,7 +1012,8 @@
       "weekend",
       "sport",
       "mattino",
-      "estate"
+      "estate",
+      "svago"
     ],
     "Looney Tunes Sports/papier-peint-panoramique-looney-tunes-cartoon-champions-stade-olympiquesur-mesure-muralconcept-102185.jpg": [
       "sport",
@@ -1046,7 +1047,10 @@
     ],
     "Looney Tunes Sports/WarnerBros_TeamUSALooneyTunes-jpg.jpg": [],
     "Looney Tunes Sports/WB2168-420x280h.jpg": [
-      "sport"
+      "sport",
+      "inverno",
+      "mattino",
+      "pomeriggio"
     ],
     "marvin_daffy_porky_astronave.jpg": [
       "sera",
@@ -1258,7 +1262,8 @@
       "crepuscolo"
     ],
     "Looney Tunes Sports/hockey.png": [
-      "sport"
+      "sport",
+      "sera"
     ],
     "Looney Tunes Sports/pepè_scii_inverno.png": [
       "inverno"
