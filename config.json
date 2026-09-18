@@ -1236,13 +1236,16 @@
         "from": "14:00",
         "to": "18:00",
         "include": [
+          "lavoro",
           "pomeriggio"
         ],
         "exclude": [
           "inverno",
-          "smart"
+          "smart",
+          "spettacolo",
+          "svago"
         ],
-        "match": "all",
+        "match": "any",
         "rotate_minutes": 60
       },
       {
@@ -1346,6 +1349,7 @@
         "include": [
           "jolly",
           "mattino",
+          "sport",
           "svago"
         ],
         "exclude": [
@@ -1408,6 +1412,7 @@
             "pomeriggio",
             "pranzo",
             "sera",
+            "svago",
             "tramonto"
           ],
           "match": "any",
@@ -1437,6 +1442,7 @@
             "inverno",
             "pranzo",
             "sera",
+            "svago",
             "tramonto"
           ],
           "match": "any",
@@ -1462,6 +1468,7 @@
             "pranzo",
             "sera",
             "smart",
+            "svago",
             "tramonto"
           ],
           "match": "any",
@@ -1483,6 +1490,7 @@
             "pomeriggio",
             "pranzo",
             "sera",
+            "svago",
             "tramonto"
           ],
           "match": "any",
@@ -1512,6 +1520,7 @@
             "inverno",
             "pranzo",
             "sera",
+            "svago",
             "tramonto"
           ],
           "match": "any",
@@ -1535,6 +1544,7 @@
             "pranzo",
             "sera",
             "smart",
+            "svago",
             "tramonto",
             "weekend"
           ],
@@ -1547,5 +1557,5 @@
     }
   },
   "history_days": 60,
-  "theme": "light"
+  "theme": "dark"
 }
