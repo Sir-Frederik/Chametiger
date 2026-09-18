@@ -687,6 +687,29 @@ def make_tray_icon() -> Image.Image:
     return Image.open(BASE_DIR / "icon.ico")
 
 
+def acquisisci_istanza_unica() -> bool:
+    """
+    True se siamo la prima istanza, False se un'altra e' gia' in esecuzione.
+
+    Il mutex va tenuto in una variabile globale: se il riferimento viene
+    raccolto dal garbage collector, Windows lo rilascia e il blocco sparisce.
+    Non serve chiuderlo all'uscita, ci pensa il sistema anche in caso di crash.
+    """
+    global _mutex
+
+    ERROR_ALREADY_EXISTS = 183
+    _mutex = ctypes.windll.kernel32.CreateMutexW(
+        None, False, "Chametiger_SingleInstance"
+    )
+
+    if ctypes.windll.kernel32.GetLastError() == ERROR_ALREADY_EXISTS:
+        return False
+    return _mutex != 0
+
+
+_mutex = None
+
+
 class ChametigerTray:
     def __init__(self):
         self.config = load_config()
@@ -840,6 +863,9 @@ class ChametigerTray:
 
     # ── Entry point ──────────────────────────────────────────────────────────
     def run(self):
+        if not acquisisci_istanza_unica():
+            log("[INFO] Chametiger e' gia' in esecuzione, questa istanza si chiude.")
+            return
         if not is_autostart_enabled():
             enable_autostart()
 

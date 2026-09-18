@@ -1546,5 +1546,6 @@
       "sunday": []
     }
   },
-  "history_days": 60
+  "history_days": 60,
+  "theme": "light"
 }
