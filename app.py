@@ -382,6 +382,92 @@ def _mazzo(pool: list[str], sig: str, giro: int) -> list[str]:
     return m
 
 
+def _rotate_of(rule: dict) -> int:
+    """La finestra di rotazione della regola, con i valori assurdi normalizzati."""
+    try:
+        r = int(rule.get("rotate_minutes", 60))
+    except (TypeError, ValueError):
+        return 60
+    return r if r >= 1 else 60
+
+
+def _regola_attiva(config: dict, quando: datetime) -> dict | None:
+    """
+    La regola casuale che copre quell'istante. Rispecchia le priorita' di
+    resolve_random: se cambi l'ordine la', va cambiato anche qui.
+    """
+    day_name = WEEKDAYS[quando.weekday()]
+    rules = config.get("random_rules", {})
+
+    rule = _first_match(rules.get("overrides", {}).get(day_name), quando)
+    if rule:
+        return rule
+
+    key = "weekend" if day_name in WEEKEND else "weekday"
+    rule = _first_match(rules.get(key, []), quando)
+    if rule:
+        return rule
+
+    if day_name in WEEKEND:
+        return _first_match(rules.get("weekday", []), quando)
+
+    return None
+
+
+def _scelta_giornaliera(config: dict, now: datetime) -> str | None:
+    """
+    Ripercorre le finestre di oggi dalla mezzanotte fino ad adesso e assegna
+    un'immagine a ognuna, saltando quelle gia' uscite nelle fasce precedenti.
+
+    Non legge e non scrive nulla: ogni PC ricalcola la stessa sequenza dagli
+    stessi ingressi, quindi l'unicita' giornaliera vale su tutte le macchine
+    senza che debbano parlarsi.
+    """
+    if _regola_attiva(config, now) is None:
+        return None
+
+    pools: dict[str, list[str]] = {}  # una volta per regola, non per finestra
+    usate: set[str] = set()
+    scelta = None
+    ultima_finestra = None
+
+    mezzanotte = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    for m in range(now.hour * 60 + now.minute + 1):
+        t = mezzanotte + timedelta(minutes=m)
+        rule = _regola_attiva(config, t)
+        if rule is None:
+            continue
+
+        rotate = _rotate_of(rule)
+        sig = _rule_signature(rule)
+        finestra = (sig, (t.hour * 60 + t.minute) // rotate)
+        if finestra == ultima_finestra:
+            continue  # stessa finestra del minuto precedente, gia' assegnata
+        ultima_finestra = finestra
+
+        if sig not in pools:
+            pools[sig] = sorted(candidates_for_rule(config, rule))
+        pool = pools[sig]
+        if not pool:
+            continue
+
+        n = len(pool)
+        giro, pos = divmod(_window_ordinal(rule, t, rotate), n)
+        mazzo = _mazzo(pool, sig, giro)
+
+        scelta = mazzo[pos]
+        for k in range(n):  # avanza finche' non trovi una non ancora uscita oggi
+            carta = mazzo[(pos + k) % n]
+            if carta not in usate:
+                scelta = carta
+                break
+
+        usate.add(scelta)
+
+    return scelta
+
+
 def pick_from_rule(
     config: dict, rule: dict, now: datetime, force_new: bool = False
 ) -> str | None:
@@ -414,8 +500,9 @@ def pick_from_rule(
     sig = _rule_signature(rule)
     bucket = (now.hour * 60 + now.minute) // rotate
 
-    giro, posizione = divmod(_window_ordinal(rule, now, rotate), len(pool))
-    scelta = _mazzo(pool, sig, giro)[posizione]
+    scelta = _scelta_giornaliera(config, now)
+    if scelta is None:
+        return None
 
     with _history_lock:
         entries = load_history()
