@@ -849,7 +849,8 @@
       "sera"
     ],
     "logo_looney_tunes_pattern.jpg": [
-      "jolly"
+      "jolly",
+      "mattino"
     ],
     "Looney tunes christmas/130999642_1023187231425147_4041612473443281886_n.jpeg": [
       "inverno",
@@ -1352,7 +1353,9 @@
           "jolly",
           "sera"
         ],
-        "exclude": [],
+        "exclude": [
+          "inverno"
+        ],
         "match": "any",
         "rotate_minutes": 60
       },
