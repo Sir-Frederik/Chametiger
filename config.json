@@ -1361,7 +1361,7 @@
       },
       {
         "from": "21:00",
-        "to": "22:00",
+        "to": "23:00",
         "include": [
           "sera",
           "spettacolo"
@@ -1373,7 +1373,7 @@
         "rotate_minutes": 60
       },
       {
-        "from": "22:00",
+        "from": "23:00",
         "to": "6:00",
         "include": [
           "notte"
