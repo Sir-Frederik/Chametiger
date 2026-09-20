@@ -2278,6 +2278,9 @@ class PeriodsTab(tk.Frame):
             ("Giu'", self._down),
         ):
             ttk.Button(bar, text=testo, command=cmd).pack(side="left", padx=(0, 6))
+        ttk.Button(bar, text="Fasce del periodo", command=self._edit_rules).pack(
+            side="left", padx=(12, 0)
+        )
         ttk.Button(
             bar, text="Verifica anno", style="Accent.TButton", command=self._check_year
         ).pack(side="right")
@@ -2323,7 +2326,9 @@ class PeriodsTab(tk.Frame):
                     md_leggibile(p.get("from", "")),
                     md_leggibile(p.get("to", "")),
                     "; ".join(etichette) or "-",
-                    f"{n_regole} fasce" if n_regole else "-",
+                    (f"{n_regole} fasce" if n_regole > 1 else "1 fascia")
+                    if n_regole
+                    else "-",
                 ),
             )
         self._aggiorna_copertura()
@@ -2398,6 +2403,17 @@ class PeriodsTab(tk.Frame):
         if dlg.result:
             self._periods()[i] = dlg.result
             self.refresh()
+
+    def _edit_rules(self):
+        """Le fasce orarie proprie del periodo selezionato."""
+        i = self._selected()
+        if i is None:
+            messagebox.showinfo(
+                "Fasce del periodo", "Seleziona prima un periodo dall'elenco."
+            )
+            return
+        PeriodRulesDialog(self, self.config_data, i)
+        self.refresh()
 
     def _delete(self):
         i = self._selected()
@@ -2577,7 +2593,7 @@ class PeriodDialog(tk.Toplevel):
             text="I vietati si sommano a quelli di ogni regola. I preferiti restringono il\n"
             "pool solo se ne resta abbastanza: con pochi tag preferiti la fascia\n"
             "diventerebbe quasi fissa. Le fasce orarie proprie del periodo si\n"
-            "conservano, e si modificano a mano nel config.",
+            "conservano, e si modificano col pulsante \"Fasce del periodo\".",
             bg=BG, fg=FG2, font=("Segoe UI Italic", 8), justify="left",
         ).grid(row=6, column=0, columnspan=3, sticky="w", padx=16, pady=(8, 0))
 
@@ -2651,12 +2667,170 @@ class PeriodDialog(tk.Toplevel):
         richiesti = self._collect(self._req)
         if richiesti:
             period["require"] = richiesti
-        # Le fasce proprie non si editano qui: si conservano cosi' come sono.
+        # Le fasce proprie si editano dal pulsante "Fasce del periodo":
+        # qui vanno solo riportate intatte.
         if self._initial.get("random_rules"):
             period["random_rules"] = self._initial["random_rules"]
 
         self.result = period
         self.destroy()
+
+
+class PeriodRulesDialog(tk.Toplevel):
+    """
+    Le fasce orarie proprie di un periodo: stessa forma di `random_rules`, ma
+    lette solo nei giorni che il periodo copre, e prima di quelle di base.
+
+    Scrive dentro il periodo mentre lavori, come ogni altro editor scrive nella
+    config in memoria: su disco ci va il pulsante "Salva configurazione". Le
+    liste rimaste vuote si tolgono alla chiusura, cosi' un periodo senza fasce
+    non si porta dietro un `random_rules` vuoto.
+    """
+
+    def __init__(self, parent, config_data: dict, indice: int):
+        super().__init__(parent)
+        self.config_data = config_data
+        self.indice = indice
+
+        periodo = config_data["periods"][indice]
+        nome = periodo.get("name", "?")
+        self.title(f"Chametiger - Fasce proprie: {nome}")
+        self.configure(bg=BG)
+        self.geometry("1020x580")
+        self.minsize(900, 500)
+
+        # Le liste devono esistere prima dei RuleEditor, che ci puntano dentro
+        # per riferimento. Quelle rimaste vuote se ne vanno in _pota().
+        regole = periodo.setdefault("random_rules", {})
+        regole.setdefault("weekday", [])
+        regole.setdefault("weekend", [])
+        regole.setdefault("overrides", {})
+
+        tk.Label(
+            self,
+            text=f"{nome}   dal {md_leggibile(periodo.get('from', ''))} "
+            f"al {md_leggibile(periodo.get('to', ''))}",
+            bg=BG,
+            fg=ACCENT,
+            font=("Segoe UI Semibold", 12),
+            anchor="w",
+        ).pack(fill="x", padx=14, pady=(12, 2))
+
+        tk.Label(
+            self,
+            text="Valgono solo nei giorni del periodo e vengono lette prima delle regole di base.",
+            bg=BG,
+            fg=FG2,
+            font=("Segoe UI", 9),
+            anchor="w",
+        ).pack(fill="x", padx=14)
+        tk.Label(
+            self,
+            text="Se nessuna copre l'ora, si scende alle regole feriali/weekend: "
+            "un periodo festivo puo' cambiare solo le sere.",
+            bg=BG,
+            fg=FG2,
+            font=("Segoe UI", 9),
+            anchor="w",
+        ).pack(fill="x", padx=14, pady=(0, 8))
+
+        nb = ttk.Notebook(self)
+        nb.pack(fill="both", expand=True, padx=14)
+
+        for chiave, etichetta in (("weekday", "Feriali"), ("weekend", "Weekend")):
+            frame = ttk.Frame(nb)
+            nb.add(frame, text=etichetta)
+            RuleEditor(
+                frame, config_data, ["periods", indice, "random_rules", chiave]
+            ).pack(fill="both", expand=True, padx=10, pady=10)
+
+        ov = ttk.Frame(nb)
+        nb.add(ov, text="Override giorno")
+
+        top = tk.Frame(ov, bg=BG, pady=8)
+        top.pack(fill="x", padx=10)
+        tk.Label(top, text="Giorno:", bg=BG, fg=FG, font=("Segoe UI", 9)).pack(
+            side="left"
+        )
+        self._day_var = tk.StringVar(value="monday")
+        cb = ttk.Combobox(
+            top,
+            textvariable=self._day_var,
+            values=[f"{v} ({WEEKDAYS_IT[v]})" for v in WEEKDAYS_ORDER],
+            width=24,
+            state="readonly",
+        )
+        cb.pack(side="left", padx=8)
+        cb.bind("<<ComboboxSelected>>", lambda e: self._refresh_day())
+        tk.Label(
+            top,
+            text="Hanno la precedenza sulle fasce feriali e weekend del periodo.",
+            bg=BG,
+            fg=FG2,
+            font=("Segoe UI", 9),
+        ).pack(side="left", padx=12)
+
+        self._day_frame = tk.Frame(ov, bg=BG)
+        self._day_frame.pack(fill="both", expand=True, padx=10, pady=(0, 10))
+        self._refresh_day()
+
+        bf = tk.Frame(self, bg=BG, pady=10)
+        bf.pack(fill="x", padx=14)
+        tk.Label(
+            bf,
+            text="Le modifiche finiscono su disco con Salva configurazione, "
+            "in fondo alla finestra principale.",
+            bg=BG,
+            fg=FG2,
+            font=("Segoe UI Italic", 8),
+        ).pack(side="left")
+        ttk.Button(
+            bf, text="Chiudi", style="Accent.TButton", command=self._chiudi
+        ).pack(side="right")
+
+        self.protocol("WM_DELETE_WINDOW", self._chiudi)
+        self.grab_set()
+        self.wait_window()
+
+    def _refresh_day(self):
+        giorno = self._day_var.get().split(" ")[0]
+        overrides = self.config_data["periods"][self.indice]["random_rules"][
+            "overrides"
+        ]
+        overrides.setdefault(giorno, [])
+        for w in self._day_frame.winfo_children():
+            w.destroy()
+        RuleEditor(
+            self._day_frame,
+            self.config_data,
+            ["periods", self.indice, "random_rules", "overrides", giorno],
+        ).pack(fill="both", expand=True)
+
+    def _chiudi(self):
+        self._pota()
+        self.destroy()
+
+    def _pota(self):
+        """
+        Toglie le liste vuote create per poterle editare. Senza, ogni periodo
+        aperto una volta si ritroverebbe un `random_rules` con tre contenitori
+        vuoti, e la colonna "Fasce proprie" direbbe comunque zero.
+        """
+        periodo = self.config_data["periods"][self.indice]
+        regole = periodo.get("random_rules") or {}
+
+        overrides = regole.get("overrides") or {}
+        for giorno in [g for g, elenco in overrides.items() if not elenco]:
+            del overrides[giorno]
+        if not overrides:
+            regole.pop("overrides", None)
+
+        for chiave in ("weekday", "weekend"):
+            if chiave in regole and not regole[chiave]:
+                del regole[chiave]
+
+        if not regole:
+            periodo.pop("random_rules", None)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

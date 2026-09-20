@@ -305,7 +305,7 @@ Un **periodo** è un intervallo di date che modula le regole casuali **senza dup
 | `prefer`       | Tag preferiti: il pool si restringe a quelli solo se ne resta abbastanza   |
 | `prefer_min`   | Soglia di `prefer`. Senza, con pochi tag preferiti la fascia resta fissa   |
 | `require`      | Tag obbligatori, si sommano all'`include` (in AND). Raro                   |
-| `random_rules` | Fasce proprie del periodo, con la stessa forma di `random_rules`           |
+| `random_rules` | Fasce proprie del periodo, con la stessa forma di `random_rules`. Si editano col pulsante **Fasce del periodo** |
 
 **Le date si ripetono ogni anno** e se la fine precede l'inizio il periodo **scavalca il capodanno**: `"from": "12-01", "to": "01-06"` copre dicembre e la Befana, con lo stesso confronto invertito che gestisce le fasce a cavallo della mezzanotte.
 
@@ -333,10 +333,12 @@ Nella sezione **Casuale** dell'editor:
 | ----------------------- | ------------------------------------------------------------------- |
 | Tag                     | Il vocabolario. Rinominare o cancellare un tag lo aggiorna anche nei periodi |
 | Libreria immagini       | Assegna i tag alle immagini                                          |
-| **Periodi dell'anno**   | I periodi, in ordine di priorità. Avvisa sui giorni non coperti e ha **Verifica anno** |
+| **Periodi dell'anno**   | I periodi, in ordine di priorità. Avvisa sui giorni non coperti, e ha **Verifica anno** e **Fasce del periodo** |
 | Regole feriali/weekend  | Le fasce. Mostrano l'orario reale di oggi accanto alle ancore solari  |
 | Regole override giorno  | Fasce per un singolo giorno della settimana                          |
 | **Anteprima giorno**    | Una data qualsiasi risolta ora per ora, con il motore vero           |
+
+**Fasce del periodo** apre le fasce orarie proprie del periodo selezionato — feriali, weekend e override di giorno — con lo stesso editor delle regole di base, ancore solari e conteggio immagini compresi. Si aprono anche su un periodo che non ne ha: le liste rimaste vuote vengono tolte alla chiusura, così un periodo senza fasce resta pulito nel `config.json`.
 
 **Anteprima giorno** è lo strumento da usare quando qualcosa non torna: per ogni finestra della giornata mostra periodo attivo, regola vincente, fascia con l'orario solare risolto, tag effettivi, dimensione del pool e immagine scelta. In fondo riporta quante immagini distinte escono e qual è il pool più piccolo.
 

@@ -860,32 +860,26 @@
     ],
     "Looney tunes christmas/191f90060af15dcac4b7fd133fd8443a.jpg": [
       "natale",
-      "notte",
-      "inverno"
+      "notte"
     ],
     "Looney tunes christmas/464855310_8701904919832867_7411089918229455112_n.jpg": [
-      "natale",
-      "inverno"
+      "natale"
     ],
     "Looney tunes christmas/6972f1bd3e391c53e8866e8ace548b68.png": [],
     "Looney tunes christmas/71a8b022-50b3-405d-b7a4-15cffb1839b2.jpg": [
       "natale",
-      "inverno",
       "crepuscolo"
     ],
     "Looney tunes christmas/80c13b56c7da94f53c37bd0f9d480178.jpg": [
-      "natale",
-      "inverno"
+      "natale"
     ],
     "Looney tunes christmas/a02515b6654d0d1a9f7c7edd2242c70e.jpg": [
-      "natale",
-      "inverno"
+      "natale"
     ],
     "Looney tunes christmas/ba6465a82ad800354ce12f1bc739241b.jpg": [
       "natale",
       "notte",
-      "sera",
-      "inverno"
+      "sera"
     ],
     "Looney tunes christmas/Bugs-Bunny-and-Lola-Bunny-art-ice-skating-Desktop-Wallpaper-HD-3840x2400-840x525.jpg": [
       "inverno",
@@ -896,8 +890,7 @@
       "inverno"
     ],
     "Looney tunes christmas/chrome/30dc634e264d2a0ea7103d2d19be2e00.jpg": [
-      "natale",
-      "inverno"
+      "natale"
     ],
     "Looney tunes christmas/Immagine WhatsApp 2024-12-19 ore 19.08.14_ddacbdd4.jpg": [
       "inverno",
@@ -911,25 +904,19 @@
     "Looney tunes christmas/inadeguate/a5191afee2f7fd81abbbee6465352f47.jpg": [],
     "Looney tunes christmas/looney-tunes-christmas-qerr5ww9m4cyzemj.png": [
       "natale",
-      "mattino",
-      "inverno"
+      "mattino"
     ],
     "Looney tunes christmas/Snapinsta.app_131306966_726276131330416_1742053223232746609_n_1080.jpg": [
       "natale",
       "notte",
-      "inverno",
       "sera"
     ],
     "Looney tunes christmas/Snapinsta.app_468456191_588140750284168_735763663732415432_n_1080.jpg": [
-      "sera",
-      "natale",
-      "notte",
-      "inverno"
+      "natale"
     ],
     "Looney tunes christmas/taz.jpg": [
       "natale",
-      "notte",
-      "inverno"
+      "notte"
     ],
     "Looney tunes christmas/thumb-1920-446269.jpg": [
       "inverno",
@@ -940,18 +927,16 @@
     "Looney tunes christmas/thumb-1920-468657.jpg": [
       "mattino",
       "alba",
-      "inverno",
-      "natale"
+      "natale",
+      "tramonto"
     ],
     "Looney tunes christmas/tumblr_23ba745e129bbc3e54bbf3ce1e1f2666_88f5ce44_1280.jpg": [
-      "natale",
-      "inverno"
+      "natale"
     ],
     "Looney tunes christmas/vlcsnap-00002.jpg": [
       "natale",
       "mattino",
-      "pomeriggio",
-      "inverno"
+      "pomeriggio"
     ],
     "Looney tunes christmas/WB2168-420x280h.jpg": [
       "inverno",
@@ -1707,27 +1692,31 @@
         "natale",
         "primavera"
       ],
+      "prefer": [
+        "horror"
+      ],
       "random_rules": {
         "weekday": [
           {
             "from": "sunset-40m",
-            "to": "01:00",
+            "to": "dusk+40",
             "include": [
+              "crepuscolo",
               "horror"
             ],
             "exclude": [],
             "match": "all",
             "rotate_minutes": 60
-          }
-        ],
-        "weekend": [
+          },
           {
-            "from": "sunset-40m",
-            "to": "01:30",
+            "from": "dusk +40",
+            "to": "02:00",
             "include": [
               "horror"
             ],
-            "exclude": [],
+            "exclude": [
+              "crepuscolo"
+            ],
             "match": "all",
             "rotate_minutes": 60
           }
@@ -1746,9 +1735,31 @@
       "random_rules": {
         "weekday": [
           {
-            "from": "sunset-40m",
-            "to": "23:30",
+            "from": "sunset-40",
+            "to": "dusk",
             "include": [
+              "crepuscolo",
+              "natale"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "dusk",
+            "to": "02:00",
+            "include": [
+              "natale"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "sunrise",
+            "to": "10:00",
+            "include": [
+              "mattino",
               "natale"
             ],
             "exclude": [],
@@ -1758,13 +1769,22 @@
         ],
         "weekend": [
           {
-            "from": "sunset-40m",
-            "to": "23:59",
+            "from": "sunrise",
+            "to": "noon",
             "include": [
-              "natale"
+              "mattino",
+              "natale",
+              "sport"
             ],
-            "exclude": [],
-            "match": "all",
+            "exclude": [
+              "autunno",
+              "estate",
+              "notte",
+              "pomeriggio",
+              "primavera",
+              "tramonto"
+            ],
+            "match": "any",
             "rotate_minutes": 60
           }
         ]
@@ -1795,7 +1815,7 @@
     {
       "name": "Estate",
       "from": "06-21",
-      "to": "09-09",
+      "to": "08-31",
       "exclude": [
         "autunno",
         "inverno",
@@ -1812,6 +1832,18 @@
         "inverno",
         "natale",
         "primavera"
+      ]
+    },
+    {
+      "name": "Est- Aut",
+      "from": "09-01",
+      "to": "09-30",
+      "exclude": [
+        "inverno"
+      ],
+      "prefer": [
+        "autunno",
+        "estate"
       ]
     }
   ]
