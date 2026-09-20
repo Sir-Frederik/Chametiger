@@ -1,10 +1,10 @@
 # 🦎 Chametiger
 
-**v2.1**
-Aggiunta sincronizzazione tra pc diversi.
+**v3.0** — 20 settembre 2026
+Fasce ancorate al sole e periodi dell'anno.
 
 
-Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno** e al **giorno della settimana**.
+Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno**, al **giorno della settimana**, al **periodo dell'anno** e agli **orari reali di alba e tramonto**.
 
 Due modalità:
 
@@ -12,6 +12,22 @@ Due modalità:
 - **casuale** — ogni fascia oraria pesca fra le immagini che hanno certi **tag**, dando la precedenza a quelle uscite meno di recente
 
 ---
+
+## Novità della 3.0
+
+- **Fasce ancorate al sole**: invece di `19:00`, scrivi `sunset-40m`. Il tramonto a Napoli si sposta di **4 ore e 4 minuti** fra giugno e dicembre, e una fascia a orario fisso è corretta per due settimane l'anno. Le ancore seguono il sole ogni giorno, **ora legale compresa**.
+- **Periodi dell'anno**: intervalli di date che filtrano i tag senza duplicare le regole. Un periodo stagionale sono tre campi (nome, intervallo, tag vietati); uno festivo (Halloween, Natale) può aggiungere fasce proprie solo per le ore che gli interessano, lasciando intatto il resto della giornata.
+- **Tab "Anteprima giorno"**: scegli una data e vedi la giornata risolta — periodo attivo, regola vincente, orari solari reali, quante immagini ci sono in pool e quale uscirebbe. Usa il motore vero, non una sua imitazione.
+- **Tab "Periodi dell'anno"** con avviso sui giorni non coperti e **"Verifica anno"**, che passa i mesi in rassegna e segnala le fasce rimaste con poche immagini.
+- **Nessuna dipendenza nuova**: gli orari solari sono calcolati in casa (algoritmo NOAA, `sun.py`), e l'ora legale la applica il sistema operativo.
+
+### Correzioni nella 3.0
+
+- **Rinominare un tag non funzionava.** `notify_tags_changed` era definita annidata dentro un altro metodo, quindi non era un metodo della finestra: ogni rinomina, aggiunta o eliminazione di un tag finiva in `AttributeError`.
+- **Il mazzo saltava con le fasce a durata variabile.** Il conteggio delle finestre era una moltiplicazione, e il primo giorno in cui il numero di finestre cambiava il mazzo avanzava di centinaia di posizioni invece di una, saltando immagini che non si vedevano mai. Ora è una somma cumulativa (vedi *Le fasce solari e il mazzo*).
+- **Ripiego più solido:** se la regola vincente non ha immagini valide si prova la successiva in ordine di priorità, invece di lasciare lo sfondo fermo. Prima l'anteprima della giornata e lo scheduler potevano scegliere regole diverse in questo caso.
+- **`resolve_wallpaper` è ~11 volte più veloce** (da 228 ms a 21 ms): i controlli di esistenza dei file sono condivisi per giro di scheduler e i confini delle fasce si risolvono una volta al giorno invece che a ogni minuto.
+- **Rimossa l'impostazione "Memoria estrazioni (giorni)".** Prometteva di decidere quali immagini uscivano, contando le uscite degli ultimi `history_days` giorni, ma da quando la scelta viene dal mazzo non fa più niente di tutto questo — verificato: la sequenza di una giornata è **identica** con `history_days` a 1, 7, 60 o 3650. L'unico effetto rimasto era la potatura di `log.json`, che ora è fissata a 7 giorni nel codice. La chiave nel `config.json` viene ancora rispettata se presente, quindi i config esistenti non cambiano comportamento.
 
 ## Novità della 2.0
 
@@ -28,7 +44,8 @@ Due modalità:
 ```
 ├── app.py          ← Applicazione principale (tray + scheduler)
 ├── gui.py          ← Editor grafico della configurazione
-├── config.json     ← Configurazione: regole, tag, libreria immagini
+├── sun.py          ← Orari solari: alba, tramonto, crepuscolo, mezzogiorno vero
+├── config.json     ← Configurazione: regole, periodi, tag, libreria immagini
 ├── log.json        ← Storico delle estrazioni casuali (generato)
 ├── chametiger.log  ← Log testuale (generato)
 ├── requirements.txt
@@ -86,7 +103,9 @@ Oppure: click destro sull'icona tray → **Apri editor config**
 {
   "mode": "random",
   "check_interval_minutes": 5,
-  "history_days": 60,
+
+  "latitude": 40.8518,
+  "longitude": 14.2681,
 
   "base_path": "G:/Temi",
   "path_map": {
@@ -103,16 +122,22 @@ Oppure: click destro sull'icona tray → **Apri editor config**
     "weekday":   [ ... ],
     "weekend":   [ ... ],
     "overrides": { "monday": [ ... ] }
-  }
+  },
+  "periods": [
+    { "name": "Autunno", "from": "09-10", "to": "11-30",
+      "exclude": ["estate", "inverno", "primavera", "natale"] }
+  ]
 }
 ```
 
-| Chiave                   | A cosa serve                                                        |
-| ------------------------ | ------------------------------------------------------------------- |
-| `mode`                   | `"scheduled"` o `"random"`                                           |
-| `check_interval_minutes` | Ogni quanto lo scheduler ricontrolla                                 |
-| `history_days`           | Per quanti giorni ricordare le immagini già uscite (solo casuale)    |
-| `base_path` / `path_map` | Cartella base delle immagini, con override per singolo PC (hostname) |
+| Chiave                    | A cosa serve                                                        |
+| ------------------------- | ------------------------------------------------------------------- |
+| `mode`                    | `"scheduled"` o `"random"`                                           |
+| `check_interval_minutes`  | Ogni quanto lo scheduler ricontrolla                                 |
+| `history_days`            | Per quanti giorni conservare le righe di `log.json` (default 7). Non è nell'editor: **non** influenza quale immagine esce |
+| `latitude` / `longitude`  | Posizione, per calcolare alba e tramonto. Default: Napoli            |
+| `base_path` / `path_map`  | Cartella base delle immagini, con override per singolo PC (hostname) |
+| `periods`                 | Periodi dell'anno che filtrano i tag (vedi sotto)                    |
 
 ### Percorsi multi-PC
 
@@ -140,6 +165,8 @@ Ogni fascia oraria punta a un'immagine precisa.
 3. **schedules** — weekday o weekend in base al giorno
 4. **fallback** — se il weekend non copre l'orario, si ripiega su weekday
 
+I periodi dell'anno riguardano solo la modalità casuale: in quella programmata ogni slot nomina un'immagine precisa, non c'è nulla da filtrare. Le ancore solari invece funzionano anche qui.
+
 - Le fasce a **cavallo della mezzanotte** sono supportate (es. `"from": "22:00", "to": "06:00"`)
 - Se nessuno slot copre l'orario corrente, lo sfondo non viene cambiato
 
@@ -163,7 +190,7 @@ e delle **regole**:
   "from": "09:00",
   "to": "13:00",
   "include": ["lavoro", "mattino"],
-  "exclude": ["inverno", "smart"],
+  "exclude": ["smart"],
   "match": "all",
   "rotate_minutes": 60
 }
@@ -175,18 +202,145 @@ e delle **regole**:
 | `exclude`        | Tag che l'immagine non deve avere                             |
 | `match`          | `"all"` = tutti gli include, `"any"` = ne basta uno           |
 | `rotate_minutes` | Ogni quanto cambiare immagine dentro la fascia                |
+| `prefer`         | Tag preferiti: restringe il pool a quelli, se ne resta abbastanza |
+| `prefer_min`     | Quante immagini devono restare perché `prefer` si applichi (default 1) |
 
-Le priorità sono le stesse della modalità programmata (i giorni speciali restano a immagine fissa: a Natale vuoi *quella*, non una a caso). Se nessuna regola copre l'orario, si ripiega sulla modalità programmata.
+Se nessuna regola copre l'orario, si ripiega sulla modalità programmata.
+
+> I tag **stagionali** (`inverno`, `estate`, `natale`…) non vanno messi nell'`exclude` delle regole: è il lavoro dei [periodi dell'anno](#periodi-dellanno). Ripetuti in ogni regola diventano decine di righe da tenere allineate a mano, e una stagione dimenticata si nota solo sei mesi dopo.
 
 ### Come viene scelta l'immagine
 
-Non è un sorteggio puro. Chametiger conta quante volte ogni immagine è uscita negli ultimi `history_days` giorni, tiene solo quelle a conteggio minimo e sorteggia fra quelle. In pratica scorre tutta la raccolta prima di ripetersi, come un mazzo che si rimescola solo quando è finito.
+Non è un sorteggio. Le immagini che soddisfano la regola vengono disposte in un **mazzo**, mescolato in modo deterministico a partire dalla regola stessa; ogni finestra di rotazione pesca la carta successiva. Finito il mazzo si rimescola con un ordine nuovo, e la prima carta non coincide mai con l'ultima del giro precedente. Così tutta la raccolta scorre prima che qualcosa si ripeta, senza bisogno di tenere conteggi.
 
-Il conteggio è **globale**: un'immagine vista stamattina non torna nel pomeriggio, anche se una regola diversa la ammetterebbe.
+Dentro la stessa giornata non ci sono ripetizioni: se la carta che toccherebbe è già uscita oggi, si avanza nel mazzo fino alla prima non ancora vista. Vale anche fra regole diverse — un'immagine vista stamattina non torna nel pomeriggio.
 
-La scelta viene memorizzata in `log.json` per la fascia corrente e riusata finché la fascia non cambia — è questo che tiene lo sfondo fermo fra un controllo e l'altro.
+Il calcolo è **deterministico e senza stato**: dipende solo dalla regola, dalla libreria e dalla data. Due PC con la stessa configurazione ottengono la stessa sequenza senza parlarsi, ed è questo che fa funzionare la sincronizzazione multi-PC.
 
-> **Nota sul valore di `history_days`.** Più la raccolta è grande, più la memoria deve essere lunga per avere effetto. Con 40 immagini e una sola estrazione al giorno, una settimana di storico non basta a distinguerle. Il default di 60 giorni è tarato per funzionare anche sulle raccolte ampie.
+`log.json` **non** partecipa alla scelta: serve a ricordare quale immagine è stata assegnata alla finestra corrente, così lo sfondo resta fermo fra un controllo e l'altro dello scheduler, e a far durare un'estrazione forzata fino alla fine della sua finestra.
+
+### Priorità in modalità casuale (dalla più alta)
+
+1. **special_days** — a immagine fissa: a Natale vuoi *quella*, non una a caso
+2. **periodo attivo** → override del giorno, poi feriali/weekend
+3. **regole di base** → override del giorno, poi feriali/weekend
+4. **fallback weekday**, se il weekend non copre l'orario
+5. **modalità programmata**, se non copre nessuno
+
+A ogni livello, se la regola vincente non ha immagini valide si prova la successiva invece di lasciare lo sfondo fermo.
+
+---
+
+## Fasce ancorate al sole
+
+Nei campi `from` e `to` puoi scrivere un'**ancora solare** invece di un orario:
+
+```json
+{ "from": "sunset-40m", "to": "dusk+30m", "include": ["tramonto"], "match": "all" }
+```
+
+| Ancora    | Momento                                              |
+| --------- | ---------------------------------------------------- |
+| `dawn`    | Crepuscolo del mattino (sole 6° sotto l'orizzonte)   |
+| `sunrise` | Alba                                                 |
+| `noon`    | Mezzogiorno **solare vero**, non le 12:00 dell'orologio |
+| `sunset`  | Tramonto                                             |
+| `dusk`    | Crepuscolo della sera                                |
+
+Lo scostamento si scrive in minuti (`sunset-40m`, oppure `sunset-40`) o in ore (`dusk+1h`).
+
+### Perché
+
+A Napoli il tramonto va dalle **16:34** di inizio dicembre alle **20:38** di fine giugno: **4 ore e 4 minuti** di escursione. Una regola `"from": "19:00", "to": "20:00"` con tag `tramonto` è corretta per circa due settimane l'anno; a dicembre alle 19:00 è notte da due ore.
+
+Vale anche per l'alba, che a Napoli si sposta di **1 ora e 57 minuti** (dalle 05:30 alle 07:27), e per `noon`, che è il mezzogiorno **solare vero**: oscilla fra le **11:46** e le **13:09** fra ora solare e ora legale, e non coincide quasi mai con le 12:00 dell'orologio.
+
+### Ora legale
+
+Gestita automaticamente e **senza dipendenze**. L'orario dell'evento si calcola in UTC (algoritmo NOAA, in `sun.py`) e si converte con `datetime.fromtimestamp()`, che applica le regole del fuso del sistema operativo. Non servono `tzdata`, `zoneinfo` né `astral`. Passando all'ora legale il tramonto salta di un'ora come deve:
+
+```
+2026-03-28   tramonto 18:23
+2026-03-29   tramonto 19:24     ← ora legale
+```
+
+### Mescolare orologio e sole
+
+Va benissimo: le fasce legate al **tuo orario** (lavoro, pranzo) restano a orologio, quelle **astronomiche** vanno al sole. Un solo accorgimento: **le fasce solari vanno prima nella lista**, perché vince la prima che copre l'ora. Così il riempitivo `18:00-21:00` cede il passo quando il tramonto entra nel suo intervallo, senza doverlo spostare per stagione.
+
+> ⚠️ Evita gli estremi misti tipo `"from": "18:00", "to": "sunset-40m"`: d'inverno `sunset-40m` cade *prima* delle 18:00, la fascia si inverte e si mangia tutta la notte. Meglio due estremi solari, o due d'orologio.
+
+### Le fasce solari e il mazzo
+
+Con le fasce ancorate al sole la durata cambia ogni giorno: la fascia `notte` ha **6 finestre a giugno e 8 a dicembre**. La posizione nel mazzo si ricava quindi da una **somma cumulativa** delle finestre effettive dall'origine, non da `giorni × finestre_al_giorno` — che al primo giorno in cui il conteggio cambia farebbe saltare il mazzo di centinaia di posizioni, bruciando immagini mai viste.
+
+Il calcolo resta **deterministico e senza stato**: due PC con la stessa libreria ottengono la stessa sequenza senza parlarsi, che è la proprietà su cui si regge la sincronizzazione multi-PC.
+
+---
+
+## Periodi dell'anno
+
+Un **periodo** è un intervallo di date che modula le regole casuali **senza duplicarle**.
+
+```json
+"periods": [
+  { "name": "Halloween", "from": "10-20", "to": "11-01",
+    "exclude": ["estate", "natale", "primavera"],
+    "random_rules": {
+      "weekday": [
+        { "from": "sunset-40m", "to": "01:00", "include": ["horror"],
+          "match": "all", "rotate_minutes": 60 }
+      ]
+    } },
+
+  { "name": "Autunno", "from": "09-10", "to": "11-30",
+    "exclude": ["estate", "inverno", "natale", "primavera"] }
+]
+```
+
+| Campo          | Effetto                                                                   |
+| -------------- | ------------------------------------------------------------------------- |
+| `from` / `to`  | `MM-GG`, **senza anno**: il periodo si ripete ogni anno                    |
+| `exclude`      | Tag vietati, **si sommano** all'`exclude` di ogni regola                   |
+| `prefer`       | Tag preferiti: il pool si restringe a quelli solo se ne resta abbastanza   |
+| `prefer_min`   | Soglia di `prefer`. Senza, con pochi tag preferiti la fascia resta fissa   |
+| `require`      | Tag obbligatori, si sommano all'`include` (in AND). Raro                   |
+| `random_rules` | Fasce proprie del periodo, con la stessa forma di `random_rules`           |
+
+**Le date si ripetono ogni anno** e se la fine precede l'inizio il periodo **scavalca il capodanno**: `"from": "12-01", "to": "01-06"` copre dicembre e la Befana, con lo stesso confronto invertito che gestisce le fasce a cavallo della mezzanotte.
+
+**Vince il primo periodo attivo**, quindi i periodi festivi vanno messi **sopra** quelli stagionali.
+
+**Le `random_rules` del periodo non sostituiscono quelle di base**: vengono consultate prima, e se nessuna copre l'ora corrente si scende alla base, esattamente come fanno gli override di giorno. Per questo il periodo Halloween è una riga sola — prende dal tramonto all'una di notte e lascia tutto il resto della giornata all'autunno.
+
+### Perché non duplicare le regole
+
+Nel `config.json` la libreria immagini pesa il **32%** del file, le regole casuali il **10%**: la parte che si vorrebbe differenziare per stagione è la più piccola. Quattro config stagionali completi duplicherebbero la libreria — e taggare un'immagine diventerebbe quattro modifiche, con le liste di tag che divergono in silenzio — per de-duplicare le regole.
+
+Tutti e sei i periodi insieme pesano **1.188 byte, il 3% del file**, e due di quelli portano anche fasce orarie proprie.
+
+### I periodi devono coprire l'anno intero
+
+Un giorno che **nessun** periodo copre non applica nessun filtro: a luglio tornerebbero le immagini invernali. La tab **Periodi dell'anno** lo segnala in fondo (*"12 giorni senza periodo: …"*), e il pulsante **Verifica anno** passa i mesi in rassegna e avvisa sulle fasce rimaste con meno di 5 immagini — che per una stagione intera resterebbero quasi fisse.
+
+---
+
+## L'editor grafico
+
+Nella sezione **Casuale** dell'editor:
+
+| Tab                     | A cosa serve                                                        |
+| ----------------------- | ------------------------------------------------------------------- |
+| Tag                     | Il vocabolario. Rinominare o cancellare un tag lo aggiorna anche nei periodi |
+| Libreria immagini       | Assegna i tag alle immagini                                          |
+| **Periodi dell'anno**   | I periodi, in ordine di priorità. Avvisa sui giorni non coperti e ha **Verifica anno** |
+| Regole feriali/weekend  | Le fasce. Mostrano l'orario reale di oggi accanto alle ancore solari  |
+| Regole override giorno  | Fasce per un singolo giorno della settimana                          |
+| **Anteprima giorno**    | Una data qualsiasi risolta ora per ora, con il motore vero           |
+
+**Anteprima giorno** è lo strumento da usare quando qualcosa non torna: per ogni finestra della giornata mostra periodo attivo, regola vincente, fascia con l'orario solare risolto, tag effettivi, dimensione del pool e immagine scelta. In fondo riporta quante immagini distinte escono e qual è il pool più piccolo.
+
+In **Impostazioni → Posizione** si impostano latitudine e longitudine, con un elenco delle principali città italiane e gli orari solari di oggi come conferma.
 
 ---
 
@@ -208,12 +362,14 @@ La scelta viene memorizzata in `log.json` per la fascia corrente e riusata finch
 `chametiger.log` registra ogni cambio di sfondo indicando **quale regola** ha vinto:
 
 ```
-[2026-09-17 14:00:03] Avvio Chametiger. Modalita': random
-[2026-09-17 14:00:03] [OK] Sfondo impostato (casuale, weekday 14:00-18:00 [pomeriggio -inverno]): G:\Temi\...
-[2026-09-17 15:00:07] [OK] Sfondo impostato (casuale, weekday 14:00-18:00 [pomeriggio -inverno]): G:\Temi\...
+[2026-12-25 15:00:03] Avvio Chametiger. Modalita': random
+[2026-12-25 15:00:03] [OK] Sfondo impostato (casuale, weekday [periodo Natale] 14:00-18:00 [lavoro/pomeriggio -autunno,-estate,-primavera,-smart]): G:\Temi\...
+[2026-12-25 16:00:07] [OK] Sfondo impostato (casuale, periodo Natale weekday sunset-40m (15:57)-23:30 [natale]): G:\Temi\...
 ```
 
-Nei tag, `+` significa che servono **tutti** quelli elencati, `/` che ne basta **uno**, `-tag` sono le esclusioni.
+Nei tag, `+` significa che servono **tutti** quelli elencati, `/` che ne basta **uno**, `-tag` sono le esclusioni e `~tag` i preferiti.
+
+La categoria dice anche **quale periodo** era attivo. `periodo Natale weekday` è una fascia propria del periodo; `weekday [periodo Natale]` è una regola di base vista attraverso il periodo. Accanto alle ancore solari c'è l'orario a cui sono cadute davvero.
 
 Lo si apre dalla GUI con **Mostra log**, in fondo alla finestra.
 
@@ -240,6 +396,10 @@ L'eseguibile comparirà in `dist/app.exe`.
 | `ModuleNotFoundError`                 | Esegui `pip install -r requirements.txt`                                |
 | Icona tray non appare                 | Assicurati di avere Pillow installato                                   |
 | `winreg` non trovato                  | Solo Windows; non funziona su Linux/macOS                               |
-| In casuale esce sempre la stessa      | La regola ha pochi candidati: controlla i tag nel log                   |
-| Le immagini si ripetono troppo spesso | Alza `history_days` nelle impostazioni della GUI                        |
+| In casuale esce sempre la stessa      | La regola ha pochi candidati: usa **Verifica anno** nella tab Periodi    |
+| Le immagini si ripetono troppo spesso | Il pool è piccolo: il mazzo si riavvolge presto. Taggane altre, o allarga i tag della regola. `history_days` **non** c'entra |
 | Su un altro PC non trova le immagini  | Aggiungi il suo hostname in `path_map`                                  |
+| Le fasce serali cadono nell'ora sbagliata | Coordinate sbagliate: **Impostazioni → Posizione**                  |
+| Un'immagine stagionale non esce mai   | È vietata dal periodo attivo: guarda la colonna Tag in **Anteprima giorno** |
+| A luglio escono immagini invernali    | Un giorno dell'anno non è coperto da nessun periodo: la tab Periodi lo segnala |
+| Una fascia resta ferma tutto il giorno | Pool troppo piccolo, o `prefer` che stringe troppo: alza `prefer_min`  |

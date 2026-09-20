@@ -10,7 +10,9 @@ import subprocess
 import sys
 from tkinter import ttk, filedialog, messagebox, simpledialog
 from pathlib import Path
-from datetime import datetime
+from datetime import date, datetime, timedelta
+
+import sun
 
 try:
     from PIL import Image, ImageTk
@@ -139,7 +141,12 @@ def ensure_defaults(cfg: dict) -> dict:
     cfg["schedules"].setdefault("weekend", [])
     cfg.setdefault("overrides", {})
     cfg.setdefault("special_days", {})
-    cfg.setdefault("history_days", 60)
+    # history_days NON viene piu' aggiunta qui: l'editor non la espone, e un
+    # config che non la ha usa il default di app.py. Quelli che ce l'hanno la
+    # conservano, cosi' il comportamento non cambia sotto i piedi a nessuno.
+    cfg.setdefault("periods", [])
+    cfg.setdefault("latitude", 40.8518)   # Napoli
+    cfg.setdefault("longitude", 14.2681)
 
     rules = cfg.setdefault("random_rules", {})
     rules.setdefault("weekday", [])
@@ -449,6 +456,7 @@ class ChametigerEditor(tk.Tk):
 
         self._build_tags_tab(sub)
         self._build_library_tab(sub)
+        self._build_periods_tab(sub)
 
         self._rule_editors = []
         hint = (
@@ -470,6 +478,19 @@ class ChametigerEditor(tk.Tk):
             self._rule_editors.append(ed)
 
         self._build_random_override_tab(sub)
+        self._build_preview_tab(sub)
+
+    def _build_periods_tab(self, nb: ttk.Notebook):
+        frame = ttk.Frame(nb)
+        nb.add(frame, text="Periodi dell'anno")
+        self._periods_tab = PeriodsTab(frame, self.config_data, self)
+        self._periods_tab.pack(fill="both", expand=True)
+
+    def _build_preview_tab(self, nb: ttk.Notebook):
+        frame = ttk.Frame(nb)
+        nb.add(frame, text="Anteprima giorno")
+        self._preview_tab = PreviewTab(frame, self.config_data, self)
+        self._preview_tab.pack(fill="both", expand=True)
 
     def _build_random_override_tab(self, nb: ttk.Notebook):
         frame = ttk.Frame(nb)
@@ -625,14 +646,20 @@ class ChametigerEditor(tk.Tk):
         self._random_tab = RandomRulesTab(frame, self.config_data)
         self._random_tab.pack(fill="both", expand=True, padx=12, pady=12)
 
-        # Chiamato dagli altri tab quando cambia l'elenco dei tag
-        def notify_tags_changed(self):
-            if hasattr(self, "_library_tab"):
-                self._library_tab.refresh_tag_widgets()
-            for ed in getattr(self, "_rule_editors", []):
-                ed.refresh_tree()
-            if hasattr(self, "_rnd_day_editor"):
-                self._rnd_day_editor.refresh_tree()
+    # Chiamato dagli altri tab quando cambia l'elenco dei tag.
+    # Era definita annidata dentro _build_random_tab, quindi non era un metodo e
+    # ogni rinomina di tag finiva in AttributeError.
+    def notify_tags_changed(self):
+        if hasattr(self, "_library_tab"):
+            self._library_tab.refresh_tag_widgets()
+        for ed in getattr(self, "_rule_editors", []):
+            ed.refresh_tree()
+        if hasattr(self, "_rnd_day_editor"):
+            self._rnd_day_editor.refresh_tree()
+        if hasattr(self, "_random_tab"):
+            self._random_tab.refresh_filters()
+        if hasattr(self, "_periods_tab"):
+            self._periods_tab.refresh()
 
     # ── Tab impostazioni ─────────────────────────────────────────────────────
     def _build_settings_tab(self, nb: ttk.Notebook):
@@ -716,47 +743,12 @@ class ChametigerEditor(tk.Tk):
             row=4, column=2, padx=4
         )
 
-        # Memoria delle estrazioni casuali
-        tk.Label(
-            inner,
-            text="Memoria estrazioni (giorni):",
-            bg=BG,
-            fg=FG,
-            font=("Segoe UI", 10),
-        ).grid(row=5, column=0, sticky="w", pady=8)
-
-        self._history_var = tk.IntVar(value=self.config_data.get("history_days", 60))
-        tk.Spinbox(
-            inner,
-            from_=1,
-            to=365,
-            textvariable=self._history_var,
-            width=6,
-            bg=ENTRY_BG,
-            fg=FG,
-            insertbackground=FG,
-            buttonbackground=BG3,
-            relief="flat",
-            font=("Segoe UI", 10),
-        ).grid(row=5, column=1, padx=12, sticky="w")
-
-        def apply_history():
-            self.config_data["history_days"] = self._history_var.get()
-
-        ttk.Button(inner, text="Applica", command=apply_history).grid(
-            row=5, column=2, padx=4
-        )
-
-        tk.Label(
-            inner,
-            text="In modalità casuale, per quanti giorni ricordare le immagini già\n"
-            "uscite: si estrae sempre fra le meno viste. Più giorni = più varietà,\n"
-            "utile se una regola pesca da molte immagini.",
-            bg=BG,
-            fg=FG2,
-            font=("Segoe UI", 9),
-            justify="left",
-        ).grid(row=6, column=0, columnspan=3, sticky="w", pady=(0, 12))
+        # Qui c'era "Memoria estrazioni (giorni)", rimossa nella 3.0: prometteva di
+        # influenzare quali immagini uscivano, ma la scelta viene dal mazzo e non
+        # guarda log.json. Restava un solo effetto, la potatura dello storico, che
+        # non e' una decisione da lasciare all'utente. La chiave history_days nel
+        # config continua a essere rispettata se c'e'; senza, vale il default di
+        # app.DEFAULT_HISTORY_DAYS.
 
         # Tema
         tk.Label(
@@ -857,6 +849,134 @@ class ChametigerEditor(tk.Tk):
         ttk.Button(inner, text="Applica cartella", command=apply_base).grid(
             row=11, column=0, sticky="w", pady=(8, 0)
         )
+
+        # ── Coordinate per gli orari solari ─────────────────────────────────
+        tk.Label(
+            inner,
+            text="Posizione (per alba, tramonto e crepuscolo)",
+            bg=BG,
+            fg=ACCENT,
+            font=("Segoe UI Semibold", 11),
+        ).grid(row=13, column=0, columnspan=3, sticky="w", pady=(24, 6))
+
+        coord = tk.Frame(inner, bg=BG)
+        coord.grid(row=14, column=0, columnspan=3, sticky="w")
+
+        tk.Label(coord, text="Latitudine", bg=BG, fg=FG, font=("Segoe UI", 10)).pack(
+            side="left"
+        )
+        self._lat_var = tk.StringVar(value=str(self.config_data.get("latitude", 40.8518)))
+        tk.Entry(
+            coord,
+            textvariable=self._lat_var,
+            bg=ENTRY_BG,
+            fg=FG,
+            insertbackground=FG,
+            relief="flat",
+            width=11,
+            font=("Segoe UI", 10),
+        ).pack(side="left", padx=(6, 16))
+
+        tk.Label(coord, text="Longitudine", bg=BG, fg=FG, font=("Segoe UI", 10)).pack(
+            side="left"
+        )
+        self._lon_var = tk.StringVar(value=str(self.config_data.get("longitude", 14.2681)))
+        tk.Entry(
+            coord,
+            textvariable=self._lon_var,
+            bg=ENTRY_BG,
+            fg=FG,
+            insertbackground=FG,
+            relief="flat",
+            width=11,
+            font=("Segoe UI", 10),
+        ).pack(side="left", padx=6)
+
+        citta = {
+            "Napoli": (40.8518, 14.2681),
+            "Roma": (41.9028, 12.4964),
+            "Milano": (45.4642, 9.1900),
+            "Torino": (45.0703, 7.6869),
+            "Firenze": (43.7696, 11.2558),
+            "Bologna": (44.4949, 11.3426),
+            "Venezia": (45.4408, 12.3155),
+            "Bari": (41.1171, 16.8719),
+            "Palermo": (38.1157, 13.3615),
+            "Cagliari": (39.2238, 9.1217),
+        }
+
+        def imposta_citta(_=None):
+            nome = self._citta_var.get()
+            if nome in citta:
+                lat, lon = citta[nome]
+                self._lat_var.set(str(lat))
+                self._lon_var.set(str(lon))
+                applica_coord()
+
+        tk.Label(coord, text="oppure", bg=BG, fg=FG2, font=("Segoe UI", 9)).pack(
+            side="left", padx=(16, 6)
+        )
+        self._citta_var = tk.StringVar()
+        cb_citta = ttk.Combobox(
+            coord,
+            textvariable=self._citta_var,
+            values=sorted(citta),
+            width=12,
+            state="readonly",
+        )
+        cb_citta.pack(side="left")
+        cb_citta.bind("<<ComboboxSelected>>", imposta_citta)
+
+        self._coord_status = tk.Label(
+            inner, bg=BG, fg=FG2, font=("Segoe UI", 9), justify="left", anchor="w"
+        )
+        self._coord_status.grid(row=16, column=0, columnspan=3, sticky="w", pady=(6, 0))
+
+        def applica_coord():
+            try:
+                lat = float(self._lat_var.get().strip().replace(",", "."))
+                lon = float(self._lon_var.get().strip().replace(",", "."))
+            except ValueError:
+                self._coord_status.config(text="Coordinate non numeriche.", fg=DANGER)
+                return
+            if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+                self._coord_status.config(
+                    text="Latitudine fra -90 e 90, longitudine fra -180 e 180.", fg=DANGER
+                )
+                return
+            self.config_data["latitude"] = lat
+            self.config_data["longitude"] = lon
+            orari = sun.sun_times(date.today(), lat, lon)
+
+            def hm(k):
+                v = orari.get(k)
+                return v.strftime("%H:%M") if v else "n.d."
+
+            self._coord_status.config(
+                text=f"Oggi qui: crepuscolo {hm('dawn')}, alba {hm('sunrise')}, "
+                f"mezzogiorno solare {hm('noon')}, tramonto {hm('sunset')}, "
+                f"crepuscolo serale {hm('dusk')}.\n"
+                "L'ora legale e' gia' compresa: la applica il sistema operativo.",
+                fg=SUCCESS,
+            )
+            if hasattr(self, "_preview_tab"):
+                self._preview_tab._calcola()
+
+        ttk.Button(inner, text="Applica posizione", command=applica_coord).grid(
+            row=15, column=0, sticky="w", pady=(8, 0)
+        )
+
+        tk.Label(
+            inner,
+            text="Servono alle fasce ancorate al sole (sunset-40m, dawn-20m): con le\n"
+            "coordinate sbagliate le fasce serali cadono nell'ora sbagliata.",
+            bg=BG,
+            fg=FG2,
+            font=("Segoe UI", 9),
+            justify="left",
+        ).grid(row=17, column=0, columnspan=3, sticky="w", pady=(4, 0))
+
+        applica_coord()
 
         self._base_status = tk.Label(inner, bg=BG, fg=FG2, font=("Segoe UI", 9))
         self._base_status.grid(row=12, column=0, columnspan=3, sticky="w", pady=(4, 0))
@@ -1007,7 +1127,7 @@ class TagsTab(tk.Frame):
                 img_tags[img_tags.index(old)] = new
 
         for rule in self._all_rules():
-            for field in ("include", "exclude"):
+            for field in ("include", "exclude", "prefer"):
                 lst = rule.get(field, [])
                 if old in lst:
                     lst[lst.index(old)] = new
@@ -1031,7 +1151,7 @@ class TagsTab(tk.Frame):
                 img_tags.remove(tag)
 
         for rule in self._all_rules():
-            for field in ("include", "exclude"):
+            for field in ("include", "exclude", "prefer"):
                 if tag in rule.get(field, []):
                     rule[field].remove(tag)
 
@@ -1039,10 +1159,36 @@ class TagsTab(tk.Frame):
         self.app.notify_tags_changed()
 
     def _all_rules(self):
-        rules = self.config_data.get("random_rules", {})
-        out = list(rules.get("weekday", [])) + list(rules.get("weekend", []))
-        for day_rules in rules.get("overrides", {}).values():
-            out += list(day_rules or [])
+        """
+        Tutte le regole che usano i tag, PERIODI COMPRESI: senza i periodi,
+        rinominare o cancellare un tag lascerebbe i periodi che lo citano
+        puntati su un tag che non esiste piu', in silenzio.
+        """
+
+        def raccogli(rules):
+            out = list(rules.get("weekday", []) or []) + list(rules.get("weekend", []) or [])
+            for day_rules in (rules.get("overrides", {}) or {}).values():
+                out += list(day_rules or [])
+            return out
+
+        out = raccogli(self.config_data.get("random_rules", {}))
+        for period in self.config_data.get("periods", []) or []:
+            # Il periodo stesso conta come utilizzo dei tag che filtra. Le liste
+            # vanno passate per RIFERIMENTO, non copiate: _rename e _delete le
+            # modificano in place, e su una copia il rinomino non arriverebbe
+            # mai al config.
+            voce = {}
+            for chiave_periodo, chiave_regola in (
+                ("require", "include"),
+                ("exclude", "exclude"),
+                ("prefer", "prefer"),
+            ):
+                lst = period.get(chiave_periodo)
+                if isinstance(lst, list):
+                    voce[chiave_regola] = lst
+            if voce:
+                out.append(voce)
+            out += raccogli(period.get("random_rules", {}) or {})
         return out
 
 
@@ -1592,17 +1738,19 @@ class RuleEditor(tk.Frame):
 
     def refresh_tree(self):
         self._tree.delete(*self._tree.get_children())
+        oggi = date.today()
         for r in self._rules():
             match = r.get("match", "all")
             inc = ", ".join(r.get("include", [])) or "(qualsiasi)"
             if match == "any" and r.get("include"):
                 inc += "  [almeno uno]"
+            lat, lon = coords_of(self.config_data)
             self._tree.insert(
                 "",
                 "end",
                 values=(
-                    r.get("from", ""),
-                    r.get("to", ""),
+                    sun.describe(r.get("from", ""), oggi, lat, lon),
+                    sun.describe(r.get("to", ""), oggi, lat, lon),
                     inc,
                     ", ".join(r.get("exclude", [])) or "-",
                     f"{r.get('rotate_minutes', 60)} min",
@@ -1665,20 +1813,44 @@ class RuleEditor(tk.Frame):
             return
 
         library = self.config_data.get("image_library", {})
+        periodi = self.config_data.get("periods", []) or []
+        oggi = date.today()
         lines = []
-        for r in rules:
-            count = 0
-            missing = 0
+
+        def conta(regola):
+            """Immagini che soddisfano la regola, e quante mancano dal disco."""
+            trovate = mancanti = 0
             for image, tags in library.items():
-                if not match_rule(tags, r):
+                if not match_rule(tags, regola):
                     continue
                 if Path(resolve_image_path(self.config_data, image)).is_file():
-                    count += 1
+                    trovate += 1
                 else:
-                    missing += 1
-            label = f"{r.get('from','')}-{r.get('to','')}"
-            extra = f"  ({missing} non trovate su disco)" if missing else ""
-            lines.append(f"{label}: {count} immagini{extra}")
+                    mancanti += 1
+            return trovate, mancanti
+
+        for r in rules:
+            etichetta = descrivi_fascia(r, oggi, self.config_data)
+            trovate, mancanti = conta(r)
+            extra = f"  ({mancanti} non trovate su disco)" if mancanti else ""
+            lines.append(f"{etichetta}: {trovate} immagini{extra}")
+
+            # Ogni periodo vieta tag diversi, quindi la stessa regola pesca da
+            # pool diversi secondo la stagione. Il conteggio senza periodo e'
+            # quello che non si verifica mai nella realta'.
+            for p in periodi:
+                vietati = set(p.get("exclude", []))
+                richiesti = list(p.get("require", []))
+                if not vietati and not richiesti:
+                    continue
+                patched = dict(r)
+                if vietati:
+                    patched["exclude"] = sorted(set(r.get("exclude", [])) | vietati)
+                if richiesti:
+                    patched["include"] = sorted(set(r.get("include", [])) | set(richiesti))
+                n, _ = conta(patched)
+                segnale = "   <-- poche" if n < 5 else ""
+                lines.append(f"      in {p.get('name', '?')}: {n}{segnale}")
 
         messagebox.showinfo("Verifica regole", "\n".join(lines))
 
@@ -1695,6 +1867,73 @@ def match_rule(image_tags, rule: dict) -> bool:
     if rule.get("match", "all") == "any":
         return any(t in tags for t in include)
     return all(t in tags for t in include)
+
+
+def valid_time(t: str) -> bool:
+    """
+    Orario valido: 'HH:MM' oppure un'ancora solare ('sunset', 'dawn-20m').
+    Le ancore seguono il sole giorno per giorno, quindi una fascia scritta cosi'
+    resta corretta da giugno a dicembre senza essere spostata a mano.
+    """
+    t = str(t).strip()
+    if sun.is_solar(t):
+        return True
+    try:
+        h, m = t.split(":")
+        return 0 <= int(h) <= 23 and 0 <= int(m) <= 59
+    except Exception:
+        return False
+
+
+def coords_of(config_data: dict) -> tuple[float, float]:
+    return sun.coords(config_data)
+
+
+def descrivi_fascia(rule: dict, giorno: date, config_data: dict) -> str:
+    """'sunset-40m (19:18)-dusk+30m (20:58)' per la lista delle regole."""
+    lat, lon = coords_of(config_data)
+    return (
+        f"{sun.describe(rule.get('from', '?'), giorno, lat, lon)}"
+        f"-{sun.describe(rule.get('to', '?'), giorno, lat, lon)}"
+    )
+
+
+_MOTORE = None
+
+
+def carica_motore():
+    """
+    Il motore di app.py, importato su richiesta e riusato.
+
+    L'anteprima e la verifica anno chiamano le funzioni vere dello scheduler
+    invece di riprodurne la logica: due implementazioni della stessa risoluzione
+    divergerebbero, e un'anteprima che non coincide con la realta' e' peggio che
+    non averla.
+    """
+    global _MOTORE
+    if _MOTORE is None:
+        try:
+            import app
+
+            _MOTORE = app
+        except Exception as e:
+            messagebox.showerror(
+                "Motore non disponibile",
+                f"Non riesco a caricare app.py:\n{e}\n\n"
+                "Anteprima e verifica anno non sono disponibili.",
+            )
+            return None
+    return _MOTORE
+
+
+ANCORE_IT = [
+    ("", "— orario fisso —"),
+    ("dawn", "dawn — crepuscolo del mattino"),
+    ("sunrise", "sunrise — alba"),
+    ("noon", "noon — mezzogiorno solare"),
+    ("sunset", "sunset — tramonto"),
+    ("dusk", "dusk — crepuscolo della sera"),
+]
 
 
 class RuleDialog(tk.Toplevel):
@@ -1805,14 +2044,40 @@ class RuleDialog(tk.Toplevel):
             mf, text="Ne basta almeno uno", variable=self._match, value="any"
         ).pack(anchor="w")
 
+        # Aiuto sulle ancore solari, con l'orario che avrebbero oggi. Una fascia
+        # scritta 'sunset-40m' non si controlla a occhio senza vedere che ora fa.
+        lat, lon = coords_of(config_data)
+        orari = sun.sun_times(date.today(), lat, lon)
+        pezzi = [
+            f"{nome} {orari[nome].strftime('%H:%M')}"
+            for nome in ("dawn", "sunrise", "noon", "sunset", "dusk")
+            if orari.get(nome)
+        ]
+        tk.Label(
+            self,
+            text="Negli orari puoi scrivere un'ancora solare invece dell'orologio:\n  "
+            + "    ".join(pezzi)
+            + "  (oggi)\ncon scostamento in minuti oppure ore: sunset-40m, dawn-20m, dusk+1h.",
+            bg=BG,
+            fg=ACCENT2,
+            font=("Segoe UI", 8),
+            justify="left",
+        ).grid(row=5, column=0, columnspan=2, sticky="w", padx=16, pady=(6, 2))
+
+        self._risolti = tk.Label(self, bg=BG, fg=FG2, font=("Segoe UI", 8), anchor="w")
+        self._risolti.grid(row=6, column=0, columnspan=2, sticky="w", padx=16)
+        for var in (self._from, self._to):
+            var.trace_add("write", lambda *_: self._aggiorna_risolti())
+        self._aggiorna_risolti()
+
         self._preview_lbl = tk.Label(
             self, bg=BG, fg=SUCCESS, font=("Segoe UI", 9), anchor="w"
         )
-        self._preview_lbl.grid(row=5, column=0, columnspan=2, sticky="w", padx=16)
+        self._preview_lbl.grid(row=7, column=0, columnspan=2, sticky="w", padx=16)
 
         # Bottoni
         bf = tk.Frame(self, bg=BG, pady=10)
-        bf.grid(row=6, column=0, columnspan=2)
+        bf.grid(row=8, column=0, columnspan=2)
         ttk.Button(bf, text="Quante immagini?", command=self._count).pack(
             side="left", padx=8
         )
@@ -1823,6 +2088,21 @@ class RuleDialog(tk.Toplevel):
 
         self.grab_set()
         self.wait_window()
+
+    def _aggiorna_risolti(self):
+        """Mostra a che ora cadono oggi gli estremi scritti, ancore comprese."""
+        lat, lon = coords_of(self.config_data)
+        oggi = date.today()
+        pezzi = []
+        for etichetta, var in (("dalle", self._from), ("alle", self._to)):
+            valore = var.get().strip()
+            if not valid_time(valore):
+                pezzi.append(f"{etichetta} ?")
+            elif sun.is_solar(valore):
+                pezzi.append(f"{etichetta} {sun.describe(valore, oggi, lat, lon)}")
+            else:
+                pezzi.append(f"{etichetta} {valore}")
+        self._risolti.config(text="Oggi: " + "   ".join(pezzi))
 
     def _make_tag_list(self, all_tags, selected) -> tk.Listbox:
         lb = tk.Listbox(
@@ -1873,11 +2153,7 @@ class RuleDialog(tk.Toplevel):
         )
 
     def _valid_time(self, t: str) -> bool:
-        try:
-            h, m = t.strip().split(":")
-            return 0 <= int(h) <= 23 and 0 <= int(m) <= 59
-        except Exception:
-            return False
+        return valid_time(t)
 
     def _ok(self):
         rule = self._build_rule()
@@ -1895,6 +2171,653 @@ class RuleDialog(tk.Toplevel):
                 return
         self.result = rule
         self.destroy()
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Tab: periodi dell'anno
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+MESI_IT = [
+    "gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno",
+    "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre",
+]
+
+GIORNI_MESE = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+
+def md_valido(s: str) -> bool:
+    """'10-20' valido. Il 29 febbraio si accetta: l'anno non entra nel confronto."""
+    try:
+        m, g = str(s).strip().split("-")
+        m, g = int(m), int(g)
+    except Exception:
+        return False
+    return 1 <= m <= 12 and 1 <= g <= GIORNI_MESE[m - 1]
+
+
+def md_ordinale(s: str) -> int | None:
+    """'10-20' -> 1020, per i confronti fra date senza anno."""
+    try:
+        m, g = str(s).strip().split("-")[-2:]
+        return int(m) * 100 + int(g)
+    except Exception:
+        return None
+
+
+def md_leggibile(s: str) -> str:
+    """'10-20' -> '20 ottobre'."""
+    try:
+        m, g = str(s).strip().split("-")
+        return f"{int(g)} {MESI_IT[int(m) - 1]}"
+    except Exception:
+        return str(s)
+
+
+def md_copre(inizio: int, fine: int, giorno: date) -> bool:
+    """Se l'intervallo (ordinali MMGG) contiene quel giorno. Gestisce il capodanno."""
+    oggi = giorno.month * 100 + giorno.day
+    if inizio <= fine:
+        return inizio <= oggi <= fine
+    return oggi >= inizio or oggi <= fine
+
+
+class PeriodsTab(tk.Frame):
+    """
+    I periodi dell'anno: intervalli di date che modulano le regole casuali senza
+    duplicarle. L'ordine conta, vince il primo che copre la data, quindi i periodi
+    festivi vanno sopra quelli stagionali.
+    """
+
+    def __init__(self, parent, config_data: dict, app):
+        super().__init__(parent, bg=BG)
+        self.config_data = config_data
+        self.app = app
+        self._build()
+
+    def _periods(self) -> list:
+        return self.config_data.setdefault("periods", [])
+
+    def _build(self):
+        tk.Label(
+            self,
+            text="Vince il primo periodo che copre la data: i periodi festivi vanno "
+            "sopra quelli stagionali.\nUn periodo non riscrive le regole, le filtra — "
+            "e puo' portarsi fasce proprie solo per le ore che gli interessano.",
+            bg=BG,
+            fg=FG2,
+            font=("Segoe UI", 9),
+            justify="left",
+        ).pack(anchor="w", padx=12, pady=(10, 8))
+
+        self._tree = ttk.Treeview(
+            self,
+            columns=("nome", "dal", "al", "tag", "regole"),
+            show="headings",
+            height=10,
+        )
+        for c, t, w in (
+            ("nome", "Periodo", 130),
+            ("dal", "Dal", 110),
+            ("al", "Al", 110),
+            ("tag", "Tag vietati / preferiti", 340),
+            ("regole", "Fasce proprie", 100),
+        ):
+            self._tree.heading(c, text=t)
+            self._tree.column(c, width=w, anchor="w")
+        self._tree.pack(fill="both", expand=True, padx=12)
+        self._tree.bind("<Double-1>", lambda e: self._edit())
+
+        bar = tk.Frame(self, bg=BG, pady=8)
+        bar.pack(fill="x", padx=12)
+        for testo, cmd in (
+            ("Aggiungi", self._add),
+            ("Modifica", self._edit),
+            ("Elimina", self._delete),
+            ("Su", self._up),
+            ("Giu'", self._down),
+        ):
+            ttk.Button(bar, text=testo, command=cmd).pack(side="left", padx=(0, 6))
+        ttk.Button(
+            bar, text="Verifica anno", style="Accent.TButton", command=self._check_year
+        ).pack(side="right")
+
+        self._status = tk.Label(
+            self, bg=BG, fg=FG2, font=("Segoe UI", 9), justify="left", anchor="w"
+        )
+        self._status.pack(fill="x", padx=12, pady=(0, 10))
+
+        self.refresh()
+
+    def refresh(self):
+        for i in self._tree.get_children():
+            self._tree.delete(i)
+        for idx, p in enumerate(self._periods()):
+            etichette = []
+            if p.get("exclude"):
+                etichette.append("vieta " + ", ".join(p["exclude"]))
+            if p.get("prefer"):
+                minimo = p.get("prefer_min")
+                etichette.append(
+                    "preferisce "
+                    + ", ".join(p["prefer"])
+                    + (f" (min {minimo})" if minimo else "")
+                )
+            if p.get("require"):
+                etichette.append("richiede " + ", ".join(p["require"]))
+
+            rr = p.get("random_rules") or {}
+            n_regole = 0
+            for valore in rr.values():
+                if isinstance(valore, list):
+                    n_regole += len(valore)
+                elif isinstance(valore, dict):
+                    n_regole += sum(len(x or []) for x in valore.values())
+
+            self._tree.insert(
+                "",
+                "end",
+                iid=str(idx),
+                values=(
+                    p.get("name", "?"),
+                    md_leggibile(p.get("from", "")),
+                    md_leggibile(p.get("to", "")),
+                    "; ".join(etichette) or "-",
+                    f"{n_regole} fasce" if n_regole else "-",
+                ),
+            )
+        self._aggiorna_copertura()
+
+    def _aggiorna_copertura(self):
+        """
+        Avvisa sui giorni dell'anno che nessun periodo copre. Non e' cosmetico: un
+        giorno scoperto non applica nessun filtro stagionale, e a luglio tornano
+        le immagini invernali.
+        """
+        periodi = self._periods()
+        if not periodi:
+            self._status.config(
+                text="Nessun periodo: le regole valgono uguali tutto l'anno.", fg=FG2
+            )
+            return
+
+        intervalli = [
+            (md_ordinale(p.get("from")), md_ordinale(p.get("to")), p.get("name", "?"))
+            for p in periodi
+        ]
+        scoperti, conteggi = [], {}
+        for d in range(365):
+            g = date(2026, 1, 1) + timedelta(days=d)
+            nome = next(
+                (n for a, b, n in intervalli if a is not None and b is not None and md_copre(a, b, g)),
+                None,
+            )
+            if nome is None:
+                scoperti.append(g)
+            else:
+                conteggi[nome] = conteggi.get(nome, 0) + 1
+
+        riepilogo = "   ".join(f"{n}: {c}gg" for n, c in conteggi.items())
+        if not scoperti:
+            self._status.config(
+                text=f"Anno coperto per intero.   {riepilogo}", fg=SUCCESS
+            )
+            return
+
+        # Raggruppa i giorni scoperti in blocchi contigui, piu' leggibili di un elenco
+        blocchi, inizio = [], scoperti[0]
+        for corrente, successivo in zip(scoperti, scoperti[1:] + [None]):
+            if successivo is None or (successivo - corrente).days > 1:
+                a = md_leggibile(f"{inizio.month:02d}-{inizio.day:02d}")
+                b = md_leggibile(f"{corrente.month:02d}-{corrente.day:02d}")
+                blocchi.append(a if corrente == inizio else f"{a} - {b}")
+                inizio = successivo
+        self._status.config(
+            text=f"{len(scoperti)} giorni senza periodo: {'; '.join(blocchi[:4])}"
+            f"{' ...' if len(blocchi) > 4 else ''}\n{riepilogo}",
+            fg=DANGER,
+        )
+
+    def _selected(self) -> int | None:
+        sel = self._tree.selection()
+        return int(sel[0]) if sel else None
+
+    def _add(self):
+        dlg = PeriodDialog(self, self.config_data, "Nuovo periodo")
+        if dlg.result:
+            self._periods().append(dlg.result)
+            self.refresh()
+
+    def _edit(self):
+        i = self._selected()
+        if i is None:
+            return
+        dlg = PeriodDialog(
+            self, self.config_data, "Modifica periodo", initial=self._periods()[i]
+        )
+        if dlg.result:
+            self._periods()[i] = dlg.result
+            self.refresh()
+
+    def _delete(self):
+        i = self._selected()
+        if i is None:
+            return
+        nome = self._periods()[i].get("name", "?")
+        if messagebox.askyesno("Conferma", f"Eliminare il periodo '{nome}'?"):
+            del self._periods()[i]
+            self.refresh()
+
+    def _move(self, delta: int):
+        i = self._selected()
+        if i is None:
+            return
+        j = i + delta
+        periodi = self._periods()
+        if not 0 <= j < len(periodi):
+            return
+        periodi[i], periodi[j] = periodi[j], periodi[i]
+        self.refresh()
+        self._tree.selection_set(str(j))
+
+    def _up(self):
+        self._move(-1)
+
+    def _down(self):
+        self._move(1)
+
+    def _check_year(self):
+        """
+        Passa l'anno col motore vero e riporta le fasce con pochi candidati.
+        E' la rete di sicurezza: un tag di troppo in un periodo puo' svuotare una
+        fascia in una sola stagione, e sfogliando il config non si vede.
+        """
+        motore = carica_motore()
+        if motore is None:
+            return
+
+        cfg = self.config_data
+        righe, problemi = [], 0
+        campioni = sorted(
+            {date(2026, m, 15) for m in range(1, 13)}
+            | {date(2026, 10, 28), date(2026, 12, 25)}
+        )
+
+        self._status.config(text="Verifica in corso...", fg=FG2)
+        self.update_idletasks()
+        motore.invalida_cache_file()
+
+        for g in campioni:
+            nome = (motore.periodo_attivo(cfg, g) or {}).get("name", "-")
+            viste, peggiore, senza_regola = set(), None, []
+            for h in range(24):
+                t = datetime(g.year, g.month, g.day, h, 0)
+                cand = motore.regole_candidate(cfg, t)
+                if not cand:
+                    senza_regola.append(h)
+                    continue
+                rule = cand[0][0]
+                sig = motore._rule_signature(rule)
+                if sig in viste:
+                    continue
+                viste.add(sig)
+                n = len(motore.candidates_for_rule(cfg, rule))
+                if peggiore is None or n < peggiore[0]:
+                    peggiore = (n, descrivi_fascia(rule, g, cfg))
+
+            if senza_regola:
+                ore = ", ".join(f"{h:02d}:00" for h in senza_regola)
+                righe.append(f"{g}  {nome}: nessuna regola alle {ore}")
+                problemi += 1
+            if peggiore and peggiore[0] < 5:
+                righe.append(f"{g}  {nome}: solo {peggiore[0]} immagini su {peggiore[1]}")
+                problemi += 1
+            elif peggiore and not senza_regola:
+                righe.append(f"{g}  {nome}: minimo {peggiore[0]} immagini, ok")
+
+        self._aggiorna_copertura()
+        testo = "\n".join(righe)
+        if problemi:
+            messagebox.showwarning(
+                "Verifica anno",
+                f"{problemi} segnalazioni.\n\n{testo}\n\n"
+                "Una fascia con poche immagini resta quasi fissa per tutta la stagione.",
+            )
+        else:
+            messagebox.showinfo("Verifica anno", f"Nessun problema.\n\n{testo}")
+
+
+class PeriodDialog(tk.Toplevel):
+    """Editor di un singolo periodo dell'anno."""
+
+    def __init__(self, parent, config_data: dict, title="Periodo", initial=None):
+        super().__init__(parent)
+        self.title(title)
+        self.resizable(False, False)
+        self.configure(bg=BG)
+        self.config_data = config_data
+        self.result: dict | None = None
+        self._initial = initial or {}
+        initial = self._initial
+        all_tags = sorted(config_data.get("tags", []), key=str.lower)
+
+        top = tk.Frame(self, bg=BG)
+        top.grid(row=0, column=0, columnspan=3, sticky="w", padx=16, pady=(14, 2))
+
+        tk.Label(top, text="Nome", bg=BG, fg=FG, font=("Segoe UI", 9)).pack(side="left")
+        # NON chiamarlo _name: tkinter usa Misc._name per il nome del widget e
+        # sovrascriverlo rompe destroy().
+        self._nome = tk.StringVar(value=initial.get("name", ""))
+        tk.Entry(
+            top, textvariable=self._nome, bg=ENTRY_BG, fg=FG, insertbackground=FG,
+            relief="flat", width=18, font=("Segoe UI", 9),
+        ).pack(side="left", padx=(6, 16))
+
+        tk.Label(top, text="dal", bg=BG, fg=FG, font=("Segoe UI", 9)).pack(side="left")
+        self._from = tk.StringVar(value=initial.get("from", "01-01"))
+        tk.Entry(
+            top, textvariable=self._from, bg=ENTRY_BG, fg=FG, insertbackground=FG,
+            relief="flat", width=8, font=("Segoe UI", 9),
+        ).pack(side="left", padx=6)
+
+        tk.Label(top, text="al", bg=BG, fg=FG, font=("Segoe UI", 9)).pack(side="left")
+        self._to = tk.StringVar(value=initial.get("to", "12-31"))
+        tk.Entry(
+            top, textvariable=self._to, bg=ENTRY_BG, fg=FG, insertbackground=FG,
+            relief="flat", width=8, font=("Segoe UI", 9),
+        ).pack(side="left", padx=6)
+
+        self._date_lbl = tk.Label(self, bg=BG, fg=FG2, font=("Segoe UI", 9), anchor="w")
+        self._date_lbl.grid(row=1, column=0, columnspan=3, sticky="w", padx=16)
+        for var in (self._from, self._to):
+            var.trace_add("write", lambda *_: self._aggiorna_date())
+
+        tk.Label(
+            self,
+            text="Formato mese-giorno, senza anno: il periodo si ripete ogni anno.\n"
+            "Se la data finale precede quella iniziale, il periodo scavalca il capodanno.",
+            bg=BG, fg=FG2, font=("Segoe UI Italic", 8), justify="left",
+        ).grid(row=2, column=0, columnspan=3, sticky="w", padx=16, pady=(2, 8))
+
+        for col, (testo, colore) in enumerate(
+            (
+                ("Tag vietati in questo periodo", DANGER),
+                ("Tag preferiti", ACCENT2),
+                ("Tag obbligatori", ACCENT),
+            )
+        ):
+            tk.Label(
+                self, text=testo, bg=BG, fg=colore, font=("Segoe UI Semibold", 9)
+            ).grid(row=3, column=col, sticky="w", padx=16, pady=(0, 2))
+
+        self._exc = self._lista(all_tags, initial.get("exclude", []))
+        self._exc.grid(row=4, column=0, padx=16, sticky="n")
+        self._pref = self._lista(all_tags, initial.get("prefer", []))
+        self._pref.grid(row=4, column=1, padx=16, sticky="n")
+        self._req = self._lista(all_tags, initial.get("require", []))
+        self._req.grid(row=4, column=2, padx=16, sticky="n")
+
+        pm = tk.Frame(self, bg=BG)
+        pm.grid(row=5, column=0, columnspan=3, sticky="w", padx=16, pady=(8, 0))
+        tk.Label(
+            pm,
+            text="Restringi ai preferiti solo se ne restano almeno",
+            bg=BG, fg=FG, font=("Segoe UI", 9),
+        ).pack(side="left")
+        self._prefer_min = tk.IntVar(value=int(initial.get("prefer_min", 1) or 1))
+        tk.Spinbox(
+            pm, from_=1, to=200, textvariable=self._prefer_min, width=5,
+            bg=ENTRY_BG, fg=FG, insertbackground=FG, buttonbackground=BG3,
+            relief="flat", font=("Segoe UI", 9),
+        ).pack(side="left", padx=6)
+        tk.Label(pm, text="immagini", bg=BG, fg=FG2, font=("Segoe UI", 9)).pack(side="left")
+
+        tk.Label(
+            self,
+            text="I vietati si sommano a quelli di ogni regola. I preferiti restringono il\n"
+            "pool solo se ne resta abbastanza: con pochi tag preferiti la fascia\n"
+            "diventerebbe quasi fissa. Le fasce orarie proprie del periodo si\n"
+            "conservano, e si modificano a mano nel config.",
+            bg=BG, fg=FG2, font=("Segoe UI Italic", 8), justify="left",
+        ).grid(row=6, column=0, columnspan=3, sticky="w", padx=16, pady=(8, 0))
+
+        bf = tk.Frame(self, bg=BG, pady=12)
+        bf.grid(row=7, column=0, columnspan=3)
+        ttk.Button(bf, text="OK", style="Accent.TButton", command=self._ok).pack(
+            side="left", padx=8
+        )
+        ttk.Button(bf, text="Annulla", command=self.destroy).pack(side="left")
+
+        self._aggiorna_date()
+        self.grab_set()
+        self.wait_window()
+
+    def _lista(self, all_tags, selected) -> tk.Listbox:
+        lb = tk.Listbox(
+            self, bg=BG2, fg=FG, selectbackground=ACCENT, selectforeground=BG,
+            selectmode="multiple", width=24, height=10, relief="flat",
+            borderwidth=0, exportselection=False, font=("Segoe UI", 9),
+        )
+        for i, t in enumerate(all_tags):
+            lb.insert("end", t)
+            if t in (selected or []):
+                lb.selection_set(i)
+        return lb
+
+    def _aggiorna_date(self):
+        a, b = self._from.get().strip(), self._to.get().strip()
+        if not (md_valido(a) and md_valido(b)):
+            self._date_lbl.config(text="Date non valide (formato MM-GG).", fg=DANGER)
+            return
+        oa, ob = md_ordinale(a), md_ordinale(b)
+        salto = " (scavalca il capodanno)" if oa > ob else ""
+        giorni = sum(
+            1
+            for d in range(365)
+            if md_copre(oa, ob, date(2026, 1, 1) + timedelta(days=d))
+        )
+        self._date_lbl.config(
+            text=f"Dal {md_leggibile(a)} al {md_leggibile(b)}{salto} - {giorni} giorni.",
+            fg=FG2,
+        )
+
+    def _collect(self, lb) -> list[str]:
+        return [lb.get(i) for i in lb.curselection()]
+
+    def _ok(self):
+        nome = self._nome.get().strip()
+        if not nome:
+            messagebox.showerror("Errore", "Dai un nome al periodo.")
+            return
+
+        a, b = self._from.get().strip(), self._to.get().strip()
+        for etichetta, valore in (("iniziale", a), ("finale", b)):
+            if not md_valido(valore):
+                messagebox.showerror(
+                    "Errore",
+                    f"Data {etichetta} non valida: '{valore}'.\nFormato MM-GG, es. 10-20.",
+                )
+                return
+
+        period = {"name": nome, "from": a, "to": b}
+        esclusi = self._collect(self._exc)
+        if esclusi:
+            period["exclude"] = esclusi
+        preferiti = self._collect(self._pref)
+        if preferiti:
+            period["prefer"] = preferiti
+            if int(self._prefer_min.get()) > 1:
+                period["prefer_min"] = int(self._prefer_min.get())
+        richiesti = self._collect(self._req)
+        if richiesti:
+            period["require"] = richiesti
+        # Le fasce proprie non si editano qui: si conservano cosi' come sono.
+        if self._initial.get("random_rules"):
+            period["random_rules"] = self._initial["random_rules"]
+
+        self.result = period
+        self.destroy()
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Tab: anteprima di una giornata
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+class PreviewTab(tk.Frame):
+    """
+    La giornata risolta ora per ora: periodo attivo, regola vincente, orari solari
+    reali, pool e immagine che uscirebbe.
+
+    Usa il motore di app.py, non una sua imitazione: se l'anteprima e lo scheduler
+    divergessero, l'anteprima non servirebbe a niente.
+    """
+
+    def __init__(self, parent, config_data: dict, app):
+        super().__init__(parent, bg=BG)
+        self.config_data = config_data
+        self.app = app
+        self._build()
+
+    def _build(self):
+        top = tk.Frame(self, bg=BG)
+        top.pack(fill="x", padx=12, pady=(10, 6))
+
+        tk.Label(top, text="Data:", bg=BG, fg=FG, font=("Segoe UI", 10)).pack(side="left")
+        oggi = date.today()
+        self._data = tk.StringVar(value=oggi.isoformat())
+        tk.Entry(
+            top, textvariable=self._data, bg=ENTRY_BG, fg=FG, insertbackground=FG,
+            relief="flat", width=12, font=("Segoe UI", 10),
+        ).pack(side="left", padx=8)
+
+        for testo, delta in (("-1 g", -1), ("+1 g", 1), ("+1 sett", 7), ("+1 mese", 30)):
+            ttk.Button(top, text=testo, width=8, command=lambda d=delta: self._sposta(d)).pack(
+                side="left", padx=2
+            )
+
+        ttk.Button(
+            top, text="Calcola", style="Accent.TButton", command=self._calcola
+        ).pack(side="left", padx=(12, 0))
+
+        self._intestazione = tk.Label(
+            self, bg=BG, fg=ACCENT, font=("Segoe UI Semibold", 10), anchor="w", justify="left"
+        )
+        self._intestazione.pack(fill="x", padx=12, pady=(2, 6))
+
+        self._tree = ttk.Treeview(
+            self,
+            columns=("ora", "origine", "fascia", "tag", "pool", "immagine"),
+            show="headings",
+            height=16,
+        )
+        for c, t, w in (
+            ("ora", "Ora", 60),
+            ("origine", "Regola vincente", 210),
+            ("fascia", "Fascia (orario reale)", 250),
+            ("tag", "Tag", 250),
+            ("pool", "Pool", 55),
+            ("immagine", "Immagine", 300),
+        ):
+            self._tree.heading(c, text=t)
+            self._tree.column(c, width=w, anchor="w")
+        self._tree.pack(fill="both", expand=True, padx=12)
+
+        self._nota = tk.Label(
+            self, bg=BG, fg=FG2, font=("Segoe UI", 9), anchor="w", justify="left"
+        )
+        self._nota.pack(fill="x", padx=12, pady=(6, 10))
+
+        self._calcola()
+
+    def _sposta(self, giorni: int):
+        try:
+            g = date.fromisoformat(self._data.get().strip()) + timedelta(days=giorni)
+        except ValueError:
+            g = date.today()
+        self._data.set(g.isoformat())
+        self._calcola()
+
+    def _calcola(self):
+        for i in self._tree.get_children():
+            self._tree.delete(i)
+
+        try:
+            giorno = date.fromisoformat(self._data.get().strip())
+        except ValueError:
+            self._intestazione.config(text="Data non valida (formato AAAA-MM-GG).", fg=DANGER)
+            return
+
+        motore = carica_motore()
+        if motore is None:
+            return
+
+        cfg = self.config_data
+        lat, lon = coords_of(cfg)
+        orari = sun.sun_times(giorno, lat, lon)
+        periodo = motore.periodo_attivo(cfg, giorno)
+
+        def hm(chiave):
+            v = orari.get(chiave)
+            return v.strftime("%H:%M") if v else "n.d."
+
+        giorni_it = ["lunedi'", "martedi'", "mercoledi'", "giovedi'", "venerdi'", "sabato", "domenica"]
+        self._intestazione.config(
+            text=f"{giorni_it[giorno.weekday()]} {giorno.strftime('%d/%m/%Y')}   "
+            f"periodo: {periodo.get('name') if periodo else 'nessuno'}   |   "
+            f"dawn {hm('dawn')}  alba {hm('sunrise')}  mezzogiorno {hm('noon')}  "
+            f"tramonto {hm('sunset')}  dusk {hm('dusk')}",
+            fg=ACCENT,
+        )
+
+        self._nota.config(text="Calcolo in corso...", fg=FG2)
+        self.update_idletasks()
+        motore.invalida_cache_file()
+
+        try:
+            sequenza = motore.sequenza_giornaliera(cfg, giorno)
+        except Exception as e:
+            self._nota.config(text=f"Errore nel motore: {e}", fg=DANGER)
+            return
+
+        if not sequenza:
+            self._nota.config(
+                text="Nessuna regola casuale copre questa giornata: si ripiegherebbe "
+                "sulla modalita' programmata.",
+                fg=DANGER,
+            )
+            return
+
+        for e in sequenza:
+            rule = e["rule"]
+            tag = []
+            if rule.get("include"):
+                tag.append(("+" if rule.get("match", "all") == "all" else "/").join(rule["include"]))
+            if rule.get("exclude"):
+                tag.append("-" + ",-".join(rule["exclude"]))
+            if rule.get("prefer"):
+                tag.append("~" + ",~".join(rule["prefer"]))
+            self._tree.insert(
+                "",
+                "end",
+                values=(
+                    f"{e['minuto'] // 60:02d}:{e['minuto'] % 60:02d}",
+                    e["origine"],
+                    descrivi_fascia(rule, giorno, cfg),
+                    " ".join(tag),
+                    e["pool"],
+                    e["image"].replace("\\", "/").split("/")[-1],
+                ),
+            )
+
+        distinte = len({e["image"] for e in sequenza})
+        minimo = min(e["pool"] for e in sequenza)
+        self._nota.config(
+            text=f"{len(sequenza)} finestre, {distinte} immagini distinte "
+            f"(nella stessa giornata non si ripetono). Pool piu' piccolo: {minimo} immagini."
+            + ("   Attenzione: sotto le 5 immagini la fascia e' quasi fissa." if minimo < 5 else ""),
+            fg=DANGER if minimo < 5 else FG2,
+        )
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -2149,11 +3072,7 @@ class SlotDialog(tk.Toplevel):
             self._preview_lbl.config(text="")
 
     def _validate_time(self, t: str) -> bool:
-        try:
-            h, m = t.strip().split(":")
-            return 0 <= int(h) <= 23 and 0 <= int(m) <= 59
-        except Exception:
-            return False
+        return valid_time(t)
 
     def _ok(self):
         frm = self._from.get().strip()

@@ -1,9 +1,15 @@
-launcher.vbs
-launcher.vbs
-*.vbs
-launcher.vbs
-launcher.vbs
-launcher.vbs
+# Generati a runtime dall'applicazione
 log.json
 chametiger.log
-launcher.vbs
+
+# Bytecode Python
+__pycache__/
+*.py[cod]
+
+# Launcher locali: i percorsi dentro sono specifici del singolo PC
+*.vbs
+
+# Build di PyInstaller
+build/
+dist/
+*.spec

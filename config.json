@@ -1297,6 +1297,74 @@
   "random_rules": {
     "weekday": [
       {
+        "from": "dawn-20m",
+        "to": "sunrise+60m",
+        "include": [
+          "alba",
+          "crepuscolo"
+        ],
+        "exclude": [
+          "weekend"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunset-40m",
+        "to": "sunset+15m",
+        "include": [
+          "tramonto"
+        ],
+        "exclude": [],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunset+15m",
+        "to": "dusk+30m",
+        "include": [
+          "crepuscolo",
+          "jolly",
+          "sera"
+        ],
+        "exclude": [],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "dusk+30m",
+        "to": "23:00",
+        "include": [
+          "sera",
+          "spettacolo"
+        ],
+        "exclude": [],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "23:00",
+        "to": "dawn-20m",
+        "include": [
+          "notte"
+        ],
+        "exclude": [],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunrise+60m",
+        "to": "09:00",
+        "include": [
+          "mattino"
+        ],
+        "exclude": [
+          "notte"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
         "from": "09:00",
         "to": "13:00",
         "include": [
@@ -1304,7 +1372,6 @@
           "mattino"
         ],
         "exclude": [
-          "inverno",
           "smart"
         ],
         "match": "all",
@@ -1330,7 +1397,6 @@
           "pomeriggio"
         ],
         "exclude": [
-          "inverno",
           "smart",
           "spettacolo",
           "svago"
@@ -1340,81 +1406,15 @@
       },
       {
         "from": "18:00",
-        "to": "19:00",
+        "to": "21:00",
         "include": [
           "jolly",
           "pomeriggio",
           "svago"
         ],
         "exclude": [
-          "inverno",
           "notte",
           "sera"
-        ],
-        "match": "any",
-        "rotate_minutes": 60
-      },
-      {
-        "from": "19:00",
-        "to": "20:00",
-        "include": [
-          "tramonto"
-        ],
-        "exclude": [
-          "inverno"
-        ],
-        "match": "all",
-        "rotate_minutes": 60
-      },
-      {
-        "from": "20:00",
-        "to": "21:00",
-        "include": [
-          "crepuscolo",
-          "jolly",
-          "sera"
-        ],
-        "exclude": [
-          "inverno"
-        ],
-        "match": "any",
-        "rotate_minutes": 60
-      },
-      {
-        "from": "21:00",
-        "to": "23:00",
-        "include": [
-          "sera",
-          "spettacolo"
-        ],
-        "exclude": [
-          "inverno"
-        ],
-        "match": "any",
-        "rotate_minutes": 60
-      },
-      {
-        "from": "23:00",
-        "to": "6:00",
-        "include": [
-          "notte"
-        ],
-        "exclude": [
-          "inverno"
-        ],
-        "match": "all",
-        "rotate_minutes": 60
-      },
-      {
-        "from": "6:00",
-        "to": "9:00",
-        "include": [
-          "alba",
-          "crepuscolo"
-        ],
-        "exclude": [
-          "inverno",
-          "weekend"
         ],
         "match": "any",
         "rotate_minutes": 60
@@ -1422,17 +1422,76 @@
     ],
     "weekend": [
       {
-        "from": "06:00",
-        "to": "9:00",
+        "from": "dawn-20m",
+        "to": "sunrise+60m",
         "include": [
           "alba",
           "crepuscolo"
         ],
         "exclude": [
-          "inverno",
           "lavoro"
         ],
         "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunset-40m",
+        "to": "sunset+15m",
+        "include": [
+          "tramonto"
+        ],
+        "exclude": [],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunset+15m",
+        "to": "dusk+30m",
+        "include": [
+          "crepuscolo",
+          "jolly",
+          "sera"
+        ],
+        "exclude": [
+          "lavoro"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "dusk+30m",
+        "to": "23:30",
+        "include": [
+          "sera",
+          "spettacolo"
+        ],
+        "exclude": [
+          "lavoro"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "23:30",
+        "to": "dawn-20m",
+        "include": [
+          "notte"
+        ],
+        "exclude": [],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunrise+60m",
+        "to": "09:00",
+        "include": [
+          "mattino"
+        ],
+        "exclude": [
+          "lavoro",
+          "notte"
+        ],
+        "match": "all",
         "rotate_minutes": 60
       },
       {
@@ -1447,7 +1506,6 @@
         "exclude": [
           "alba",
           "crepuscolo",
-          "inverno",
           "lavoro",
           "notte",
           "pranzo",
@@ -1462,9 +1520,7 @@
         "include": [
           "pranzo"
         ],
-        "exclude": [
-          "inverno"
-        ],
+        "exclude": [],
         "match": "all",
         "rotate_minutes": 60
       },
@@ -1479,7 +1535,6 @@
         "exclude": [
           "alba",
           "crepuscolo",
-          "inverno",
           "lavoro",
           "notte",
           "sera"
@@ -1500,7 +1555,6 @@
           ],
           "exclude": [
             "crepuscolo",
-            "inverno",
             "pomeriggio",
             "pranzo",
             "sera",
@@ -1530,8 +1584,6 @@
           ],
           "exclude": [
             "alba",
-            "estate",
-            "inverno",
             "pranzo",
             "sera",
             "svago",
@@ -1554,8 +1606,6 @@
           "exclude": [
             "alba",
             "crepuscolo",
-            "estate",
-            "inverno",
             "notte",
             "pranzo",
             "sera",
@@ -1578,7 +1628,6 @@
           ],
           "exclude": [
             "crepuscolo",
-            "inverno",
             "pomeriggio",
             "pranzo",
             "sera",
@@ -1608,8 +1657,6 @@
           ],
           "exclude": [
             "alba",
-            "estate",
-            "inverno",
             "pranzo",
             "sera",
             "svago",
@@ -1629,8 +1676,6 @@
             "sport"
           ],
           "exclude": [
-            "estate",
-            "inverno",
             "notte",
             "pomeriggio",
             "pranzo",
@@ -1649,5 +1694,125 @@
     }
   },
   "history_days": 60,
-  "theme": "dark"
+  "theme": "dark",
+  "latitude": 40.8518,
+  "longitude": 14.2681,
+  "periods": [
+    {
+      "name": "Halloween",
+      "from": "10-20",
+      "to": "11-01",
+      "exclude": [
+        "estate",
+        "natale",
+        "primavera"
+      ],
+      "random_rules": {
+        "weekday": [
+          {
+            "from": "sunset-40m",
+            "to": "01:00",
+            "include": [
+              "horror"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          }
+        ],
+        "weekend": [
+          {
+            "from": "sunset-40m",
+            "to": "01:30",
+            "include": [
+              "horror"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          }
+        ]
+      }
+    },
+    {
+      "name": "Natale",
+      "from": "12-01",
+      "to": "01-06",
+      "exclude": [
+        "autunno",
+        "estate",
+        "primavera"
+      ],
+      "random_rules": {
+        "weekday": [
+          {
+            "from": "sunset-40m",
+            "to": "23:30",
+            "include": [
+              "natale"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          }
+        ],
+        "weekend": [
+          {
+            "from": "sunset-40m",
+            "to": "23:59",
+            "include": [
+              "natale"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          }
+        ]
+      }
+    },
+    {
+      "name": "Inverno",
+      "from": "01-07",
+      "to": "03-20",
+      "exclude": [
+        "autunno",
+        "estate",
+        "natale",
+        "primavera"
+      ]
+    },
+    {
+      "name": "Primavera",
+      "from": "03-21",
+      "to": "06-20",
+      "exclude": [
+        "autunno",
+        "estate",
+        "inverno",
+        "natale"
+      ]
+    },
+    {
+      "name": "Estate",
+      "from": "06-21",
+      "to": "09-09",
+      "exclude": [
+        "autunno",
+        "inverno",
+        "natale",
+        "primavera"
+      ]
+    },
+    {
+      "name": "Autunno",
+      "from": "09-10",
+      "to": "11-30",
+      "exclude": [
+        "estate",
+        "inverno",
+        "natale",
+        "primavera"
+      ]
+    }
+  ]
 }
