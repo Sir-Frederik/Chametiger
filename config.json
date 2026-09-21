@@ -535,7 +535,6 @@
     "lavoro",
     "pranzo",
     "smart",
-    "ufficio",
     "pomeriggio",
     "tramonto",
     "crepuscolo",
@@ -1198,9 +1197,7 @@
     "marv_space_extended2.jpg": [
       "notte"
     ],
-    "marvin_amateurs.jpg": [
-      "notte"
-    ],
+    "marvin_amateurs.jpg": [],
     "paris.png": [
       "pomeriggio"
     ],
@@ -1279,6 +1276,27 @@
     ],
     "wood_rabbit_season.jpg": [
       "autunno"
+    ],
+    "daffy_razzo_coscritto.png": [
+      "sera"
+    ],
+    "daffy_doc.jpg": [
+      "lavoro"
+    ],
+    "bugs_veggente.png": [
+      "sera"
+    ],
+    "looney_hollywood_behind_scenes.png": [
+      "pomeriggio"
+    ],
+    "Gossamer_movie.png": [
+      "horror"
+    ],
+    "carrotBlanca.jpg": [
+      "spettacolo"
+    ],
+    "quadriglia.jpg": [
+      "jolly"
     ]
   },
   "random_rules": {
@@ -1308,7 +1326,7 @@
       },
       {
         "from": "sunset+15m",
-        "to": "dusk+30m",
+        "to": "dusk+40m",
         "include": [
           "crepuscolo",
           "jolly",
@@ -1319,7 +1337,7 @@
         "rotate_minutes": 60
       },
       {
-        "from": "dusk+30m",
+        "from": "dusk+40m",
         "to": "23:00",
         "include": [
           "sera",
@@ -1337,7 +1355,7 @@
         ],
         "exclude": [],
         "match": "all",
-        "rotate_minutes": 60
+        "rotate_minutes": 90
       },
       {
         "from": "sunrise+60m",
@@ -1378,7 +1396,7 @@
       },
       {
         "from": "14:00",
-        "to": "18:00",
+        "to": "sunset-40",
         "include": [
           "lavoro",
           "pomeriggio"
@@ -1387,21 +1405,6 @@
           "smart",
           "spettacolo",
           "svago"
-        ],
-        "match": "any",
-        "rotate_minutes": 60
-      },
-      {
-        "from": "18:00",
-        "to": "21:00",
-        "include": [
-          "jolly",
-          "pomeriggio",
-          "svago"
-        ],
-        "exclude": [
-          "notte",
-          "sera"
         ],
         "match": "any",
         "rotate_minutes": 60
@@ -1513,15 +1516,13 @@
       },
       {
         "from": "15:00",
-        "to": "19:00",
+        "to": "sunset-40",
         "include": [
-          "jolly",
           "pomeriggio",
+          "sport",
           "svago"
         ],
         "exclude": [
-          "alba",
-          "crepuscolo",
           "lavoro",
           "notte",
           "sera"
@@ -1537,8 +1538,7 @@
           "to": "13:00",
           "include": [
             "lavoro",
-            "mattino",
-            "ufficio"
+            "mattino"
           ],
           "exclude": [
             "crepuscolo",
@@ -1587,8 +1587,7 @@
           "include": [
             "lavoro",
             "pomeriggio",
-            "sport",
-            "ufficio"
+            "sport"
           ],
           "exclude": [
             "alba",
@@ -1610,8 +1609,7 @@
           "to": "13:00",
           "include": [
             "lavoro",
-            "mattino",
-            "ufficio"
+            "mattino"
           ],
           "exclude": [
             "crepuscolo",
@@ -1729,6 +1727,7 @@
       "exclude": [
         "autunno",
         "estate",
+        "horror",
         "primavera"
       ],
       "random_rules": {
@@ -1847,6 +1846,7 @@
       "from": "09-15",
       "to": "10-15",
       "exclude": [
+        "horror",
         "inverno",
         "natale",
         "primavera"
