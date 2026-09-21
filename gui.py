@@ -1814,6 +1814,7 @@ class RuleEditor(tk.Frame):
 
         library = self.config_data.get("image_library", {})
         periodi = self.config_data.get("periods", []) or []
+        motore = carica_motore()
         oggi = date.today()
         lines = []
 
@@ -1839,15 +1840,16 @@ class RuleEditor(tk.Frame):
             # pool diversi secondo la stagione. Il conteggio senza periodo e'
             # quello che non si verifica mai nella realta'.
             for p in periodi:
-                vietati = set(p.get("exclude", []))
-                richiesti = list(p.get("require", []))
-                if not vietati and not richiesti:
+                if not (p.get("exclude") or p.get("require")):
                     continue
-                patched = dict(r)
-                if vietati:
-                    patched["exclude"] = sorted(set(r.get("exclude", [])) | vietati)
-                if richiesti:
-                    patched["include"] = sorted(set(r.get("include", [])) | set(richiesti))
+                # La patch la fa il motore: rifarla qui significherebbe avere due
+                # idee diverse di cosa vieta un periodo, e il conteggio della GUI
+                # mentirebbe proprio dove serve.
+                patched = (
+                    motore.patch_rule(r, p, self.config_data)
+                    if motore
+                    else dict(r)
+                )
                 n, _ = conta(patched)
                 segnale = "   <-- poche" if n < 5 else ""
                 lines.append(f"      in {p.get('name', '?')}: {n}{segnale}")
@@ -1856,8 +1858,18 @@ class RuleEditor(tk.Frame):
 
 
 def match_rule(image_tags, rule: dict) -> bool:
-    """Stessa logica di app.image_matches_rule."""
+    """
+    Stessa logica di app.image_matches_rule, comprese le stagioni vietate dal
+    periodo: quelle non sono un divieto per tag ma per insieme, e l'immagine
+    cade solo se ogni stagione che dichiara e' vietata.
+    """
     tags = set(image_tags or [])
+
+    vietate = set(rule.get("season_exclude") or ())
+    if vietate:
+        stagioni = tags & set(rule.get("seasonal") or vietate)
+        if stagioni and stagioni <= vietate:
+            return False
     for t in rule.get("exclude", []):
         if t in tags:
             return False
@@ -2969,6 +2981,8 @@ class PreviewTab(tk.Frame):
                 tag.append(("+" if rule.get("match", "all") == "all" else "/").join(rule["include"]))
             if rule.get("exclude"):
                 tag.append("-" + ",-".join(rule["exclude"]))
+            if rule.get("season_exclude"):
+                tag.append("!" + ",!".join(rule["season_exclude"]))
             if rule.get("prefer"):
                 tag.append("~" + ",~".join(rule["prefer"]))
             self._tree.insert(

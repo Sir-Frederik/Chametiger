@@ -238,6 +238,8 @@ def _tags_of(rule: dict) -> str:
         parts.append(joiner.join(rule["include"]))
     if rule.get("exclude"):
         parts.append("-" + ",-".join(rule["exclude"]))
+    if rule.get("season_exclude"):
+        parts.append("!" + ",!".join(rule["season_exclude"]))
     if rule.get("prefer"):
         parts.append("~" + ",~".join(rule["prefer"]))
     return f" [{' '.join(parts)}]" if parts else ""
@@ -250,7 +252,9 @@ def _tags_of(rule: dict) -> str:
 #  Un periodo copre un intervallo di date che si ripete ogni anno ("09-10" ->
 #  "10-10") e modula le regole casuali senza duplicarle:
 #
-#    exclude  tag vietati, si sommano a quelli della regola
+#    exclude  stagioni vietate. Un'immagine cade solo se TUTTE le stagioni di
+#             cui porta il tag sono vietate: una taggata inverno+primavera esce
+#             sia in Inverno sia in Primavera, invece di sparire da entrambi
 #    prefer   tag preferiti: se nel pool ce n'e' almeno uno il pool si restringe
 #             a quelli, altrimenti resta intero (per non rimanere a secco)
 #    require  tag obbligatori, si sommano all'include (in AND) - raro
@@ -305,7 +309,22 @@ def periodo_attivo(config: dict, giorno: date) -> dict | None:
     return None
 
 
-def patch_rule(rule: dict, period: dict | None) -> dict:
+def tag_stagionali(config: dict) -> set:
+    """
+    Quali tag contano come "stagione": tutti quelli che almeno un periodo vieta.
+
+    Si ricava dai periodi invece di essere una lista fissa, cosi' chi aggiunge
+    una stagione propria (`carnevale`) non deve toccare il codice. Serve a
+    distinguere i tag di stagione dagli altri: `tramonto` non rende invernale
+    un'immagine, `inverno` si.
+    """
+    vocabolario = set()
+    for period in config.get("periods", []) or []:
+        vocabolario.update(period.get("exclude", []) or [])
+    return vocabolario
+
+
+def patch_rule(rule: dict, period: dict | None, config: dict | None = None) -> dict:
     """
     La regola vista attraverso il periodo attivo. Ritorna sempre una COPIA:
     `_scelta_giornaliera` ripassa le stesse regole centinaia di volte e un dict
@@ -316,9 +335,17 @@ def patch_rule(rule: dict, period: dict | None) -> dict:
 
     patched = dict(rule)
 
-    esclusi = list(rule.get("exclude", [])) + list(period.get("exclude", []))
-    if esclusi:
-        patched["exclude"] = sorted(set(esclusi))
+    # Le due esclusioni restano separate perche' sono due cose diverse:
+    # quella della regola e' un divieto secco per immagine ("niente -smart"),
+    # quella del periodo riguarda le stagioni e si applica all'insieme dei tag
+    # stagionali dell'immagine. Fonderle era il motivo per cui un'immagine
+    # taggata autunno+primavera non usciva in nessuno dei due periodi.
+    vietate = list(period.get("exclude", []) or [])
+    if vietate:
+        patched["season_exclude"] = sorted(set(vietate))
+        patched["seasonal"] = sorted(
+            tag_stagionali(config) if config is not None else set(vietate)
+        )
 
     richiesti = list(period.get("require", []))
     if richiesti:
@@ -398,11 +425,24 @@ def image_matches_rule(image_tags, rule: dict) -> bool:
     exclude: tag che l'immagine non deve avere
     match:   "all" (default) = deve avere tutti gli include
              "any"           = ne basta uno
+
+    `season_exclude` (le stagioni vietate dal periodo attivo) non e' un divieto
+    per tag ma per insieme: l'immagine cade solo se OGNI stagione che dichiara e'
+    vietata. Una taggata inverno+primavera esce in entrambe le stagioni; una
+    taggata solo primavera resta fuori dall'inverno come prima; una senza tag
+    stagionali esce sempre. Col divieto secco, invece, bastava un tag di troppo
+    perche' l'immagine non si vedesse in tutto l'anno.
     """
     tags = set(image_tags or [])
 
     for t in rule.get("exclude", []):
         if t in tags:
+            return False
+
+    vietate = set(rule.get("season_exclude") or ())
+    if vietate:
+        stagioni = tags & set(rule.get("seasonal") or vietate)
+        if stagioni and stagioni <= vietate:
             return False
 
     include = rule.get("include", [])
@@ -479,6 +519,8 @@ def _rule_signature(rule: dict) -> str:
         ",".join(sorted(rule.get("exclude", []))),
         str(rule.get("match", "all")),
     ]
+    if rule.get("season_exclude"):
+        parti.append("se:" + ",".join(sorted(rule["season_exclude"])))
     if rule.get("prefer"):
         parti.append("p:" + ",".join(sorted(rule["prefer"])))
         if rule.get("prefer_min"):
@@ -717,7 +759,7 @@ def _regole_del_giorno(config: dict, giorno: date) -> list[tuple[dict, str, int,
     for regole, origine in fonti:
         for rule in regole or []:
             start, end = slot_bounds(rule, giorno, config)
-            out.append((patch_rule(rule, period), origine, start, end))
+            out.append((patch_rule(rule, period, config), origine, start, end))
     return out
 
 

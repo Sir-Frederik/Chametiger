@@ -555,13 +555,6 @@
     "jolly"
   ],
   "image_library": {
-    "1491917627-797-1525-par-for-the-course.jpg": [
-      "mattino",
-      "pomeriggio",
-      "sport",
-      "svago",
-      "weekend"
-    ],
     "28157068917085.5b6da7f251381.jpg": [
       "jolly"
     ],
@@ -579,7 +572,6 @@
       "mattino"
     ],
     "923948-3840x2160-desktop-4k-looney-tunes-characters-background.jpg": [
-      "tramonto",
       "crepuscolo"
     ],
     "amour-parisienne.jpg": [
@@ -643,7 +635,10 @@
       "tramonto",
       "svago",
       "sport",
-      "alba"
+      "alba",
+      "autunno",
+      "estate",
+      "primavera"
     ],
     "cane_pastore_coyote_burrone.jpg": [
       "tramonto",
@@ -922,7 +917,9 @@
       "inverno",
       "sport",
       "mattino",
-      "pomeriggio"
+      "pomeriggio",
+      "svago",
+      "crepuscolo"
     ],
     "Looney tunes christmas/thumb-1920-468657.jpg": [
       "mattino",
@@ -1187,7 +1184,9 @@
       "lavoro"
     ],
     "foghorn_taz_inseguimento.png": [
-      "mattino"
+      "mattino",
+      "autunno",
+      "primavera"
     ],
     "Looney tunes christmas/inadeguate/1520f0839f8f82f960461469bf5d3f38.jpg": [],
     "looney-tunes-art-opening.jpg": [
@@ -1277,6 +1276,9 @@
     ],
     "melblanc.png": [
       "spettacolo"
+    ],
+    "wood_rabbit_season.jpg": [
+      "autunno"
     ]
   },
   "random_rules": {
@@ -1793,7 +1795,7 @@
     {
       "name": "Inverno",
       "from": "01-07",
-      "to": "03-20",
+      "to": "03-05",
       "exclude": [
         "autunno",
         "estate",
@@ -1802,9 +1804,19 @@
       ]
     },
     {
+      "name": "Inv-Prim",
+      "from": "03-06",
+      "to": "04-05",
+      "exclude": [
+        "autunno",
+        "estate",
+        "natale"
+      ]
+    },
+    {
       "name": "Primavera",
-      "from": "03-21",
-      "to": "06-20",
+      "from": "04-06",
+      "to": "06-05",
       "exclude": [
         "autunno",
         "estate",
@@ -1813,9 +1825,19 @@
       ]
     },
     {
+      "name": "Prim-Est",
+      "from": "06-06",
+      "to": "07-06",
+      "exclude": [
+        "autunno",
+        "inverno",
+        "natale"
+      ]
+    },
+    {
       "name": "Estate",
-      "from": "06-21",
-      "to": "08-31",
+      "from": "07-07",
+      "to": "09-14",
       "exclude": [
         "autunno",
         "inverno",
@@ -1824,9 +1846,19 @@
       ]
     },
     {
+      "name": "Est-Aut",
+      "from": "09-15",
+      "to": "10-15",
+      "exclude": [
+        "inverno",
+        "natale",
+        "primavera"
+      ]
+    },
+    {
       "name": "Autunno",
-      "from": "09-10",
-      "to": "11-30",
+      "from": "10-16",
+      "to": "11-15",
       "exclude": [
         "estate",
         "inverno",
@@ -1835,15 +1867,13 @@
       ]
     },
     {
-      "name": "Est- Aut",
-      "from": "09-01",
-      "to": "09-30",
+      "name": "Aut-Inv",
+      "from": "11-16",
+      "to": "11-30",
       "exclude": [
-        "inverno"
-      ],
-      "prefer": [
-        "autunno",
-        "estate"
+        "estate",
+        "natale",
+        "primavera"
       ]
     }
   ]

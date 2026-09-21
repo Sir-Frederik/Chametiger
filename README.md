@@ -1,7 +1,7 @@
 # 🦎 Chametiger
 
-**v3.0** — 20 settembre 2026
-Fasce ancorate al sole e periodi dell'anno.
+**v3.1** — 21 settembre 2026
+Un'immagine può appartenere a più stagioni.
 
 
 Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno**, al **giorno della settimana**, al **periodo dell'anno** e agli **orari reali di alba e tramonto**.
@@ -12,6 +12,14 @@ Due modalità:
 - **casuale** — ogni fascia oraria pesca fra le immagini che hanno certi **tag**, dando la precedenza a quelle uscite meno di recente
 
 ---
+
+## Novità della 3.1
+
+- **Un'immagine può appartenere a più stagioni.** I tag stagionali erano un divieto secco per tag: `autunno + primavera` non voleva dire *"va bene in autunno e in primavera"*, ma *"vietata in autunno"* **e** *"vietata in primavera"*. Più stagioni si assegnavano a un'immagine, meno la si vedeva. In una libreria di 197 immagini ce n'erano **nove** taggate con cura e **mai mostrate in tutto l'anno**. Ora un'immagine cade solo se **tutte** le stagioni che dichiara sono vietate, e il campo delle stagioni è separato dall'`exclude` della regola, che resta un divieto secco (`-smart` toglie e basta). Il cambio **aggiunge soltanto**: verificato su 196 combinazioni periodo × fascia, 410 immagini tornate in circolo, **zero** tolte. Vedi [Un'immagine in più stagioni](#unimmagine-in-più-stagioni).
+- **Quali tag siano "stagioni" non è più una lista nel codice**: sono tutti quelli che almeno un periodo vieta. Aggiungere `carnevale` non richiede di toccare niente, e `tramonto`, che nessun periodo vieta, non rende stagionale l'immagine che lo porta.
+- **Le fasce proprie dei periodi si modificano dall'editor**, col pulsante **Fasce del periodo** nella tab *Periodi dell'anno*: feriali, weekend e override di giorno, con lo stesso editor delle regole di base — ancore solari e conteggio immagini compresi. Prima erano l'unica parte del config che restava da scrivere a mano. Le liste rimaste vuote vengono tolte alla chiusura, così un periodo senza fasce resta pulito nel `config.json`.
+- **Nel log le stagioni vietate dal periodo si distinguono** dalle esclusioni della regola: `!estate,!natale` contro `-smart`.
+- **La GUI non conta più per conto suo.** *Verifica regole* costruiva la patch del periodo rifacendo la logica del motore, e dopo questo cambio avrebbe contato col criterio vecchio: ora chiama `patch_rule`, come già facevano *Anteprima giorno* e *Verifica anno*.
 
 ## Novità della 3.0
 
@@ -301,11 +309,27 @@ Un **periodo** è un intervallo di date che modula le regole casuali **senza dup
 | Campo          | Effetto                                                                   |
 | -------------- | ------------------------------------------------------------------------- |
 | `from` / `to`  | `MM-GG`, **senza anno**: il periodo si ripete ogni anno                    |
-| `exclude`      | Tag vietati, **si sommano** all'`exclude` di ogni regola                   |
+| `exclude`      | Stagioni vietate. Un'immagine cade solo se **tutte** le stagioni che dichiara sono vietate |
 | `prefer`       | Tag preferiti: il pool si restringe a quelli solo se ne resta abbastanza   |
 | `prefer_min`   | Soglia di `prefer`. Senza, con pochi tag preferiti la fascia resta fissa   |
 | `require`      | Tag obbligatori, si sommano all'`include` (in AND). Raro                   |
 | `random_rules` | Fasce proprie del periodo, con la stessa forma di `random_rules`. Si editano col pulsante **Fasce del periodo** |
+
+### Un'immagine in più stagioni
+
+I tag stagionali **non sono un divieto per tag, ma per insieme**: un'immagine cade solo se **ogni** stagione di cui porta il tag è vietata dal periodo attivo.
+
+```
+inverno + primavera   ->  esce in Inverno, in Primavera e in Inv-Prim
+solo primavera        ->  resta fuori dall'inverno, come prima
+nessun tag stagionale ->  esce sempre, in ogni periodo
+```
+
+Serve per poter dire "questa va bene in due stagioni" senza doverlo esprimere con un tag per ogni combinazione. Col divieto secco che c'era prima, `autunno + primavera` significava invece *vietata in autunno* **e** *vietata in primavera*: più stagioni si assegnavano a un'immagine, meno si vedeva — fino a sparire dall'anno intero. In una libreria di 197 immagini ce n'erano **nove** in quello stato, taggate con cura e mai mostrate.
+
+Quali tag contino come stagione non è una lista fissa nel codice: sono **tutti quelli che almeno un periodo vieta**. Così chi aggiunge una stagione sua (`carnevale`) non deve toccare niente, e un tag come `tramonto`, che nessun periodo vieta, non rende stagionale l'immagine che lo porta.
+
+L'`exclude` della singola **regola** resta invece un divieto secco per tag: `-smart` toglie l'immagine e basta. Sono due cose diverse e stanno in due campi diversi.
 
 **Le date si ripetono ogni anno** e se la fine precede l'inizio il periodo **scavalca il capodanno**: `"from": "12-01", "to": "01-06"` copre dicembre e la Befana, con lo stesso confronto invertito che gestisce le fasce a cavallo della mezzanotte.
 
@@ -369,7 +393,7 @@ In **Impostazioni → Posizione** si impostano latitudine e longitudine, con un 
 [2026-12-25 16:00:07] [OK] Sfondo impostato (casuale, periodo Natale weekday sunset-40m (15:57)-23:30 [natale]): G:\Temi\...
 ```
 
-Nei tag, `+` significa che servono **tutti** quelli elencati, `/` che ne basta **uno**, `-tag` sono le esclusioni e `~tag` i preferiti.
+Nei tag, `+` significa che servono **tutti** quelli elencati, `/` che ne basta **uno**, `-tag` sono le esclusioni della regola, `!tag` le stagioni vietate dal periodo e `~tag` i preferiti.
 
 La categoria dice anche **quale periodo** era attivo. `periodo Natale weekday` è una fascia propria del periodo; `weekday [periodo Natale]` è una regola di base vista attraverso il periodo. Accanto alle ancore solari c'è l'orario a cui sono cadute davvero.
 
@@ -402,6 +426,6 @@ L'eseguibile comparirà in `dist/app.exe`.
 | Le immagini si ripetono troppo spesso | Il pool è piccolo: il mazzo si riavvolge presto. Taggane altre, o allarga i tag della regola. `history_days` **non** c'entra |
 | Su un altro PC non trova le immagini  | Aggiungi il suo hostname in `path_map`                                  |
 | Le fasce serali cadono nell'ora sbagliata | Coordinate sbagliate: **Impostazioni → Posizione**                  |
-| Un'immagine stagionale non esce mai   | È vietata dal periodo attivo: guarda la colonna Tag in **Anteprima giorno** |
+| Un'immagine stagionale non esce mai   | Ogni stagione che dichiara è vietata dal periodo attivo: guarda la colonna Tag in **Anteprima giorno**. Se le stagioni sono più d'una, basta che una sia ammessa |
 | A luglio escono immagini invernali    | Un giorno dell'anno non è coperto da nessun periodo: la tab Periodi lo segnala |
 | Una fascia resta ferma tutto il giorno | Pool troppo piccolo, o `prefer` che stringe troppo: alza `prefer_min`  |
