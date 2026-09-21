@@ -3,6 +3,7 @@ Chametiger - Editor grafico della configurazione
 Richiede: tkinter (stdlib), Pillow, tkcalendar (opzionale)
 """
 
+import copy
 import json
 import socket
 import tkinter as tk
@@ -145,7 +146,7 @@ def ensure_defaults(cfg: dict) -> dict:
     # config che non la ha usa il default di app.py. Quelli che ce l'hanno la
     # conservano, cosi' il comportamento non cambia sotto i piedi a nessuno.
     cfg.setdefault("periods", [])
-    cfg.setdefault("latitude", 40.8518)   # Napoli
+    cfg.setdefault("latitude", 40.8518)  # Napoli
     cfg.setdefault("longitude", 14.2681)
 
     rules = cfg.setdefault("random_rules", {})
@@ -774,7 +775,7 @@ class ChametigerEditor(tk.Tk):
             self.after_idle(self._rebuild_ui)
             messagebox.showinfo(
                 "Tema",
-                "Tema applicato.\nPremi \"Salva configurazione\" per mantenerlo ai prossimi avvii.",
+                'Tema applicato.\nPremi "Salva configurazione" per mantenerlo ai prossimi avvii.',
             )
 
         ttk.Button(inner, text="Applica", command=apply_and_restart).grid(
@@ -865,7 +866,9 @@ class ChametigerEditor(tk.Tk):
         tk.Label(coord, text="Latitudine", bg=BG, fg=FG, font=("Segoe UI", 10)).pack(
             side="left"
         )
-        self._lat_var = tk.StringVar(value=str(self.config_data.get("latitude", 40.8518)))
+        self._lat_var = tk.StringVar(
+            value=str(self.config_data.get("latitude", 40.8518))
+        )
         tk.Entry(
             coord,
             textvariable=self._lat_var,
@@ -880,7 +883,9 @@ class ChametigerEditor(tk.Tk):
         tk.Label(coord, text="Longitudine", bg=BG, fg=FG, font=("Segoe UI", 10)).pack(
             side="left"
         )
-        self._lon_var = tk.StringVar(value=str(self.config_data.get("longitude", 14.2681)))
+        self._lon_var = tk.StringVar(
+            value=str(self.config_data.get("longitude", 14.2681))
+        )
         tk.Entry(
             coord,
             textvariable=self._lon_var,
@@ -941,7 +946,8 @@ class ChametigerEditor(tk.Tk):
                 return
             if not (-90 <= lat <= 90 and -180 <= lon <= 180):
                 self._coord_status.config(
-                    text="Latitudine fra -90 e 90, longitudine fra -180 e 180.", fg=DANGER
+                    text="Latitudine fra -90 e 90, longitudine fra -180 e 180.",
+                    fg=DANGER,
                 )
                 return
             self.config_data["latitude"] = lat
@@ -1166,7 +1172,9 @@ class TagsTab(tk.Frame):
         """
 
         def raccogli(rules):
-            out = list(rules.get("weekday", []) or []) + list(rules.get("weekend", []) or [])
+            out = list(rules.get("weekday", []) or []) + list(
+                rules.get("weekend", []) or []
+            )
             for day_rules in (rules.get("overrides", {}) or {}).values():
                 out += list(day_rules or [])
             return out
@@ -1846,9 +1854,7 @@ class RuleEditor(tk.Frame):
                 # idee diverse di cosa vieta un periodo, e il conteggio della GUI
                 # mentirebbe proprio dove serve.
                 patched = (
-                    motore.patch_rule(r, p, self.config_data)
-                    if motore
-                    else dict(r)
+                    motore.patch_rule(r, p, self.config_data) if motore else dict(r)
                 )
                 n, _ = conta(patched)
                 segnale = "   <-- poche" if n < 5 else ""
@@ -2039,7 +2045,9 @@ class RuleDialog(tk.Toplevel):
 
         tk.Label(
             self,
-            text="Ctrl+click per selezionarne più di uno.",
+            text="Ctrl+click per selezionarne più di uno. L'esclusione qui è secca:\n"
+            "basta il tag e l'immagine è fuori. Le stagioni si gestiscono nei "
+            "periodi dell'anno.",
             bg=BG,
             fg=FG2,
             font=("Segoe UI Italic", 8),
@@ -2191,8 +2199,18 @@ class RuleDialog(tk.Toplevel):
 
 
 MESI_IT = [
-    "gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno",
-    "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre",
+    "gennaio",
+    "febbraio",
+    "marzo",
+    "aprile",
+    "maggio",
+    "giugno",
+    "luglio",
+    "agosto",
+    "settembre",
+    "ottobre",
+    "novembre",
+    "dicembre",
 ]
 
 GIORNI_MESE = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -2234,6 +2252,25 @@ def md_copre(inizio: int, fine: int, giorno: date) -> bool:
     return oggi >= inizio or oggi <= fine
 
 
+def conta_fasce(period: dict) -> int:
+    """Quante fasce proprie ha il periodo, override di giorno compresi."""
+    quante = 0
+    for valore in (period.get("random_rules") or {}).values():
+        if isinstance(valore, list):
+            quante += len(valore)
+        elif isinstance(valore, dict):
+            quante += sum(len(x or []) for x in valore.values())
+    return quante
+
+
+def etichetta_fasce(period: dict) -> str:
+    """'2 fasce proprie' / '1 fascia propria' / 'nessuna fascia propria'."""
+    n = conta_fasce(period)
+    if not n:
+        return "nessuna fascia propria"
+    return "1 fascia propria" if n == 1 else f"{n} fasce proprie"
+
+
 class PeriodsTab(tk.Frame):
     """
     I periodi dell'anno: intervalli di date che modulano le regole casuali senza
@@ -2255,7 +2292,9 @@ class PeriodsTab(tk.Frame):
             self,
             text="Vince il primo periodo che copre la data: i periodi festivi vanno "
             "sopra quelli stagionali.\nUn periodo non riscrive le regole, le filtra — "
-            "e puo' portarsi fasce proprie solo per le ore che gli interessano.",
+            "e puo' portarsi fasce proprie solo per le ore che gli interessano.\n"
+            "Le stagioni vietate valgono per insieme: un'immagine esce finche' "
+            "almeno una delle sue stagioni e' ammessa.",
             bg=BG,
             fg=FG2,
             font=("Segoe UI", 9),
@@ -2272,7 +2311,7 @@ class PeriodsTab(tk.Frame):
             ("nome", "Periodo", 130),
             ("dal", "Dal", 110),
             ("al", "Al", 110),
-            ("tag", "Tag vietati / preferiti", 340),
+            ("tag", "Stagioni vietate / preferiti", 340),
             ("regole", "Fasce proprie", 100),
         ):
             self._tree.heading(c, text=t)
@@ -2321,13 +2360,7 @@ class PeriodsTab(tk.Frame):
             if p.get("require"):
                 etichette.append("richiede " + ", ".join(p["require"]))
 
-            rr = p.get("random_rules") or {}
-            n_regole = 0
-            for valore in rr.values():
-                if isinstance(valore, list):
-                    n_regole += len(valore)
-                elif isinstance(valore, dict):
-                    n_regole += sum(len(x or []) for x in valore.values())
+            n_regole = conta_fasce(p)
 
             self._tree.insert(
                 "",
@@ -2338,9 +2371,11 @@ class PeriodsTab(tk.Frame):
                     md_leggibile(p.get("from", "")),
                     md_leggibile(p.get("to", "")),
                     "; ".join(etichette) or "-",
-                    (f"{n_regole} fasce" if n_regole > 1 else "1 fascia")
-                    if n_regole
-                    else "-",
+                    (
+                        (f"{n_regole} fasce" if n_regole > 1 else "1 fascia")
+                        if n_regole
+                        else "-"
+                    ),
                 ),
             )
         self._aggiorna_copertura()
@@ -2366,7 +2401,11 @@ class PeriodsTab(tk.Frame):
         for d in range(365):
             g = date(2026, 1, 1) + timedelta(days=d)
             nome = next(
-                (n for a, b, n in intervalli if a is not None and b is not None and md_copre(a, b, g)),
+                (
+                    n
+                    for a, b, n in intervalli
+                    if a is not None and b is not None and md_copre(a, b, g)
+                ),
                 None,
             )
             if nome is None:
@@ -2410,7 +2449,11 @@ class PeriodsTab(tk.Frame):
         if i is None:
             return
         dlg = PeriodDialog(
-            self, self.config_data, "Modifica periodo", initial=self._periods()[i]
+            self,
+            self.config_data,
+            "Modifica periodo",
+            initial=self._periods()[i],
+            indice=i,
         )
         if dlg.result:
             self._periods()[i] = dlg.result
@@ -2498,7 +2541,9 @@ class PeriodsTab(tk.Frame):
                 righe.append(f"{g}  {nome}: nessuna regola alle {ore}")
                 problemi += 1
             if peggiore and peggiore[0] < 5:
-                righe.append(f"{g}  {nome}: solo {peggiore[0]} immagini su {peggiore[1]}")
+                righe.append(
+                    f"{g}  {nome}: solo {peggiore[0]} immagini su {peggiore[1]}"
+                )
                 problemi += 1
             elif peggiore and not senza_regola:
                 righe.append(f"{g}  {nome}: minimo {peggiore[0]} immagini, ok")
@@ -2518,7 +2563,9 @@ class PeriodsTab(tk.Frame):
 class PeriodDialog(tk.Toplevel):
     """Editor di un singolo periodo dell'anno."""
 
-    def __init__(self, parent, config_data: dict, title="Periodo", initial=None):
+    def __init__(
+        self, parent, config_data: dict, title="Periodo", initial=None, indice=None
+    ):
         super().__init__(parent)
         self.title(title)
         self.resizable(False, False)
@@ -2526,6 +2573,11 @@ class PeriodDialog(tk.Toplevel):
         self.config_data = config_data
         self.result: dict | None = None
         self._initial = initial or {}
+        # Le fasce si scrivono nel periodo appena le tocchi, mentre nome, date e
+        # tag passano da `result` e si applicano solo con OK. Senza questa copia,
+        # Annulla lascerebbe a meta' il lavoro: dati vecchi e fasce nuove.
+        self.indice = indice
+        self._fasce_prima = copy.deepcopy(self._initial.get("random_rules"))
         initial = self._initial
         all_tags = sorted(config_data.get("tags", []), key=str.lower)
 
@@ -2537,22 +2589,40 @@ class PeriodDialog(tk.Toplevel):
         # sovrascriverlo rompe destroy().
         self._nome = tk.StringVar(value=initial.get("name", ""))
         tk.Entry(
-            top, textvariable=self._nome, bg=ENTRY_BG, fg=FG, insertbackground=FG,
-            relief="flat", width=18, font=("Segoe UI", 9),
+            top,
+            textvariable=self._nome,
+            bg=ENTRY_BG,
+            fg=FG,
+            insertbackground=FG,
+            relief="flat",
+            width=18,
+            font=("Segoe UI", 9),
         ).pack(side="left", padx=(6, 16))
 
         tk.Label(top, text="dal", bg=BG, fg=FG, font=("Segoe UI", 9)).pack(side="left")
         self._from = tk.StringVar(value=initial.get("from", "01-01"))
         tk.Entry(
-            top, textvariable=self._from, bg=ENTRY_BG, fg=FG, insertbackground=FG,
-            relief="flat", width=8, font=("Segoe UI", 9),
+            top,
+            textvariable=self._from,
+            bg=ENTRY_BG,
+            fg=FG,
+            insertbackground=FG,
+            relief="flat",
+            width=8,
+            font=("Segoe UI", 9),
         ).pack(side="left", padx=6)
 
         tk.Label(top, text="al", bg=BG, fg=FG, font=("Segoe UI", 9)).pack(side="left")
         self._to = tk.StringVar(value=initial.get("to", "12-31"))
         tk.Entry(
-            top, textvariable=self._to, bg=ENTRY_BG, fg=FG, insertbackground=FG,
-            relief="flat", width=8, font=("Segoe UI", 9),
+            top,
+            textvariable=self._to,
+            bg=ENTRY_BG,
+            fg=FG,
+            insertbackground=FG,
+            relief="flat",
+            width=8,
+            font=("Segoe UI", 9),
         ).pack(side="left", padx=6)
 
         self._date_lbl = tk.Label(self, bg=BG, fg=FG2, font=("Segoe UI", 9), anchor="w")
@@ -2564,12 +2634,15 @@ class PeriodDialog(tk.Toplevel):
             self,
             text="Formato mese-giorno, senza anno: il periodo si ripete ogni anno.\n"
             "Se la data finale precede quella iniziale, il periodo scavalca il capodanno.",
-            bg=BG, fg=FG2, font=("Segoe UI Italic", 8), justify="left",
+            bg=BG,
+            fg=FG2,
+            font=("Segoe UI Italic", 8),
+            justify="left",
         ).grid(row=2, column=0, columnspan=3, sticky="w", padx=16, pady=(2, 8))
 
         for col, (testo, colore) in enumerate(
             (
-                ("Tag vietati in questo periodo", DANGER),
+                ("Stagioni vietate in questo periodo", DANGER),
                 ("Tag preferiti", ACCENT2),
                 ("Tag obbligatori", ACCENT),
             )
@@ -2590,41 +2663,115 @@ class PeriodDialog(tk.Toplevel):
         tk.Label(
             pm,
             text="Restringi ai preferiti solo se ne restano almeno",
-            bg=BG, fg=FG, font=("Segoe UI", 9),
+            bg=BG,
+            fg=FG,
+            font=("Segoe UI", 9),
         ).pack(side="left")
         self._prefer_min = tk.IntVar(value=int(initial.get("prefer_min", 1) or 1))
         tk.Spinbox(
-            pm, from_=1, to=200, textvariable=self._prefer_min, width=5,
-            bg=ENTRY_BG, fg=FG, insertbackground=FG, buttonbackground=BG3,
-            relief="flat", font=("Segoe UI", 9),
+            pm,
+            from_=1,
+            to=200,
+            textvariable=self._prefer_min,
+            width=5,
+            bg=ENTRY_BG,
+            fg=FG,
+            insertbackground=FG,
+            buttonbackground=BG3,
+            relief="flat",
+            font=("Segoe UI", 9),
         ).pack(side="left", padx=6)
-        tk.Label(pm, text="immagini", bg=BG, fg=FG2, font=("Segoe UI", 9)).pack(side="left")
+        tk.Label(pm, text="immagini", bg=BG, fg=FG2, font=("Segoe UI", 9)).pack(
+            side="left"
+        )
 
         tk.Label(
             self,
-            text="I vietati si sommano a quelli di ogni regola. I preferiti restringono il\n"
-            "pool solo se ne resta abbastanza: con pochi tag preferiti la fascia\n"
-            "diventerebbe quasi fissa. Le fasce orarie proprie del periodo si\n"
-            "conservano, e si modificano col pulsante \"Fasce del periodo\".",
-            bg=BG, fg=FG2, font=("Segoe UI Italic", 8), justify="left",
+            text="Un'immagine cade solo se TUTTE le stagioni che porta sono vietate:\n"
+            "una taggata inverno+primavera esce sia in Inverno sia in Primavera, e\n"
+            "una senza tag stagionali esce sempre. Per togliere un'immagine con un\n"
+            'tag solo, usa "Non deve avere questi tag" nella singola regola.\n'
+            "I preferiti restringono il pool solo se ne resta abbastanza: con pochi\n"
+            "tag preferiti la fascia diventerebbe quasi fissa. Le fasce orarie\n"
+            'proprie si modificano col pulsante "Fasce del periodo".',
+            bg=BG,
+            fg=FG2,
+            font=("Segoe UI Italic", 8),
+            justify="left",
         ).grid(row=6, column=0, columnspan=3, sticky="w", padx=16, pady=(8, 0))
 
+        fasce = tk.Frame(self, bg=BG)
+        fasce.grid(row=7, column=0, columnspan=3, sticky="w", padx=16, pady=(10, 0))
+        self._btn_fasce = ttk.Button(
+            fasce, text="Fasce del periodo", command=self._fasce
+        )
+        self._btn_fasce.pack(side="left")
+        self._lbl_fasce = tk.Label(fasce, bg=BG, fg=FG2, font=("Segoe UI", 9))
+        self._lbl_fasce.pack(side="left", padx=10)
+        if indice is None:
+            self._btn_fasce.state(["disabled"])
+        self._aggiorna_fasce()
+
         bf = tk.Frame(self, bg=BG, pady=12)
-        bf.grid(row=7, column=0, columnspan=3)
+        bf.grid(row=8, column=0, columnspan=3)
         ttk.Button(bf, text="OK", style="Accent.TButton", command=self._ok).pack(
             side="left", padx=8
         )
-        ttk.Button(bf, text="Annulla", command=self.destroy).pack(side="left")
+        ttk.Button(bf, text="Annulla", command=self._annulla).pack(side="left")
 
         self._aggiorna_date()
+        self.protocol("WM_DELETE_WINDOW", self._annulla)
         self.grab_set()
         self.wait_window()
 
+    def _aggiorna_fasce(self):
+        """La riga accanto al pulsante: quante fasce proprie ha il periodo."""
+        if self.indice is None:
+            self._lbl_fasce.config(
+                text="Il periodo non e' ancora nell'elenco: confermalo con OK, "
+                "poi riaprilo per aggiungerle."
+            )
+            return
+        self._lbl_fasce.config(
+            text=etichetta_fasce(self.config_data["periods"][self.indice])
+        )
+
+    def _fasce(self):
+        """Le fasce orarie proprie, nello stesso editor delle regole di base."""
+        if self.indice is None:
+            return
+        PeriodRulesDialog(self, self.config_data, self.indice)
+        # Il dialogo figlio si prende il grab e non lo restituisce da solo:
+        # senza questo, il dialogo del periodo resterebbe cliccabile ma non piu'
+        # modale, e l'elenco sotto si potrebbe modificare alle sue spalle.
+        self.grab_set()
+        self.lift()
+        self._aggiorna_fasce()
+
+    def _annulla(self):
+        """Rimette le fasce com'erano all'apertura, poi chiude senza salvare."""
+        if self.indice is not None:
+            periodo = self.config_data["periods"][self.indice]
+            if self._fasce_prima is None:
+                periodo.pop("random_rules", None)
+            else:
+                periodo["random_rules"] = copy.deepcopy(self._fasce_prima)
+        self.destroy()
+
     def _lista(self, all_tags, selected) -> tk.Listbox:
         lb = tk.Listbox(
-            self, bg=BG2, fg=FG, selectbackground=ACCENT, selectforeground=BG,
-            selectmode="multiple", width=24, height=10, relief="flat",
-            borderwidth=0, exportselection=False, font=("Segoe UI", 9),
+            self,
+            bg=BG2,
+            fg=FG,
+            selectbackground=ACCENT,
+            selectforeground=BG,
+            selectmode="multiple",
+            width=24,
+            height=10,
+            relief="flat",
+            borderwidth=0,
+            exportselection=False,
+            font=("Segoe UI", 9),
         )
         for i, t in enumerate(all_tags):
             lb.insert("end", t)
@@ -2738,8 +2885,8 @@ class PeriodRulesDialog(tk.Toplevel):
         ).pack(fill="x", padx=14)
         tk.Label(
             self,
-            text="Se nessuna copre l'ora, si scende alle regole feriali/weekend: "
-            "un periodo festivo puo' cambiare solo le sere.",
+            text="Se nessuna copre l'ora, si scende alle regole feriali/weekend: ",
+            # "un periodo festivo puo' cambiare solo le sere.",
             bg=BG,
             fg=FG2,
             font=("Segoe UI", 9),
@@ -2869,25 +3016,43 @@ class PreviewTab(tk.Frame):
         top = tk.Frame(self, bg=BG)
         top.pack(fill="x", padx=12, pady=(10, 6))
 
-        tk.Label(top, text="Data:", bg=BG, fg=FG, font=("Segoe UI", 10)).pack(side="left")
+        tk.Label(top, text="Data:", bg=BG, fg=FG, font=("Segoe UI", 10)).pack(
+            side="left"
+        )
         oggi = date.today()
         self._data = tk.StringVar(value=oggi.isoformat())
         tk.Entry(
-            top, textvariable=self._data, bg=ENTRY_BG, fg=FG, insertbackground=FG,
-            relief="flat", width=12, font=("Segoe UI", 10),
+            top,
+            textvariable=self._data,
+            bg=ENTRY_BG,
+            fg=FG,
+            insertbackground=FG,
+            relief="flat",
+            width=12,
+            font=("Segoe UI", 10),
         ).pack(side="left", padx=8)
 
-        for testo, delta in (("-1 g", -1), ("+1 g", 1), ("+1 sett", 7), ("+1 mese", 30)):
-            ttk.Button(top, text=testo, width=8, command=lambda d=delta: self._sposta(d)).pack(
-                side="left", padx=2
-            )
+        for testo, delta in (
+            ("-1 g", -1),
+            ("+1 g", 1),
+            ("+1 sett", 7),
+            ("+1 mese", 30),
+        ):
+            ttk.Button(
+                top, text=testo, width=8, command=lambda d=delta: self._sposta(d)
+            ).pack(side="left", padx=2)
 
         ttk.Button(
             top, text="Calcola", style="Accent.TButton", command=self._calcola
         ).pack(side="left", padx=(12, 0))
 
         self._intestazione = tk.Label(
-            self, bg=BG, fg=ACCENT, font=("Segoe UI Semibold", 10), anchor="w", justify="left"
+            self,
+            bg=BG,
+            fg=ACCENT,
+            font=("Segoe UI Semibold", 10),
+            anchor="w",
+            justify="left",
         )
         self._intestazione.pack(fill="x", padx=12, pady=(2, 6))
 
@@ -2909,10 +3074,21 @@ class PreviewTab(tk.Frame):
             self._tree.column(c, width=w, anchor="w")
         self._tree.pack(fill="both", expand=True, padx=12)
 
+        tk.Label(
+            self,
+            text="Nella colonna Tag:  a+b servono tutti   a/b ne basta uno   "
+            "-tag escluso dalla regola   !tag stagione vietata dal periodo   "
+            "~tag preferito",
+            bg=BG,
+            fg=FG2,
+            font=("Segoe UI Italic", 8),
+            anchor="w",
+        ).pack(fill="x", padx=12, pady=(6, 0))
+
         self._nota = tk.Label(
             self, bg=BG, fg=FG2, font=("Segoe UI", 9), anchor="w", justify="left"
         )
-        self._nota.pack(fill="x", padx=12, pady=(6, 10))
+        self._nota.pack(fill="x", padx=12, pady=(2, 10))
 
         self._calcola()
 
@@ -2931,7 +3107,9 @@ class PreviewTab(tk.Frame):
         try:
             giorno = date.fromisoformat(self._data.get().strip())
         except ValueError:
-            self._intestazione.config(text="Data non valida (formato AAAA-MM-GG).", fg=DANGER)
+            self._intestazione.config(
+                text="Data non valida (formato AAAA-MM-GG).", fg=DANGER
+            )
             return
 
         motore = carica_motore()
@@ -2947,7 +3125,15 @@ class PreviewTab(tk.Frame):
             v = orari.get(chiave)
             return v.strftime("%H:%M") if v else "n.d."
 
-        giorni_it = ["lunedi'", "martedi'", "mercoledi'", "giovedi'", "venerdi'", "sabato", "domenica"]
+        giorni_it = [
+            "lunedi'",
+            "martedi'",
+            "mercoledi'",
+            "giovedi'",
+            "venerdi'",
+            "sabato",
+            "domenica",
+        ]
         self._intestazione.config(
             text=f"{giorni_it[giorno.weekday()]} {giorno.strftime('%d/%m/%Y')}   "
             f"periodo: {periodo.get('name') if periodo else 'nessuno'}   |   "
@@ -2978,7 +3164,11 @@ class PreviewTab(tk.Frame):
             rule = e["rule"]
             tag = []
             if rule.get("include"):
-                tag.append(("+" if rule.get("match", "all") == "all" else "/").join(rule["include"]))
+                tag.append(
+                    ("+" if rule.get("match", "all") == "all" else "/").join(
+                        rule["include"]
+                    )
+                )
             if rule.get("exclude"):
                 tag.append("-" + ",-".join(rule["exclude"]))
             if rule.get("season_exclude"):
@@ -3003,7 +3193,11 @@ class PreviewTab(tk.Frame):
         self._nota.config(
             text=f"{len(sequenza)} finestre, {distinte} immagini distinte "
             f"(nella stessa giornata non si ripetono). Pool piu' piccolo: {minimo} immagini."
-            + ("   Attenzione: sotto le 5 immagini la fascia e' quasi fissa." if minimo < 5 else ""),
+            + (
+                "   Attenzione: sotto le 5 immagini la fascia e' quasi fissa."
+                if minimo < 5
+                else ""
+            ),
             fg=DANGER if minimo < 5 else FG2,
         )
 
