@@ -1583,7 +1583,7 @@
       "tuesday": [
         {
           "from": "15:00",
-          "to": "16:00",
+          "to": "sunset-40",
           "include": [
             "lavoro",
             "pomeriggio",
@@ -1636,7 +1636,7 @@
         },
         {
           "from": "14:00",
-          "to": "18:00",
+          "to": "sunset-40",
           "include": [
             "lavoro",
             "pomeriggio",
