@@ -1168,7 +1168,9 @@
     ],
     "wile1280x1024.jpg": [],
     "amusement_park.png": [
-      "estate"
+      "estate",
+      "primavera",
+      "pomeriggio"
     ],
     "bugs_daffy_scrivania_ufficio.jpg": [
       "lavoro"
@@ -1377,7 +1379,8 @@
           "mattino"
         ],
         "exclude": [
-          "smart"
+          "smart",
+          "svago"
         ],
         "match": "all",
         "rotate_minutes": 60
