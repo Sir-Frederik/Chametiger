@@ -1344,7 +1344,7 @@
       },
       {
         "from": "dusk+40m",
-        "to": "23:00",
+        "to": "22:00",
         "include": [
           "sera",
           "spettacolo"
@@ -1413,6 +1413,17 @@
           "spettacolo",
           "svago"
         ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "09:00",
+        "to": "12:00",
+        "include": [
+          "notte",
+          "spettacolo"
+        ],
+        "exclude": [],
         "match": "any",
         "rotate_minutes": 60
       }
