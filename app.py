@@ -613,7 +613,8 @@ def _finestre_del_giorno(rule: dict, giorno: date, rotate: int, config: dict) ->
 # delle finestre. Non il periodo: le patch sui tag non cambiano gli orari, cosi'
 # un cambio di periodo non invalida la tabella.
 _CUM_TOTALI: dict[tuple, dict[date, int]] = {}
-_CUM_PASSO = 64  # si tiene un checkpoint ogni 64 giorni, non uno al giorno
+# Checkpoint ogni 64 giorni, piu' i giorni gia' chiesti (poche centinaia l'anno)
+_CUM_PASSO = 64
 
 
 def _finestre_fino_a(rule: dict, giorno: date, rotate: int, config: dict) -> int:
@@ -636,6 +637,12 @@ def _finestre_fino_a(rule: dict, giorno: date, rotate: int, config: dict) -> int
     chiave = (str(rule.get("from", "")), str(rule.get("to", "")), rotate, lat, lon)
     punti = _CUM_TOTALI.setdefault(chiave, {EPOCH: 0})
 
+    # sequenza_giornaliera chiede lo stesso giorno per ogni minuto: senza questo
+    # ripercorreva fino a 63 giorni 1440 volte, e un anno simulato ci metteva
+    # quaranta secondi. Il giorno si aggiunge ai checkpoint a fine funzione.
+    if giorno in punti:
+        return punti[giorno]
+
     # Riparte dal checkpoint piu' recente che non superi il giorno richiesto.
     g = EPOCH + timedelta(days=((giorno - EPOCH).days // _CUM_PASSO) * _CUM_PASSO)
     while g not in punti:
@@ -648,6 +655,7 @@ def _finestre_fino_a(rule: dict, giorno: date, rotate: int, config: dict) -> int
         if (g - EPOCH).days % _CUM_PASSO == 0:
             punti[g] = totale
 
+    punti[giorno] = totale
     return totale
 
 

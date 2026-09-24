@@ -9,6 +9,7 @@ import socket
 import tkinter as tk
 import subprocess
 import sys
+import threading
 from tkinter import ttk, filedialog, messagebox, simpledialog
 from pathlib import Path
 from datetime import date, datetime, timedelta
@@ -2332,9 +2333,10 @@ class PeriodsTab(tk.Frame):
         ttk.Button(bar, text="Fasce del periodo", command=self._edit_rules).pack(
             side="left", padx=(12, 0)
         )
-        ttk.Button(
+        self._btn_verifica = ttk.Button(
             bar, text="Verifica anno", style="Accent.TButton", command=self._check_year
-        ).pack(side="right")
+        )
+        self._btn_verifica.pack(side="right")
 
         self._status = tk.Label(
             self, bg=BG, fg=FG2, font=("Segoe UI", 9), justify="left", anchor="w"
@@ -2502,10 +2504,16 @@ class PeriodsTab(tk.Frame):
         Passa l'anno col motore vero e riporta le fasce con pochi candidati.
         E' la rete di sicurezza: un tag di troppo in un periodo puo' svuotare una
         fascia in una sola stagione, e sfogliando il config non si vede.
+
+        Poi lancia verifica_immagini, che ricostruisce un anno intero di uscite
+        per trovare le immagini che non escono mai. Ci mette qualche secondo,
+        quindi gira in un thread e il rapporto arriva alla fine.
         """
         motore = carica_motore()
         if motore is None:
             return
+        if "disabled" in self._btn_verifica.state():
+            return  # verifica gia' in corso
 
         cfg = self.config_data
         righe, problemi = [], 0
@@ -2548,16 +2556,114 @@ class PeriodsTab(tk.Frame):
             elif peggiore and not senza_regola:
                 righe.append(f"{g}  {nome}: minimo {peggiore[0]} immagini, ok")
 
+        try:
+            import verifica_immagini
+        except Exception as e:
+            self._aggiorna_copertura()
+            self._mostra_rapporto(righe, problemi, [f"verifica_immagini.py non disponibile: {e}"], None)
+            return
+
+        # Copia: il thread non deve vedere le modifiche fatte nell'editor mentre gira
+        cfg_copia = motore.ensure_defaults(copy.deepcopy(cfg))
+        stato = {"fase": "fasce", "fatto": 0, "totale": 1, "esito": None, "errore": None}
+
+        def progresso(fase, fatto, totale):
+            stato.update(fase=fase, fatto=fatto, totale=totale)
+
+        def lavora():
+            try:
+                stato["esito"] = verifica_immagini.rapporto(cfg_copia, progresso=progresso)
+            except Exception as e:
+                stato["errore"] = e
+
+        self._btn_verifica.state(["disabled"])
+        threading.Thread(target=lavora, daemon=True).start()
+        self._attendi_immagini(stato, righe, problemi)
+
+    def _attendi_immagini(self, stato: dict, righe_fasce: list[str], problemi_fasce: int):
+        """
+        Aggiorna la barra di stato finche' il thread lavora. Tkinter non va
+        toccato da un altro thread: il thread scrive solo in `stato`, e qui lo
+        si legge dal thread della GUI.
+        """
+        try:
+            if not self.winfo_exists():
+                return
+        except tk.TclError:
+            return  # tab ricreata (cambio tema) mentre la verifica girava
+
+        if stato["esito"] is None and stato["errore"] is None:
+            fase = "fasce vincenti" if stato["fase"] == "fasce" else "uscite giorno per giorno"
+            self._status.config(
+                text=f"Verifica immagini: {fase} {stato['fatto']}/{stato['totale']}...",
+                fg=FG2,
+            )
+            self.after(200, self._attendi_immagini, stato, righe_fasce, problemi_fasce)
+            return
+
+        self._btn_verifica.state(["!disabled"])
         self._aggiorna_copertura()
-        testo = "\n".join(righe)
-        if problemi:
-            messagebox.showwarning(
-                "Verifica anno",
-                f"{problemi} segnalazioni.\n\n{testo}\n\n"
-                "Una fascia con poche immagini resta quasi fissa per tutta la stagione.",
+        if stato["errore"] is not None:
+            self._mostra_rapporto(
+                righe_fasce, problemi_fasce, [f"Errore: {stato['errore']}"], None
             )
         else:
-            messagebox.showinfo("Verifica anno", f"Nessun problema.\n\n{testo}")
+            righe_img, problemi_img = stato["esito"]
+            self._mostra_rapporto(righe_fasce, problemi_fasce, righe_img, problemi_img)
+
+    def _mostra_rapporto(
+        self,
+        righe_fasce: list[str],
+        problemi_fasce: int,
+        righe_img: list[str],
+        problemi_img: int | None,
+    ):
+        """Il rapporto completo in una finestra: in un messagebox non ci sta."""
+        dlg = tk.Toplevel(self)
+        dlg.title("Chametiger - Verifica anno")
+        dlg.configure(bg=BG)
+        dlg.geometry("900x560")
+
+        esito_img = (
+            "non eseguita" if problemi_img is None
+            else f"{problemi_img} problemi" if problemi_img
+            else "tutte escono"
+        )
+        esito_fasce = f"{problemi_fasce} segnalazioni" if problemi_fasce else "nessuna segnalazione"
+        tutto_ok = not problemi_fasce and problemi_img == 0
+        tk.Label(
+            dlg,
+            text=f"Fasce: {esito_fasce}   -   Immagini: {esito_img}",
+            bg=BG,
+            fg=SUCCESS if tutto_ok else DANGER,
+            font=("Segoe UI Semibold", 10),
+            anchor="w",
+        ).pack(fill="x", padx=10, pady=(8, 0))
+
+        box = tk.Text(
+            dlg,
+            bg=ENTRY_BG,
+            fg=FG,
+            insertbackground=FG,
+            font=("Consolas", 9),
+            wrap="none",
+            borderwidth=0,
+        )
+        scroll = ttk.Scrollbar(dlg, orient="vertical", command=box.yview)
+        box.configure(yscrollcommand=scroll.set)
+
+        testo = (
+            "── Fasce (giorni campione) ──\n"
+            + "\n".join(righe_fasce)
+            + "\nUna fascia con poche immagini resta quasi fissa per tutta la stagione.\n\n"
+            + "── Immagini (anno simulato da oggi) ──\n"
+            + "\n".join(righe_img)
+        )
+        box.insert("1.0", testo)
+        box.configure(state="disabled")
+
+        scroll.pack(side="right", fill="y")
+        box.pack(side="left", fill="both", expand=True, padx=(8, 0), pady=8)
 
 
 class PeriodDialog(tk.Toplevel):

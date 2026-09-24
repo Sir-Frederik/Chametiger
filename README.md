@@ -1,6 +1,6 @@
 # 🦎 Chametiger
 
-**v3.1** — 21 settembre 2026
+**v3.5** — 21 settembre 2026
 Un'immagine può appartenere a più stagioni.
 
 
