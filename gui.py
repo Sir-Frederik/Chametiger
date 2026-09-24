@@ -2886,7 +2886,6 @@ class PeriodRulesDialog(tk.Toplevel):
         tk.Label(
             self,
             text="Se nessuna copre l'ora, si scende alle regole feriali/weekend: ",
-            # "un periodo festivo puo' cambiare solo le sere.",
             bg=BG,
             fg=FG2,
             font=("Segoe UI", 9),
