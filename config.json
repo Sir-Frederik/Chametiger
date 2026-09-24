@@ -1,7 +1,7 @@
 {
   "base_path": "G:/Altri computer/Asus/Temi/Looney tunes",
   "path_map": {
-    "FedericoAsus": "C:/Users/Asus/Pictures/Temi",
+    "FedericoAsus": "C:/Users/Asus/Pictures/Temi/Looney tunes",
     "Federico": "G:/Altri computer/Asus/Temi/Looney tunes"
   },
   "check_interval_minutes": 7,
@@ -10,13 +10,13 @@
       {
         "from": "07:00",
         "to": "08:00",
-        "image": "Looney tunes/tutti_i_personaggi_poster.jpg",
+        "image": "tutti_i_personaggi_poster.jpg",
         "label": "7"
       },
       {
         "from": "08:00",
         "to": "9:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/sylvester_tweety_spiaggia.jpg",
+        "image": "sylvester_tweety_spiaggia.jpg",
         "label": "8"
       },
       {
@@ -28,25 +28,25 @@
       {
         "from": "10:00",
         "to": "11:00",
-        "image": "Looney tunes/logo_looney_tunes_pattern.jpg",
+        "image": "logo_looney_tunes_pattern.jpg",
         "label": "10"
       },
       {
         "from": "11:00",
         "to": "12:00",
-        "image": "Looney tunes/personaggi_logo_warner_bros.jpg",
+        "image": "personaggi_logo_warner_bros.jpg",
         "label": "11"
       },
       {
         "from": "12:00",
         "to": "13:00",
-        "image": "Looney tunes/coyote_esplosione_binario.jpg",
+        "image": "coyote_esplosione_binario.jpg",
         "label": "12"
       },
       {
         "from": "13:00",
         "to": "14:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/personaggi_pausa_pranzo_trave.jpg",
+        "image": "personaggi_pausa_pranzo_trave.jpg",
         "label": "13"
       },
       {
@@ -58,85 +58,85 @@
       {
         "from": "15:00",
         "to": "16:00",
-        "image": "Looney tunes/bugs_taz_cassa_pericolo.jpeg",
+        "image": "bugs_taz_cassa_pericolo.jpeg",
         "label": "15"
       },
       {
         "from": "16:00",
         "to": "17:00",
-        "image": "Looney tunes/elmer_bugs_daffy_caccia_foresta.jpg",
+        "image": "elmer_bugs_daffy_caccia_foresta.jpg",
         "label": "16"
       },
       {
         "from": "17:00",
         "to": "18:00",
-        "image": "Looney tunes/bugs_daffy_rabbit_season.jpg",
+        "image": "bugs_daffy_rabbit_season.jpg",
         "label": "17"
       },
       {
         "from": "18:00",
         "to": "19:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/marvin_pistola_raggio_luna.jpg",
+        "image": "marvin_pistola_raggio_luna.jpg",
         "label": "18"
       },
       {
         "from": "19:00",
         "to": "20:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/daffy_elmer_bugs_foresta_stagione_caccia.jpg",
+        "image": "daffy_elmer_bugs_foresta_stagione_caccia.jpg",
         "label": "19"
       },
       {
         "from": "20:00",
         "to": "21:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/marvin_daffy_porky_astronave.jpg",
+        "image": "marvin_daffy_porky_astronave.jpg",
         "label": "20"
       },
       {
         "from": "21:00",
         "to": "22:00",
-        "image": "Looney tunes/bugs_notte_parco_coniglietti.jpg",
+        "image": "bugs_notte_parco_coniglietti.jpg",
         "label": "21"
       },
       {
         "from": "22:00",
         "to": "23:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/marvin_k9_pianeta_alieno.jpg",
+        "image": "marvin_k9_pianeta_alieno.jpg",
         "label": "22"
       },
       {
         "from": "23:00",
         "to": "00:00",
-        "image": "Looney tunes/sylvester_tweety_forbici_filo_luna.jpg",
+        "image": "sylvester_tweety_forbici_filo_luna.jpg",
         "label": "23"
       },
       {
         "from": "00:00",
         "to": "01:00",
-        "image": "Looney tunes/thats_all_folks_testo_rosso.jpg",
+        "image": "thats_all_folks_testo_rosso.jpg",
         "label": "00"
       },
       {
         "from": "01:00",
         "to": "02:00",
-        "image": "Looney tunes/marvin_guarda_terra_spazio.jpg",
+        "image": "marvin_guarda_terra_spazio.jpg",
         "label": "01"
       },
       {
         "from": "03:00",
         "to": "05:00",
-        "image": "Looney tunes/foresta_notturna.jpg",
+        "image": "foresta_notturna.jpg",
         "label": "Notte fonda"
       },
       {
         "from": "06:00",
         "to": "07:00",
-        "image": "Looney tunes/sfondo_deserto_notturno_binario.jpg",
+        "image": "sfondo_deserto_notturno_binario.jpg",
         "label": "alba"
       },
       {
         "from": "03:00",
         "to": "12:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/backrooms_daffy_bugs_gossamer.jpg",
+        "image": "backrooms_daffy_bugs_gossamer.jpg",
         "label": "02:00"
       }
     ],
@@ -144,37 +144,37 @@
       {
         "from": "8:00",
         "to": "11:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/surf_squali_spiaggia.jpg",
+        "image": "surf_squali_spiaggia.jpg",
         "label": "estate mattina"
       },
       {
         "from": "13:00",
         "to": "15:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/porky_daffy_sub_sfera_marina.jpg",
+        "image": "porky_daffy_sub_sfera_marina.jpg",
         "label": "Estate pomeriggio"
       },
       {
         "from": "16:00",
         "to": "19:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/bugs_sdraio_spiaggia_carote.jpg",
+        "image": "bugs_sdraio_spiaggia_carote.jpg",
         "label": "Estate tramonto"
       },
       {
         "from": "20:00",
         "to": "23:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/pepe_penelope_barca_luna_cuori.jpg",
+        "image": "pepe_penelope_barca_luna_cuori.jpg",
         "label": "Estate sera"
       },
       {
         "from": "23:00",
         "to": "02:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/festa_hawaiana_notturna.jpg",
+        "image": "festa_hawaiana_notturna.jpg",
         "label": "Estate notte"
       },
       {
         "from": "11:00",
         "to": "13:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/daffy_amaca_spiaggia_ukulele.jpg",
+        "image": "daffy_amaca_spiaggia_ukulele.jpg",
         "label": "Estate giorno"
       }
     ]
@@ -184,31 +184,31 @@
       {
         "from": "22:00",
         "to": "23:00",
-        "image": "Looney tunes/thats_all_folks_personaggi_palco.jpg",
+        "image": "thats_all_folks_personaggi_palco.jpg",
         "label": "22"
       },
       {
         "from": "16:00",
         "to": "17:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/porky_daffy_sub_sfera_marina.jpg",
+        "image": "porky_daffy_sub_sfera_marina.jpg",
         "label": "16"
       },
       {
         "from": "14:00",
         "to": "15:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/mosaico_personaggi_1.jpg",
+        "image": "mosaico_personaggi_1.jpg",
         "label": "14"
       },
       {
         "from": "10:00",
         "to": "11:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/bracco_foghorn_leghorn_fattoria.jpg",
+        "image": "bracco_foghorn_leghorn_fattoria.jpg",
         "label": "10"
       },
       {
         "from": "09:00",
         "to": "10:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_travestito_pecora_gregge.jpg",
+        "image": "coyote_travestito_pecora_gregge.jpg",
         "label": "9"
       }
     ],
@@ -216,43 +216,43 @@
       {
         "from": "12:00",
         "to": "13:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_caduta_vuoto.jpg",
+        "image": "coyote_caduta_vuoto.jpg",
         "label": "12"
       },
       {
         "from": "15:00",
         "to": "16:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/ufficio_disegnatori_personaggi.jpg",
+        "image": "ufficio_disegnatori_personaggi.jpg",
         "label": "15"
       },
       {
         "from": "16:00",
         "to": "17:00",
-        "image": "Looney tunes/daffy_bugs_faccia_a_faccia.jpg",
+        "image": "daffy_bugs_faccia_a_faccia.jpg",
         "label": "16"
       },
       {
         "from": "19:00",
         "to": "20:00",
-        "image": "Looney tunes/coyote_razzo_tramonto_deserto.jpg",
+        "image": "coyote_razzo_tramonto_deserto.jpg",
         "label": "tramonto"
       },
       {
         "from": "23:00",
         "to": "00:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_sagoma_salto_luna.jpeg",
+        "image": "coyote_sagoma_salto_luna.jpeg",
         "label": "23"
       },
       {
         "from": "17:00",
         "to": "18:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/sylvester_tweety_spiaggia.jpg",
+        "image": "sylvester_tweety_spiaggia.jpg",
         "label": "17"
       },
       {
         "from": "11:00",
         "to": "12:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/collage_locandine_classiche.jpg",
+        "image": "collage_locandine_classiche.jpg",
         "label": "11"
       }
     ],
@@ -260,43 +260,43 @@
       {
         "from": "10:00",
         "to": "11:00",
-        "image": "Looney tunes/pepe_le_pew_penelope_bosco.jpg",
+        "image": "pepe_le_pew_penelope_bosco.jpg",
         "label": "pepé"
       },
       {
         "from": "17:00",
         "to": "18:00",
-        "image": "Looney tunes/elmer_travestito_coniglio_rabbit_season.webp",
+        "image": "elmer_travestito_coniglio_rabbit_season.png",
         "label": "17"
       },
       {
         "from": "19:00",
         "to": "20:00",
-        "image": "Looney tunes/coyote_roadrunner_forchetta_deserto.jpg",
+        "image": "coyote_roadrunner_forchetta_deserto.jpg",
         "label": "tramonto"
       },
       {
         "from": "22:00",
         "to": "23:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/bugs_smoking_palco_rose.jpg",
+        "image": "bugs_smoking_palco_rose.jpg",
         "label": "22"
       },
       {
         "from": "16:00",
         "to": "17:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/speedy_gonzales_corsa_deserto.png",
+        "image": "speedy_gonzales_corsa_deserto.png",
         "label": "16"
       },
       {
         "from": "13:00",
         "to": "14:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/sylvester_tweety_bidoni_spazzatura.jpg",
+        "image": "sylvester_tweety_bidoni_spazzatura.jpg",
         "label": "13"
       },
       {
         "from": "15:00",
         "to": "16:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/basket.jpg",
+        "image": "basket.jpg",
         "label": "15"
       }
     ],
@@ -304,49 +304,49 @@
       {
         "from": "10:00",
         "to": "11:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/personaggi_cerchio_bugs_centro.jpg",
+        "image": "personaggi_cerchio_bugs_centro.jpg",
         "label": "10"
       },
       {
         "from": "13:00",
         "to": "14:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_roadrunner_corsa_nomi_latini.jpg",
+        "image": "coyote_roadrunner_corsa_nomi_latini.jpg",
         "label": "13"
       },
       {
         "from": "15:00",
         "to": "16:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/tweety_sylvester_sega_albero.jpg",
+        "image": "tweety_sylvester_sega_albero.jpg",
         "label": "15"
       },
       {
         "from": "19:00",
         "to": "20:00",
-        "image": "Looney tunes/bugs_cassetta_postale_autunno.jpg",
+        "image": "bugs_cassetta_postale_autunno.jpg",
         "label": "tramonto"
       },
       {
         "from": "21:00",
         "to": "22:00",
-        "image": "Looney tunes/duck_dodgers_porky_marvin.jpg",
+        "image": "duck_dodgers_porky_marvin.jpg",
         "label": "21"
       },
       {
         "from": "02:00",
         "to": "04:00",
-        "image": "Looney tunes/casetta_scogliera_notturna.jpg",
+        "image": "casetta_scogliera_notturna.jpg",
         "label": "2AM"
       },
       {
         "from": "11:00",
         "to": "12:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/collage_locandine_classiche.jpg",
+        "image": "collage_locandine_classiche.jpg",
         "label": "11"
       },
       {
         "from": "09:00",
         "to": "10:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/ralph_lupo_sam_pastore_pecora.jpg",
+        "image": "ralph_lupo_sam_pastore_pecora.jpg",
         "label": "9"
       }
     ],
@@ -354,43 +354,43 @@
       {
         "from": "9:00",
         "to": "10:00",
-        "image": "Looney tunes/bugs_yosemite_sam_pesca_barca.jpg",
+        "image": "bugs_yosemite_sam_pesca_barca.jpg",
         "label": "9"
       },
       {
         "from": "18:00",
         "to": "19:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_sub_mina_squalo.jpg",
+        "image": "coyote_sub_mina_squalo.jpg",
         "label": "18"
       },
       {
         "from": "23:00",
         "to": "00:00",
-        "image": "Looney tunes/bugs_daffy_bar_notte.jpg",
+        "image": "bugs_daffy_bar_notte.jpg",
         "label": "23"
       },
       {
         "from": "10:00",
         "to": "11:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/sylvester_tom_tweety_gabbia.webp",
+        "image": "sylvester_tweety_gabbia_anonymous.png",
         "label": "10"
       },
       {
         "from": "16:00",
         "to": "17:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/mosaico_personaggi_2.png",
+        "image": "mosaico_personaggi_2.png",
         "label": "16"
       },
       {
         "from": "13:00",
         "to": "14:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/taz_hamburger_logo.jpg",
+        "image": "taz_hamburger_logo.jpg",
         "label": "13"
       },
       {
         "from": "19:00",
         "to": "20:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/cane_pastore_coyote_burrone.jpg",
+        "image": "cane_pastore_coyote_burrone.jpg",
         "label": "tramonto"
       }
     ],
@@ -398,7 +398,7 @@
       {
         "from": "10:00",
         "to": "11:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/sylvester_tweety_spiaggia.jpg",
+        "image": "sylvester_tweety_spiaggia.jpg",
         "label": ""
       }
     ],
@@ -406,7 +406,7 @@
       {
         "from": "14:00",
         "to": "15:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_sub_mina_squalo.jpg",
+        "image": "coyote_sub_mina_squalo.jpg",
         "label": ""
       }
     ]
@@ -424,7 +424,7 @@
       {
         "from": "12:00",
         "to": "22:00",
-        "image": "Looney tunes/bugs_compleanno_festa.jpg",
+        "image": "bugs_compleanno_festa.jpg",
         "label": "Compleanno"
       }
     ],
@@ -432,49 +432,49 @@
       {
         "from": "08:00",
         "to": "10:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_esplosione_binario.jpg",
+        "image": "coyote_esplosione_binario.jpg",
         "label": "Coyote"
       },
       {
         "from": "12:00",
         "to": "15:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_roadrunner_corsa_nomi_latini.jpg",
+        "image": "coyote_roadrunner_corsa_nomi_latini.jpg",
         "label": ""
       },
       {
         "from": "15:00",
         "to": "17:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_sub_mina_squalo.jpg",
+        "image": "coyote_sub_mina_squalo.jpg",
         "label": ""
       },
       {
         "from": "18:00",
         "to": "20:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_razzo_tramonto_deserto.jpg",
+        "image": "coyote_razzo_tramonto_deserto.jpg",
         "label": ""
       },
       {
         "from": "20:00",
         "to": "22:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/sfondo_deserto_notturno_binario.jpg",
+        "image": "sfondo_deserto_notturno_binario.jpg",
         "label": ""
       },
       {
         "from": "17:00",
         "to": "18:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_caduta_vuoto.jpg",
+        "image": "coyote_caduta_vuoto.jpg",
         "label": ""
       },
       {
         "from": "11:00",
         "to": "12:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_roadrunner_forchetta_deserto.jpg",
+        "image": "coyote_roadrunner_forchetta_deserto.jpg",
         "label": ""
       },
       {
         "from": "22:00",
         "to": "01:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_sagoma_salto_luna.jpeg",
+        "image": "coyote_sagoma_salto_luna.jpeg",
         "label": "notte"
       }
     ],
@@ -482,49 +482,49 @@
       {
         "from": "08:00",
         "to": "10:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_esplosione_binario.jpg",
+        "image": "coyote_esplosione_binario.jpg",
         "label": "Coyote"
       },
       {
         "from": "12:00",
         "to": "15:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_roadrunner_corsa_nomi_latini.jpg",
+        "image": "coyote_roadrunner_corsa_nomi_latini.jpg",
         "label": ""
       },
       {
         "from": "15:00",
         "to": "17:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_razzo_tramonto_deserto.jpg",
+        "image": "coyote_razzo_tramonto_deserto.jpg",
         "label": ""
       },
       {
         "from": "18:00",
         "to": "20:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_sub_mina_squalo.jpg",
+        "image": "coyote_sub_mina_squalo.jpg",
         "label": ""
       },
       {
         "from": "20:00",
         "to": "22:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/sfondo_deserto_notturno_binario.jpg",
+        "image": "sfondo_deserto_notturno_binario.jpg",
         "label": "20"
       },
       {
         "from": "17:00",
         "to": "18:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_caduta_vuoto.jpg",
+        "image": "coyote_caduta_vuoto.jpg",
         "label": ""
       },
       {
         "from": "11:00",
         "to": "12:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_roadrunner_forchetta_deserto.jpg",
+        "image": "coyote_roadrunner_forchetta_deserto.jpg",
         "label": ""
       },
       {
         "from": "22:00",
         "to": "01:00",
-        "image": "G:/Altri computer/Asus/Temi/Looney tunes/coyote_sagoma_salto_luna.jpeg",
+        "image": "coyote_sagoma_salto_luna.jpeg",
         "label": "notte"
       }
     ]
@@ -554,23 +554,23 @@
     "jolly"
   ],
   "image_library": {
-    "28157068917085.5b6da7f251381.jpg": [
+    "personaggi_riquadri_colorati_bianco_nero.jpg": [
       "jolly"
     ],
-    "43967d68dd8fffb7f75d639485013726.jpg": [
+    "bugs_daffy_sylvester_fuga_halloween.jpg": [
       "horror",
       "notte",
       "sera",
       "crepuscolo",
       "autunno"
     ],
-    "4ef3f70d148f76aa2d5f2f8db178f5d4.jpg": [
+    "sylvester_arrampicata_corda.jpg": [
       "pomeriggio",
       "sport",
       "smart",
       "mattino"
     ],
-    "923948-3840x2160-desktop-4k-looney-tunes-characters-background.jpg": [
+    "sylvester_tweety_nido.jpg": [
       "crepuscolo"
     ],
     "amour-parisienne.jpg": [
@@ -589,7 +589,8 @@
       "primavera",
       "autunno",
       "sport",
-      "svago"
+      "svago",
+      "smart"
     ],
     "bracco_foghorn_leghorn_fattoria.jpg": [
       "mattino",
@@ -686,92 +687,91 @@
       "tramonto",
       "lavoro"
     ],
-    "CULwH3.jpg": [
+    "porky_bugs_daffy_ombra_mostro.jpg": [
       "horror",
       "crepuscolo",
       "notte",
       "sera"
     ],
-    "d701b8e489615b83daa2f201ff5e087f3e5f2d07bd7a714f1f3c12b8a9a6ae57._SX1080_FMjpg_.jpg": [
+    "personaggi_finestra_ombra_mostro.jpg": [
       "horror",
       "crepuscolo",
       "notte",
       "sera"
     ],
-    "Daffy and Porky/0d8ff237ad7050b5ed4088d9a8d17ef9_2.png": [
+    "Daffy and Porky/daffy_porky_divano_popcorn.png": [
       "spettacolo",
       "sera",
       "svago",
       "weekend"
     ],
-    "Daffy and Porky/19fad16133ff7bbfcf25717cb1d6bda4_w1200.jpg": [],
-    "Daffy and Porky/202.png": [
+    "Daffy and Porky/porky_daffy_neonati_pozza.jpg": [],
+    "Daffy and Porky/daffy_leva_gomme_super_stretchy.png": [
       "lavoro",
       "mattino"
     ],
-    "Daffy and Porky/270fa50320cbdb5489b2996adc607034ed251a75.jpg": [],
-    "Daffy and Porky/2G5QPreQoklVJcbXlRRelWkxlfv.jpg": [
+    "Daffy and Porky/alieno_cattivo_schermi_daffy.jpg": [],
+    "Daffy and Porky/porky_daffy_petunia_astronauti.jpg": [
       "sera"
     ],
-    "Daffy and Porky/469875290_8719423838153995_2592515850667698560_n.jpg": [
+    "Daffy and Porky/scala_buia_guardiano_zombie.jpg": [
       "notte",
       "horror"
     ],
-    "Daffy and Porky/469910274_8719423748154004_9106807984728137363_n.jpg": [
+    "Daffy and Porky/porky_daffy_colazione_cucina.jpg": [
       "mattino"
     ],
-    "Daffy and Porky/485088247_2663074947227455_8040668032314877732_n.jpg": [],
-    "Daffy and Porky/7bc7d7f44dfe64bcf30055e9de452abace7e08a9.jpg": [
+    "Daffy and Porky/porky_daffy_ufo_tetto_verticale.jpg": [],
+    "Daffy and Porky/porky_daffy_lavano_denti.jpg": [
       "alba",
       "mattino",
       "smart"
     ],
-    "Daffy and Porky/chrome/Daffy-Duck-Porky-Pig-Poster-021725-2d3696a03d1e4d8cb9cf27e10b56e9b6.png": [],
+    "Daffy and Porky/chrome/locandina_the_day_the_earth_blew_up.png": [],
     "Daffy and Porky/chrome/daffy.png": [],
-    "Daffy and Porky/chrome/Immagine.png": [],
-    "Daffy and Porky/chrome/Immagine2.png": [],
-    "Daffy and Porky/chrome/photo.jpg": [],
-    "Daffy and Porky/chrome/sfondo 1.png": [],
-    "Daffy and Porky/chrome/sfondo 2.png": [],
+    "Daffy and Porky/chrome/porky_daffy_finale_cerchi_rossi_hd.png": [],
+    "Daffy and Porky/chrome/daffy_leva_gomme_super_stretchy_hd.png": [],
+    "Daffy and Porky/chrome/porky_daffy_ufo_tetto_citta.png": [],
+    "Daffy and Porky/chrome/porky_daffy_ufo_raggio_primo_piano.png": [],
     "Daffy and Porky/chrome/tab dark.png": [],
     "Daffy and Porky/chrome/tab.png": [],
-    "Daffy and Porky/Daffy-Duck-Porky-Pig-021725-2w-0aa539820f8f47198ef935d653e1bbb3.webp": [],
+    "Daffy and Porky/porky_daffy_urlano_raggio_ufo.webp": [],
     "Daffy and Porky/daffy_porky_leva_sala_macchine.jpg": [
       "lavoro",
       "pomeriggio"
     ],
-    "Daffy and Porky/daytheearthblewup.jpg": [
+    "Daffy and Porky/daffy_porky_petunia_ombre_alieni_tenda.jpg": [
       "horror",
       "crepuscolo",
       "notte",
       "sera"
     ],
-    "Daffy and Porky/GPOoNNJWQAAl0hV.png": [
+    "Daffy and Porky/porky_daffy_neonati_spaghetti.png": [
       "pranzo",
       "smart",
       "weekend"
     ],
-    "Daffy and Porky/GXSWNMIXUAAByzX.jpg": [
+    "Daffy and Porky/contadino_porky_daffy_neonati.jpg": [
       "alba",
       "mattino",
       "weekend",
       "smart"
     ],
-    "Daffy and Porky/GXSWNSiXsAAxibf.jpeg": [
+    "Daffy and Porky/daffy_porky_scivolano_corrimano.jpeg": [
       "mattino",
       "svago"
     ],
-    "Daffy and Porky/hq720.jpg": [
+    "Daffy and Porky/porky_daffy_ballo_palco_art_deco.jpg": [
       "lavoro",
       "pomeriggio",
       "mattino"
     ],
-    "Daffy and Porky/k8cmBaq6ggMynwfGm5PWU3Zs2Qt.jpg": [],
-    "Daffy and Porky/lt.png": [
+    "Daffy and Porky/porky_daffy_petunia_fuga_gomma_aliena.jpg": [],
+    "Daffy and Porky/porky_daffy_petunia_tavola_calda.png": [
       "sera",
       "svago"
     ],
-    "Daffy and Porky/PDMV325_A03_0240_Cp_v0223.png": [
+    "Daffy and Porky/daffy_lanciafiamme_porky_giardino.png": [
       "sera",
       "crepuscolo",
       "autunno"
@@ -781,23 +781,23 @@
       "mattino",
       "lavoro"
     ],
-    "Daffy and Porky/the end.PNG": [
+    "Daffy and Porky/porky_daffy_finale_cerchi_rossi.png": [
       "spettacolo"
     ],
-    "Daffy and Porky/The-Day-The-Earth-Blew-Up-2.jpg": [
+    "Daffy and Porky/porky_daffy_petunia_ombre_zombie.jpg": [
       "horror",
       "sera"
     ],
-    "Daffy and Porky/The-Day-the-Earth-Blew-Up-A-Looney-Tunes-Movie-1.jpg": [],
-    "Daffy and Porky/the-day-the-earth-blew-up-a-looney-tunes-movie-saved-from-th_yrce.1200.jpg": [],
-    "Daffy and Porky/The-Day-the-Earth-Blew-Up.jpg": [],
-    "Daffy and Porky/TheDayThEarthBlewUp_239Scope_Still_29.jpg": [
+    "Daffy and Porky/porky_astronauta_ufo_pianeta.jpg": [],
+    "Daffy and Porky/porky_daffy_urlo_spirale.jpg": [],
+    "Daffy and Porky/porky_daffy_vialetto_casa.jpg": [],
+    "Daffy and Porky/porky_camera_daffy_vasca.jpg": [
       "alba",
       "weekend",
       "lavoro"
     ],
-    "Daffy and Porky/thedaytheearthblewupalooneytunesmovietrailer-ign-blogroll-1733950544517.jpg": [],
-    "Daffy and Porky/Un-avventura-spaziale-Un-film-dei-Looney-Tunes-Ecco-il-trailer-italiano.png": [],
+    "Daffy and Porky/porky_daffy_abbraccio_porta.jpg": [],
+    "Daffy and Porky/daffy_astronauta_maxischermo_citta.png": [],
     "daffy_amaca_spiaggia_ukulele.jpg": [
       "estate",
       "svago",
@@ -821,7 +821,7 @@
       "sera",
       "notte"
     ],
-    "duffyduck01.jpg": [
+    "daffy_cartello_duck_xing.jpg": [
       "jolly"
     ],
     "elmer_bugs_daffy_caccia_foresta.jpg": [
@@ -843,7 +843,7 @@
     "fudd_daffy-1_copy.jpg": [
       "tramonto"
     ],
-    "loading_screen_haloween_2023-1200x695.jpg": [
+    "halloween_personaggi_mostri_cimitero.jpg": [
       "horror",
       "notte",
       "sera"
@@ -852,36 +852,36 @@
       "jolly",
       "mattino"
     ],
-    "Looney tunes christmas/130999642_1023187231425147_4041612473443281886_n.jpeg": [
+    "Looney tunes christmas/coyote_sci_salto_montagna.jpeg": [
       "inverno",
       "mattino",
       "pomeriggio",
       "sport"
     ],
-    "Looney tunes christmas/191f90060af15dcac4b7fd133fd8443a.jpg": [
+    "Looney tunes christmas/natale_personaggi_comignolo_neve.jpg": [
       "natale",
       "notte"
     ],
-    "Looney tunes christmas/464855310_8701904919832867_7411089918229455112_n.jpg": [
+    "Looney tunes christmas/daffy_ho_ho_ho_quackers.jpg": [
       "natale"
     ],
-    "Looney tunes christmas/6972f1bd3e391c53e8866e8ace548b68.png": [],
-    "Looney tunes christmas/71a8b022-50b3-405d-b7a4-15cffb1839b2.jpg": [
+    "Looney tunes christmas/natale_personaggi_ho_ho_ho_rosso.png": [],
+    "Looney tunes christmas/porky_daffy_bugs_regali_neve.jpg": [
       "natale",
       "crepuscolo"
     ],
-    "Looney tunes christmas/80c13b56c7da94f53c37bd0f9d480178.jpg": [
+    "Looney tunes christmas/natale_personaggi_albero_salotto.jpg": [
       "natale"
     ],
-    "Looney tunes christmas/a02515b6654d0d1a9f7c7edd2242c70e.jpg": [
+    "Looney tunes christmas/natale_trenino_merry_christmas.jpg": [
       "natale"
     ],
-    "Looney tunes christmas/ba6465a82ad800354ce12f1bc739241b.jpg": [
+    "Looney tunes christmas/bugs_daffy_sylvester_calze_natale.jpg": [
       "natale",
       "notte",
       "sera"
     ],
-    "Looney tunes christmas/Bugs-Bunny-and-Lola-Bunny-art-ice-skating-Desktop-Wallpaper-HD-3840x2400-840x525.jpg": [
+    "Looney tunes christmas/bugs_lola_pattinaggio_ghiaccio.jpg": [
       "inverno",
       "mattino",
       "pomeriggio"
@@ -889,36 +889,36 @@
     "Looney tunes christmas/capodanno_fuochi_artificio.jpg": [
       "inverno"
     ],
-    "Looney tunes christmas/chrome/30dc634e264d2a0ea7103d2d19be2e00.jpg": [
+    "Looney tunes christmas/chrome/natale_personaggi_addobbano_albero.jpg": [
       "natale"
     ],
-    "Looney tunes christmas/Immagine WhatsApp 2024-12-19 ore 19.08.14_ddacbdd4.jpg": [
+    "Looney tunes christmas/elmer_daffy_slittino_neve.jpg": [
       "inverno",
       "sport",
       "pomeriggio",
       "mattino"
     ],
-    "Looney tunes christmas/Immagine WhatsApp 2024-12-19 ore 19.11.15_322aed96.jpg": [],
-    "Looney tunes christmas/inadeguate/7a3ee81f0047f0adf12d8391e9d6fbc1.jpg": [],
-    "Looney tunes christmas/inadeguate/8ad28a04e750158d99565c0e801f0460.jpg": [],
-    "Looney tunes christmas/inadeguate/a5191afee2f7fd81abbbee6465352f47.jpg": [],
-    "Looney tunes christmas/looney-tunes-christmas-qerr5ww9m4cyzemj.png": [
+    "Looney tunes christmas/bugs_lola_albero_natale_iceberg.jpg": [],
+    "Looney tunes christmas/inadeguate/bugs_ghirlanda_natale_verticale.jpg": [],
+    "Looney tunes christmas/inadeguate/tiny_toons_coro_natalizio.jpg": [],
+    "Looney tunes christmas/inadeguate/daffy_babbo_natale_pila_regali.jpg": [],
+    "Looney tunes christmas/nonna_sylvester_tweety_regalo_natale.png": [
       "natale",
       "mattino"
     ],
-    "Looney tunes christmas/Snapinsta.app_131306966_726276131330416_1742053223232746609_n_1080.jpg": [
+    "Looney tunes christmas/taz_happy_holidays_neve.jpg": [
       "natale",
       "notte",
       "sera"
     ],
-    "Looney tunes christmas/Snapinsta.app_468456191_588140750284168_735763663732415432_n_1080.jpg": [
+    "Looney tunes christmas/cartoline_natalizie_personaggi.jpg": [
       "natale"
     ],
-    "Looney tunes christmas/taz.jpg": [
+    "Looney tunes christmas/taz_babbo_natale_comignolo_luna.jpg": [
       "natale",
       "notte"
     ],
-    "Looney tunes christmas/thumb-1920-446269.jpg": [
+    "Looney tunes christmas/bugs_taz_snowboard_pupazzo_neve.jpg": [
       "inverno",
       "sport",
       "mattino",
@@ -926,120 +926,105 @@
       "svago",
       "crepuscolo"
     ],
-    "Looney tunes christmas/thumb-1920-468657.jpg": [
+    "Looney tunes christmas/taz_bugs_sylvester_albero_natale_neve.jpg": [
       "mattino",
       "alba",
       "natale",
       "tramonto"
     ],
-    "Looney tunes christmas/tumblr_23ba745e129bbc3e54bbf3ce1e1f2666_88f5ce44_1280.jpg": [
+    "Looney tunes christmas/daffy_cappello_natale_vintage.jpg": [
       "natale"
     ],
-    "Looney tunes christmas/vlcsnap-00002.jpg": [
+    "Looney tunes christmas/coyote_babbo_natale_merry_xmas.jpg": [
       "natale",
       "mattino",
       "pomeriggio"
     ],
-    "Looney tunes christmas/WB2168-420x280h.jpg": [
+    "Looney tunes christmas/personaggi_snowboard_neve.jpg": [
       "inverno",
       "mattino",
       "pomeriggio",
       "sport"
     ],
-    "Looney Tunes Sports/130999642_1023187231425147_4041612473443281886_n.jpeg": [
-      "sport"
-    ],
-    "Looney Tunes Sports/1491917627-797-1525-par-for-the-course.jpg": [
+    "Looney Tunes Sports/bugs_daffy_golf_buca.jpg": [
       "mattino"
     ],
-    "Looney Tunes Sports/464907637_8723255287697830_8585212234038788753_n.jpg": [
+    "Looney Tunes Sports/bugs_daffy_taz_baseball_stadio.jpg": [
       "sport",
       "jolly"
     ],
-    "Looney Tunes Sports/465256556_8721454687877890_8514847418727839693_n.jpg": [
+    "Looney Tunes Sports/football_americano_mischia_bugs_foghorn.jpg": [
       "sport",
       "pomeriggio"
     ],
-    "Looney Tunes Sports/4ef3f70d148f76aa2d5f2f8db178f5d4.jpg": [],
-    "Looney Tunes Sports/924365-3840x2160-desktop-4k-looney-tunes-tweety-bird-wallpaper-photo.jpg": [
-      "pomeriggio",
-      "sport",
-      "smart"
-    ],
-    "Looney Tunes Sports/Bugs-Bunny-and-Lola-Bunny-art-ice-skating-Desktop-Wallpaper-HD-3840x2400-840x525.jpg": [],
-    "Looney Tunes Sports/devwdd7-778e52b6-d8b2-4a38-ba81-1946ead17e22.jpg": [
+    "Looney Tunes Sports/space_jam_bugs_jordan_lebron.png": [
       "sera",
       "sport",
       "spettacolo"
     ],
-    "Looney Tunes Sports/football_follies_clp.jpg": [
+    "Looney Tunes Sports/football_americano_squadra_gossamer_bugs.jpg": [
       "sport"
     ],
-    "Looney Tunes Sports/GJhlXvVWUAA291R.jpg": [
+    "Looney Tunes Sports/personaggi_sport_riquadri_colorati.jpg": [
       "jolly",
       "sport"
     ],
-    "Looney Tunes Sports/GJhlXvVWUAA291R2.jpg": [],
-    "Looney Tunes Sports/GOM8k-SXcAAxBnm.jpg": [
+    "Looney Tunes Sports/personaggi_sport_riquadri_colorati_striscia.jpg": [],
+    "Looney Tunes Sports/team_usa_personaggi_divise.jpg": [
       "sport",
       "jolly"
     ],
-    "Looney Tunes Sports/HD-wallpaper-daffy-bugs-warner-brothers-tv-show-bugs-bunny-looney-tunes-daffy-duck-cartoon-animacion.jpg": [
+    "Looney Tunes Sports/daffy_bugs_golf_esplosivo_bunker.jpg": [
       "alba",
       "mattino",
       "sport",
       "svago",
       "weekend"
     ],
-    "Looney Tunes Sports/juniorsleague_1901x_7d8085ef-52a9-4511-82b4-d608f53d84b4.jpg": [
+    "Looney Tunes Sports/baseball_stadio_battitore_bugs_taz.jpg": [
       "sport",
       "crepuscolo",
       "sera"
     ],
-    "Looney Tunes Sports/looney-tunes-surfing-with-sharks-i9tpr68o5pex1uwz.jpg": [
+    "surf_squali_spiaggia.jpg": [
       "weekend",
       "sport",
       "mattino",
       "estate",
-      "svago"
+      "svago",
+      "pomeriggio"
     ],
-    "Looney Tunes Sports/papier-peint-panoramique-looney-tunes-cartoon-champions-stade-olympiquesur-mesure-muralconcept-102185.jpg": [
+    "Looney Tunes Sports/atletica_ostacoli_bugs_taz_daffy.jpg": [
       "sport",
       "pomeriggio",
       "mattino",
       "smart"
     ],
-    "Looney Tunes Sports/papier-peint-panoramique-looney-tunes-cartoon-daffy-duck-masterclass-football-goalsur-mesure-muralconcept-984354.jpg": [
+    "Looney Tunes Sports/daffy_goal_calcio_stivali_acme.jpg": [
       "jolly"
     ],
-    "Looney Tunes Sports/s-l1600-1.jpg": [
+    "Looney Tunes Sports/olimpiadi_1996_centenario_carota.jpg": [
       "sport",
       "weekend",
       "crepuscolo"
     ],
-    "Looney Tunes Sports/s-l1600-2.jpg": [
+    "Looney Tunes Sports/olimpiadi_1996_atlanta_stadio.jpg": [
       "sera",
       "sport",
       "weekend"
     ],
-    "Looney Tunes Sports/TennisAnyone_LT.jpg": [
+    "Looney Tunes Sports/taz_bugs_tennis_sparapalle.jpg": [
       "sport",
       "jolly"
     ],
-    "Looney Tunes Sports/WarnerBros_TeamUSALooneyTunes-2.jpg": [
+    "Looney Tunes Sports/team_usa_parigi_corsa_striscia.jpg": [
       "jolly",
       "autunno",
       "inverno",
       "mattino",
       "pomeriggio"
     ],
-    "Looney Tunes Sports/WarnerBros_TeamUSALooneyTunes-jpg.jpg": [],
-    "Looney Tunes Sports/WB2168-420x280h.jpg": [
-      "sport",
-      "inverno",
-      "mattino",
-      "pomeriggio"
-    ],
+    "Looney Tunes Sports/team_usa_parigi_corsa.jpg": [],
     "marvin_daffy_porky_astronave.jpg": [
       "sera",
       "notte"
@@ -1054,7 +1039,7 @@
     "marvin_pistola_raggio_luna.jpg": [
       "crepuscolo"
     ],
-    "maxresdefault.jpg": [
+    "cane_pastore_coyote_timbrano_neve.jpg": [
       "alba",
       "mattino",
       "lavoro",
@@ -1066,7 +1051,7 @@
     "mosaico_personaggi_2.png": [
       "jolly"
     ],
-    "PcD8mSv-looney-tunes-wallpaper.jpg": [
+    "bugs_daffy_porky_gangster_noir.jpg": [
       "horror"
     ],
     "pepe_le_pew_penelope_bosco.jpg": [
@@ -1104,7 +1089,7 @@
       "estate",
       "lavoro"
     ],
-    "rocket-squad-1956-true-detective-2014-v0-xpohewh6zizb1.jpg": [
+    "daffy_porky_detective_auto.jpg": [
       "sera",
       "notte"
     ],
@@ -1112,7 +1097,7 @@
       "notte",
       "crepuscolo"
     ],
-    "SnapInsta.to_465011009_537199462588431_1302831289674217324_n.jpg": [
+    "casa_stregata_notte_luna.jpg": [
       "horror",
       "notte"
     ],
@@ -1121,12 +1106,6 @@
       "pomeriggio",
       "estate",
       "autunno"
-    ],
-    "surf_squali_spiaggia.jpg": [
-      "estate",
-      "mattino",
-      "sport",
-      "pomeriggio"
     ],
     "sylvester_tweety_bidoni_spazzatura.jpg": [
       "pranzo"
@@ -1153,7 +1132,7 @@
     "thats_all_folks_testo_rosso.jpg": [
       "notte"
     ],
-    "tumblr_3149e31097e2ddefbcd5b367e2a07626_bb5afa0a_500.png": [
+    "daffy_albero_fattoria_contadino.png": [
       "tramonto",
       "autunno"
     ],
@@ -1171,7 +1150,7 @@
       "mattino",
       "pomeriggio"
     ],
-    "wile1280x1024.jpg": [],
+    "coyote_caduta_vuoto_hd.jpg": [],
     "amusement_park.png": [
       "estate",
       "primavera",
@@ -1196,7 +1175,7 @@
       "autunno",
       "primavera"
     ],
-    "Looney tunes christmas/inadeguate/1520f0839f8f82f960461469bf5d3f38.jpg": [],
+    "Looney tunes christmas/inadeguate/natale_happy_holidays_ghirlanda.jpg": [],
     "looney-tunes-art-opening.jpg": [
       "jolly"
     ],
@@ -1241,12 +1220,12 @@
     "willy_beep_beep_zoom_and_bored.jpg": [
       "tramonto"
     ],
-    "0_6e916880-e31e-4a7e-84c7-bd6fa4841bac (1).jpg": [],
-    "b9755ceff63a485f83f7cc431eb8f719.jpg": [],
+    "joker_daffy_fumetto_risate.jpg": [],
+    "joker_daffy_fumetto_cella.jpg": [],
     "coyotexlobo.jpg": [],
-    "Daffy and Porky/483669378_1004992818276557_3914514963323049268_n.jpg": [],
-    "Daffy and Porky/484109607_959074925985609_3681128393341350131_n.jpg": [],
-    "Daffy and Porky/484631544_1318850809377730_5597637368188575646_n.jpg": [],
+    "Daffy and Porky/daffy_coperto_gomma_rosa_verticale.jpg": [],
+    "Daffy and Porky/daffy_porky_batti_cinque_verticale.jpg": [],
+    "Daffy and Porky/porky_bolla_gomma_rosa_verticale.jpg": [],
     "Looney Tunes Sports/bagged_by_boony_bugs.jpg": [
       "autunno"
     ],
@@ -1314,15 +1293,29 @@
     "quadriglia.jpg": [
       "jolly"
     ],
-    "Daffy and Porky/willy_dirupo_dipinto.png": [
+    "personaggi_cerchio_bugs_taz.jpg": [],
+    "marvin_k9_pianeta_alieno_verticale.jpg": [],
+    "wabbit_season_with_gun_copy.jpg": [],
+    "Daffy and Porky/chrome/porky_daffy_ufo_tetto_citta_panoramica.jpg": [],
+    "Looney Tunes Sports/olimpiadi_1996_poster_completo.jpg": [],
+    "Looney Tunes Sports/bugs_lola_pattinaggio_primo_piano.jpg": [],
+    "willy_dirupo_dipinto.png": [
       "mattino"
+    ],
+    "sylvester_tweety_gabbia_anonymous.png": [
+      "pranzo"
+    ],
+    "elmer_travestito_coniglio_rabbit_season.png": [
+      "primavera",
+      "smart",
+      "pomeriggio"
     ]
   },
   "random_rules": {
     "weekday": [
       {
-        "from": "dawn-20m",
-        "to": "sunrise+60m",
+        "from": "dawn -20m",
+        "to": "sunrise +60m",
         "include": [
           "alba",
           "crepuscolo"
@@ -1334,8 +1327,8 @@
         "rotate_minutes": 60
       },
       {
-        "from": "sunset-40m",
-        "to": "sunset+15m",
+        "from": "sunset -40m",
+        "to": "sunset +15m",
         "include": [
           "tramonto"
         ],
@@ -1344,8 +1337,8 @@
         "rotate_minutes": 60
       },
       {
-        "from": "sunset+15m",
-        "to": "dusk+40m",
+        "from": "sunset +15m",
+        "to": "dusk +40m",
         "include": [
           "crepuscolo",
           "jolly",
@@ -1359,7 +1352,7 @@
         "rotate_minutes": 60
       },
       {
-        "from": "dusk+40m",
+        "from": "dusk +40m",
         "to": "22:00",
         "include": [
           "sera",
@@ -1371,7 +1364,7 @@
       },
       {
         "from": "23:00",
-        "to": "dawn-20m",
+        "to": "dawn -20m",
         "include": [
           "notte"
         ],
@@ -1380,7 +1373,7 @@
         "rotate_minutes": 90
       },
       {
-        "from": "sunrise+60m",
+        "from": "sunrise +60m",
         "to": "09:00",
         "include": [
           "mattino"
@@ -1426,7 +1419,7 @@
       },
       {
         "from": "14:00",
-        "to": "sunset-40",
+        "to": "sunset -40m",
         "include": [
           "lavoro",
           "pomeriggio",
@@ -1464,8 +1457,8 @@
     ],
     "weekend": [
       {
-        "from": "dawn-20m",
-        "to": "sunrise+60m",
+        "from": "dawn -20m",
+        "to": "sunrise +60m",
         "include": [
           "alba",
           "crepuscolo"
@@ -1477,8 +1470,8 @@
         "rotate_minutes": 60
       },
       {
-        "from": "sunset-40m",
-        "to": "sunset+15m",
+        "from": "sunset -40m",
+        "to": "sunset +15m",
         "include": [
           "tramonto"
         ],
@@ -1487,8 +1480,8 @@
         "rotate_minutes": 60
       },
       {
-        "from": "sunset+15m",
-        "to": "dusk+30m",
+        "from": "sunset +15m",
+        "to": "dusk +30m",
         "include": [
           "crepuscolo",
           "sera"
@@ -1502,7 +1495,7 @@
         "rotate_minutes": 60
       },
       {
-        "from": "dusk+30m",
+        "from": "dusk +30m",
         "to": "23:00",
         "include": [
           "sera",
@@ -1520,7 +1513,7 @@
       },
       {
         "from": "23:00",
-        "to": "dawn-20m",
+        "to": "dawn -20m",
         "include": [
           "notte"
         ],
@@ -1529,7 +1522,7 @@
         "rotate_minutes": 60
       },
       {
-        "from": "sunrise+60m",
+        "from": "sunrise +60m",
         "to": "09:00",
         "include": [
           "mattino"
@@ -1574,7 +1567,7 @@
       },
       {
         "from": "15:00",
-        "to": "sunset-40",
+        "to": "sunset -40m",
         "include": [
           "pomeriggio",
           "sport",
@@ -1644,7 +1637,7 @@
       "tuesday": [
         {
           "from": "15:00",
-          "to": "sunset-40",
+          "to": "sunset -40m",
           "include": [
             "lavoro",
             "pomeriggio",
@@ -1697,7 +1690,7 @@
         },
         {
           "from": "14:00",
-          "to": "sunset-40",
+          "to": "sunset -40m",
           "include": [
             "lavoro",
             "pomeriggio",
@@ -1745,7 +1738,7 @@
     }
   },
   "history_days": 60,
-  "theme": "dark",
+  "theme": "light",
   "latitude": 40.8518,
   "longitude": 14.2681,
   "periods": [
@@ -1755,14 +1748,15 @@
       "to": "11-01",
       "exclude": [
         "estate",
+        "inverno",
         "natale",
         "primavera"
       ],
       "random_rules": {
         "weekday": [
           {
-            "from": "sunset-40m",
-            "to": "dusk+40",
+            "from": "sunset -40m",
+            "to": "dusk +40m",
             "include": [
               "crepuscolo",
               "horror"
@@ -1772,7 +1766,7 @@
             "rotate_minutes": 60
           },
           {
-            "from": "dusk +40",
+            "from": "dusk +40m",
             "to": "02:00",
             "include": [
               "horror"
@@ -1799,7 +1793,7 @@
       "random_rules": {
         "weekday": [
           {
-            "from": "sunset-40",
+            "from": "sunset -40m",
             "to": "dusk",
             "include": [
               "crepuscolo",
@@ -1861,6 +1855,7 @@
       "exclude": [
         "autunno",
         "estate",
+        "horror",
         "natale",
         "primavera"
       ]
