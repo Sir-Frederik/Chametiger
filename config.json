@@ -1425,7 +1425,7 @@
       },
       {
         "from": "sunset -50m",
-        "to": "sunset +15m",
+        "to": "sunset +9m",
         "include": [
           "tramonto"
         ],
@@ -1434,7 +1434,7 @@
         "rotate_minutes": 60
       },
       {
-        "from": "sunset +15m",
+        "from": "sunset +9m",
         "to": "dusk +40m",
         "include": [
           "crepuscolo",
@@ -1568,7 +1568,7 @@
       },
       {
         "from": "sunset -50m",
-        "to": "sunset +15m",
+        "to": "sunset +9m",
         "include": [
           "tramonto"
         ],
@@ -1577,7 +1577,7 @@
         "rotate_minutes": 60
       },
       {
-        "from": "sunset +15m",
+        "from": "sunset +9m",
         "to": "dusk +30m",
         "include": [
           "crepuscolo",
