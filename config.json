@@ -1140,8 +1140,8 @@
       "lavoro"
     ],
     "sfondo_deserto_notturno_binario.jpg": [
-      "notte",
-      "crepuscolo"
+      "crepuscolo",
+      "alba"
     ],
     "casa_stregata_notte_luna.jpg": [
       "horror",
@@ -1387,7 +1387,9 @@
     ],
     "quadriglia.jpg": [
       "jolly",
-      "svago"
+      "svago",
+      "pomeriggio",
+      "mattino"
     ],
     "personaggi_cerchio_bugs_taz.jpg": [],
     "marvin_k9_pianeta_alieno_verticale.jpg": [],
@@ -1406,6 +1408,34 @@
       "smart",
       "pomeriggio",
       "alba"
+    ],
+    "Daffy_rainy.jpg": [
+      "inverno"
+    ],
+    "daffy_elmer_cake.jpg": [
+      "jolly"
+    ],
+    "duck_tracy.jpg": [
+      "spettacolo"
+    ],
+    "daffy_paperclip.jpg": [
+      "svago"
+    ],
+    "daffy_porky_compleanno.jpg": [
+      "spettacolo"
+    ],
+    "daffy_porky_cinema.jpg": [
+      "spettacolo"
+    ],
+    "bugs_bunny_arpa.jpg": [
+      "crepuscolo",
+      "svago"
+    ],
+    "daffy_razzo_valigia.jpg": [
+      "jolly"
+    ],
+    "bugs_elmer_barber_seville.png": [
+      "lavoro"
     ]
   },
   "random_rules": {
@@ -1437,9 +1467,7 @@
         "from": "sunset +9m",
         "to": "dusk +40m",
         "include": [
-          "crepuscolo",
-          "jolly",
-          "sera"
+          "crepuscolo"
         ],
         "exclude": [
           "mattino",
@@ -1658,7 +1686,9 @@
         "include": [
           "pranzo"
         ],
-        "exclude": [],
+        "exclude": [
+          "lavoro"
+        ],
         "match": "all",
         "rotate_minutes": 60
       },
@@ -1835,7 +1865,7 @@
     }
   },
   "history_days": 60,
-  "theme": "light",
+  "theme": "dark",
   "latitude": 40.8518,
   "longitude": 14.2681,
   "periods": [
