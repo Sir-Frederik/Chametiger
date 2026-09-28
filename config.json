@@ -601,63 +601,19 @@
     "Daffy and Porky/chrome/porky_daffy_ufo_raggio_primo_piano.png": [],
     "Daffy and Porky/chrome/tab dark.png": [],
     "Daffy and Porky/chrome/tab.png": [],
-    "Daffy and Porky/porky_daffy_urlano_raggio_ufo.webp": [
-      "horror",
-      "notte"
-    ],
-    "Daffy and Porky/daffy_porky_leva_sala_macchine.jpg": [
-      "lavoro",
-      "pomeriggio"
-    ],
-    "Daffy and Porky/daffy_porky_petunia_ombre_alieni_tenda.jpg": [
-      "horror",
-      "crepuscolo",
-      "notte",
-      "sera"
-    ],
-    "Daffy and Porky/porky_daffy_neonati_spaghetti.png": [
-      "pranzo",
-      "smart",
-      "weekend"
-    ],
-    "Daffy and Porky/contadino_porky_daffy_neonati.jpg": [
-      "alba",
-      "mattino",
-      "weekend",
-      "smart"
-    ],
-    "Daffy and Porky/daffy_porky_scivolano_corrimano.jpeg": [
-      "mattino",
-      "svago"
-    ],
-    "Daffy and Porky/porky_daffy_ballo_palco_art_deco.jpg": [
-      "lavoro",
-      "pomeriggio",
-      "mattino"
-    ],
+    "Daffy and Porky/porky_daffy_urlano_raggio_ufo.webp": ["horror", "notte"],
+    "Daffy and Porky/daffy_porky_leva_sala_macchine.jpg": ["lavoro", "pomeriggio"],
+    "Daffy and Porky/daffy_porky_petunia_ombre_alieni_tenda.jpg": ["horror", "crepuscolo", "notte", "sera"],
+    "Daffy and Porky/porky_daffy_neonati_spaghetti.png": ["pranzo", "smart", "weekend"],
+    "Daffy and Porky/contadino_porky_daffy_neonati.jpg": ["alba", "mattino", "weekend", "smart"],
+    "Daffy and Porky/daffy_porky_scivolano_corrimano.jpeg": ["mattino", "svago"],
+    "Daffy and Porky/porky_daffy_ballo_palco_art_deco.jpg": ["lavoro", "pomeriggio", "mattino"],
     "Daffy and Porky/porky_daffy_petunia_fuga_gomma_aliena.jpg": [],
-    "Daffy and Porky/porky_daffy_petunia_tavola_calda.png": [
-      "sera",
-      "svago"
-    ],
-    "Daffy and Porky/daffy_lanciafiamme_porky_giardino.png": [
-      "sera",
-      "crepuscolo",
-      "autunno"
-    ],
-    "Daffy and Porky/porky_daffy_moto_bazooka.jpg": [
-      "alba",
-      "mattino",
-      "lavoro"
-    ],
-    "Daffy and Porky/porky_daffy_finale_cerchi_rossi.png": [
-      "spettacolo",
-      "notte"
-    ],
-    "Daffy and Porky/porky_daffy_petunia_ombre_zombie.jpg": [
-      "horror",
-      "sera"
-    ],
+    "Daffy and Porky/porky_daffy_petunia_tavola_calda.png": ["sera", "svago"],
+    "Daffy and Porky/daffy_lanciafiamme_porky_giardino.png": ["sera", "crepuscolo", "autunno"],
+    "Daffy and Porky/porky_daffy_moto_bazooka.jpg": ["alba", "mattino", "lavoro"],
+    "Daffy and Porky/porky_daffy_finale_cerchi_rossi.png": ["spettacolo", "notte"],
+    "Daffy and Porky/porky_daffy_petunia_ombre_zombie.jpg": ["horror", "sera"],
     "Daffy and Porky/porky_astronauta_ufo_pianeta.jpg": [],
     "Daffy and Porky/porky_daffy_urlo_spirale.jpg": ["jolly"],
     "Daffy and Porky/porky_daffy_vialetto_casa.jpg": ["autunno", "estate", "mattino"],
@@ -680,13 +636,7 @@
     "Looney tunes christmas/daffy_ho_ho_ho_quackers.jpg": ["natale"],
     "Looney tunes christmas/natale_personaggi_ho_ho_ho_rosso.png": [],
     "Looney tunes christmas/porky_daffy_bugs_regali_neve.jpg": ["natale", "crepuscolo"],
-    "Looney tunes christmas/natale_personaggi_albero_salotto.jpg": [
-      "natale",
-      "crepuscolo",
-      "mattino",
-      "pomeriggio",
-      "svago"
-    ],
+    "Looney tunes christmas/natale_personaggi_albero_salotto.jpg": ["natale", "crepuscolo", "mattino", "pomeriggio", "svago"],
     "Looney tunes christmas/natale_trenino_merry_christmas.jpg": ["natale", "mattino"],
     "Looney tunes christmas/bugs_daffy_sylvester_calze_natale.jpg": ["natale", "notte", "sera"],
     "Looney tunes christmas/bugs_lola_pattinaggio_ghiaccio.jpg": ["inverno", "mattino", "pomeriggio", "sport", "svago"],
@@ -701,14 +651,7 @@
     "Looney tunes christmas/taz_happy_holidays_neve.jpg": ["natale", "notte", "sera"],
     "Looney tunes christmas/cartoline_natalizie_personaggi.jpg": ["natale", "crepuscolo", "sera"],
     "Looney tunes christmas/taz_babbo_natale_comignolo_luna.jpg": ["natale", "notte"],
-    "Looney tunes christmas/bugs_taz_snowboard_pupazzo_neve.jpg": [
-      "inverno",
-      "sport",
-      "mattino",
-      "pomeriggio",
-      "svago",
-      "crepuscolo"
-    ],
+    "Looney tunes christmas/bugs_taz_snowboard_pupazzo_neve.jpg": ["inverno", "sport", "mattino", "pomeriggio", "svago", "crepuscolo"],
     "Looney tunes christmas/taz_bugs_sylvester_albero_natale_neve.jpg": ["mattino", "alba", "natale", "tramonto"],
     "Looney tunes christmas/daffy_cappello_natale_vintage.jpg": ["natale"],
     "Looney tunes christmas/coyote_babbo_natale_merry_xmas.jpg": ["natale", "mattino", "pomeriggio"],
@@ -788,97 +731,26 @@
     "Daffy and Porky/daffy_coperto_gomma_rosa_verticale.jpg": [],
     "Daffy and Porky/daffy_porky_batti_cinque_verticale.jpg": [],
     "Daffy and Porky/porky_bolla_gomma_rosa_verticale.jpg": [],
-    "Looney Tunes Sports/bagged_by_boony_bugs.jpg": [
-      "autunno",
-      "crepuscolo",
-      "svago",
-      "sport",
-      "inverno",
-      "pomeriggio"
-    ],
-    "Looney Tunes Sports/bugs_bunny_baseball.jpg": [
-      "crepuscolo",
-      "sport"
-    ],
-    "Looney Tunes Sports/hockey.png": [
-      "sport",
-      "sera"
-    ],
-    "Looney Tunes Sports/pepè_scii_inverno.png": [
-      "inverno",
-      "sport",
-      "pomeriggio",
-      "mattino"
-    ],
-    "Looney Tunes Sports/willy_golf.jpg": [
-      "primavera",
-      "weekend",
-      "sport",
-      "svago",
-      "crepuscolo",
-      "alba"
-    ],
-    "daffyduck_auto_forchetta.png": [
-      "pranzo",
-      "svago",
-      "tramonto"
-    ],
-    "Willy_pittura_galleria.png": [
-      "lavoro"
-    ],
-    "willy_mangia_pillole.png": [
-      "pranzo"
-    ],
-    "bugs_daffy_smocking.png": [
-      "spettacolo"
-    ],
-    "willy_fisarmonica_acme.png": [
-      "pomeriggio"
-    ],
-    "beacky.png": [
-      "pomeriggio"
-    ],
-    "melblanc.png": [
-      "spettacolo",
-      "sera",
-      "weekend"
-    ],
-    "wood_rabbit_season.jpg": [
-      "autunno",
-      "tramonto"
-    ],
-    "daffy_razzo_coscritto.png": [
-      "sera"
-    ],
-    "daffy_doc.jpg": [
-      "lavoro"
-    ],
-    "bugs_veggente.png": [
-      "sera",
-      "inverno",
-      "primavera"
-    ],
-    "looney_hollywood_behind_scenes.png": [
-      "pomeriggio",
-      "lavoro",
-      "spettacolo"
-    ],
-    "Gossamer_movie.png": [
-      "horror",
-      "spettacolo"
-    ],
-    "carrotBlanca.jpg": [
-      "spettacolo",
-      "svago",
-      "weekend",
-      "sera"
-    ],
-    "quadriglia.jpg": [
-      "jolly",
-      "svago",
-      "pomeriggio",
-      "mattino"
-    ],
+    "Looney Tunes Sports/bagged_by_boony_bugs.jpg": ["autunno", "crepuscolo", "svago", "sport", "inverno", "pomeriggio"],
+    "Looney Tunes Sports/bugs_bunny_baseball.jpg": ["crepuscolo", "sport"],
+    "Looney Tunes Sports/hockey.png": ["sport", "sera"],
+    "Looney Tunes Sports/pepè_scii_inverno.png": ["inverno", "sport", "pomeriggio", "mattino"],
+    "Looney Tunes Sports/willy_golf.jpg": ["primavera", "weekend", "sport", "svago", "crepuscolo", "alba"],
+    "daffyduck_auto_forchetta.png": ["pranzo", "svago", "tramonto"],
+    "Willy_pittura_galleria.png": ["lavoro"],
+    "willy_mangia_pillole.png": ["pranzo"],
+    "bugs_daffy_smocking.png": ["spettacolo"],
+    "willy_fisarmonica_acme.png": ["pomeriggio"],
+    "beacky.png": ["pomeriggio"],
+    "melblanc.png": ["spettacolo", "sera", "weekend"],
+    "wood_rabbit_season.jpg": ["autunno", "tramonto"],
+    "daffy_razzo_coscritto.png": ["sera"],
+    "daffy_doc.jpg": ["lavoro"],
+    "bugs_veggente.png": ["sera", "inverno", "primavera"],
+    "looney_hollywood_behind_scenes.png": ["pomeriggio", "lavoro", "spettacolo"],
+    "Gossamer_movie.png": ["horror", "spettacolo"],
+    "carrotBlanca.jpg": ["spettacolo", "svago", "weekend", "sera"],
+    "quadriglia.jpg": ["jolly", "svago", "pomeriggio", "mattino"],
     "personaggi_cerchio_bugs_taz.jpg": [],
     "marvin_k9_pianeta_alieno_verticale.jpg": [],
     "wabbit_season_with_gun_copy.jpg": [],
@@ -890,9 +762,7 @@
     "elmer_travestito_coniglio_rabbit_season.png": ["primavera", "smart", "pomeriggio", "alba"],
     "Daffy_rainy.jpg": ["inverno"],
     "daffy_elmer_cake.jpg": ["jolly"],
-    "duck_tracy.jpg": ["spettacolo",
-      "notte",
-      "horror"],
+    "duck_tracy.jpg": ["spettacolo", "notte", "horror"],
     "daffy_paperclip.jpg": ["svago"],
     "daffy_porky_compleanno.jpg": ["svago"],
     "daffy_porky_cinema.jpg": ["spettacolo"],
@@ -900,9 +770,8 @@
     "daffy_razzo_valigia.jpg": ["jolly"],
     "bugs_elmer_barber_seville.png": ["lavoro"],
     "looney_tunes_pinball.png": ["jolly"],
-    ],
-    "coyote_vs_acme_wrecking.jpg": [
-      "estate"
+
+    "coyote_vs_acme_wrecking.jpg": ["estate"],
     "Looney Tunes Sports/daffy_surf_onda_Porky.jpg": ["estate"]
   },
   "random_rules": {
@@ -1016,18 +885,8 @@
       {
         "from": "dusk +30m",
         "to": "23:00",
-        "include": [
-          "sera",
-          "spettacolo",
-          "weekend"
-        ],
-        "exclude": [
-          "lavoro",
-          "mattino",
-          "pomeriggio",
-          "pranzo",
-          "tramonto"
-        ],
+        "include": ["sera", "spettacolo", "weekend"],
+        "exclude": ["lavoro", "mattino", "pomeriggio", "pranzo", "tramonto"],
         "match": "any",
         "rotate_minutes": 60
       },
