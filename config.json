@@ -738,7 +738,6 @@
     "Daffy and Porky/chrome/tab.png": [],
     "Daffy and Porky/porky_daffy_urlano_raggio_ufo.webp": [
       "horror",
-      "spettacolo",
       "notte"
     ],
     "Daffy and Porky/daffy_porky_leva_sala_macchine.jpg": [
@@ -787,7 +786,8 @@
       "lavoro"
     ],
     "Daffy and Porky/porky_daffy_finale_cerchi_rossi.png": [
-      "spettacolo"
+      "spettacolo",
+      "notte"
     ],
     "Daffy and Porky/porky_daffy_petunia_ombre_zombie.jpg": [
       "horror",
@@ -1362,8 +1362,7 @@
       "sera"
     ],
     "daffy_doc.jpg": [
-      "lavoro",
-      "spettacolo"
+      "lavoro"
     ],
     "bugs_veggente.png": [
       "sera",
@@ -1416,13 +1415,15 @@
       "jolly"
     ],
     "duck_tracy.jpg": [
-      "spettacolo"
+      "spettacolo",
+      "notte",
+      "horror"
     ],
     "daffy_paperclip.jpg": [
       "svago"
     ],
     "daffy_porky_compleanno.jpg": [
-      "spettacolo"
+      "svago"
     ],
     "daffy_porky_cinema.jpg": [
       "spettacolo"
@@ -1439,6 +1440,9 @@
     ],
     "looney_tunes_pinball.png": [
       "jolly"
+    ],
+    "coyote_vs_acme_wrecking.jpg": [
+      "estate"
     ]
   },
   "random_rules": {
@@ -1634,6 +1638,7 @@
           "lavoro",
           "mattino",
           "pomeriggio",
+          "pranzo",
           "tramonto"
         ],
         "match": "any",
