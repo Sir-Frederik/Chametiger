@@ -563,8 +563,7 @@
       "horror",
       "notte",
       "sera",
-      "crepuscolo",
-      "autunno"
+      "crepuscolo"
     ],
     "sylvester_arrampicata_corda.jpg": [
       "pomeriggio",
@@ -1064,8 +1063,7 @@
       "jolly",
       "autunno",
       "inverno",
-      "mattino",
-      "pomeriggio"
+      "mattino"
     ],
     "Looney Tunes Sports/team_usa_parigi_corsa.jpg": [],
     "marvin_daffy_porky_astronave.jpg": [
@@ -1406,6 +1404,9 @@
       "smart",
       "pomeriggio",
       "alba"
+    ],
+    "Looney Tunes Sports/daffy_surf_onda_Porky.jpg": [
+      "estate"
     ]
   },
   "random_rules": {
