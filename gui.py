@@ -1861,7 +1861,39 @@ class RuleEditor(tk.Frame):
                 segnale = "   <-- poche" if n < 5 else ""
                 lines.append(f"      in {p.get('name', '?')}: {n}{segnale}")
 
-        messagebox.showinfo("Verifica regole", "\n".join(lines))
+        self._mostra_verifica(lines)
+
+    def _mostra_verifica(self, lines: list[str]):
+        """Con tante regole e periodi un messagebox esce dallo schermo: serve lo scroll."""
+        dlg = tk.Toplevel(self)
+        dlg.title("Verifica regole")
+        dlg.configure(bg=BG)
+        dlg.transient(self.winfo_toplevel())
+
+        ttk.Button(dlg, text="Chiudi", command=dlg.destroy).pack(
+            side="bottom", anchor="e", padx=8, pady=(0, 8)
+        )
+
+        box = tk.Text(
+            dlg,
+            bg=ENTRY_BG,
+            fg=FG,
+            insertbackground=FG,
+            font=("Consolas", 9),
+            wrap="none",
+            borderwidth=0,
+            width=max(40, min(110, max(len(l) for l in lines) + 2)),
+            height=min(30, len(lines) + 1),
+        )
+        scroll = ttk.Scrollbar(dlg, orient="vertical", command=box.yview)
+        box.configure(yscrollcommand=scroll.set)
+        box.insert("1.0", "\n".join(lines))
+        box.configure(state="disabled")
+
+        scroll.pack(side="right", fill="y", pady=8)
+        box.pack(side="left", fill="both", expand=True, padx=(8, 0), pady=8)
+        dlg.bind("<Escape>", lambda e: dlg.destroy())
+        dlg.focus_set()
 
 
 def match_rule(image_tags, rule: dict) -> bool:

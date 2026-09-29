@@ -569,7 +569,7 @@
       "pomeriggio",
       "sport",
       "smart",
-      "mattino"
+      "alba"
     ],
     "sylvester_tweety_nido.jpg": [
       "crepuscolo"
@@ -684,7 +684,6 @@
     ],
     "coyote_travestito_pecora_gregge.jpg": [
       "alba",
-      "mattino",
       "tramonto",
       "lavoro"
     ],
@@ -719,12 +718,11 @@
       "horror"
     ],
     "Daffy and Porky/porky_daffy_colazione_cucina.jpg": [
-      "mattino"
+      "alba"
     ],
     "Daffy and Porky/porky_daffy_ufo_tetto_verticale.jpg": [],
     "Daffy and Porky/porky_daffy_lavano_denti.jpg": [
       "alba",
-      "mattino",
       "smart"
     ],
     "Daffy and Porky/chrome/locandina_the_day_the_earth_blew_up.png": [],
@@ -756,7 +754,6 @@
     ],
     "Daffy and Porky/contadino_porky_daffy_neonati.jpg": [
       "alba",
-      "mattino",
       "weekend",
       "smart"
     ],
@@ -781,7 +778,6 @@
     ],
     "Daffy and Porky/porky_daffy_moto_bazooka.jpg": [
       "alba",
-      "mattino",
       "lavoro"
     ],
     "Daffy and Porky/porky_daffy_finale_cerchi_rossi.png": [
@@ -929,8 +925,7 @@
     ],
     "Looney tunes christmas/nonna_sylvester_tweety_regalo_natale.png": [
       "natale",
-      "mattino",
-      "alba"
+      "mattino"
     ],
     "Looney tunes christmas/taz_happy_holidays_neve.jpg": [
       "natale",
@@ -949,10 +944,10 @@
     "Looney tunes christmas/bugs_taz_snowboard_pupazzo_neve.jpg": [
       "inverno",
       "sport",
-      "mattino",
       "pomeriggio",
       "svago",
-      "crepuscolo"
+      "crepuscolo",
+      "alba"
     ],
     "Looney tunes christmas/taz_bugs_sylvester_albero_natale_neve.jpg": [
       "mattino",
@@ -981,7 +976,8 @@
     ],
     "Looney Tunes Sports/bugs_daffy_taz_baseball_stadio.jpg": [
       "sport",
-      "jolly"
+      "jolly",
+      "smart"
     ],
     "Looney Tunes Sports/football_americano_mischia_bugs_foghorn.jpg": [
       "sport",
@@ -1016,7 +1012,6 @@
     ],
     "Looney Tunes Sports/daffy_bugs_golf_esplosivo_bunker.jpg": [
       "alba",
-      "mattino",
       "sport",
       "svago",
       "weekend"
@@ -1078,7 +1073,6 @@
     ],
     "cane_pastore_coyote_timbrano_neve.jpg": [
       "alba",
-      "mattino",
       "lavoro",
       "inverno"
     ],
@@ -1095,8 +1089,6 @@
     ],
     "pepe_le_pew_penelope_bosco.jpg": [
       "alba",
-      "mattino",
-      "pomeriggio",
       "primavera"
     ],
     "pepe_penelope_barca_luna_cuori.jpg": [
@@ -1183,7 +1175,6 @@
     ],
     "tutti_i_personaggi_poster.jpg": [
       "alba",
-      "mattino",
       "tramonto",
       "smart"
     ],
@@ -1395,7 +1386,7 @@
     "Looney Tunes Sports/olimpiadi_1996_poster_completo.jpg": [],
     "Looney Tunes Sports/bugs_lola_pattinaggio_primo_piano.jpg": [],
     "willy_dirupo_dipinto.png": [
-      "mattino"
+      "alba"
     ],
     "sylvester_tweety_gabbia_anonymous.png": [
       "pranzo"
@@ -1465,54 +1456,10 @@
         "rotate_minutes": 60
       },
       {
-        "from": "sunset -50m",
-        "to": "sunset +9m",
-        "include": [
-          "tramonto"
-        ],
-        "exclude": [],
-        "match": "all",
-        "rotate_minutes": 60
-      },
-      {
-        "from": "sunset +9m",
-        "to": "dusk +40m",
-        "include": [
-          "crepuscolo"
-        ],
-        "exclude": [
-          "mattino",
-          "tramonto"
-        ],
-        "match": "any",
-        "rotate_minutes": 60
-      },
-      {
-        "from": "dusk +40m",
-        "to": "22:00",
-        "include": [
-          "sera",
-          "spettacolo"
-        ],
-        "exclude": [],
-        "match": "any",
-        "rotate_minutes": 60
-      },
-      {
-        "from": "23:00",
-        "to": "dawn -20m",
-        "include": [
-          "notte"
-        ],
-        "exclude": [],
-        "match": "all",
-        "rotate_minutes": 90
-      },
-      {
         "from": "sunrise +60m",
-        "to": "09:00",
+        "to": "10:00",
         "include": [
-          "mattino"
+          "alba"
         ],
         "exclude": [
           "notte"
@@ -1521,7 +1468,7 @@
         "rotate_minutes": 60
       },
       {
-        "from": "09:00",
+        "from": "10:00",
         "to": "13:00",
         "include": [
           "jolly",
@@ -1555,7 +1502,7 @@
       },
       {
         "from": "14:00",
-        "to": "sunset -40m",
+        "to": "sunset -50m",
         "include": [
           "lavoro",
           "pomeriggio",
@@ -1576,6 +1523,37 @@
         "rotate_minutes": 60
       },
       {
+        "from": "sunset -50m",
+        "to": "sunset +9m",
+        "include": [
+          "tramonto"
+        ],
+        "exclude": [],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunset +9m",
+        "to": "dusk +40m",
+        "include": [
+          "crepuscolo"
+        ],
+        "exclude": [],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "dusk +40m",
+        "to": "22:00",
+        "include": [
+          "sera",
+          "spettacolo"
+        ],
+        "exclude": [],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
         "from": "22:00",
         "to": "23:00",
         "include": [
@@ -1589,6 +1567,16 @@
         ],
         "match": "any",
         "rotate_minutes": 60
+      },
+      {
+        "from": "23:00",
+        "to": "dawn -20m",
+        "include": [
+          "notte"
+        ],
+        "exclude": [],
+        "match": "all",
+        "rotate_minutes": 90
       }
     ],
     "weekend": [
@@ -1606,61 +1594,8 @@
         "rotate_minutes": 60
       },
       {
-        "from": "sunset -50m",
-        "to": "sunset +9m",
-        "include": [
-          "tramonto"
-        ],
-        "exclude": [],
-        "match": "all",
-        "rotate_minutes": 60
-      },
-      {
-        "from": "sunset +9m",
-        "to": "dusk +30m",
-        "include": [
-          "crepuscolo",
-          "sera"
-        ],
-        "exclude": [
-          "lavoro",
-          "mattino",
-          "tramonto"
-        ],
-        "match": "any",
-        "rotate_minutes": 60
-      },
-      {
-        "from": "dusk +30m",
-        "to": "23:00",
-        "include": [
-          "sera",
-          "spettacolo",
-          "weekend"
-        ],
-        "exclude": [
-          "lavoro",
-          "mattino",
-          "pomeriggio",
-          "pranzo",
-          "tramonto"
-        ],
-        "match": "any",
-        "rotate_minutes": 60
-      },
-      {
-        "from": "23:00",
-        "to": "dawn -20m",
-        "include": [
-          "notte"
-        ],
-        "exclude": [],
-        "match": "all",
-        "rotate_minutes": 60
-      },
-      {
         "from": "sunrise +60m",
-        "to": "09:00",
+        "to": "10:00",
         "include": [
           "mattino"
         ],
@@ -1672,7 +1607,7 @@
         "rotate_minutes": 60
       },
       {
-        "from": "09:00",
+        "from": "10:00",
         "to": "13:00",
         "include": [
           "jolly",
@@ -1706,7 +1641,7 @@
       },
       {
         "from": "15:00",
-        "to": "sunset -40m",
+        "to": "sunset -50m",
         "include": [
           "pomeriggio",
           "sport",
@@ -1721,12 +1656,64 @@
         ],
         "match": "any",
         "rotate_minutes": 60
+      },
+      {
+        "from": "sunset -50m",
+        "to": "sunset +9m",
+        "include": [
+          "tramonto"
+        ],
+        "exclude": [],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunset +9m",
+        "to": "dusk +30m",
+        "include": [
+          "crepuscolo"
+        ],
+        "exclude": [
+          "lavoro"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "dusk +30m",
+        "to": "23:00",
+        "include": [
+          "sera",
+          "spettacolo",
+          "svago",
+          "weekend"
+        ],
+        "exclude": [
+          "alba",
+          "lavoro",
+          "mattino",
+          "pomeriggio",
+          "pranzo",
+          "tramonto"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "23:00",
+        "to": "dawn -20m",
+        "include": [
+          "notte"
+        ],
+        "exclude": [],
+        "match": "all",
+        "rotate_minutes": 60
       }
     ],
     "overrides": {
       "monday": [
         {
-          "from": "09:00",
+          "from": "10:00",
           "to": "13:00",
           "include": [
             "lavoro",
@@ -1798,7 +1785,7 @@
       ],
       "wednesday": [
         {
-          "from": "09:00",
+          "from": "10:00",
           "to": "13:00",
           "include": [
             "jolly",
@@ -1853,7 +1840,7 @@
       "friday": [
         {
           "from": "09:00",
-          "to": "10:00",
+          "to": "11:00",
           "include": [
             "jolly",
             "sport"
