@@ -766,7 +766,9 @@
       "pomeriggio",
       "mattino"
     ],
-    "Daffy and Porky/porky_daffy_petunia_fuga_gomma_aliena.jpg": [],
+    "Daffy and Porky/porky_daffy_petunia_fuga_gomma_aliena.jpg": [
+      "spettacolo"
+    ],
     "Daffy and Porky/porky_daffy_petunia_tavola_calda.png": [
       "sera",
       "svago"
@@ -802,7 +804,9 @@
       "weekend",
       "lavoro"
     ],
-    "Daffy and Porky/porky_daffy_abbraccio_porta.jpg": [],
+    "Daffy and Porky/porky_daffy_abbraccio_porta.jpg": [
+      "svago"
+    ],
     "Daffy and Porky/daffy_astronauta_maxischermo_citta.png": [],
     "daffy_amaca_spiaggia_ukulele.jpg": [
       "estate",
@@ -1438,6 +1442,49 @@
     ],
     "Ralph_Sam_Beatup.jpg": [
       "crepuscolo"
+    ],
+    "bugs_fox_police.png": [
+      "svago"
+    ],
+    "bugs_halloween_zucca.jpg": [
+      "horror"
+    ],
+    "bugs_scherzi.jpg": [
+      "smart"
+    ],
+    "DuckAmuck.jpg": [
+      "spettacolo"
+    ],
+    "elmer_bosco_daffy.jpg": [
+      "smart"
+    ],
+    "hazel_bugs.jpeg": [
+      "crepuscolo"
+    ],
+    "lola_land.png": [
+      "sera"
+    ],
+    "Looney tunes christmas/taz_pupazzo_neve.jpg": [
+      "natale"
+    ],
+    "marv_space_extended2.jpg.png": [],
+    "pepe_valentine.jpg": [
+      "inverno"
+    ],
+    "taz_vampiro_halloween.jpg": [
+      "notte"
+    ],
+    "titti_crazy.png": [
+      "crepuscolo"
+    ],
+    "titti_zucca.jpg": [
+      "horror"
+    ],
+    "whats_opera_doc2.jpg": [
+      "sera"
+    ],
+    "willy_lavagna.png": [
+      "lavoro"
     ]
   },
   "random_rules": {
