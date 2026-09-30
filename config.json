@@ -1689,6 +1689,7 @@
           "alba",
           "crepuscolo",
           "mattino",
+          "pomeriggio",
           "tramonto"
         ],
         "match": "any",
@@ -1833,6 +1834,7 @@
         ],
         "exclude": [
           "alba",
+          "crepuscolo",
           "lavoro",
           "mattino",
           "pomeriggio",
