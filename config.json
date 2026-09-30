@@ -1485,6 +1485,13 @@
     ],
     "willy_lavagna.png": [
       "lavoro"
+    ],
+    "Ralph_canna_pesca_pecora_lattuga.png": [
+      "alba",
+      "crepuscolo",
+      "lavoro",
+      "primavera",
+      "autunno"
     ]
   },
   "random_rules": {
