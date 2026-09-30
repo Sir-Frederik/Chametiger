@@ -551,7 +551,8 @@
     "natale",
     "sport",
     "horror",
-    "jolly"
+    "jolly",
+    "sanValentino"
   ],
   "image_library": {
     "personaggi_riquadri_colorati_bianco_nero.jpg": [
@@ -632,7 +633,8 @@
       "spettacolo"
     ],
     "bugs_taz_cassa_pericolo.jpeg": [
-      "pomeriggio"
+      "pomeriggio",
+      "smart"
     ],
     "bugs_yosemite_sam_pesca_barca.jpg": [
       "tramonto",
@@ -656,7 +658,8 @@
       "sera"
     ],
     "collage_locandine_classiche.jpg": [
-      "jolly"
+      "jolly",
+      "mattino"
     ],
     "coyote_caduta_vuoto.jpg": [
       "tramonto"
@@ -905,7 +908,8 @@
     ],
     "Looney tunes christmas/capodanno_fuochi_artificio.jpg": [
       "inverno",
-      "natale"
+      "natale",
+      "notte"
     ],
     "Looney tunes christmas/chrome/natale_personaggi_addobbano_albero.jpg": [
       "natale"
@@ -1093,7 +1097,8 @@
     ],
     "pepe_le_pew_penelope_bosco.jpg": [
       "alba",
-      "primavera"
+      "primavera",
+      "sanValentino"
     ],
     "pepe_penelope_barca_luna_cuori.jpg": [
       "crepuscolo",
@@ -1102,7 +1107,8 @@
       "inverno",
       "estate",
       "smart",
-      "weekend"
+      "weekend",
+      "sanValentino"
     ],
     "personaggi_cerchio_bugs_centro.jpg": [
       "jolly",
@@ -1199,7 +1205,8 @@
       "weekend"
     ],
     "bugs_daffy_scrivania_ufficio.jpg": [
-      "lavoro"
+      "lavoro",
+      "mattino"
     ],
     "daffy_cacciatori.png": [
       "autunno",
@@ -1257,9 +1264,9 @@
       "autunno"
     ],
     "speedy_gonzales_amore.png": [
-      "inverno",
       "pomeriggio",
-      "svago"
+      "svago",
+      "sanValentino"
     ],
     "taz_bugs_daffy_foghorn_processo.png": [
       "lavoro"
@@ -1328,7 +1335,9 @@
       "tramonto"
     ],
     "Willy_pittura_galleria.png": [
-      "lavoro"
+      "lavoro",
+      "pomeriggio",
+      "mattino"
     ],
     "willy_mangia_pillole.png": [
       "pranzo"
@@ -1355,7 +1364,8 @@
       "sera"
     ],
     "daffy_doc.jpg": [
-      "lavoro"
+      "lavoro",
+      "mattino"
     ],
     "bugs_veggente.png": [
       "sera",
@@ -1419,23 +1429,30 @@
       "svago"
     ],
     "daffy_porky_cinema.jpg": [
-      "spettacolo"
+      "spettacolo",
+      "weekend"
     ],
     "bugs_bunny_arpa.jpg": [
       "crepuscolo",
       "svago"
     ],
     "daffy_razzo_valigia.jpg": [
-      "jolly"
+      "jolly",
+      "mattino",
+      "svago"
     ],
     "bugs_elmer_barber_seville.png": [
       "lavoro"
     ],
     "looney_tunes_pinball.png": [
-      "jolly"
+      "jolly",
+      "smart"
     ],
     "coyote_vs_acme_wrecking.jpg": [
-      "estate"
+      "estate",
+      "tramonto",
+      "autunno",
+      "alba"
     ],
     "Looney Tunes Sports/daffy_surf_onda_Porky.jpg": [
       "estate"
@@ -1444,47 +1461,67 @@
       "crepuscolo"
     ],
     "bugs_fox_police.png": [
-      "svago"
+      "svago",
+      "pomeriggio",
+      "primavera"
     ],
     "bugs_halloween_zucca.jpg": [
-      "horror"
-    ],
-    "bugs_scherzi.jpg": [
-      "smart"
-    ],
-    "DuckAmuck.jpg": [
-      "spettacolo"
-    ],
-    "elmer_bosco_daffy.jpg": [
-      "smart"
-    ],
-    "hazel_bugs.jpeg": [
+      "horror",
       "crepuscolo"
     ],
+    "bugs_scherzi.jpg": [
+      "smart",
+      "crepuscolo",
+      "autunno",
+      "svago"
+    ],
+    "DuckAmuck.jpg": [
+      "spettacolo",
+      "tramonto",
+      "estate"
+    ],
+    "elmer_bosco_daffy.jpg": [
+      "smart",
+      "crepuscolo",
+      "primavera",
+      "autunno"
+    ],
+    "hazel_bugs.jpeg": [
+      "crepuscolo",
+      "horror"
+    ],
     "lola_land.png": [
-      "sera"
+      "sera",
+      "svago",
+      "spettacolo",
+      "crepuscolo"
     ],
     "Looney tunes christmas/taz_pupazzo_neve.jpg": [
       "natale"
     ],
     "marv_space_extended2.jpg.png": [],
     "pepe_valentine.jpg": [
-      "inverno"
+      "inverno",
+      "sanValentino"
     ],
     "taz_vampiro_halloween.jpg": [
-      "notte"
+      "notte",
+      "horror"
     ],
     "titti_crazy.png": [
-      "crepuscolo"
+      "crepuscolo",
+      "smart"
     ],
     "titti_zucca.jpg": [
       "horror"
     ],
     "whats_opera_doc2.jpg": [
-      "sera"
+      "sera",
+      "spettacolo"
     ],
     "willy_lavagna.png": [
-      "lavoro"
+      "lavoro",
+      "crepuscolo"
     ],
     "Ralph_canna_pesca_pecora_lattuga.png": [
       "alba",
@@ -1492,6 +1529,50 @@
       "lavoro",
       "primavera",
       "autunno"
+    ],
+    "Bugs_Bunny_spiaggia.jpg": [
+      "estate",
+      "svago",
+      "mattino"
+    ],
+    "Bugs_daffy_moschettieri.jpg": [
+      "sera",
+      "spettacolo"
+    ],
+    "looney_ambulanza.jpg": [
+      "lavoro",
+      "pomeriggio"
+    ],
+    "Pete_Puma_Bugs.jpg": [
+      "pomeriggio",
+      "svago"
+    ],
+    "petunia_porky_love.gif": [
+      "sanValentino"
+    ],
+    "Planet_of_taz.jpg": [
+      "pomeriggio",
+      "estate",
+      "smart",
+      "tramonto"
+    ],
+    "Planet_of_taz_Daffy_Porky.gif": [
+      "estate",
+      "tramonto",
+      "smart"
+    ],
+    "Sorceress_Petunia_29.png": [],
+    "yosemite_danza.jpg": [
+      "pomeriggio",
+      "svago"
+    ],
+    "yosemite_sam_Bugs_nozze.jpg": [
+      "svago",
+      "inverno"
+    ],
+    "yosemite_sam_cavallo_schizzo.png": [
+      "jolly",
+      "mattino"
     ]
   },
   "random_rules": {
@@ -1601,9 +1682,15 @@
         "to": "22:00",
         "include": [
           "sera",
-          "spettacolo"
+          "spettacolo",
+          "svago"
         ],
-        "exclude": [],
+        "exclude": [
+          "alba",
+          "crepuscolo",
+          "mattino",
+          "tramonto"
+        ],
         "match": "any",
         "rotate_minutes": 60
       },
@@ -1615,6 +1702,8 @@
           "spettacolo"
         ],
         "exclude": [
+          "alba",
+          "crepuscolo",
           "mattino",
           "pomeriggio",
           "tramonto"
