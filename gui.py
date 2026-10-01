@@ -14,6 +14,7 @@ from tkinter import ttk, filedialog, messagebox, simpledialog
 from pathlib import Path
 from datetime import date, datetime, timedelta
 
+import date_mobili
 import sun
 from versione import VERSIONE
 
@@ -159,7 +160,7 @@ class ChametigerEditor(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title(f"Chametiger {VERSIONE} - Editor Configurazione")
-        self.geometry("1040x720")
+        self.geometry("1040x780")
         self.minsize(900, 600)
 
         try:
@@ -2108,44 +2109,38 @@ MESI_IT = [
     "dicembre",
 ]
 
-GIORNI_MESE = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-
-
 def md_valido(s: str) -> bool:
-    """'10-20' valido. Il 29 febbraio si accetta: l'anno non entra nel confronto."""
-    try:
-        m, g = str(s).strip().split("-")
-        m, g = int(m), int(g)
-    except Exception:
-        return False
-    return 1 <= m <= 12 and 1 <= g <= GIORNI_MESE[m - 1]
+    """'10-20' o 'pasqua-5' validi. Il 29 febbraio si accetta: l'anno non entra nel confronto."""
+    return date_mobili.valida(s)
 
 
-def md_ordinale(s: str) -> int | None:
-    """'10-20' -> 1020, per i confronti fra date senza anno."""
-    try:
-        m, g = str(s).strip().split("-")[-2:]
-        return int(m) * 100 + int(g)
-    except Exception:
-        return None
+def md_ordinale(s: str, anno: int | None = None) -> int | None:
+    """
+    '10-20' -> 1020, per i confronti fra date senza anno. Le date relative a
+    Pasqua si risolvono nell'anno dato, di default quello corrente.
+    """
+    return date_mobili.ordinale(str(s or "").strip(), anno or date.today().year)
 
 
-def md_leggibile(s: str) -> str:
-    """'10-20' -> '20 ottobre'."""
-    try:
-        m, g = str(s).strip().split("-")
-        return f"{int(g)} {MESI_IT[int(m) - 1]}"
-    except Exception:
+def md_leggibile(s: str, anno: int | None = None) -> str:
+    """'10-20' -> '20 ottobre'; 'pasqua-5' -> 'pasqua-5 (31 marzo)' nell'anno dato."""
+    o = md_ordinale(s, anno)
+    if o is None:
         return str(s)
+    testo = f"{o % 100} {MESI_IT[o // 100 - 1]}"
+    if date_mobili.e_mobile(s):
+        return f"{str(s).strip()} ({testo})"
+    return testo
 
 
 def md_breve(s: str) -> str:
-    """'10-20' -> '20 ott'."""
-    try:
-        m, g = str(s).strip().split("-")
-        return f"{int(g)} {MESI_IT[int(m) - 1][:3]}"
-    except Exception:
+    """'10-20' -> '20 ott'. Una data relativa a Pasqua resta scritta com'e'."""
+    if date_mobili.e_mobile(s):
+        return str(s).strip()
+    o = md_ordinale(s)
+    if o is None:
         return str(s)
+    return f"{o % 100} {MESI_IT[o // 100 - 1][:3]}"
 
 
 def md_copre(inizio: int, fine: int, giorno: date) -> bool:
@@ -2176,7 +2171,10 @@ def etichetta_fasce(period: dict) -> str:
 
 
 def giorno_anno(md: str) -> int | None:
-    """'03-01' -> 60: indice del giorno su un anno bisestile, da 0 a 365."""
+    """
+    '03-01' -> 60: indice del giorno su un anno bisestile, da 0 a 365. Le date
+    relative a Pasqua cadono dove cadono quest'anno.
+    """
     o = md_ordinale(md)
     if o is None:
         return None
@@ -2204,8 +2202,8 @@ class GraficoAnno(tk.Canvas):
     seleziona il periodo nella sua tabella.
     """
 
-    RIGA = 14
-    TESTATA = 18
+    RIGA = 13
+    TESTATA = 16
     SEPARATORE = 8
     MARGINE_SX = 112
 
@@ -2236,6 +2234,11 @@ class GraficoAnno(tk.Canvas):
             return
         x0 = self.MARGINE_SX
         px = (larghezza - x0 - 10) / 366
+
+        # L'anno in alto a sinistra: le date relative a Pasqua sono quelle sue
+        self.create_text(
+            6, 8, anchor="w", text=str(date.today().year), fill=FG2, font=("Segoe UI", 8)
+        )
 
         # Mesi
         for m in range(12):
@@ -2309,11 +2312,11 @@ class TabellaPeriodi(tk.Frame):
             self, columns=("nome", "dal", "al", "tag", "fasce"), show="headings", height=5
         )
         for c, t, w in (
-            ("nome", "Nome", 105),
-            ("dal", "Dal", 60),
-            ("al", "Al", 60),
-            ("tag", "Tag", 120),
-            ("fasce", "Fasce", 50),
+            ("nome", "Nome", 95),
+            ("dal", "Dal", 70),
+            ("al", "Al", 70),
+            ("tag", "Tag", 150),
+            ("fasce", "Fasce", 42),
         ):
             self._tree.heading(c, text=t)
             self._tree.column(c, width=w, anchor="w")
@@ -2445,10 +2448,9 @@ class PeriodsTab(tk.Frame):
     def _build(self):
         intro = tk.Label(
             self,
-            text="Le stagioni coprono l'anno; dove due si sovrappongono valgono entrambe. "
-            "Gli eventi si annidano sopra (sta sopra il piu' corto). "
-            "Nelle ore che le fasce di un evento non coprono si scende allo strato sotto. "
-            "Un tag di stagione o evento vale solo nei suoi giorni.",
+            text="Le stagioni coprono l'anno e dove si sovrappongono valgono entrambe. "
+            "Gli eventi si annidano sopra (sta sopra il piu' corto); nelle ore che le "
+            "loro fasce non coprono si scende allo strato sotto.",
             bg=BG,
             fg=FG2,
             font=("Segoe UI", 9),
@@ -2820,7 +2822,8 @@ class PeriodDialog(tk.Toplevel):
         tk.Label(
             self,
             text="Formato mese-giorno, senza anno: il periodo si ripete ogni anno.\n"
-            "Se la data finale precede quella iniziale, il periodo scavalca il capodanno.",
+            "Se la data finale precede quella iniziale, il periodo scavalca il capodanno.\n"
+            "Per le feste mobili: pasqua, pasqua-5, pasqua+2 (giorni prima o dopo Pasqua).",
             bg=BG,
             fg=FG2,
             font=("Segoe UI Italic", 8),
@@ -2985,19 +2988,31 @@ class PeriodDialog(tk.Toplevel):
     def _aggiorna_date(self):
         a, b = self._from.get().strip(), self._to.get().strip()
         if not (md_valido(a) and md_valido(b)):
-            self._date_lbl.config(text="Date non valide (formato MM-GG).", fg=DANGER)
+            self._date_lbl.config(
+                text="Date non valide (formato MM-GG, oppure pasqua-5).", fg=DANGER
+            )
             return
-        oa, ob = md_ordinale(a), md_ordinale(b)
+        anno = date.today().year
+        oa, ob = md_ordinale(a, anno), md_ordinale(b, anno)
         salto = " (scavalca il capodanno)" if oa > ob else ""
         giorni = sum(
             1
             for d in range(366)
             if md_copre(oa, ob, date(2024, 1, 1) + timedelta(days=d))
         )
-        self._date_lbl.config(
-            text=f"Dal {md_leggibile(a)} al {md_leggibile(b)}{salto} - {giorni} giorni.",
-            fg=FG2,
-        )
+        testo = f"Dal {md_leggibile(a, anno)} al {md_leggibile(b, anno)}{salto} - {giorni} giorni."
+        if date_mobili.e_mobile(a) or date_mobili.e_mobile(b):
+            # Pasqua si sposta: l'anno prossimo le stesse date cadono altrove
+
+            def giorno(s, y):
+                o = md_ordinale(s, y)
+                return f"{o % 100} {MESI_IT[o // 100 - 1]}"
+
+            testo = (
+                f"Nel {anno} dal {giorno(a, anno)} al {giorno(b, anno)} ({giorni} giorni), "
+                f"nel {anno + 1} dal {giorno(a, anno + 1)} al {giorno(b, anno + 1)}."
+            )
+        self._date_lbl.config(text=testo, fg=FG2)
 
     def _collect(self, lb) -> list[str]:
         return [lb.get(i) for i in lb.curselection()]
@@ -3026,7 +3041,8 @@ class PeriodDialog(tk.Toplevel):
             if not md_valido(valore):
                 messagebox.showerror(
                     "Errore",
-                    f"Data {etichetta} non valida: '{valore}'.\nFormato MM-GG, es. 10-20.",
+                    f"Data {etichetta} non valida: '{valore}'.\n"
+                    "Formato MM-GG (es. 10-20), oppure pasqua, pasqua-5, pasqua+2.",
                     parent=self,
                 )
                 return

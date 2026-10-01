@@ -1,7 +1,7 @@
 # 🦎 Chametiger
 
-**v4.1** — 1 ottobre 2026
-Vietati sempre: un tag che in un periodo non deve uscire, qualunque altro tag porti l'immagine.
+**v4.2** — 1 ottobre 2026
+Pasqua: date relative alla festa mobile, ricalcolate ogni anno.
 
 
 Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno**, al **giorno della settimana**, alla **stagione**, agli **eventi** dell'anno e agli **orari reali di alba e tramonto**.
@@ -9,6 +9,12 @@ Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorn
 Ogni fascia oraria pesca fra le immagini che hanno certi **tag**, e le fa scorrere tutte prima di ripeterle.
 
 ---
+
+## Novità della 4.2
+
+- **Date relative a Pasqua.** Le date di stagioni ed eventi accettano, oltre a `MM-GG`, anche `pasqua`, `pasqua-5`, `pasqua+2`: giorni prima o dopo la domenica di Pasqua, ricalcolata ogni anno (algoritmo di Meeus, in `date_mobili.py`, senza dipendenze). La durata la decidi tu con lo scostamento. Vedi [Feste mobili](#feste-mobili).
+- **Evento Pasqua** nel config, da `pasqua-5` a `pasqua+2` (8 giorni: nel 2027 dal 23 al 30 marzo), col tag `pasqua` e niente horror.
+- **Il dialogo mostra dove cadono le date mobili** quest'anno e il prossimo; il grafico dell'anno indica l'anno a cui si riferisce.
 
 ## Novità della 4.1
 
@@ -80,6 +86,7 @@ Ogni fascia oraria pesca fra le immagini che hanno certi **tag**, e le fa scorre
 ├── sun.py          ← Orari solari: alba, tramonto, crepuscolo, mezzogiorno vero
 ├── verifica_immagini.py ← Simula un anno e trova le immagini che non escono mai
 ├── versione.py     ← Numero di versione, mostrato nel tray e nell'editor
+├── date_mobili.py  ← Date di stagioni ed eventi, comprese quelle relative a Pasqua
 ├── config.json     ← Configurazione: regole, stagioni, eventi, tag, libreria
 ├── log.json        ← Storico delle estrazioni casuali (generato)
 ├── chametiger.log  ← Log testuale (generato)
@@ -305,13 +312,29 @@ Due livelli di periodi, entrambi intervalli di date che si ripetono ogni anno:
 
 | Campo          | Effetto                                                                   |
 | -------------- | ------------------------------------------------------------------------- |
-| `from` / `to`  | `MM-GG`, **senza anno**: il periodo si ripete ogni anno. Se la fine precede l'inizio scavalca il capodanno |
+| `from` / `to`  | `MM-GG`, **senza anno**: il periodo si ripete ogni anno. Se la fine precede l'inizio scavalca il capodanno. Per le feste mobili: `pasqua-5`, `pasqua+2` |
 | `tags`         | I tag del periodo: valgono solo nei suoi giorni                            |
 | `veto`         | Tag vietati senza appello nei giorni del periodo: basta averne uno e l'immagine è fuori |
 | `random_rules` | Fasce proprie, con la stessa forma di `random_rules`. Si editano col pulsante **Fasce** |
 | `prefer`       | Tag preferiti: il pool si restringe a quelli solo se ne resta abbastanza   |
 | `prefer_min`   | Soglia di `prefer`. Senza, con pochi tag preferiti la fascia resta fissa   |
 | `require`      | Tag obbligatori, si sommano all'`include` (in AND). Raro                   |
+
+### Feste mobili
+
+Pasqua cade fra il 22 marzo e il 25 aprile, quindi una data fissa sarebbe giusta un anno su tanti. Nei campi `from` e `to` si può scrivere una data **relativa alla domenica di Pasqua**:
+
+```json
+{ "name": "Pasqua", "from": "pasqua-5", "to": "pasqua+2", "tags": ["pasqua"], "veto": ["horror"] }
+```
+
+| Scrittura      | Giorno                                   |
+| -------------- | ---------------------------------------- |
+| `pasqua`       | La domenica di Pasqua                    |
+| `pasqua-5`     | Cinque giorni prima (anche `pasqua - 5g`) |
+| `pasqua+1`     | Il lunedì dell'Angelo                    |
+
+La data si ricalcola **ogni anno**, così l'evento dura sempre quanto hai deciso: `pasqua-5 → pasqua+2` sono 8 giorni, dal 31 marzo al 7 aprile nel 2026 e dal 23 al 30 marzo nel 2027. Una data fissa e una mobile si possono anche mescolare (`03-01 → pasqua`). Il dialogo dell'evento mostra dove cadono le date quest'anno e il prossimo; il grafico le disegna nell'anno corrente.
 
 ### La pila del giorno
 
@@ -405,7 +428,7 @@ In **Impostazioni → Posizione** si impostano latitudine e longitudine, con un 
 `chametiger.log` registra ogni cambio di sfondo indicando **quale regola** ha vinto:
 
 ```
-[2026-12-25 15:00:03] Avvio Chametiger 4.1.
+[2026-12-25 15:00:03] Avvio Chametiger 4.2.
 [2026-12-25 15:00:03] [OK] Sfondo impostato (weekday [Inverno] 14:00-18:00 [lavoro/pomeriggio -smart]): G:\Temi\...
 [2026-12-25 16:00:07] [OK] Sfondo impostato (evento Natale weekday sunset-40m (15:57)-23:30 [natale]): G:\Temi\...
 ```

@@ -19,6 +19,7 @@ from datetime import date, datetime, timedelta
 from functools import lru_cache
 from pathlib import Path
 
+import date_mobili
 import sun
 from versione import VERSIONE
 
@@ -226,7 +227,9 @@ def _tags_of(rule: dict) -> str:
 # ═══════════════════════════════════════════════════════════════════════════════
 #
 #  Due livelli di periodi, entrambi intervalli di date che si ripetono ogni anno
-#  ("09-10" -> "10-10", anche a cavallo del capodanno):
+#  ("09-10" -> "10-10", anche a cavallo del capodanno). Una data puo' anche
+#  essere relativa a Pasqua ("pasqua-5" -> "pasqua+2"), e si ricalcola ogni
+#  anno: vedi date_mobili.py.
 #
 #    seasons  coprono l'anno intero. Dove due si sovrappongono c'e' una
 #             transizione, e valgono tutte e due
@@ -265,31 +268,15 @@ def _tags_of(rule: dict) -> str:
 _ANNO_BISESTILE = 2024
 
 
-@lru_cache(maxsize=512)
-def _md_ordinal(s: str) -> int | None:
-    """'10-20' -> 1020. Accetta anche 'AAAA-MM-GG', ignorando l'anno."""
-    pezzi = str(s).strip().split("-")
-    if len(pezzi) == 3:
-        pezzi = pezzi[1:]
-    if len(pezzi) != 2:
-        return None
-    try:
-        mese, giorno = int(pezzi[0]), int(pezzi[1])
-    except ValueError:
-        return None
-    if not (1 <= mese <= 12 and 1 <= giorno <= 31):
-        return None
-    return mese * 100 + giorno
-
-
 def period_active(period: dict, giorno: date) -> bool:
     """
     True se il periodo copre quella data. Il salto di capodanno ("10-11" ->
     "01-03") si gestisce come le fasce a cavallo della mezzanotte: confronto
-    invertito, nessun caso speciale sull'anno.
+    invertito, nessun caso speciale sull'anno. Le date relative a Pasqua si
+    risolvono nell'anno della data chiesta.
     """
-    start = _md_ordinal(period.get("from", ""))
-    end = _md_ordinal(period.get("to", ""))
+    start = date_mobili.ordinale(str(period.get("from", "")), giorno.year)
+    end = date_mobili.ordinale(str(period.get("to", "")), giorno.year)
     if start is None or end is None:
         return False
     oggi = giorno.month * 100 + giorno.day
@@ -298,10 +285,13 @@ def period_active(period: dict, giorno: date) -> bool:
     return oggi >= start or oggi <= end
 
 
-def durata_periodo(period: dict) -> int:
-    """Quanti giorni copre il periodo, contati su un anno bisestile."""
-    start = _md_ordinal(period.get("from", ""))
-    end = _md_ordinal(period.get("to", ""))
+def durata_periodo(period: dict, anno: int = _ANNO_BISESTILE) -> int:
+    """
+    Quanti giorni copre il periodo, contati su un anno bisestile. `anno` serve
+    solo a risolvere le date relative a Pasqua.
+    """
+    start = date_mobili.ordinale(str(period.get("from", "")), anno)
+    end = date_mobili.ordinale(str(period.get("to", "")), anno)
     if start is None or end is None:
         return 0
     try:
@@ -340,7 +330,7 @@ def stagioni_attive(config: dict, giorno: date) -> list[dict]:
 def eventi_attivi(config: dict, giorno: date) -> list[dict]:
     """Gli eventi che coprono la data, dal piu' interno (il piu' corto) in giu'."""
     attivi = [
-        (durata_periodo(e), i, e)
+        (durata_periodo(e, giorno.year), i, e)
         for i, e in enumerate(config.get("events", []) or [])
         if period_active(e, giorno)
     ]

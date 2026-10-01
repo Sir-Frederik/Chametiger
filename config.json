@@ -29,7 +29,8 @@
     "jolly",
     "sanValentino",
     "capodanno",
-    "compleanno"
+    "compleanno",
+    "pasqua"
   ],
   "image_library": {
     "personaggi_riquadri_colorati_bianco_nero.jpg": [
@@ -1754,6 +1755,17 @@
           }
         ]
       }
+    },
+    {
+      "name": "Pasqua",
+      "from": "pasqua-5",
+      "to": "pasqua+2",
+      "tags": [
+        "pasqua"
+      ],
+      "veto": [
+        "horror"
+      ]
     },
     {
       "name": "Halloween",
