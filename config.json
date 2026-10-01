@@ -1674,15 +1674,6 @@
       }
     },
     {
-      "name": "San Valentino",
-      "from": "01-10",
-      "to": "01-15",
-      "tags": [
-        "sanValentino"
-      ],
-      "veto": [
-        "horror"
-      ],
       "random_rules": {
         "weekday": [
           {
@@ -1754,7 +1745,16 @@
             "rotate_minutes": 60
           }
         ]
-      }
+      },
+      "name": "San Valentino",
+      "from": "01-10",
+      "to": "01-15",
+      "tags": [
+        "sanValentino"
+      ],
+      "veto": [
+        "horror"
+      ]
     },
     {
       "name": "Pasqua",
