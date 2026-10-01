@@ -1010,17 +1010,10 @@ class TagsTab(tk.Frame):
             # vanno passate per RIFERIMENTO, non copiate: _rename e _delete le
             # modificano in place, e su una copia il rinomino non arriverebbe
             # mai al config.
-            voce = {}
-            for chiave_periodo, chiave_regola in (
-                ("require", "include"),
-                ("tags", "exclude"),
-                ("prefer", "prefer"),
-            ):
+            for chiave_periodo in ("require", "tags", "prefer", "veto"):
                 lst = period.get(chiave_periodo)
                 if isinstance(lst, list):
-                    voce[chiave_regola] = lst
-            if voce:
-                out.append(voce)
+                    out.append({"include": lst})
             out += raccogli(period.get("random_rules", {}) or {})
         return out
 
@@ -1761,6 +1754,8 @@ def match_rule(image_tags, rule: dict) -> bool:
     for t in rule.get("exclude", []):
         if t in tags:
             return False
+    if tags & set(rule.get("veto") or ()):
+        return False
     include = rule.get("include", [])
     if not include:
         return True
@@ -2357,7 +2352,8 @@ class TabellaPeriodi(tk.Frame):
                     p.get("name", "?"),
                     md_breve(p.get("from", "")),
                     md_breve(p.get("to", "")),
-                    ", ".join(p.get("tags") or []) or "-",
+                    (", ".join(p.get("tags") or []) or "-")
+                    + ("  no " + ", ".join(p["veto"]) if p.get("veto") else ""),
                     n_regole or "-",
                 ),
             )
@@ -2773,7 +2769,7 @@ class PeriodDialog(tk.Toplevel):
         evento = chiave == "events"
 
         top = tk.Frame(self, bg=BG)
-        top.grid(row=0, column=0, columnspan=3, sticky="w", padx=16, pady=(14, 2))
+        top.grid(row=0, column=0, columnspan=4, sticky="w", padx=16, pady=(14, 2))
 
         tk.Label(top, text="Nome", bg=BG, fg=FG, font=("Segoe UI", 9)).pack(side="left")
         # NON chiamarlo _name: tkinter usa Misc._name per il nome del widget e
@@ -2817,7 +2813,7 @@ class PeriodDialog(tk.Toplevel):
         ).pack(side="left", padx=6)
 
         self._date_lbl = tk.Label(self, bg=BG, fg=FG2, font=("Segoe UI", 9), anchor="w")
-        self._date_lbl.grid(row=1, column=0, columnspan=3, sticky="w", padx=16)
+        self._date_lbl.grid(row=1, column=0, columnspan=4, sticky="w", padx=16)
         for var in (self._from, self._to):
             var.trace_add("write", lambda *_: self._aggiorna_date())
 
@@ -2829,11 +2825,12 @@ class PeriodDialog(tk.Toplevel):
             fg=FG2,
             font=("Segoe UI Italic", 8),
             justify="left",
-        ).grid(row=2, column=0, columnspan=3, sticky="w", padx=16, pady=(2, 8))
+        ).grid(row=2, column=0, columnspan=4, sticky="w", padx=16, pady=(2, 8))
 
         for col, (testo, colore) in enumerate(
             (
                 ("Tag " + ("dell'evento" if evento else "della stagione"), SUCCESS),
+                ("Vietati sempre", DANGER),
                 ("Tag preferiti", ACCENT2),
                 ("Tag obbligatori", ACCENT),
             )
@@ -2844,13 +2841,15 @@ class PeriodDialog(tk.Toplevel):
 
         self._tags = self._lista(all_tags, initial.get("tags", []))
         self._tags.grid(row=4, column=0, padx=16, sticky="n")
+        self._veto = self._lista(all_tags, initial.get("veto", []))
+        self._veto.grid(row=4, column=1, padx=16, sticky="n")
         self._pref = self._lista(all_tags, initial.get("prefer", []))
-        self._pref.grid(row=4, column=1, padx=16, sticky="n")
+        self._pref.grid(row=4, column=2, padx=16, sticky="n")
         self._req = self._lista(all_tags, initial.get("require", []))
-        self._req.grid(row=4, column=2, padx=16, sticky="n")
+        self._req.grid(row=4, column=3, padx=16, sticky="n")
 
         pm = tk.Frame(self, bg=BG)
-        pm.grid(row=5, column=0, columnspan=3, sticky="w", padx=16, pady=(8, 0))
+        pm.grid(row=5, column=0, columnspan=4, sticky="w", padx=16, pady=(8, 0))
         tk.Label(
             pm,
             text="Restringi ai preferiti solo se ne restano almeno",
@@ -2893,16 +2892,19 @@ class PeriodDialog(tk.Toplevel):
         tk.Label(
             self,
             text=spiegazione
-            + "I preferiti restringono il pool solo se ne resta abbastanza: con pochi\n"
+            + "I vietati sempre escludono ogni immagine che ne ha anche uno solo, qualunque\n"
+            "altro tag porti: valgono nei giorni del periodo, nelle sue fasce e in tutte\n"
+            "quelle degli strati sotto (non in un evento annidato sopra, che decide da se').\n"
+            "I preferiti restringono il pool solo se ne resta abbastanza: con pochi\n"
             "tag preferiti la fascia diventerebbe quasi fissa.",
             bg=BG,
             fg=FG2,
             font=("Segoe UI Italic", 8),
             justify="left",
-        ).grid(row=6, column=0, columnspan=3, sticky="w", padx=16, pady=(8, 0))
+        ).grid(row=6, column=0, columnspan=4, sticky="w", padx=16, pady=(8, 0))
 
         fasce = tk.Frame(self, bg=BG)
-        fasce.grid(row=7, column=0, columnspan=3, sticky="w", padx=16, pady=(10, 0))
+        fasce.grid(row=7, column=0, columnspan=4, sticky="w", padx=16, pady=(10, 0))
         self._btn_fasce = ttk.Button(fasce, text="Fasce orarie proprie", command=self._fasce)
         self._btn_fasce.pack(side="left")
         self._lbl_fasce = tk.Label(fasce, bg=BG, fg=FG2, font=("Segoe UI", 9))
@@ -2912,7 +2914,7 @@ class PeriodDialog(tk.Toplevel):
         self._aggiorna_fasce()
 
         bf = tk.Frame(self, bg=BG, pady=12)
-        bf.grid(row=8, column=0, columnspan=3)
+        bf.grid(row=8, column=0, columnspan=4)
         ttk.Button(bf, text="OK", style="Accent.TButton", command=self._ok).pack(
             side="left", padx=8
         )
@@ -2965,7 +2967,7 @@ class PeriodDialog(tk.Toplevel):
             selectbackground=ACCENT,
             selectforeground=BG,
             selectmode="multiple",
-            width=24,
+            width=20,
             height=10,
             relief="flat",
             borderwidth=0,
@@ -3034,12 +3036,15 @@ class PeriodDialog(tk.Toplevel):
         period = {
             k: v
             for k, v in self._initial.items()
-            if k not in ("name", "from", "to", "tags", "prefer", "prefer_min", "require")
+            if k not in ("name", "from", "to", "tags", "veto", "prefer", "prefer_min", "require")
         }
         period.update({"name": nome, "from": a, "to": b})
         tags = self._collect(self._tags)
         if tags:
             period["tags"] = tags
+        veto = self._collect(self._veto)
+        if veto:
+            period["veto"] = veto
         preferiti = self._collect(self._pref)
         if preferiti:
             period["prefer"] = preferiti
@@ -3304,7 +3309,7 @@ class PreviewTab(tk.Frame):
         tk.Label(
             self,
             text="Nella colonna Tag:  a+b servono tutti   a/b ne basta uno   "
-            "-tag escluso dalla regola   ~tag preferito.   La regola vincente dice "
+            "-tag escluso dalla regola   !tag vietato dal periodo   ~tag preferito.   La regola vincente dice "
             "anche da quale strato viene: evento, stagione o [stagione] per le regole di base.",
             bg=BG,
             fg=FG2,
@@ -3398,6 +3403,8 @@ class PreviewTab(tk.Frame):
                 )
             if rule.get("exclude"):
                 tag.append("-" + ",-".join(rule["exclude"]))
+            if rule.get("veto"):
+                tag.append("!" + ",!".join(rule["veto"]))
             if rule.get("prefer"):
                 tag.append("~" + ",~".join(rule["prefer"]))
             self._tree.insert(

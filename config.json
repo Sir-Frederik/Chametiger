@@ -1564,6 +1564,9 @@
       "tags": [
         "capodanno"
       ],
+      "veto": [
+        "horror"
+      ],
       "random_rules": {
         "weekday": [
           {
@@ -1585,6 +1588,9 @@
       "to": "01-06",
       "tags": [
         "natale"
+      ],
+      "veto": [
+        "horror"
       ],
       "random_rules": {
         "weekday": [
@@ -1673,6 +1679,9 @@
       "tags": [
         "sanValentino"
       ],
+      "veto": [
+        "horror"
+      ],
       "random_rules": {
         "weekday": [
           {
@@ -1752,6 +1761,10 @@
       "to": "11-01",
       "tags": [
         "horror"
+      ],
+      "veto": [
+        "natale",
+        "sanValentino"
       ],
       "random_rules": {
         "weekday": [

@@ -214,6 +214,8 @@ def _tags_of(rule: dict) -> str:
         parts.append(joiner.join(rule["include"]))
     if rule.get("exclude"):
         parts.append("-" + ",-".join(rule["exclude"]))
+    if rule.get("veto"):
+        parts.append("!" + ",!".join(rule["veto"]))
     if rule.get("prefer"):
         parts.append("~" + ",~".join(rule["prefer"]))
     return f" [{' '.join(parts)}]" if parts else ""
@@ -249,6 +251,12 @@ def _tags_of(rule: dict) -> str:
 #  di durata, quello che viene prima nell'elenco.
 #
 #  Un periodo puo' anche avere:
+#    veto     tag vietati senza appello: basta averne uno e l'immagine e' fuori,
+#             qualunque altro tag porti. Vale nei giorni del periodo, nel suo
+#             strato e in tutti quelli sotto: il "no horror" di Natale tiene
+#             anche nelle ore che si scende all'Inverno. Uno strato sopra
+#             (Capodanno) non lo eredita e decide per conto suo, cosi' un
+#             "no horror" sull'Autunno non svuota le fasce di Halloween
 #    prefer   tag preferiti: se nel pool ce n'e' almeno uno il pool si restringe
 #             a quelli, altrimenti resta intero (per non rimanere a secco)
 #    require  tag obbligatori, si sommano all'include (in AND) - raro
@@ -348,6 +356,8 @@ def strati_del_giorno(config: dict, giorno: date) -> list[dict]:
       periodi   i periodi dello strato: uno per un evento, una o due stagioni
       ammessi   i tag stagionali che lo strato lascia passare: i suoi e quelli
                 di tutti gli strati sotto
+      veto      i tag vietati senza appello: i suoi e quelli di tutti gli strati
+                SOPRA, che valgono anche quando si scende fin qui
 
     Un giorno che nessuna stagione copre ammette tutti i tag di stagione, come
     se non ci fossero stagioni: e' un buco nel config, la GUI lo segnala.
@@ -374,6 +384,14 @@ def strati_del_giorno(config: dict, giorno: date) -> list[dict]:
             }
         )
     strati.reverse()
+
+    # Il veto scende: dall'alto verso il basso ogni strato somma il suo a
+    # quelli degli strati sopra.
+    veto: set = set()
+    for strato in strati:
+        for period in strato["periodi"]:
+            veto |= set(period.get("veto") or [])
+        strato["veto"] = set(veto)
     return strati
 
 
@@ -403,6 +421,11 @@ def patch_rule(rule: dict, strato: dict | None, config: dict) -> dict:
     if vietate:
         patched["season_exclude"] = sorted(vietate)
         patched["seasonal"] = sorted(vocabolario)
+
+    # Il veto invece e' secco come l'exclude della regola, ma resta in un campo
+    # suo: viene dal periodo e non dalla regola, e il log li distingue.
+    if strato.get("veto"):
+        patched["veto"] = sorted(strato["veto"])
 
     richiesti, preferiti, minimo = [], list(rule.get("prefer", [])), 0
     for period in strato["periodi"]:
@@ -436,6 +459,8 @@ def image_matches_rule(image_tags, rule: dict) -> bool:
     match:   "all" (default) = deve avere tutti gli include
              "any"           = ne basta uno
 
+    `veto` (i tag vietati dai periodi del giorno) e' secco come `exclude`.
+
     `season_exclude` (le stagioni vietate dal periodo attivo) non e' un divieto
     per tag ma per insieme: l'immagine cade solo se OGNI stagione che dichiara e'
     vietata. Una taggata inverno+primavera esce in entrambe le stagioni; una
@@ -448,6 +473,8 @@ def image_matches_rule(image_tags, rule: dict) -> bool:
     for t in rule.get("exclude", []):
         if t in tags:
             return False
+    if tags & set(rule.get("veto") or ()):
+        return False
 
     vietate = set(rule.get("season_exclude") or ())
     if vietate:
@@ -531,6 +558,8 @@ def _rule_signature(rule: dict) -> str:
     ]
     if rule.get("season_exclude"):
         parti.append("se:" + ",".join(sorted(rule["season_exclude"])))
+    if rule.get("veto"):
+        parti.append("v:" + ",".join(sorted(rule["veto"])))
     if rule.get("prefer"):
         parti.append("p:" + ",".join(sorted(rule["prefer"])))
         if rule.get("prefer_min"):

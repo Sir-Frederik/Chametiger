@@ -1,7 +1,7 @@
 # 🦎 Chametiger
 
-**v4.0** — 1 ottobre 2026
-Stagioni ed eventi: gli eventi si appoggiano sopra la stagione, e si annidano.
+**v4.1** — 1 ottobre 2026
+Vietati sempre: un tag che in un periodo non deve uscire, qualunque altro tag porti l'immagine.
 
 
 Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno**, al **giorno della settimana**, alla **stagione**, agli **eventi** dell'anno e agli **orari reali di alba e tramonto**.
@@ -9,6 +9,12 @@ Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorn
 Ogni fascia oraria pesca fra le immagini che hanno certi **tag**, e le fa scorrere tutte prima di ripeterle.
 
 ---
+
+## Novità della 4.1
+
+- **Vietati sempre (`veto`)**: ogni stagione o evento può vietare dei tag senza appello, accanto al divieto morbido dei tag di stagione. A Natale "no horror" toglie ogni immagine horror, anche quelle taggate `inverno` o `natale`; finito Natale il veto sparisce. Il veto scende lungo la pila (vale anche nelle ore che si torna alla stagione) ma non sale negli eventi annidati sopra. Vedi [Vietati sempre](#vietati-sempre).
+- **Nel config**: niente horror a Natale, Capodanno e San Valentino; niente `natale` né `sanValentino` ad Halloween. Capodanno ha il suo veto perché, stando sopra Natale, non eredita quello di Natale.
+- **Anteprima e log** mostrano i tag vietati dal periodo come `!horror`; la tabella degli eventi come "natale  no horror".
 
 ## Novità della 4.0
 
@@ -301,6 +307,7 @@ Due livelli di periodi, entrambi intervalli di date che si ripetono ogni anno:
 | -------------- | ------------------------------------------------------------------------- |
 | `from` / `to`  | `MM-GG`, **senza anno**: il periodo si ripete ogni anno. Se la fine precede l'inizio scavalca il capodanno |
 | `tags`         | I tag del periodo: valgono solo nei suoi giorni                            |
+| `veto`         | Tag vietati senza appello nei giorni del periodo: basta averne uno e l'immagine è fuori |
 | `random_rules` | Fasce proprie, con la stessa forma di `random_rules`. Si editano col pulsante **Fasce** |
 | `prefer`       | Tag preferiti: il pool si restringe a quelli solo se ne resta abbastanza   |
 | `prefer_min`   | Soglia di `prefer`. Senza, con pochi tag preferiti la fascia resta fissa   |
@@ -334,6 +341,25 @@ nessun tag stagionale ->  esce sempre
 Quali tag contino come stagione non è una lista fissa nel codice: sono **tutti quelli dichiarati da stagioni ed eventi**. Un tag come `tramonto`, che nessuno dichiara, non rende stagionale l'immagine che lo porta.
 
 L'`exclude` della singola **regola** resta invece un divieto secco per tag: `-smart` toglie l'immagine e basta.
+
+### Vietati sempre
+
+I tag di stagione ed evento sono un divieto **morbido**: un'immagine cade solo se *tutti* i suoi tag di stagione sono fuori periodo. Per dire invece *"in questo periodo, questo tag no, punto"* c'è il **veto**, la lista **Vietati sempre** nel dialogo della stagione o dell'evento:
+
+```json
+{ "name": "Natale", "from": "12-01", "to": "01-06", "tags": ["natale"], "veto": ["horror"] }
+```
+
+Un'immagine con anche un solo tag vietato è fuori, qualunque altro tag porti: `horror + inverno + natale` a Natale non esce. Finito il periodo, il veto non c'è più.
+
+Il veto **scende** lungo la pila: vale nelle fasce del suo strato e in tutte quelle sotto, quindi il "no horror" di Natale tiene anche nelle ore che si torna all'Inverno e alle regole di base. Uno strato annidato **sopra** non lo eredita e decide per conto suo: un "no horror" sull'Autunno lascia intatte le fasce di Halloween, che gli sta sopra.
+
+```
+Halloween   veto: -           <- le sue fasce pescano l'horror
+Autunno     veto: horror      <- qui e nelle regole di base, no
+```
+
+In **Anteprima** e nel log un tag vietato dal periodo compare come `!horror`.
 
 ### Le stagioni devono coprire l'anno intero
 
@@ -379,12 +405,12 @@ In **Impostazioni → Posizione** si impostano latitudine e longitudine, con un 
 `chametiger.log` registra ogni cambio di sfondo indicando **quale regola** ha vinto:
 
 ```
-[2026-12-25 15:00:03] Avvio Chametiger 4.0.
+[2026-12-25 15:00:03] Avvio Chametiger 4.1.
 [2026-12-25 15:00:03] [OK] Sfondo impostato (weekday [Inverno] 14:00-18:00 [lavoro/pomeriggio -smart]): G:\Temi\...
 [2026-12-25 16:00:07] [OK] Sfondo impostato (evento Natale weekday sunset-40m (15:57)-23:30 [natale]): G:\Temi\...
 ```
 
-Nei tag, `+` significa che servono **tutti** quelli elencati, `/` che ne basta **uno**, `-tag` sono le esclusioni della regola e `~tag` i preferiti.
+Nei tag, `+` significa che servono **tutti** quelli elencati, `/` che ne basta **uno**, `-tag` sono le esclusioni della regola, `!tag` i tag vietati dal periodo e `~tag` i preferiti.
 
 La categoria dice anche **da quale strato** viene la regola. `evento Natale weekday` è una fascia propria dell'evento; `weekday [Inverno]` è una regola di base filtrata dalla stagione. Accanto alle ancore solari c'è l'orario a cui sono cadute davvero.
 
@@ -417,6 +443,6 @@ L'eseguibile comparirà in `dist/app.exe`.
 | Le immagini si ripetono troppo spesso | Il pool è piccolo: il mazzo si riavvolge presto. Taggane altre, o allarga i tag della regola. `history_days` **non** c'entra |
 | Su un altro PC non trova le immagini  | Aggiungi il suo hostname in `path_map`                                  |
 | Le fasce serali cadono nell'ora sbagliata | Coordinate sbagliate: **Impostazioni → Posizione**                  |
-| Un'immagine stagionale non esce mai   | Tutti i suoi tag di stagione o evento sono fuori periodo, oppure è ammessa solo in uno strato le cui fasce non la pescano: guarda **Anteprima** |
+| Un'immagine stagionale non esce mai   | Tutti i suoi tag di stagione o evento sono fuori periodo, ha un tag vietato (`!tag`), oppure è ammessa solo in uno strato le cui fasce non la pescano: guarda **Anteprima** |
 | A luglio escono immagini invernali    | Un giorno dell'anno non è coperto da nessuna stagione: la tab Stagioni ed eventi lo segnala |
 | Una fascia resta ferma tutto il giorno | Pool troppo piccolo, o `prefer` che stringe troppo: alza `prefer_min`  |
