@@ -1,15 +1,34 @@
 # 🦎 Chametiger
 
-**v3.5** — 21 settembre 2026
-Un'immagine può appartenere a più stagioni.
+**v4.0** — 1 ottobre 2026
+Stagioni ed eventi: gli eventi si appoggiano sopra la stagione, e si annidano.
 
 
-Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno**, al **giorno della settimana**, al **periodo dell'anno** e agli **orari reali di alba e tramonto**.
+Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno**, al **giorno della settimana**, alla **stagione**, agli **eventi** dell'anno e agli **orari reali di alba e tramonto**.
 
-Due modalità:
+Ogni fascia oraria pesca fra le immagini che hanno certi **tag**, e le fa scorrere tutte prima di ripeterle.
 
-- **programmata** — ogni fascia oraria ha la sua immagine fissa
-- **casuale** — ogni fascia oraria pesca fra le immagini che hanno certi **tag**, dando la precedenza a quelle uscite meno di recente
+---
+
+## Novità della 4.0
+
+- **Stagioni ed eventi al posto dei periodi.** Prima c'era un elenco solo, e vinceva il primo periodo che copriva la data: un evento doveva stare sopra la stagione per vincere, ma vincendo la sostituiva per intero. San Valentino, messo sotto l'Inverno, non usciva mai; Natale, messo sopra, si mangiava l'Inverno dal 1° dicembre al 6 gennaio, e nelle ore senza fasce proprie le regole di base venivano filtrate coi divieti di Natale. Ora sono due livelli: le **stagioni** coprono l'anno, gli **eventi** ci si appoggiano sopra. Vedi [Stagioni ed eventi](#stagioni-ed-eventi).
+- **Gli eventi si annidano come matrioske**: Capodanno sopra Natale sopra l'Inverno. Ogni strato ha le sue fasce; nelle ore che non copre si scende allo strato sotto, con i tag ammessi da quello strato.
+- **Le transizioni sono sovrapposizioni.** Non servono più le righe `Inv-Prim`, `Prim-Est`…: dove Inverno e Primavera si sovrappongono valgono entrambe.
+- **Niente più tag vietati da scrivere a mano.** Ogni stagione ed evento dichiara i *suoi* tag; un tag di stagione o di evento vale solo nei giorni del suo periodo. Prima `sanValentino` non lo vietava nessun periodo, e tre immagini con solo quel tag potevano uscire a luglio.
+- **Grafico dell'anno** nella tab *Stagioni ed eventi*: una riga per stagione e per evento, con le sovrapposizioni incolonnate e la linea di oggi.
+- **Rimossa la modalità programmata**, con il suo ripiego, i giorni speciali, le impostazioni e le tab. I due giorni speciali ancora utili sono diventati eventi (*Capodanno*, *Compleanno*). Le tab dell'editor ora stanno su una fila sola.
+- **Verifica regole conta per strato**: per ogni regola mostra quante immagini pesca in ogni combinazione dell'anno in cui viene davvero letta (*Inverno*, *Inverno/Primavera*, *Inverno > Natale*…). Le regole di base si contano sotto ogni stagione, le fasce di un evento solo nel suo strato.
+- **Verifica anno controlla ogni combinazione**: oltre al 15 di ogni mese prende il primo giorno di ogni pila distinta, così anche un evento di un giorno solo e ogni transizione passano il controllo.
+- **Anteprima e log dicono da quale strato viene la regola**: `evento Natale weekday`, `stagione Estate weekday`, oppure `weekday [Inverno]` per una regola di base filtrata dalla stagione. Sparisce l'elenco `!tag` delle stagioni vietate, che con tutti i tag di stagione ed evento sarebbe diventato illeggibile.
+- **Un nome solo per periodo**: l'editor rifiuta due stagioni o eventi con lo stesso nome, che nel log e nell'anteprima si confonderebbero.
+
+### Aggiornare dalla 3.x
+
+- **La chiave `periods` non viene più letta.** Va divisa in `seasons` ed `events`, e ogni periodo dichiara i suoi `tags` al posto della lista `exclude`. Il `config.json` di questo repository è già convertito; le chiavi `mode`, `schedules`, `overrides` e `special_days` sono state tolte.
+- **Riavvia l'app nel tray** dopo l'aggiornamento: un'istanza col codice vecchio, letto il config nuovo, smetterebbe di cambiare lo sfondo.
+- **I mazzi si rimescolano una volta**: la firma delle regole contiene il nome dello strato, quindi le sequenze non riprendono da dove erano.
+- **Un tag di evento vale solo nell'evento.** Le immagini con solo `horror` ora escono nelle sere di Halloween e basta (in un anno simulato: da 1120 a 125 uscite); prima uscivano anche in primavera, estate e autunno. Per riaverle tutto l'anno basta togliere `horror` dai tag di Halloween.
 
 ---
 
@@ -53,7 +72,9 @@ Due modalità:
 ├── app.py          ← Applicazione principale (tray + scheduler)
 ├── gui.py          ← Editor grafico della configurazione
 ├── sun.py          ← Orari solari: alba, tramonto, crepuscolo, mezzogiorno vero
-├── config.json     ← Configurazione: regole, periodi, tag, libreria immagini
+├── verifica_immagini.py ← Simula un anno e trova le immagini che non escono mai
+├── versione.py     ← Numero di versione, mostrato nel tray e nell'editor
+├── config.json     ← Configurazione: regole, stagioni, eventi, tag, libreria
 ├── log.json        ← Storico delle estrazioni casuali (generato)
 ├── chametiger.log  ← Log testuale (generato)
 ├── requirements.txt
@@ -76,9 +97,6 @@ I due file generati si creano da soli al primo avvio: non vanno preparati né ve
 ```bash
 py -m pip install -r requirements.txt
 ```
-
-> `tkcalendar` è opzionale: se non installato, la selezione data nei giorni speciali
-> avviene tramite campo testo anziché calendario grafico.
 
 ---
 
@@ -109,7 +127,6 @@ Oppure: click destro sull'icona tray → **Apri editor config**
 
 ```json
 {
-  "mode": "random",
   "check_interval_minutes": 5,
 
   "latitude": 40.8518,
@@ -120,10 +137,6 @@ Oppure: click destro sull'icona tray → **Apri editor config**
     "NomePC": "C:/Users/Tizio/Pictures/Temi"
   },
 
-  "schedules":    { "weekday": [ ... ], "weekend": [ ... ] },
-  "overrides":    { "monday": null, "friday": [ ... ] },
-  "special_days": { "2026-12-25": [ ... ] },
-
   "tags": ["mattino", "lavoro", "notte", "..."],
   "image_library": { "cartella/foto.jpg": ["mattino", "lavoro"] },
   "random_rules": {
@@ -131,21 +144,23 @@ Oppure: click destro sull'icona tray → **Apri editor config**
     "weekend":   [ ... ],
     "overrides": { "monday": [ ... ] }
   },
-  "periods": [
-    { "name": "Autunno", "from": "09-10", "to": "11-30",
-      "exclude": ["estate", "inverno", "primavera", "natale"] }
+  "seasons": [
+    { "name": "Autunno", "from": "09-15", "to": "11-30", "tags": ["autunno"] }
+  ],
+  "events": [
+    { "name": "Halloween", "from": "10-20", "to": "11-01", "tags": ["horror"],
+      "random_rules": { "weekday": [ ... ] } }
   ]
 }
 ```
 
 | Chiave                    | A cosa serve                                                        |
 | ------------------------- | ------------------------------------------------------------------- |
-| `mode`                    | `"scheduled"` o `"random"`                                           |
 | `check_interval_minutes`  | Ogni quanto lo scheduler ricontrolla                                 |
 | `history_days`            | Per quanti giorni conservare le righe di `log.json` (default 7). Non è nell'editor: **non** influenza quale immagine esce |
 | `latitude` / `longitude`  | Posizione, per calcolare alba e tramonto. Default: Napoli            |
 | `base_path` / `path_map`  | Cartella base delle immagini, con override per singolo PC (hostname) |
-| `periods`                 | Periodi dell'anno che filtrano i tag (vedi sotto)                    |
+| `seasons` / `events`      | Stagioni ed eventi, che filtrano i tag (vedi sotto)                  |
 
 ### Percorsi multi-PC
 
@@ -153,34 +168,7 @@ Oppure: click destro sull'icona tray → **Apri editor config**
 
 ---
 
-## Modalità programmata
-
-Ogni fascia oraria punta a un'immagine precisa.
-
-```json
-{
-  "from": "08:00",
-  "to": "12:00",
-  "image": "mattina/alba.jpg",
-  "label": "Mattina"
-}
-```
-
-### Priorità di risoluzione (dalla più alta)
-
-1. **special_days** — data esatta (es. Natale, Capodanno)
-2. **overrides** — override per giorno della settimana (es. venerdì sera)
-3. **schedules** — weekday o weekend in base al giorno
-4. **fallback** — se il weekend non copre l'orario, si ripiega su weekday
-
-I periodi dell'anno riguardano solo la modalità casuale: in quella programmata ogni slot nomina un'immagine precisa, non c'è nulla da filtrare. Le ancore solari invece funzionano anche qui.
-
-- Le fasce a **cavallo della mezzanotte** sono supportate (es. `"from": "22:00", "to": "06:00"`)
-- Se nessuno slot copre l'orario corrente, lo sfondo non viene cambiato
-
----
-
-## Modalità casuale
+## Regole e tag
 
 Invece di scegliere l'immagine, descrivi che tipo di immagine vuoi. Serve una **libreria taggata**:
 
@@ -213,9 +201,9 @@ e delle **regole**:
 | `prefer`         | Tag preferiti: restringe il pool a quelli, se ne resta abbastanza |
 | `prefer_min`     | Quante immagini devono restare perché `prefer` si applichi (default 1) |
 
-Se nessuna regola copre l'orario, si ripiega sulla modalità programmata.
+Se nessuna regola copre l'orario, lo sfondo resta quello che c'è.
 
-> I tag **stagionali** (`inverno`, `estate`, `natale`…) non vanno messi nell'`exclude` delle regole: è il lavoro dei [periodi dell'anno](#periodi-dellanno). Ripetuti in ogni regola diventano decine di righe da tenere allineate a mano, e una stagione dimenticata si nota solo sei mesi dopo.
+> I tag **stagionali** (`inverno`, `estate`, `natale`…) non vanno messi nell'`exclude` delle regole: è il lavoro di [stagioni ed eventi](#stagioni-ed-eventi). Ripetuti in ogni regola diventano decine di righe da tenere allineate a mano, e una stagione dimenticata si nota solo sei mesi dopo.
 
 ### Come viene scelta l'immagine
 
@@ -227,13 +215,11 @@ Il calcolo è **deterministico e senza stato**: dipende solo dalla regola, dalla
 
 `log.json` **non** partecipa alla scelta: serve a ricordare quale immagine è stata assegnata alla finestra corrente, così lo sfondo resta fermo fra un controllo e l'altro dello scheduler, e a far durare un'estrazione forzata fino alla fine della sua finestra.
 
-### Priorità in modalità casuale (dalla più alta)
+### Priorità (dalla più alta)
 
-1. **special_days** — a immagine fissa: a Natale vuoi *quella*, non una a caso
-2. **periodo attivo** → override del giorno, poi feriali/weekend
-3. **regole di base** → override del giorno, poi feriali/weekend
-4. **fallback weekday**, se il weekend non copre l'orario
-5. **modalità programmata**, se non copre nessuno
+1. **eventi del giorno**, dal più interno → override del giorno, poi feriali/weekend, poi feriali se il weekend non copre
+2. **stagione** (o le due stagioni di una transizione) → idem
+3. **regole di base** → idem, filtrate dalla stagione
 
 A ogni livello, se la regola vincente non ha immagini valide si prova la successiva invece di lasciare lo sfondo fermo.
 
@@ -286,85 +272,91 @@ Il calcolo resta **deterministico e senza stato**: due PC con la stessa libreria
 
 ---
 
-## Periodi dell'anno
+## Stagioni ed eventi
 
-Un **periodo** è un intervallo di date che modula le regole casuali **senza duplicarle**.
+Due livelli di periodi, entrambi intervalli di date che si ripetono ogni anno:
+
+- le **stagioni** coprono l'anno intero; dove due si sovrappongono c'è una **transizione** e valgono entrambe;
+- gli **eventi** sono facoltativi e si appoggiano sopra la stagione. Si possono **annidare**: Capodanno dentro Natale dentro l'Inverno.
 
 ```json
-"periods": [
-  { "name": "Halloween", "from": "10-20", "to": "11-01",
-    "exclude": ["estate", "natale", "primavera"],
+"seasons": [
+  { "name": "Inverno",   "from": "11-16", "to": "04-05", "tags": ["inverno"] },
+  { "name": "Primavera", "from": "03-06", "to": "07-06", "tags": ["primavera"] }
+],
+"events": [
+  { "name": "Natale", "from": "12-01", "to": "01-06", "tags": ["natale"],
     "random_rules": {
       "weekday": [
-        { "from": "sunset-40m", "to": "01:00", "include": ["horror"],
+        { "from": "dusk", "to": "02:00", "include": ["natale"],
           "match": "all", "rotate_minutes": 60 }
       ]
     } },
-
-  { "name": "Autunno", "from": "09-10", "to": "11-30",
-    "exclude": ["estate", "inverno", "natale", "primavera"] }
+  { "name": "Capodanno", "from": "01-01", "to": "01-01", "tags": ["capodanno"],
+    "random_rules": { "weekday": [ ... ] } }
 ]
 ```
 
 | Campo          | Effetto                                                                   |
 | -------------- | ------------------------------------------------------------------------- |
-| `from` / `to`  | `MM-GG`, **senza anno**: il periodo si ripete ogni anno                    |
-| `exclude`      | Stagioni vietate. Un'immagine cade solo se **tutte** le stagioni che dichiara sono vietate |
+| `from` / `to`  | `MM-GG`, **senza anno**: il periodo si ripete ogni anno. Se la fine precede l'inizio scavalca il capodanno |
+| `tags`         | I tag del periodo: valgono solo nei suoi giorni                            |
+| `random_rules` | Fasce proprie, con la stessa forma di `random_rules`. Si editano col pulsante **Fasce** |
 | `prefer`       | Tag preferiti: il pool si restringe a quelli solo se ne resta abbastanza   |
 | `prefer_min`   | Soglia di `prefer`. Senza, con pochi tag preferiti la fascia resta fissa   |
 | `require`      | Tag obbligatori, si sommano all'`include` (in AND). Raro                   |
-| `random_rules` | Fasce proprie del periodo, con la stessa forma di `random_rules`. Si editano col pulsante **Fasce del periodo** |
+
+### La pila del giorno
+
+Ogni giorno è una pila di **strati**, dall'evento più interno alla stagione. Il 1° gennaio:
+
+```
+Capodanno   ammette capodanno, natale, inverno
+Natale      ammette natale, inverno
+Inverno     ammette inverno            <- qui sotto anche le regole di base
+```
+
+Le fasce si leggono dall'alto: prima quelle di Capodanno, poi quelle di Natale, poi quelle dell'Inverno, infine le regole di base. Vince la prima che copre l'ora e ha immagini. **Ogni fascia pesca con i tag ammessi dal suo strato**: nelle ore che Natale non copre si torna all'Inverno, con i divieti dell'Inverno. Così un evento cambia solo le ore che gli interessano, e un evento senza fasce proprie non cambia niente.
+
+Fra due eventi sovrapposti sta sopra **il più corto**, che è il più specifico; a parità di durata, quello che viene prima nell'elenco. In una transizione le fasce proprie delle due stagioni si leggono nell'ordine dell'elenco.
 
 ### Un'immagine in più stagioni
 
-I tag stagionali **non sono un divieto per tag, ma per insieme**: un'immagine cade solo se **ogni** stagione di cui porta il tag è vietata dal periodo attivo.
+I tag stagionali **non sono un divieto per tag, ma per insieme**: un'immagine cade solo se **tutti** i suoi tag di stagione o di evento sono fuori periodo.
 
 ```
-inverno + primavera   ->  esce in Inverno, in Primavera e in Inv-Prim
-solo primavera        ->  resta fuori dall'inverno, come prima
-nessun tag stagionale ->  esce sempre, in ogni periodo
+inverno + primavera   ->  esce in Inverno, in Primavera e nella transizione
+solo primavera        ->  resta fuori dall'inverno
+primavera + sanValentino -> esce in primavera, e a San Valentino anche d'inverno
+nessun tag stagionale ->  esce sempre
 ```
 
-Serve per poter dire "questa va bene in due stagioni" senza doverlo esprimere con un tag per ogni combinazione. Col divieto secco che c'era prima, `autunno + primavera` significava invece *vietata in autunno* **e** *vietata in primavera*: più stagioni si assegnavano a un'immagine, meno si vedeva — fino a sparire dall'anno intero. In una libreria di 197 immagini ce n'erano **nove** in quello stato, taggate con cura e mai mostrate.
+Quali tag contino come stagione non è una lista fissa nel codice: sono **tutti quelli dichiarati da stagioni ed eventi**. Un tag come `tramonto`, che nessuno dichiara, non rende stagionale l'immagine che lo porta.
 
-Quali tag contino come stagione non è una lista fissa nel codice: sono **tutti quelli che almeno un periodo vieta**. Così chi aggiunge una stagione sua (`carnevale`) non deve toccare niente, e un tag come `tramonto`, che nessun periodo vieta, non rende stagionale l'immagine che lo porta.
+L'`exclude` della singola **regola** resta invece un divieto secco per tag: `-smart` toglie l'immagine e basta.
 
-L'`exclude` della singola **regola** resta invece un divieto secco per tag: `-smart` toglie l'immagine e basta. Sono due cose diverse e stanno in due campi diversi.
+### Le stagioni devono coprire l'anno intero
 
-**Le date si ripetono ogni anno** e se la fine precede l'inizio il periodo **scavalca il capodanno**: `"from": "12-01", "to": "01-06"` copre dicembre e la Befana, con lo stesso confronto invertito che gestisce le fasce a cavallo della mezzanotte.
-
-**Vince il primo periodo attivo**, quindi i periodi festivi vanno messi **sopra** quelli stagionali.
-
-**Le `random_rules` del periodo non sostituiscono quelle di base**: vengono consultate prima, e se nessuna copre l'ora corrente si scende alla base, esattamente come fanno gli override di giorno. Per questo il periodo Halloween è una riga sola — prende dal tramonto all'una di notte e lascia tutto il resto della giornata all'autunno.
-
-### Perché non duplicare le regole
-
-Nel `config.json` la libreria immagini pesa il **32%** del file, le regole casuali il **10%**: la parte che si vorrebbe differenziare per stagione è la più piccola. Quattro config stagionali completi duplicherebbero la libreria — e taggare un'immagine diventerebbe quattro modifiche, con le liste di tag che divergono in silenzio — per de-duplicare le regole.
-
-Tutti e sei i periodi insieme pesano **1.188 byte, il 3% del file**, e due di quelli portano anche fasce orarie proprie.
-
-### I periodi devono coprire l'anno intero
-
-Un giorno che **nessun** periodo copre non applica nessun filtro: a luglio tornerebbero le immagini invernali. La tab **Periodi dell'anno** lo segnala in fondo (*"12 giorni senza periodo: …"*), e il pulsante **Verifica anno** passa i mesi in rassegna e avvisa sulle fasce rimaste con meno di 5 immagini — che per una stagione intera resterebbero quasi fisse.
+Un giorno che **nessuna** stagione copre non applica nessun filtro di stagione: a luglio tornerebbero le immagini invernali. La tab **Stagioni ed eventi** lo segnala in fondo (*"12 giorni senza stagione: …"*), e il pulsante **Verifica anno** controlla ogni combinazione di stagioni ed eventi dell'anno e avvisa sulle fasce rimaste con meno di 5 immagini.
 
 ---
 
 ## L'editor grafico
 
-Nella sezione **Casuale** dell'editor:
-
 | Tab                     | A cosa serve                                                        |
 | ----------------------- | ------------------------------------------------------------------- |
-| Tag                     | Il vocabolario. Rinominare o cancellare un tag lo aggiorna anche nei periodi |
-| Libreria immagini       | Assegna i tag alle immagini                                          |
-| **Periodi dell'anno**   | I periodi, in ordine di priorità. Avvisa sui giorni non coperti, e ha **Verifica anno** e **Fasce del periodo** |
-| Regole feriali/weekend  | Le fasce. Mostrano l'orario reale di oggi accanto alle ancore solari  |
-| Regole override giorno  | Fasce per un singolo giorno della settimana                          |
-| **Anteprima giorno**    | Una data qualsiasi risolta ora per ora, con il motore vero           |
+| Tag                     | Il vocabolario. Rinominare o cancellare un tag lo aggiorna anche in stagioni ed eventi |
+| Libreria                | Assegna i tag alle immagini                                          |
+| **Stagioni ed eventi**  | Il grafico dell'anno e le due tabelle. Avvisa sui giorni senza stagione, e ha **Verifica anno** |
+| Feriali / Weekend       | Le regole di base. Mostrano l'orario reale di oggi accanto alle ancore solari |
+| Override giorno         | Regole di base per un singolo giorno della settimana                 |
+| **Anteprima**           | Una data qualsiasi risolta ora per ora, con il motore vero           |
 
-**Fasce del periodo** apre le fasce orarie proprie del periodo selezionato — feriali, weekend e override di giorno — con lo stesso editor delle regole di base, ancore solari e conteggio immagini compresi. Si aprono anche su un periodo che non ne ha: le liste rimaste vuote vengono tolte alla chiusura, così un periodo senza fasce resta pulito nel `config.json`.
+Nel **grafico** ogni stagione ed evento è una riga, coi mesi in colonna: le transizioni e gli eventi annidati si vedono incolonnati, e cliccando una barra si seleziona la riga nella tabella.
 
-**Anteprima giorno** è lo strumento da usare quando qualcosa non torna: per ogni finestra della giornata mostra periodo attivo, regola vincente, fascia con l'orario solare risolto, tag effettivi, dimensione del pool e immagine scelta. In fondo riporta quante immagini distinte escono e qual è il pool più piccolo.
+**Fasce** apre le fasce orarie proprie della stagione o dell'evento selezionato — feriali, weekend e override di giorno — con lo stesso editor delle regole di base, ancore solari e conteggio immagini compresi. Si aprono anche su un periodo che non ne ha: le liste rimaste vuote vengono tolte alla chiusura, così un periodo senza fasce resta pulito nel `config.json`.
+
+**Anteprima** è lo strumento da usare quando qualcosa non torna: per ogni finestra della giornata mostra la pila del giorno (*Inverno > Natale*), regola vincente, fascia con l'orario solare risolto, tag effettivi, dimensione del pool e immagine scelta. In fondo riporta quante immagini distinte escono e qual è il pool più piccolo.
 
 In **Impostazioni → Posizione** si impostano latitudine e longitudine, con un elenco delle principali città italiane e gli orari solari di oggi come conferma.
 
@@ -375,9 +367,8 @@ In **Impostazioni → Posizione** si impostano latitudine e longitudine, con un 
 | Voce                    | Descrizione                                      |
 | ----------------------- | ------------------------------------------------ |
 | Applica adesso          | Forza il controllo immediato                     |
-| Cambia immagine adesso  | Nuova estrazione subito (solo modalità casuale)  |
+| Cambia immagine adesso  | Nuova estrazione subito                          |
 | Apri editor config      | Apre la GUI di configurazione                    |
-| Modalità: …             | Passa da programmata a casuale e viceversa       |
 | \* Avvio con Windows    | Toggle avvio automatico                          |
 | Esci                    | Chiude l'applicazione                            |
 
@@ -388,14 +379,14 @@ In **Impostazioni → Posizione** si impostano latitudine e longitudine, con un 
 `chametiger.log` registra ogni cambio di sfondo indicando **quale regola** ha vinto:
 
 ```
-[2026-12-25 15:00:03] Avvio Chametiger. Modalita': random
-[2026-12-25 15:00:03] [OK] Sfondo impostato (casuale, weekday [periodo Natale] 14:00-18:00 [lavoro/pomeriggio -autunno,-estate,-primavera,-smart]): G:\Temi\...
-[2026-12-25 16:00:07] [OK] Sfondo impostato (casuale, periodo Natale weekday sunset-40m (15:57)-23:30 [natale]): G:\Temi\...
+[2026-12-25 15:00:03] Avvio Chametiger 4.0.
+[2026-12-25 15:00:03] [OK] Sfondo impostato (weekday [Inverno] 14:00-18:00 [lavoro/pomeriggio -smart]): G:\Temi\...
+[2026-12-25 16:00:07] [OK] Sfondo impostato (evento Natale weekday sunset-40m (15:57)-23:30 [natale]): G:\Temi\...
 ```
 
-Nei tag, `+` significa che servono **tutti** quelli elencati, `/` che ne basta **uno**, `-tag` sono le esclusioni della regola, `!tag` le stagioni vietate dal periodo e `~tag` i preferiti.
+Nei tag, `+` significa che servono **tutti** quelli elencati, `/` che ne basta **uno**, `-tag` sono le esclusioni della regola e `~tag` i preferiti.
 
-La categoria dice anche **quale periodo** era attivo. `periodo Natale weekday` è una fascia propria del periodo; `weekday [periodo Natale]` è una regola di base vista attraverso il periodo. Accanto alle ancore solari c'è l'orario a cui sono cadute davvero.
+La categoria dice anche **da quale strato** viene la regola. `evento Natale weekday` è una fascia propria dell'evento; `weekday [Inverno]` è una regola di base filtrata dalla stagione. Accanto alle ancore solari c'è l'orario a cui sono cadute davvero.
 
 Lo si apre dalla GUI con **Mostra log**, in fondo alla finestra.
 
@@ -422,10 +413,10 @@ L'eseguibile comparirà in `dist/app.exe`.
 | `ModuleNotFoundError`                 | Esegui `pip install -r requirements.txt`                                |
 | Icona tray non appare                 | Assicurati di avere Pillow installato                                   |
 | `winreg` non trovato                  | Solo Windows; non funziona su Linux/macOS                               |
-| In casuale esce sempre la stessa      | La regola ha pochi candidati: usa **Verifica anno** nella tab Periodi    |
+| Esce sempre la stessa                 | La regola ha pochi candidati: usa **Verifica anno** in Stagioni ed eventi |
 | Le immagini si ripetono troppo spesso | Il pool è piccolo: il mazzo si riavvolge presto. Taggane altre, o allarga i tag della regola. `history_days` **non** c'entra |
 | Su un altro PC non trova le immagini  | Aggiungi il suo hostname in `path_map`                                  |
 | Le fasce serali cadono nell'ora sbagliata | Coordinate sbagliate: **Impostazioni → Posizione**                  |
-| Un'immagine stagionale non esce mai   | Ogni stagione che dichiara è vietata dal periodo attivo: guarda la colonna Tag in **Anteprima giorno**. Se le stagioni sono più d'una, basta che una sia ammessa |
-| A luglio escono immagini invernali    | Un giorno dell'anno non è coperto da nessun periodo: la tab Periodi lo segnala |
+| Un'immagine stagionale non esce mai   | Tutti i suoi tag di stagione o evento sono fuori periodo, oppure è ammessa solo in uno strato le cui fasce non la pescano: guarda **Anteprima** |
+| A luglio escono immagini invernali    | Un giorno dell'anno non è coperto da nessuna stagione: la tab Stagioni ed eventi lo segnala |
 | Una fascia resta ferma tutto il giorno | Pool troppo piccolo, o `prefer` che stringe troppo: alza `prefer_min`  |

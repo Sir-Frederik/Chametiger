@@ -5,531 +5,6 @@
     "Federico": "G:/Altri computer/Asus/Temi/Looney tunes"
   },
   "check_interval_minutes": 7,
-  "schedules": {
-    "weekday": [
-      {
-        "from": "07:00",
-        "to": "08:00",
-        "image": "tutti_i_personaggi_poster.jpg",
-        "label": "7"
-      },
-      {
-        "from": "08:00",
-        "to": "9:00",
-        "image": "sylvester_tweety_spiaggia.jpg",
-        "label": "8"
-      },
-      {
-        "from": "9:00",
-        "to": "10:00",
-        "image": "Daffy and Porky/porky_daffy_moto_bazooka.jpg",
-        "label": "9"
-      },
-      {
-        "from": "10:00",
-        "to": "11:00",
-        "image": "logo_looney_tunes_pattern.jpg",
-        "label": "10"
-      },
-      {
-        "from": "11:00",
-        "to": "12:00",
-        "image": "personaggi_logo_warner_bros.jpg",
-        "label": "11"
-      },
-      {
-        "from": "12:00",
-        "to": "13:00",
-        "image": "coyote_esplosione_binario.jpg",
-        "label": "12"
-      },
-      {
-        "from": "13:00",
-        "to": "14:00",
-        "image": "personaggi_pausa_pranzo_trave.jpg",
-        "label": "13"
-      },
-      {
-        "from": "14:00",
-        "to": "15:00",
-        "image": "Daffy and Porky/daffy_porky_leva_sala_macchine.jpg",
-        "label": "14"
-      },
-      {
-        "from": "15:00",
-        "to": "16:00",
-        "image": "bugs_taz_cassa_pericolo.jpeg",
-        "label": "15"
-      },
-      {
-        "from": "16:00",
-        "to": "17:00",
-        "image": "elmer_bugs_daffy_caccia_foresta.jpg",
-        "label": "16"
-      },
-      {
-        "from": "17:00",
-        "to": "18:00",
-        "image": "bugs_daffy_rabbit_season.jpg",
-        "label": "17"
-      },
-      {
-        "from": "18:00",
-        "to": "19:00",
-        "image": "marvin_pistola_raggio_luna.jpg",
-        "label": "18"
-      },
-      {
-        "from": "19:00",
-        "to": "20:00",
-        "image": "daffy_elmer_bugs_foresta_stagione_caccia.jpg",
-        "label": "19"
-      },
-      {
-        "from": "20:00",
-        "to": "21:00",
-        "image": "marvin_daffy_porky_astronave.jpg",
-        "label": "20"
-      },
-      {
-        "from": "21:00",
-        "to": "22:00",
-        "image": "bugs_notte_parco_coniglietti.jpg",
-        "label": "21"
-      },
-      {
-        "from": "22:00",
-        "to": "23:00",
-        "image": "marvin_k9_pianeta_alieno.jpg",
-        "label": "22"
-      },
-      {
-        "from": "23:00",
-        "to": "00:00",
-        "image": "sylvester_tweety_forbici_filo_luna.jpg",
-        "label": "23"
-      },
-      {
-        "from": "00:00",
-        "to": "01:00",
-        "image": "thats_all_folks_testo_rosso.jpg",
-        "label": "00"
-      },
-      {
-        "from": "01:00",
-        "to": "02:00",
-        "image": "marvin_guarda_terra_spazio.jpg",
-        "label": "01"
-      },
-      {
-        "from": "03:00",
-        "to": "05:00",
-        "image": "foresta_notturna.jpg",
-        "label": "Notte fonda"
-      },
-      {
-        "from": "06:00",
-        "to": "07:00",
-        "image": "sfondo_deserto_notturno_binario.jpg",
-        "label": "alba"
-      },
-      {
-        "from": "03:00",
-        "to": "12:00",
-        "image": "backrooms_daffy_bugs_gossamer.jpg",
-        "label": "02:00"
-      }
-    ],
-    "weekend": [
-      {
-        "from": "8:00",
-        "to": "11:00",
-        "image": "surf_squali_spiaggia.jpg",
-        "label": "estate mattina"
-      },
-      {
-        "from": "13:00",
-        "to": "15:00",
-        "image": "porky_daffy_sub_sfera_marina.jpg",
-        "label": "Estate pomeriggio"
-      },
-      {
-        "from": "16:00",
-        "to": "19:00",
-        "image": "bugs_sdraio_spiaggia_carote.jpg",
-        "label": "Estate tramonto"
-      },
-      {
-        "from": "20:00",
-        "to": "23:00",
-        "image": "pepe_penelope_barca_luna_cuori.jpg",
-        "label": "Estate sera"
-      },
-      {
-        "from": "23:00",
-        "to": "02:00",
-        "image": "festa_hawaiana_notturna.jpg",
-        "label": "Estate notte"
-      },
-      {
-        "from": "11:00",
-        "to": "13:00",
-        "image": "daffy_amaca_spiaggia_ukulele.jpg",
-        "label": "Estate giorno"
-      }
-    ]
-  },
-  "overrides": {
-    "monday": [
-      {
-        "from": "22:00",
-        "to": "23:00",
-        "image": "thats_all_folks_personaggi_palco.jpg",
-        "label": "22"
-      },
-      {
-        "from": "16:00",
-        "to": "17:00",
-        "image": "porky_daffy_sub_sfera_marina.jpg",
-        "label": "16"
-      },
-      {
-        "from": "14:00",
-        "to": "15:00",
-        "image": "mosaico_personaggi_1.jpg",
-        "label": "14"
-      },
-      {
-        "from": "10:00",
-        "to": "11:00",
-        "image": "bracco_foghorn_leghorn_fattoria.jpg",
-        "label": "10"
-      },
-      {
-        "from": "09:00",
-        "to": "10:00",
-        "image": "coyote_travestito_pecora_gregge.jpg",
-        "label": "9"
-      }
-    ],
-    "tuesday": [
-      {
-        "from": "12:00",
-        "to": "13:00",
-        "image": "coyote_caduta_vuoto.jpg",
-        "label": "12"
-      },
-      {
-        "from": "15:00",
-        "to": "16:00",
-        "image": "ufficio_disegnatori_personaggi.jpg",
-        "label": "15"
-      },
-      {
-        "from": "16:00",
-        "to": "17:00",
-        "image": "daffy_bugs_faccia_a_faccia.jpg",
-        "label": "16"
-      },
-      {
-        "from": "19:00",
-        "to": "20:00",
-        "image": "coyote_razzo_tramonto_deserto.jpg",
-        "label": "tramonto"
-      },
-      {
-        "from": "23:00",
-        "to": "00:00",
-        "image": "coyote_sagoma_salto_luna.jpeg",
-        "label": "23"
-      },
-      {
-        "from": "17:00",
-        "to": "18:00",
-        "image": "sylvester_tweety_spiaggia.jpg",
-        "label": "17"
-      },
-      {
-        "from": "11:00",
-        "to": "12:00",
-        "image": "collage_locandine_classiche.jpg",
-        "label": "11"
-      }
-    ],
-    "wednesday": [
-      {
-        "from": "10:00",
-        "to": "11:00",
-        "image": "pepe_le_pew_penelope_bosco.jpg",
-        "label": "pepé"
-      },
-      {
-        "from": "17:00",
-        "to": "18:00",
-        "image": "elmer_travestito_coniglio_rabbit_season.png",
-        "label": "17"
-      },
-      {
-        "from": "19:00",
-        "to": "20:00",
-        "image": "coyote_roadrunner_forchetta_deserto.jpg",
-        "label": "tramonto"
-      },
-      {
-        "from": "22:00",
-        "to": "23:00",
-        "image": "bugs_smoking_palco_rose.jpg",
-        "label": "22"
-      },
-      {
-        "from": "16:00",
-        "to": "17:00",
-        "image": "speedy_gonzales_corsa_deserto.png",
-        "label": "16"
-      },
-      {
-        "from": "13:00",
-        "to": "14:00",
-        "image": "sylvester_tweety_bidoni_spazzatura.jpg",
-        "label": "13"
-      },
-      {
-        "from": "15:00",
-        "to": "16:00",
-        "image": "basket.jpg",
-        "label": "15"
-      }
-    ],
-    "thursday": [
-      {
-        "from": "10:00",
-        "to": "11:00",
-        "image": "personaggi_cerchio_bugs_centro.jpg",
-        "label": "10"
-      },
-      {
-        "from": "13:00",
-        "to": "14:00",
-        "image": "coyote_roadrunner_corsa_nomi_latini.jpg",
-        "label": "13"
-      },
-      {
-        "from": "15:00",
-        "to": "16:00",
-        "image": "tweety_sylvester_sega_albero.jpg",
-        "label": "15"
-      },
-      {
-        "from": "19:00",
-        "to": "20:00",
-        "image": "bugs_cassetta_postale_autunno.jpg",
-        "label": "tramonto"
-      },
-      {
-        "from": "21:00",
-        "to": "22:00",
-        "image": "duck_dodgers_porky_marvin.jpg",
-        "label": "21"
-      },
-      {
-        "from": "02:00",
-        "to": "04:00",
-        "image": "casetta_scogliera_notturna.jpg",
-        "label": "2AM"
-      },
-      {
-        "from": "11:00",
-        "to": "12:00",
-        "image": "collage_locandine_classiche.jpg",
-        "label": "11"
-      },
-      {
-        "from": "09:00",
-        "to": "10:00",
-        "image": "ralph_lupo_sam_pastore_pecora.jpg",
-        "label": "9"
-      }
-    ],
-    "friday": [
-      {
-        "from": "9:00",
-        "to": "10:00",
-        "image": "bugs_yosemite_sam_pesca_barca.jpg",
-        "label": "9"
-      },
-      {
-        "from": "18:00",
-        "to": "19:00",
-        "image": "coyote_sub_mina_squalo.jpg",
-        "label": "18"
-      },
-      {
-        "from": "23:00",
-        "to": "00:00",
-        "image": "bugs_daffy_bar_notte.jpg",
-        "label": "23"
-      },
-      {
-        "from": "10:00",
-        "to": "11:00",
-        "image": "sylvester_tweety_gabbia_anonymous.png",
-        "label": "10"
-      },
-      {
-        "from": "16:00",
-        "to": "17:00",
-        "image": "mosaico_personaggi_2.png",
-        "label": "16"
-      },
-      {
-        "from": "13:00",
-        "to": "14:00",
-        "image": "taz_hamburger_logo.jpg",
-        "label": "13"
-      },
-      {
-        "from": "19:00",
-        "to": "20:00",
-        "image": "cane_pastore_coyote_burrone.jpg",
-        "label": "tramonto"
-      }
-    ],
-    "saturday": [
-      {
-        "from": "10:00",
-        "to": "11:00",
-        "image": "sylvester_tweety_spiaggia.jpg",
-        "label": ""
-      }
-    ],
-    "sunday": [
-      {
-        "from": "14:00",
-        "to": "15:00",
-        "image": "coyote_sub_mina_squalo.jpg",
-        "label": ""
-      }
-    ]
-  },
-  "special_days": {
-    "2026-01-01": [
-      {
-        "from": "00:00",
-        "to": "23:59",
-        "image": "Looney tunes christmas/capodanno_fuochi_artificio.jpg",
-        "label": "Capodanno"
-      }
-    ],
-    "2026-10-13": [
-      {
-        "from": "12:00",
-        "to": "22:00",
-        "image": "bugs_compleanno_festa.jpg",
-        "label": "Compleanno"
-      }
-    ],
-    "2026-09-02": [
-      {
-        "from": "08:00",
-        "to": "10:00",
-        "image": "coyote_esplosione_binario.jpg",
-        "label": "Coyote"
-      },
-      {
-        "from": "12:00",
-        "to": "15:00",
-        "image": "coyote_roadrunner_corsa_nomi_latini.jpg",
-        "label": ""
-      },
-      {
-        "from": "15:00",
-        "to": "17:00",
-        "image": "coyote_sub_mina_squalo.jpg",
-        "label": ""
-      },
-      {
-        "from": "18:00",
-        "to": "20:00",
-        "image": "coyote_razzo_tramonto_deserto.jpg",
-        "label": ""
-      },
-      {
-        "from": "20:00",
-        "to": "22:00",
-        "image": "sfondo_deserto_notturno_binario.jpg",
-        "label": ""
-      },
-      {
-        "from": "17:00",
-        "to": "18:00",
-        "image": "coyote_caduta_vuoto.jpg",
-        "label": ""
-      },
-      {
-        "from": "11:00",
-        "to": "12:00",
-        "image": "coyote_roadrunner_forchetta_deserto.jpg",
-        "label": ""
-      },
-      {
-        "from": "22:00",
-        "to": "01:00",
-        "image": "coyote_sagoma_salto_luna.jpeg",
-        "label": "notte"
-      }
-    ],
-    "2026-09-03": [
-      {
-        "from": "08:00",
-        "to": "10:00",
-        "image": "coyote_esplosione_binario.jpg",
-        "label": "Coyote"
-      },
-      {
-        "from": "12:00",
-        "to": "15:00",
-        "image": "coyote_roadrunner_corsa_nomi_latini.jpg",
-        "label": ""
-      },
-      {
-        "from": "15:00",
-        "to": "17:00",
-        "image": "coyote_razzo_tramonto_deserto.jpg",
-        "label": ""
-      },
-      {
-        "from": "18:00",
-        "to": "20:00",
-        "image": "coyote_sub_mina_squalo.jpg",
-        "label": ""
-      },
-      {
-        "from": "20:00",
-        "to": "22:00",
-        "image": "sfondo_deserto_notturno_binario.jpg",
-        "label": "20"
-      },
-      {
-        "from": "17:00",
-        "to": "18:00",
-        "image": "coyote_caduta_vuoto.jpg",
-        "label": ""
-      },
-      {
-        "from": "11:00",
-        "to": "12:00",
-        "image": "coyote_roadrunner_forchetta_deserto.jpg",
-        "label": ""
-      },
-      {
-        "from": "22:00",
-        "to": "01:00",
-        "image": "coyote_sagoma_salto_luna.jpeg",
-        "label": "notte"
-      }
-    ]
-  },
-  "mode": "random",
   "tags": [
     "mattino",
     "lavoro",
@@ -552,7 +27,9 @@
     "sport",
     "horror",
     "jolly",
-    "sanValentino"
+    "sanValentino",
+    "capodanno",
+    "compleanno"
   ],
   "image_library": {
     "personaggi_riquadri_colorati_bianco_nero.jpg": [
@@ -604,7 +81,8 @@
       "primavera"
     ],
     "bugs_compleanno_festa.jpg": [
-      "svago"
+      "svago",
+      "compleanno"
     ],
     "bugs_daffy_bar_notte.jpg": [
       "notte",
@@ -909,7 +387,8 @@
     "Looney tunes christmas/capodanno_fuochi_artificio.jpg": [
       "inverno",
       "natale",
-      "notte"
+      "notte",
+      "capodanno"
     ],
     "Looney tunes christmas/chrome/natale_personaggi_addobbano_albero.jpg": [
       "natale"
@@ -2040,61 +1519,58 @@
     }
   },
   "history_days": 60,
-  "theme": "light",
+  "theme": "dark",
   "latitude": 40.8518,
   "longitude": 14.2681,
-  "periods": [
+  "seasons": [
     {
-      "name": "Halloween",
-      "from": "10-20",
-      "to": "11-01",
-      "exclude": [
-        "estate",
-        "inverno",
-        "natale",
+      "name": "Inverno",
+      "from": "11-16",
+      "to": "04-05",
+      "tags": [
+        "inverno"
+      ]
+    },
+    {
+      "name": "Primavera",
+      "from": "03-06",
+      "to": "07-06",
+      "tags": [
         "primavera"
+      ]
+    },
+    {
+      "name": "Estate",
+      "from": "06-06",
+      "to": "10-05",
+      "tags": [
+        "estate"
+      ]
+    },
+    {
+      "name": "Autunno",
+      "from": "09-15",
+      "to": "11-30",
+      "tags": [
+        "autunno"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "Capodanno",
+      "from": "01-01",
+      "to": "01-01",
+      "tags": [
+        "capodanno"
       ],
       "random_rules": {
         "weekday": [
           {
-            "from": "sunset -40m",
-            "to": "dusk +40m",
+            "from": "00:00",
+            "to": "23:59",
             "include": [
-              "crepuscolo",
-              "horror"
-            ],
-            "exclude": [],
-            "match": "all",
-            "rotate_minutes": 60
-          },
-          {
-            "from": "dusk +40m",
-            "to": "21:00",
-            "include": [
-              "horror",
-              "sera"
-            ],
-            "exclude": [],
-            "match": "all",
-            "rotate_minutes": 60
-          },
-          {
-            "from": "21:00",
-            "to": "22:00",
-            "include": [
-              "horror",
-              "spettacolo"
-            ],
-            "exclude": [],
-            "match": "all",
-            "rotate_minutes": 60
-          },
-          {
-            "from": "22:00",
-            "to": "2:00",
-            "include": [
-              "horror",
-              "notte"
+              "capodanno"
             ],
             "exclude": [],
             "match": "all",
@@ -2107,11 +1583,8 @@
       "name": "Natale",
       "from": "12-01",
       "to": "01-06",
-      "exclude": [
-        "autunno",
-        "estate",
-        "horror",
-        "primavera"
+      "tags": [
+        "natale"
       ],
       "random_rules": {
         "weekday": [
@@ -2194,99 +1667,11 @@
       }
     },
     {
-      "name": "Inverno",
-      "from": "01-07",
-      "to": "03-05",
-      "exclude": [
-        "autunno",
-        "estate",
-        "horror",
-        "natale",
-        "primavera"
-      ]
-    },
-    {
-      "name": "Inv-Prim",
-      "from": "03-06",
-      "to": "04-05",
-      "exclude": [
-        "autunno",
-        "estate",
-        "natale"
-      ]
-    },
-    {
-      "name": "Primavera",
-      "from": "04-06",
-      "to": "06-05",
-      "exclude": [
-        "autunno",
-        "estate",
-        "inverno",
-        "natale"
-      ]
-    },
-    {
-      "name": "Prim-Est",
-      "from": "06-06",
-      "to": "07-06",
-      "exclude": [
-        "autunno",
-        "inverno",
-        "natale"
-      ]
-    },
-    {
-      "name": "Estate",
-      "from": "07-07",
-      "to": "09-14",
-      "exclude": [
-        "autunno",
-        "inverno",
-        "natale",
-        "primavera"
-      ]
-    },
-    {
-      "name": "Est-Aut",
-      "from": "09-15",
-      "to": "10-5",
-      "exclude": [
-        "horror",
-        "inverno",
-        "natale",
-        "primavera"
-      ]
-    },
-    {
-      "name": "Autunno",
-      "from": "10-6",
-      "to": "11-15",
-      "exclude": [
-        "estate",
-        "inverno",
-        "natale",
-        "primavera"
-      ]
-    },
-    {
-      "name": "Aut-Inv",
-      "from": "11-16",
-      "to": "11-30",
-      "exclude": [
-        "estate",
-        "natale",
-        "primavera"
-      ]
-    },
-    {
       "name": "San Valentino",
       "from": "01-10",
       "to": "01-15",
-      "exclude": [
-        "autunno",
-        "estate",
-        "primavera"
+      "tags": [
+        "sanValentino"
       ],
       "random_rules": {
         "weekday": [
@@ -2356,6 +1741,84 @@
               "tramonto"
             ],
             "match": "any",
+            "rotate_minutes": 60
+          }
+        ]
+      }
+    },
+    {
+      "name": "Halloween",
+      "from": "10-20",
+      "to": "11-01",
+      "tags": [
+        "horror"
+      ],
+      "random_rules": {
+        "weekday": [
+          {
+            "from": "sunset -40m",
+            "to": "dusk +40m",
+            "include": [
+              "crepuscolo",
+              "horror"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "dusk +40m",
+            "to": "21:00",
+            "include": [
+              "horror",
+              "sera"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "21:00",
+            "to": "22:00",
+            "include": [
+              "horror",
+              "spettacolo"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "22:00",
+            "to": "2:00",
+            "include": [
+              "horror",
+              "notte"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          }
+        ]
+      }
+    },
+    {
+      "name": "Compleanno",
+      "from": "10-13",
+      "to": "10-13",
+      "tags": [
+        "compleanno"
+      ],
+      "random_rules": {
+        "weekday": [
+          {
+            "from": "12:00",
+            "to": "22:00",
+            "include": [
+              "compleanno"
+            ],
+            "exclude": [],
+            "match": "all",
             "rotate_minutes": 60
           }
         ]

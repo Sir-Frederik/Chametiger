@@ -2,7 +2,7 @@
 Verifica che ogni immagine con almeno un tag esca davvero, con il config attuale.
 
 Simula un anno a partire da oggi usando le stesse funzioni dello scheduler
-(periodi, override, fasce solari, divieti stagionali, special_days) e fa due
+(stagioni, eventi, override, fasce solari, divieti stagionali) e fa due
 controlli:
 
   1. eleggibilita': l'immagine sta nel pool di almeno una regola che vince
@@ -10,7 +10,7 @@ controlli:
   2. uscite reali: ricostruisce la sequenza di ogni giorno con il mazzo e il
      vincolo di non ripetere nella stessa giornata, e conta le uscite
 
-La usa anche la GUI, dal pulsante "Verifica anno" della tab Periodi.
+La usa anche la GUI, dal pulsante "Verifica anno" della tab Stagioni ed eventi.
 
 Uso: python verifica_immagini.py [giorni] [soglia_rare]
      (default: 365 giorni, segnala le immagini uscite <= 12 volte)
@@ -18,7 +18,7 @@ Uso: python verifica_immagini.py [giorni] [soglia_rare]
 
 import sys
 from collections import Counter, defaultdict
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
 import app
 
@@ -31,21 +31,14 @@ def _nessun_progresso(fase: str, fatto: int, totale: int):
 
 
 def eleggibili(config: dict, giorni: list[date], progresso=_nessun_progresso) -> dict[str, set[str]]:
-    """Immagine -> periodi in cui e' nel pool di una regola vincente."""
+    """Immagine -> periodi (strati) in cui e' nel pool di una regola vincente."""
     out: dict[str, set[str]] = defaultdict(set)
     pools: dict[str, list[str]] = {}
     for n, g in enumerate(giorni):
         progresso("fasce", n, len(giorni))
         regole = app._regole_del_giorno(config, g)
-        speciali = config.get("special_days", {}).get(g.strftime("%Y-%m-%d")) or []
-        periodo = app.periodo_attivo(config, g)
-        nome = periodo.get("name", "?") if periodo else "-"
         vinte = set()
         for minuto in range(1440):
-            if speciali:
-                t = datetime(g.year, g.month, g.day) + timedelta(minutes=minuto)
-                if app._first_match(speciali, t, config):
-                    continue  # coperto da un giorno speciale, le regole non contano
             for rule, _origine, start, end in regole:
                 if not app._copre(start, end, minuto):
                     continue
@@ -53,9 +46,9 @@ def eleggibili(config: dict, giorni: list[date], progresso=_nessun_progresso) ->
                 if sig not in pools:
                     pools[sig] = app.candidates_for_rule(config, rule)
                 if pools[sig]:
-                    vinte.add(sig)
+                    vinte.add((sig, rule.get("_period", "-")))
                     break
-        for sig in vinte:
+        for sig, nome in vinte:
             for img in pools[sig]:
                 out[img].add(nome)
     return out

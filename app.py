@@ -1,8 +1,7 @@
 """
 Chametiger - Wallpaper scheduler per ora + giorno della settimana
-Due modalita':
-  - "scheduled": ogni slot ha un'immagine fissa (comportamento storico)
-  - "random":    ogni slot pesca a caso tra le immagini che hanno certi tag
+Ogni fascia oraria pesca fra le immagini che hanno certi tag, filtrate dalla
+stagione e dagli eventi del giorno.
 Richiede: pystray, Pillow, pywin32
 """
 
@@ -21,6 +20,7 @@ from functools import lru_cache
 from pathlib import Path
 
 import sun
+from versione import VERSIONE
 
 try:
     import pystray
@@ -77,9 +77,6 @@ WEEKDAYS = [
 ]
 WEEKEND = {"saturday", "sunday"}
 
-MODE_SCHEDULED = "scheduled"
-MODE_RANDOM = "random"
-
 # Coordinate di default: Napoli. Servono agli orari solari (alba, tramonto,
 # crepuscolo); si cambiano dalle impostazioni della GUI.
 DEFAULT_LAT = 40.8518
@@ -93,10 +90,10 @@ DEFAULT_LON = 14.2681
 
 def ensure_defaults(cfg: dict) -> dict:
     """Aggiunge le chiavi nuove se mancano, cosi' i config vecchi restano validi."""
-    cfg.setdefault("mode", MODE_SCHEDULED)
     cfg.setdefault("tags", [])
     cfg.setdefault("image_library", {})
-    cfg.setdefault("periods", [])
+    cfg.setdefault("seasons", [])
+    cfg.setdefault("events", [])
     cfg.setdefault("latitude", DEFAULT_LAT)
     cfg.setdefault("longitude", DEFAULT_LON)
 
@@ -195,27 +192,6 @@ def slot_bounds(slot: dict, giorno: date, config: dict) -> tuple[int, int]:
     )
 
 
-def time_in_slot(now: datetime, slot: dict, config: dict) -> bool:
-    """Ritorna True se l'orario corrente rientra nello slot."""
-    start, end = slot_bounds(slot, now.date(), config)
-    cur = now.hour * 60 + now.minute
-
-    if start <= end:
-        return start <= cur <= end
-    # Fascia a cavallo della mezzanotte (es. 22:00 -> 06:00, o dusk -> dawn)
-    return cur >= start or cur <= end
-
-
-def _first_match(slots, now: datetime, config: dict) -> dict | None:
-    """Ritorna il primo slot che copre l'orario corrente, o None."""
-    if not slots:
-        return None
-    for slot in slots:
-        if time_in_slot(now, slot, config):
-            return slot
-    return None
-
-
 def _window(slot: dict, giorno: date | None = None, config: dict | None = None) -> str:
     """
     Fascia oraria dello slot, come appare nel log. Con giorno e config, le ancore
@@ -238,31 +214,47 @@ def _tags_of(rule: dict) -> str:
         parts.append(joiner.join(rule["include"]))
     if rule.get("exclude"):
         parts.append("-" + ",-".join(rule["exclude"]))
-    if rule.get("season_exclude"):
-        parts.append("!" + ",!".join(rule["season_exclude"]))
     if rule.get("prefer"):
         parts.append("~" + ",~".join(rule["prefer"]))
     return f" [{' '.join(parts)}]" if parts else ""
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  Periodi dell'anno
+#  Stagioni ed eventi
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-#  Un periodo copre un intervallo di date che si ripete ogni anno ("09-10" ->
-#  "10-10") e modula le regole casuali senza duplicarle:
+#  Due livelli di periodi, entrambi intervalli di date che si ripetono ogni anno
+#  ("09-10" -> "10-10", anche a cavallo del capodanno):
 #
-#    exclude  stagioni vietate. Un'immagine cade solo se TUTTE le stagioni di
-#             cui porta il tag sono vietate: una taggata inverno+primavera esce
-#             sia in Inverno sia in Primavera, invece di sparire da entrambi
+#    seasons  coprono l'anno intero. Dove due si sovrappongono c'e' una
+#             transizione, e valgono tutte e due
+#    events   facoltativi, si appoggiano sopra la stagione e si annidano come
+#             matrioske: Capodanno dentro Natale dentro l'Inverno
+#
+#  Ogni periodo dichiara i suoi tag (`tags`). L'insieme dei tag di tutti i
+#  periodi e' il vocabolario "stagionale": un tag cosi' vale solo nei giorni del
+#  suo periodo. Il divieto e' per insieme, non per tag: un'immagine cade solo se
+#  TUTTI i suoi tag stagionali sono fuori periodo, quindi una taggata
+#  inverno+primavera esce in entrambe le stagioni, e una senza tag stagionali
+#  esce sempre.
+#
+#  Un giorno e' una pila di strati, dall'evento piu' interno alla stagione.
+#  Ogni strato puo' portarsi fasce proprie (`random_rules`): se nessuna copre
+#  l'ora si scende allo strato sotto, e in fondo alle regole di base. Ogni
+#  fascia pesca coi tag ammessi dal SUO strato, cioe' i suoi e quelli di tutti
+#  gli strati sotto: nelle ore che Natale non copre si torna all'Inverno, coi
+#  divieti dell'Inverno.
+#
+#  Fra gli eventi sta sopra il piu' corto, che e' il piu' specifico; a parita'
+#  di durata, quello che viene prima nell'elenco.
+#
+#  Un periodo puo' anche avere:
 #    prefer   tag preferiti: se nel pool ce n'e' almeno uno il pool si restringe
 #             a quelli, altrimenti resta intero (per non rimanere a secco)
 #    require  tag obbligatori, si sommano all'include (in AND) - raro
-#
-#  Un periodo puo' anche portarsi regole proprie (`random_rules`), che NON
-#  sostituiscono quelle di base: vengono consultate prima, e se nessuna copre
-#  l'ora corrente si scende alla base. Stessa catena degli `overrides`, cosi'
-#  un periodo festivo puo' cambiare solo le sere e lasciare intatto il resto.
+
+# Anno bisestile di comodo per contare i giorni: il 29 febbraio deve esistere.
+_ANNO_BISESTILE = 2024
 
 
 @lru_cache(maxsize=512)
@@ -298,124 +290,142 @@ def period_active(period: dict, giorno: date) -> bool:
     return oggi >= start or oggi <= end
 
 
-def periodo_attivo(config: dict, giorno: date) -> dict | None:
-    """
-    Il primo periodo che copre quella data, o None. L'ordine conta: i periodi
-    festivi vanno messi prima di quelli stagionali, come le regole override.
-    """
-    for period in config.get("periods", []) or []:
-        if period_active(period, giorno):
-            return period
-    return None
+def durata_periodo(period: dict) -> int:
+    """Quanti giorni copre il periodo, contati su un anno bisestile."""
+    start = _md_ordinal(period.get("from", ""))
+    end = _md_ordinal(period.get("to", ""))
+    if start is None or end is None:
+        return 0
+    try:
+        a = date(_ANNO_BISESTILE, start // 100, start % 100)
+        b = date(_ANNO_BISESTILE, end // 100, end % 100)
+    except ValueError:
+        return 0
+    return (b - a).days % 366 + 1
+
+
+def tag_del_periodo(period: dict) -> list[str]:
+    return list(period.get("tags") or [])
 
 
 def tag_stagionali(config: dict) -> set:
     """
-    Quali tag contano come "stagione": tutti quelli che almeno un periodo vieta.
+    Quali tag contano come "stagione": quelli dichiarati da stagioni ed eventi.
 
     Si ricava dai periodi invece di essere una lista fissa, cosi' chi aggiunge
-    una stagione propria (`carnevale`) non deve toccare il codice. Serve a
+    un evento proprio (`carnevale`) non deve toccare il codice. Serve a
     distinguere i tag di stagione dagli altri: `tramonto` non rende invernale
     un'immagine, `inverno` si.
     """
     vocabolario = set()
-    for period in config.get("periods", []) or []:
-        vocabolario.update(period.get("exclude", []) or [])
+    for chiave in ("seasons", "events"):
+        for period in config.get(chiave, []) or []:
+            vocabolario.update(tag_del_periodo(period))
     return vocabolario
 
 
-def patch_rule(rule: dict, period: dict | None, config: dict | None = None) -> dict:
+def stagioni_attive(config: dict, giorno: date) -> list[dict]:
+    """Le stagioni che coprono la data: una, o due in una transizione."""
+    return [s for s in config.get("seasons", []) or [] if period_active(s, giorno)]
+
+
+def eventi_attivi(config: dict, giorno: date) -> list[dict]:
+    """Gli eventi che coprono la data, dal piu' interno (il piu' corto) in giu'."""
+    attivi = [
+        (durata_periodo(e), i, e)
+        for i, e in enumerate(config.get("events", []) or [])
+        if period_active(e, giorno)
+    ]
+    return [e for _, _, e in sorted(attivi, key=lambda x: (x[0], x[1]))]
+
+
+def strati_del_giorno(config: dict, giorno: date) -> list[dict]:
     """
-    La regola vista attraverso il periodo attivo. Ritorna sempre una COPIA:
+    La pila del giorno, dall'evento piu' interno alla stagione. Ogni strato:
+
+      nome      come appare nel log ("Natale", "Inverno/Primavera")
+      tipo      "evento" o "stagione"
+      periodi   i periodi dello strato: uno per un evento, una o due stagioni
+      ammessi   i tag stagionali che lo strato lascia passare: i suoi e quelli
+                di tutti gli strati sotto
+
+    Un giorno che nessuna stagione copre ammette tutti i tag di stagione, come
+    se non ci fossero stagioni: e' un buco nel config, la GUI lo segnala.
+    """
+    stagioni = stagioni_attive(config, giorno)
+    if stagioni:
+        ammessi = set().union(*(tag_del_periodo(s) for s in stagioni))
+        nome = "/".join(s.get("name", "?") for s in stagioni)
+    else:
+        ammessi = set().union(
+            *(tag_del_periodo(s) for s in config.get("seasons", []) or [])
+        )
+        nome = "nessuna stagione"
+
+    strati = [{"nome": nome, "tipo": "stagione", "periodi": stagioni, "ammessi": ammessi}]
+    for evento in reversed(eventi_attivi(config, giorno)):
+        ammessi = ammessi | set(tag_del_periodo(evento))
+        strati.append(
+            {
+                "nome": evento.get("name", "?"),
+                "tipo": "evento",
+                "periodi": [evento],
+                "ammessi": ammessi,
+            }
+        )
+    strati.reverse()
+    return strati
+
+
+def descrivi_giorno(config: dict, giorno: date) -> str:
+    """'Inverno > Natale > Capodanno': la pila letta dal basso."""
+    return " > ".join(s["nome"] for s in reversed(strati_del_giorno(config, giorno)))
+
+
+def patch_rule(rule: dict, strato: dict | None, config: dict) -> dict:
+    """
+    La regola vista attraverso uno strato. Ritorna sempre una COPIA:
     `_scelta_giornaliera` ripassa le stesse regole centinaia di volte e un dict
     mutato in place si porterebbe dietro le patch dei giri precedenti.
     """
-    if not period:
+    if not strato:
         return rule
 
     patched = dict(rule)
 
     # Le due esclusioni restano separate perche' sono due cose diverse:
     # quella della regola e' un divieto secco per immagine ("niente -smart"),
-    # quella del periodo riguarda le stagioni e si applica all'insieme dei tag
+    # quella dello strato riguarda le stagioni e si applica all'insieme dei tag
     # stagionali dell'immagine. Fonderle era il motivo per cui un'immagine
-    # taggata autunno+primavera non usciva in nessuno dei due periodi.
-    vietate = list(period.get("exclude", []) or [])
+    # taggata autunno+primavera non usciva in nessuna delle due stagioni.
+    vocabolario = tag_stagionali(config)
+    vietate = vocabolario - strato["ammessi"]
     if vietate:
-        patched["season_exclude"] = sorted(set(vietate))
-        patched["seasonal"] = sorted(
-            tag_stagionali(config) if config is not None else set(vietate)
-        )
+        patched["season_exclude"] = sorted(vietate)
+        patched["seasonal"] = sorted(vocabolario)
 
-    richiesti = list(period.get("require", []))
+    richiesti, preferiti, minimo = [], list(rule.get("prefer", [])), 0
+    for period in strato["periodi"]:
+        richiesti += list(period.get("require", []) or [])
+        preferiti += list(period.get("prefer", []) or [])
+        minimo = max(minimo, int(period.get("prefer_min") or 0))
+
     if richiesti:
         patched["include"] = sorted(set(list(rule.get("include", [])) + richiesti))
-
-    preferiti = list(rule.get("prefer", [])) + list(period.get("prefer", []))
     if preferiti:
         patched["prefer"] = sorted(set(preferiti))
-        if period.get("prefer_min"):
-            patched["prefer_min"] = period["prefer_min"]
+        if minimo:
+            patched["prefer_min"] = minimo
 
     # Marca la provenienza: entra nella firma della regola, cosi' la stessa
-    # fascia in due periodi diversi non condivide il memo in log.json.
-    nome = period.get("name")
-    if nome:
-        patched["_period"] = nome
+    # fascia in due strati diversi non condivide il memo in log.json.
+    patched["_period"] = strato["nome"]
 
     return patched
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  Modalita' programmata
-# ═══════════════════════════════════════════════════════════════════════════════
-
-
-def resolve_scheduled(config: dict, now: datetime) -> tuple[str | None, str]:
-    """
-    Ritorna (percorso, categoria). La categoria e' l'etichetta della regola che
-    ha vinto, usata nel log.
-
-    Priorita':
-      1. special_days (data esatta)
-      2. overrides    (giorno della settimana)
-      3. schedules    (weekday / weekend)
-      4. fallback     (weekday, se il weekend non copre l'orario)
-    """
-    today_key = now.strftime("%Y-%m-%d")
-    day_name = WEEKDAYS[now.weekday()]
-    schedules = config.get("schedules", {})
-
-    giorno = now.date()
-
-    slot = _first_match(config.get("special_days", {}).get(today_key), now, config)
-    if slot:
-        cat = f"programmata, giorno speciale {today_key} {_window(slot, giorno, config)}"
-        return resolve_path(config, slot["image"]), cat
-
-    slot = _first_match(config.get("overrides", {}).get(day_name), now, config)
-    if slot:
-        cat = f"programmata, override {day_name} {_window(slot, giorno, config)}"
-        return resolve_path(config, slot["image"]), cat
-
-    schedule_key = "weekend" if day_name in WEEKEND else "weekday"
-    slot = _first_match(schedules.get(schedule_key, []), now, config)
-    if slot:
-        cat = f"programmata, {schedule_key} {_window(slot, giorno, config)}"
-        return resolve_path(config, slot["image"]), cat
-
-    if schedule_key == "weekend":
-        slot = _first_match(schedules.get("weekday", []), now, config)
-        if slot:
-            log("[INFO] Nessuno slot weekend attivo, uso il fallback weekday.")
-            cat = f"programmata, fallback weekday {_window(slot, giorno, config)}"
-            return resolve_path(config, slot["image"]), cat
-
-    return None, ""
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  Modalita' casuale per tag
+#  Estrazione per tag
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
@@ -721,18 +731,15 @@ def _regole_del_giorno(config: dict, giorno: date) -> list[tuple[dict, str, int,
 
     UNICO posto in cui l'ordine di priorita' e' definito. Prima era ripetuto in
     resolve_random, _regola_attiva e _shuffle_now: tre copie da tenere allineate
-    a mano, che col livello dei periodi sarebbero diventate quattro.
+    a mano.
 
-    Ordine:
-      1. regole del periodo attivo, override del giorno
-      2. regole del periodo attivo, feriali / weekend
-      3. regole di base, override del giorno
-      4. regole di base, feriali / weekend
-      5. ripiego su feriali quando il weekend non copre l'orario
-
-    Le regole del periodo non sostituiscono quelle di base: se nessuna copre
-    l'ora corrente si scende, come fanno da sempre gli override di giorno. Cosi'
-    un periodo festivo puo' cambiare solo le sere e lasciare intatte le mattine.
+    Ordine, strato per strato dall'evento piu' interno alla stagione:
+      1. fasce dello strato, override del giorno
+      2. fasce dello strato, feriali / weekend
+      3. fasce dello strato, ripiego su feriali quando il weekend non copre
+    e in fondo le regole di base, con la stessa sequenza, filtrate dalla
+    stagione. Un evento quindi cambia solo le ore che copre con le sue fasce:
+    nelle altre si scende allo strato sotto, fino alla stagione.
 
     I confini si risolvono una volta per giorno e non per minuto: la ricostruzione
     della giornata interroga queste regole 1440 volte, e con le ancore solari
@@ -740,34 +747,40 @@ def _regole_del_giorno(config: dict, giorno: date) -> list[tuple[dict, str, int,
     """
     day_name = WEEKDAYS[giorno.weekday()]
     key = "weekend" if day_name in WEEKEND else "weekday"
-    period = periodo_attivo(config, giorno)
+    strati = strati_del_giorno(config, giorno)
 
-    fonti: list[tuple[list | None, str]] = []
-
-    if period:
-        proprie = period.get("random_rules", {}) or {}
-        etichetta = f"periodo {period.get('name', '?')}"
-        fonti.append(
-            (proprie.get("overrides", {}).get(day_name), f"{etichetta} override {day_name}")
-        )
-        fonti.append((proprie.get(key), f"{etichetta} {key}"))
+    def fonti_di(regole: dict, etichetta: str) -> list[tuple[list | None, str]]:
+        fonti = [
+            ((regole.get("overrides") or {}).get(day_name), f"{etichetta}override {day_name}"),
+            (regole.get(key), f"{etichetta}{key}"),
+        ]
         if key == "weekend":
-            fonti.append((proprie.get("weekday"), f"{etichetta} fallback weekday"))
-
-    base = config.get("random_rules", {})
-    suffisso = f" [periodo {period.get('name', '?')}]" if period else ""
-    fonti.append(
-        (base.get("overrides", {}).get(day_name), f"override {day_name}{suffisso}")
-    )
-    fonti.append((base.get(key), f"{key}{suffisso}"))
-    if key == "weekend":
-        fonti.append((base.get("weekday"), f"fallback weekday{suffisso}"))
+            fonti.append((regole.get("weekday"), f"{etichetta}fallback weekday"))
+        return fonti
 
     out = []
-    for regole, origine in fonti:
-        for rule in regole or []:
-            start, end = slot_bounds(rule, giorno, config)
-            out.append((patch_rule(rule, period, config), origine, start, end))
+
+    def aggiungi(fonti, strato, suffisso=""):
+        for regole, origine in fonti:
+            for rule in regole or []:
+                start, end = slot_bounds(rule, giorno, config)
+                out.append(
+                    (patch_rule(rule, strato, config), origine + suffisso, start, end)
+                )
+
+    for strato in strati:
+        for period in strato["periodi"]:
+            proprie = period.get("random_rules") or {}
+            if proprie:
+                etichetta = f"{strato['tipo']} {period.get('name', '?')} "
+                aggiungi(fonti_di(proprie, etichetta), strato)
+
+    stagione = strati[-1]
+    aggiungi(
+        fonti_di(config.get("random_rules", {}) or {}, ""),
+        stagione,
+        f" [{stagione['nome']}]",
+    )
     return out
 
 
@@ -973,45 +986,25 @@ def pick_from_rule(
 
 def resolve_random(config: dict, now: datetime) -> tuple[str | None, str]:
     """
-    Ritorna (percorso, categoria), come resolve_scheduled.
+    Ritorna (percorso, categoria). La categoria dice quale regola ha vinto, e
+    finisce nel log.
 
-    Priorita':
-      1. special_days  (immagini fisse: a Natale vuoi quella, non una a caso)
-      2. random_rules.overrides[giorno]
-      3. random_rules.weekday / weekend
-      4. fallback weekday
-      5. fallback finale sulla modalita' programmata
+    Le regole arrivano gia' in ordine di priorita' da `_regole_del_giorno`:
+    vince la prima che copre l'ora e ha almeno un'immagine.
     """
-    today_key = now.strftime("%Y-%m-%d")
     giorno = now.date()
-
-    slot = _first_match(config.get("special_days", {}).get(today_key), now, config)
-    if slot:
-        cat = f"casuale, giorno speciale {today_key} {_window(slot, giorno, config)}"
-        return resolve_path(config, slot["image"]), cat
-
     for rule, origine in regole_candidate(config, now):
         image = pick_from_rule(config, rule, now)
         if image:
-            cat = f"casuale, {origine} {_window(rule, giorno, config)}{_tags_of(rule)}"
+            cat = f"{origine} {_window(rule, giorno, config)}{_tags_of(rule)}"
             return resolve_path(config, image), cat
         log(f"[WARN] Regola '{origine}' senza immagini valide, proseguo.")
-
-    log("[INFO] Nessuna regola casuale attiva, ripiego sulla modalita' programmata.")
-    return resolve_scheduled(config, now)
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  Dispatcher
-# ═══════════════════════════════════════════════════════════════════════════════
+    return None, ""
 
 
 def resolve_wallpaper(config: dict) -> tuple[str | None, str]:
     """Ritorna (percorso, categoria) della regola attiva adesso."""
-    now = datetime.now()
-    if config.get("mode", MODE_SCHEDULED) == MODE_RANDOM:
-        return resolve_random(config, now)
-    return resolve_scheduled(config, now)
+    return resolve_random(config, datetime.now())
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1179,14 +1172,11 @@ class ChametigerTray:
         try:
             self.config = load_config()
             invalida_cache_file()
-            if self.config.get("mode") != MODE_RANDOM:
-                log("[INFO] Estrazione disponibile solo in modalita' casuale.")
-                return
 
             now = datetime.now()
             candidate = regole_candidate(self.config, now)
             if not candidate:
-                log("[INFO] Nessuna regola casuale attiva adesso.")
+                log("[INFO] Nessuna regola attiva adesso.")
                 return
 
             for rule, origine in candidate:
@@ -1203,21 +1193,6 @@ class ChametigerTray:
         except Exception as e:
             log(f"[ERR] Shuffle: {e}")
 
-    def _toggle_mode(self, icon, item):
-        """Passa da programmata a casuale e viceversa, salvando nel config."""
-        try:
-            cfg = load_config()
-            cfg["mode"] = (
-                MODE_RANDOM if cfg.get("mode") == MODE_SCHEDULED else MODE_SCHEDULED
-            )
-            with open(CONFIG_FILE, "w", encoding="utf-8") as f:
-                json.dump(cfg, f, indent=2, ensure_ascii=False)
-            self.config = cfg
-            log(f"[OK] Modalita': {cfg['mode']}")
-            self._apply_now(None, None)
-        except Exception as e:
-            log(f"[ERR] Cambio modalita': {e}")
-
     def _toggle_autostart(self, icon, item):
         if is_autostart_enabled():
             disable_autostart()
@@ -1229,18 +1204,7 @@ class ChametigerTray:
         icon.stop()
 
     # ── Build menu ───────────────────────────────────────────────────────────
-    def _current_mode(self) -> str:
-        try:
-            return load_config().get("mode", MODE_SCHEDULED)
-        except Exception:
-            return MODE_SCHEDULED
-
     def _build_menu(self):
-        def mode_label(item):
-            if self._current_mode() == MODE_RANDOM:
-                return "Modalita': casuale"
-            return "Modalita': programmata"
-
         def autostart_label(item):
             return (
                 "* Avvio con Windows"
@@ -1249,13 +1213,12 @@ class ChametigerTray:
             )
 
         return pystray.Menu(
-            Item("Chametiger", None, enabled=False),
+            Item(f"Chametiger {VERSIONE}", None, enabled=False),
             pystray.Menu.SEPARATOR,
             Item("Applica adesso", self._apply_now),
             Item("Cambia immagine adesso", self._shuffle_now),
             Item("Apri editor config", self._open_editor),
             pystray.Menu.SEPARATOR,
-            Item(mode_label, self._toggle_mode),
             Item(autostart_label, self._toggle_autostart),
             pystray.Menu.SEPARATOR,
             Item("Esci", self._quit),
@@ -1269,14 +1232,14 @@ class ChametigerTray:
         if not is_autostart_enabled():
             enable_autostart()
 
-        log(f"Avvio Chametiger. Modalita': {self.config.get('mode')}")
+        log(f"Avvio Chametiger {VERSIONE}.")
         self._apply_now(None, None)
 
         t = threading.Thread(target=self._run_scheduler, daemon=True)
         t.start()
 
         self._icon = pystray.Icon(
-            APP_NAME, make_tray_icon(), APP_NAME, self._build_menu()
+            APP_NAME, make_tray_icon(), f"{APP_NAME} {VERSIONE}", self._build_menu()
         )
         self._icon.run()
 
