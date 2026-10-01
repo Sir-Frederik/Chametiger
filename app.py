@@ -896,7 +896,8 @@ def pick_from_rule(
     serve a non toccare il desktop per niente, e a far durare un'estrazione
     forzata fino alla fine della sua finestra.
 
-    force_new=True ignora la memoria ed estrae di nuovo, escludendo la corrente.
+    force_new=True ignora la memoria ed estrae di nuovo, escludendo la corrente
+    e le immagini che la sequenza del giorno assegna ad altre finestre.
     """
     pool = sorted(candidates_for_rule(config, rule))
     if not pool:
@@ -927,8 +928,20 @@ def pick_from_rule(
         if force_new:
             corrente = memo.get("image") if memo else scelta
             rest = [i for i in pool if i != corrente]
-            if rest:
-                scelta = random.choice(rest)
+            # Escluse le immagini che la sequenza del giorno assegna ad altre
+            # finestre: gia' uscite o in arrivo. Si usa la sequenza e non lo
+            # storico locale perche' e' identica su tutti i PC; l'estrazione
+            # resta casuale e vale solo qui, come prima. Se le esclusioni
+            # svuotano il pool si rinuncia prima a quelle future, poi a tutte.
+            sequenza = sequenza_giornaliera(config, now.date())
+            minuto = now.hour * 60 + now.minute
+            passate = {s["image"] for s in sequenza if s["minuto"] <= minuto}
+            giornata = {s["image"] for s in sequenza}
+            for escluse in (giornata, passate, set()):
+                libere = [i for i in rest if i not in escluse]
+                if libere:
+                    scelta = random.choice(libere)
+                    break
             if memo:
                 entries.remove(memo)
             forzata = True
