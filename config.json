@@ -1501,7 +1501,6 @@
     ],
     "marv_space_extended2.jpg.png": [],
     "pepe_valentine.jpg": [
-      "inverno",
       "sanValentino"
     ],
     "taz_vampiro_halloween.jpg": [
@@ -2247,6 +2246,88 @@
         "natale",
         "primavera"
       ]
+    },
+    {
+      "name": "San Valentino",
+      "from": "01-10",
+      "to": "01-15",
+      "exclude": [
+        "autunno",
+        "estate",
+        "primavera"
+      ],
+      "random_rules": {
+        "weekday": [
+          {
+            "from": "dusk",
+            "to": "22:00",
+            "include": [
+              "sanValentino",
+              "sera"
+            ],
+            "exclude": [
+              "alba",
+              "crepuscolo",
+              "horror",
+              "mattino",
+              "pomeriggio",
+              "tramonto"
+            ],
+            "match": "any",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "15:00",
+            "to": "16:00",
+            "include": [
+              "pomeriggio",
+              "sanValentino"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          }
+        ],
+        "weekend": [
+          {
+            "from": "08:00",
+            "to": "12:00",
+            "include": [
+              "sanValentino",
+              "svago",
+              "weekend"
+            ],
+            "exclude": [
+              "alba",
+              "crepuscolo",
+              "notte",
+              "pomeriggio",
+              "sera"
+            ],
+            "match": "any",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "12:00",
+            "to": "sunset-40",
+            "include": [
+              "sanValentino",
+              "svago",
+              "weekend"
+            ],
+            "exclude": [
+              "alba",
+              "horror",
+              "mattino",
+              "notte",
+              "sera",
+              "tramonto"
+            ],
+            "match": "any",
+            "rotate_minutes": 60
+          }
+        ]
+      }
     }
   ]
 }
