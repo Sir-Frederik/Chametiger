@@ -1213,6 +1213,9 @@ class LibraryTab(tk.Frame):
         self._preview_photo = None
         self._tag_vars: dict[str, tk.BooleanVar] = {}
         self._suspend_events = False
+        # immagini appena taggate: restano visibili anche se non rispettano più
+        # il filtro, finché non si cambia filtro o ricerca
+        self._pinned: set[str] = set()
         self._build()
 
     # ── Layout ───────────────────────────────────────────────────────────────
@@ -1248,7 +1251,7 @@ class LibraryTab(tk.Frame):
             side="left"
         )
         self._search_var = tk.StringVar()
-        self._search_var.trace_add("write", lambda *_: self._refresh_list())
+        self._search_var.trace_add("write", lambda *_: self._on_filter_change())
         tk.Entry(
             filt,
             textvariable=self._search_var,
@@ -1271,7 +1274,7 @@ class LibraryTab(tk.Frame):
             state="readonly",
         )
         self._filter_cb.pack(side="left", padx=6)
-        self._filter_cb.bind("<<ComboboxSelected>>", lambda e: self._refresh_list())
+        self._filter_cb.bind("<<ComboboxSelected>>", lambda e: self._on_filter_change())
 
         # Corpo
         body = tk.Frame(self, bg=BG)
@@ -1415,6 +1418,10 @@ class LibraryTab(tk.Frame):
         self._on_select()
 
     # ── Lista ────────────────────────────────────────────────────────────────
+    def _on_filter_change(self):
+        self._pinned.clear()
+        self._refresh_list()
+
     def _refresh_list(self):
         self._listbox.delete(0, "end")
         library = self._library()
@@ -1423,12 +1430,13 @@ class LibraryTab(tk.Frame):
 
         for image in sorted(library.keys(), key=str.lower):
             tags = library.get(image) or []
-            if search and search not in image.lower():
-                continue
-            if ftag == "(senza tag)" and tags:
-                continue
-            if ftag not in ("(tutti)", "(senza tag)") and ftag not in tags:
-                continue
+            if image not in self._pinned:
+                if search and search not in image.lower():
+                    continue
+                if ftag == "(senza tag)" and tags:
+                    continue
+                if ftag not in ("(tutti)", "(senza tag)") and ftag not in tags:
+                    continue
             marker = f"  [{', '.join(tags)}]" if tags else "  [-]"
             self._listbox.insert("end", image + marker)
 
@@ -1520,6 +1528,10 @@ class LibraryTab(tk.Frame):
                 tags.append(tag)
             elif not add and tag in tags:
                 tags.remove(tag)
+
+        # Le immagini toccate restano in elenco (e selezionate) anche se ora
+        # escono dal filtro, così si possono aggiungere più tag di fila
+        self._pinned.update(images)
 
         # Ricostruisce la lista mantenendo selezione e posizione di scorrimento
         selected = set(images)
@@ -2592,19 +2604,29 @@ class PeriodsTab(tk.Frame):
             import verifica_immagini
         except Exception as e:
             self._aggiorna_copertura()
-            self._mostra_rapporto(righe, problemi, [f"verifica_immagini.py non disponibile: {e}"], None)
+            self._mostra_rapporto(
+                righe, problemi, [f"verifica_immagini.py non disponibile: {e}"], None
+            )
             return
 
         # Copia: il thread non deve vedere le modifiche fatte nell'editor mentre gira
         cfg_copia = motore.ensure_defaults(copy.deepcopy(cfg))
-        stato = {"fase": "fasce", "fatto": 0, "totale": 1, "esito": None, "errore": None}
+        stato = {
+            "fase": "fasce",
+            "fatto": 0,
+            "totale": 1,
+            "esito": None,
+            "errore": None,
+        }
 
         def progresso(fase, fatto, totale):
             stato.update(fase=fase, fatto=fatto, totale=totale)
 
         def lavora():
             try:
-                stato["esito"] = verifica_immagini.rapporto(cfg_copia, progresso=progresso)
+                stato["esito"] = verifica_immagini.rapporto(
+                    cfg_copia, progresso=progresso
+                )
             except Exception as e:
                 stato["errore"] = e
 
@@ -2612,7 +2634,9 @@ class PeriodsTab(tk.Frame):
         threading.Thread(target=lavora, daemon=True).start()
         self._attendi_immagini(stato, righe, problemi)
 
-    def _attendi_immagini(self, stato: dict, righe_fasce: list[str], problemi_fasce: int):
+    def _attendi_immagini(
+        self, stato: dict, righe_fasce: list[str], problemi_fasce: int
+    ):
         """
         Aggiorna la barra di stato finche' il thread lavora. Tkinter non va
         toccato da un altro thread: il thread scrive solo in `stato`, e qui lo
@@ -2625,7 +2649,11 @@ class PeriodsTab(tk.Frame):
             return  # tab ricreata (cambio tema) mentre la verifica girava
 
         if stato["esito"] is None and stato["errore"] is None:
-            fase = "fasce vincenti" if stato["fase"] == "fasce" else "uscite giorno per giorno"
+            fase = (
+                "fasce vincenti"
+                if stato["fase"] == "fasce"
+                else "uscite giorno per giorno"
+            )
             self._status.config(
                 text=f"Verifica immagini: {fase} {stato['fatto']}/{stato['totale']}...",
                 fg=FG2,
@@ -2657,11 +2685,15 @@ class PeriodsTab(tk.Frame):
         dlg.geometry("900x560")
 
         esito_img = (
-            "non eseguita" if problemi_img is None
-            else f"{problemi_img} problemi" if problemi_img
-            else "tutte escono"
+            "non eseguita"
+            if problemi_img is None
+            else f"{problemi_img} problemi" if problemi_img else "tutte escono"
         )
-        esito_fasce = f"{problemi_fasce} segnalazioni" if problemi_fasce else "nessuna segnalazione"
+        esito_fasce = (
+            f"{problemi_fasce} segnalazioni"
+            if problemi_fasce
+            else "nessuna segnalazione"
+        )
         tutto_ok = not problemi_fasce and problemi_img == 0
         tk.Label(
             dlg,

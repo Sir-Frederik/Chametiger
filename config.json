@@ -1572,6 +1572,38 @@
     "yosemite_sam_cavallo_schizzo.png": [
       "jolly",
       "mattino"
+    ],
+    "Bugs_bunny_Bed_Sun'sComingUp.jpeg": [
+      "alba",
+      "autunno",
+      "inverno",
+      "primavera"
+    ],
+    "Bugs_bunny_Giant_“WhatsUp_Doc”.jpg": [
+      "pomeriggio",
+      "smart",
+      "svago"
+    ],
+    "Bugs_Bunny_Ocean_BookOfRhymes.jpeg": [
+      "svago",
+      "tramonto",
+      "primavera",
+      "estate",
+      "alba"
+    ],
+    "Daffy_duck_moments_sea.jpg": [
+      "svago",
+      "mattino",
+      "pomeriggio",
+      "primavera",
+      "autunno"
+    ],
+    "Daffy_duck_The_Warning_Deer.png": [
+      "autunno",
+      "tramonto"
+    ],
+    "Silvestro_balzo.png": [
+      "mattino"
     ]
   },
   "random_rules": {
@@ -2008,7 +2040,7 @@
     }
   },
   "history_days": 60,
-  "theme": "dark",
+  "theme": "light",
   "latitude": 40.8518,
   "longitude": 14.2681,
   "periods": [
