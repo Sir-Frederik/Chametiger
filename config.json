@@ -386,8 +386,6 @@
       "svago"
     ],
     "Looney tunes christmas/capodanno_fuochi_artificio.jpg": [
-      "inverno",
-      "natale",
       "notte",
       "capodanno"
     ],
@@ -650,8 +648,7 @@
     ],
     "taz_hamburger_logo.jpg": [
       "pranzo",
-      "smart",
-      "weekend"
+      "smart"
     ],
     "thats_all_folks_personaggi_palco.jpg": [
       "spettacolo"
@@ -865,7 +862,8 @@
       "spettacolo",
       "svago",
       "weekend",
-      "sera"
+      "sera",
+      "capodanno"
     ],
     "quadriglia.jpg": [
       "jolly",
@@ -1084,6 +1082,44 @@
     ],
     "Silvestro_balzo.png": [
       "mattino"
+    ],
+    "daffy_bugs_taz_doctor.jpg": [
+      "lavoro"
+    ],
+    "daffy_shoot_faces.jpg": [
+      "jolly"
+    ],
+    "Group_cerchi_verdi_Alvarez.jpg": [
+      "jolly",
+      "smart"
+    ],
+    "Logo_mare.jpg": [
+      "estate",
+      "mattino",
+      "svago",
+      "weekend"
+    ],
+    "looney_saloon.jpg": [
+      "capodanno",
+      "tramonto",
+      "crepuscolo",
+      "svago",
+      "weekend"
+    ],
+    "Mosaico 3.jpg": [
+      "jolly",
+      "smart"
+    ],
+    "new_year_2000.jpg": [
+      "capodanno",
+      "mattino",
+      "pomeriggio",
+      "alba"
+    ],
+    "titti_silvestro_bugs_daffy_willy_altalena.jpg": [
+      "primavera",
+      "svago",
+      "pomeriggio"
     ]
   },
   "random_rules": {
@@ -1520,7 +1556,7 @@
     }
   },
   "history_days": 60,
-  "theme": "dark",
+  "theme": "light",
   "latitude": 40.8518,
   "longitude": 14.2681,
   "seasons": [
@@ -1559,19 +1595,10 @@
   ],
   "events": [
     {
-      "name": "Capodanno",
-      "from": "01-01",
-      "to": "01-01",
-      "tags": [
-        "capodanno"
-      ],
-      "veto": [
-        "horror"
-      ],
       "random_rules": {
         "weekday": [
           {
-            "from": "00:00",
+            "from": "9:00",
             "to": "23:59",
             "include": [
               "capodanno"
@@ -1581,7 +1608,16 @@
             "rotate_minutes": 60
           }
         ]
-      }
+      },
+      "name": "Capodanno",
+      "from": "12-31",
+      "to": "01-01",
+      "tags": [
+        "capodanno"
+      ],
+      "veto": [
+        "horror"
+      ]
     },
     {
       "name": "Natale",
@@ -1677,16 +1713,13 @@
       "random_rules": {
         "weekday": [
           {
-            "from": "dusk",
+            "from": "dusk +60",
             "to": "22:00",
             "include": [
-              "sanValentino",
-              "sera"
+              "sanValentino"
             ],
             "exclude": [
               "alba",
-              "crepuscolo",
-              "horror",
               "mattino",
               "pomeriggio",
               "tramonto"
@@ -1704,6 +1737,17 @@
             "exclude": [],
             "match": "all",
             "rotate_minutes": 60
+          },
+          {
+            "from": "dusk",
+            "to": "dusk +60",
+            "include": [
+              "crepuscolo",
+              "sanValentino"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
           }
         ],
         "weekend": [
@@ -1711,18 +1755,13 @@
             "from": "08:00",
             "to": "12:00",
             "include": [
-              "sanValentino",
-              "svago",
-              "weekend"
+              "sanValentino"
             ],
             "exclude": [
-              "alba",
-              "crepuscolo",
               "notte",
-              "pomeriggio",
               "sera"
             ],
-            "match": "any",
+            "match": "all",
             "rotate_minutes": 60
           },
           {
@@ -1735,7 +1774,6 @@
             ],
             "exclude": [
               "alba",
-              "horror",
               "mattino",
               "notte",
               "sera",
