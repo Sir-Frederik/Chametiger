@@ -88,7 +88,8 @@
     "bugs_daffy_bar_notte.jpg": [
       "notte",
       "weekend",
-      "svago"
+      "svago",
+      "capodanno"
     ],
     "bugs_daffy_rabbit_season.jpg": [
       "autunno",
@@ -148,7 +149,8 @@
       "pomeriggio"
     ],
     "coyote_razzo_tramonto_deserto.jpg": [
-      "tramonto"
+      "tramonto",
+      "capodanno"
     ],
     "coyote_roadrunner_corsa_nomi_latini.jpg": [
       "pranzo"
@@ -184,7 +186,8 @@
       "spettacolo",
       "sera",
       "svago",
-      "weekend"
+      "weekend",
+      "capodanno"
     ],
     "Daffy and Porky/porky_daffy_neonati_pozza.jpg": [],
     "Daffy and Porky/daffy_leva_gomme_super_stretchy.png": [
@@ -724,7 +727,8 @@
     "paris.png": [
       "pomeriggio",
       "svago",
-      "weekend"
+      "weekend",
+      "capodanno"
     ],
     "psicologo_beep_beep.png": [
       "lavoro"
@@ -838,7 +842,8 @@
       "tramonto"
     ],
     "daffy_razzo_coscritto.png": [
-      "sera"
+      "sera",
+      "capodanno"
     ],
     "daffy_doc.jpg": [
       "lavoro",
@@ -901,10 +906,13 @@
       "horror"
     ],
     "daffy_paperclip.jpg": [
-      "svago"
+      "svago",
+      "capodanno",
+      "compleanno"
     ],
     "daffy_porky_compleanno.jpg": [
-      "svago"
+      "svago",
+      "compleanno"
     ],
     "daffy_porky_cinema.jpg": [
       "spettacolo",
@@ -917,7 +925,8 @@
     "daffy_razzo_valigia.jpg": [
       "jolly",
       "mattino",
-      "svago"
+      "svago",
+      "capodanno"
     ],
     "bugs_elmer_barber_seville.png": [
       "lavoro"
@@ -1120,6 +1129,106 @@
       "primavera",
       "svago",
       "pomeriggio"
+    ],
+    "toons_birthday_party.jpg": [
+      "compleanno"
+    ],
+    "bugs_porky_tamburo_thatsallfolks.jpg": [
+      "spettacolo",
+      "notte"
+    ],
+    "cicogna_ubriaca.jpg": [
+      "lavoro",
+      "smart"
+    ],
+    "daffy_artwork_paint.jpg": [
+      "jolly"
+    ],
+    "daffy_cake_birthday_porky.jpeg": [
+      "compleanno"
+    ],
+    "daffy_elmer_cupid_valentine.jpg": [
+      "sanValentino"
+    ],
+    "daffy_lay_pound.jpg": [
+      "svago",
+      "autunno",
+      "primavera",
+      "mattino"
+    ],
+    "daffy_porky_cleaning_windows.jpg": [
+      "lavoro",
+      "pomeriggio"
+    ],
+    "daffy_porky_doctor_apple.jpg": [
+      "lavoro"
+    ],
+    "daffy_porky_hotel_bill.jpg": [
+      "jolly"
+    ],
+    "daffy_porky_lay_egg.jpg": [],
+    "daffy_porky_moustache_paint.jpg": [
+      "pomeriggio",
+      "jolly"
+    ],
+    "daffy_porky_new_year.jpg": [
+      "capodanno"
+    ],
+    "daffy_porky_picnic.jpg": [
+      "weekend",
+      "svago",
+      "primavera",
+      "pranzo",
+      "pomeriggio"
+    ],
+    "daffy_valentine_chocolathe.jpg": [
+      "sanValentino"
+    ],
+    "daffy_vassoio.jpg": [
+      "pranzo",
+      "smart"
+    ],
+    "dorlock_holmes.jpg": [
+      "notte",
+      "inverno",
+      "autunno"
+    ],
+    "duck_tracy_gangster.jpg": [
+      "horror",
+      "notte"
+    ],
+    "elmer_daffy_cupid.jpg": [
+      "sanValentino"
+    ],
+    "porky_bar_apple_juice.jpg": [
+      "sera",
+      "svago"
+    ],
+    "porky_cowboy.jpg": [
+      "pomeriggio",
+      "mattino",
+      "estate",
+      "svago"
+    ],
+    "porky_fly_wackyland_night.jpg": [
+      "spettacolo",
+      "notte",
+      "horror"
+    ],
+    "porky_tamburo.jpg": [
+      "spettacolo",
+      "notte"
+    ],
+    "porky_valentine_flowers.jpg": [
+      "sanValentino"
+    ],
+    "robin_hood_daffy_forest.jpg": [
+      "pomeriggio",
+      "primavera",
+      "svago"
+    ],
+    "sylvester_tweety_christmas_present_dynamite.jpg": [
+      "natale"
     ]
   },
   "random_rules": {
@@ -1586,7 +1695,7 @@
     },
     {
       "name": "Autunno",
-      "from": "09-15",
+      "from": "09-10",
       "to": "11-30",
       "tags": [
         "autunno"
@@ -1598,12 +1707,53 @@
       "random_rules": {
         "weekday": [
           {
-            "from": "9:00",
-            "to": "23:59",
+            "from": "00:00",
+            "to": "8:00",
             "include": [
               "capodanno"
             ],
+            "exclude": [
+              "mattino",
+              "pomeriggio"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "8:00",
+            "to": "sunset-40",
+            "include": [
+              "capodanno"
+            ],
+            "exclude": [
+              "notte",
+              "sera"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "sunset-40",
+            "to": "dusk+30",
+            "include": [
+              "capodanno",
+              "tramonto"
+            ],
             "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "22:00",
+            "to": "00:00",
+            "include": [
+              "capodanno"
+            ],
+            "exclude": [
+              "mattino",
+              "pomeriggio",
+              "tramonto"
+            ],
             "match": "all",
             "rotate_minutes": 60
           }
@@ -1748,6 +1898,24 @@
             "exclude": [],
             "match": "all",
             "rotate_minutes": 60
+          },
+          {
+            "from": "14:00",
+            "to": "sunset-50",
+            "include": [
+              "lavoro",
+              "pomeriggio",
+              "sanValentino"
+            ],
+            "exclude": [
+              "notte",
+              "sera",
+              "smart",
+              "svago",
+              "tramonto"
+            ],
+            "match": "any",
+            "rotate_minutes": 60
           }
         ],
         "weekend": [
@@ -1806,16 +1974,6 @@
       ]
     },
     {
-      "name": "Halloween",
-      "from": "10-20",
-      "to": "11-01",
-      "tags": [
-        "horror"
-      ],
-      "veto": [
-        "natale",
-        "sanValentino"
-      ],
       "random_rules": {
         "weekday": [
           {
@@ -1863,20 +2021,24 @@
             "rotate_minutes": 60
           }
         ]
-      }
+      },
+      "name": "Halloween",
+      "from": "10-20",
+      "to": "11-01",
+      "tags": [
+        "horror"
+      ],
+      "veto": [
+        "natale",
+        "sanValentino"
+      ]
     },
     {
-      "name": "Compleanno",
-      "from": "10-13",
-      "to": "10-13",
-      "tags": [
-        "compleanno"
-      ],
       "random_rules": {
         "weekday": [
           {
-            "from": "12:00",
-            "to": "22:00",
+            "from": "00:00",
+            "to": "00:00",
             "include": [
               "compleanno"
             ],
@@ -1885,7 +2047,13 @@
             "rotate_minutes": 60
           }
         ]
-      }
+      },
+      "name": "Compleanno",
+      "from": "10-12",
+      "to": "10-13",
+      "tags": [
+        "compleanno"
+      ]
     }
   ]
 }

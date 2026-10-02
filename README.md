@@ -83,7 +83,7 @@ Ogni fascia oraria pesca fra le immagini che hanno certi **tag**, e le fa scorre
 ```
 ├── app.py          ← Applicazione principale (tray + scheduler)
 ├── gui.py          ← Editor grafico della configurazione
-├── sun.py          ← Orari solari: alba, tramonto, crepuscolo, mezzogiorno vero
+├── sun.py          ← Orari solari: alba, tramonto, crepuscolo, mezzogiorno solare
 ├── verifica_immagini.py ← Simula un anno e trova le immagini che non escono mai
 ├── versione.py     ← Numero di versione, mostrato nel tray e nell'editor
 ├── date_mobili.py  ← Date di stagioni ed eventi, comprese quelle relative a Pasqua
