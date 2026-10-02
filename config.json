@@ -287,7 +287,8 @@
       "alba"
     ],
     "Daffy and Porky/porky_daffy_abbraccio_porta.jpg": [
-      "svago"
+      "svago",
+      "mattino"
     ],
     "Daffy and Porky/daffy_astronauta_maxischermo_citta.png": [],
     "daffy_amaca_spiaggia_ukulele.jpg": [
@@ -1226,6 +1227,14 @@
     ],
     "sylvester_tweety_christmas_present_dynamite.jpg": [
       "natale"
+    ],
+    "black_and_white_smocking.jpg": [
+      "jolly",
+      "sera",
+      "spettacolo",
+      "weekend",
+      "inverno",
+      "autunno"
     ]
   },
   "random_rules": {
@@ -1673,7 +1682,7 @@
     }
   },
   "history_days": 60,
-  "theme": "light",
+  "theme": "dark",
   "latitude": 40.8518,
   "longitude": 14.2681,
   "seasons": [
