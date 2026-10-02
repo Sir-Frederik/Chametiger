@@ -984,7 +984,8 @@
       "crepuscolo"
     ],
     "Looney tunes christmas/taz_pupazzo_neve.jpg": [
-      "natale"
+      "natale",
+      "notte"
     ],
     "marv_space_extended2.jpg.png": [],
     "pepe_valentine.jpg": [
@@ -1237,10 +1238,10 @@
         "from": "dawn -20m",
         "to": "sunrise +60m",
         "include": [
-          "alba",
           "crepuscolo"
         ],
         "exclude": [
+          "smart",
           "weekend"
         ],
         "match": "any",
@@ -1384,7 +1385,6 @@
         "from": "dawn -20m",
         "to": "sunrise +60m",
         "include": [
-          "alba",
           "crepuscolo"
         ],
         "exclude": [
@@ -1429,7 +1429,7 @@
       },
       {
         "from": "13:00",
-        "to": "15:00",
+        "to": "noon+2h",
         "include": [
           "pranzo"
         ],
@@ -1440,7 +1440,7 @@
         "rotate_minutes": 60
       },
       {
-        "from": "15:00",
+        "from": "noon +2h",
         "to": "sunset -50m",
         "include": [
           "pomeriggio",
