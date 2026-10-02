@@ -55,8 +55,8 @@
     ],
     "amour-parisienne.jpg": [
       "primavera",
-      "inverno",
-      "tramonto"
+      "tramonto",
+      "sanValentino"
     ],
     "backrooms_daffy_bugs_gossamer.jpg": [
       "horror",
@@ -178,7 +178,6 @@
     ],
     "personaggi_finestra_ombra_mostro.jpg": [
       "horror",
-      "crepuscolo",
       "notte",
       "sera"
     ],
@@ -285,9 +284,7 @@
       "mattino"
     ],
     "Daffy and Porky/porky_camera_daffy_vasca.jpg": [
-      "alba",
-      "weekend",
-      "lavoro"
+      "alba"
     ],
     "Daffy and Porky/porky_daffy_abbraccio_porta.jpg": [
       "svago"
@@ -585,7 +582,6 @@
       "crepuscolo",
       "sera",
       "primavera",
-      "inverno",
       "estate",
       "smart",
       "weekend",
@@ -616,13 +612,12 @@
       "lavoro"
     ],
     "daffy_porky_detective_auto.jpg": [
-      "sera",
-      "notte",
-      "lavoro"
+      "lavoro",
+      "spettacolo"
     ],
     "sfondo_deserto_notturno_binario.jpg": [
       "crepuscolo",
-      "alba"
+      "notte"
     ],
     "casa_stregata_notte_luna.jpg": [
       "horror",
@@ -699,8 +694,8 @@
     ],
     "daffy_venditore.png": [
       "lavoro",
-      "pomeriggio",
-      "mattino"
+      "mattino",
+      "alba"
     ],
     "foghorn_taz_inseguimento.png": [
       "mattino",
@@ -728,10 +723,13 @@
       "pomeriggio",
       "svago",
       "weekend",
-      "capodanno"
+      "capodanno",
+      "sanValentino"
     ],
     "psicologo_beep_beep.png": [
-      "lavoro"
+      "lavoro",
+      "pomeriggio",
+      "crepuscolo"
     ],
     "quincy_jones_recordings.jpg": [
       "spettacolo",
@@ -807,7 +805,6 @@
       "weekend",
       "sport",
       "svago",
-      "crepuscolo",
       "alba"
     ],
     "daffyduck_auto_forchetta.png": [
@@ -953,8 +950,7 @@
       "primavera"
     ],
     "bugs_halloween_zucca.jpg": [
-      "horror",
-      "crepuscolo"
+      "horror"
     ],
     "bugs_scherzi.jpg": [
       "smart",
@@ -989,10 +985,10 @@
     ],
     "marv_space_extended2.jpg.png": [],
     "pepe_valentine.jpg": [
-      "sanValentino"
+      "sanValentino",
+      "smart"
     ],
     "taz_vampiro_halloween.jpg": [
-      "notte",
       "horror"
     ],
     "titti_crazy.png": [
@@ -1035,7 +1031,8 @@
       "svago"
     ],
     "petunia_porky_love.gif": [
-      "sanValentino"
+      "sanValentino",
+      "smart"
     ],
     "Planet_of_taz.jpg": [
       "pomeriggio",
@@ -1121,10 +1118,7 @@
       "smart"
     ],
     "new_year_2000.jpg": [
-      "capodanno",
-      "mattino",
-      "pomeriggio",
-      "alba"
+      "capodanno"
     ],
     "titti_silvestro_bugs_daffy_willy_altalena.jpg": [
       "primavera",
@@ -1149,7 +1143,8 @@
       "compleanno"
     ],
     "daffy_elmer_cupid_valentine.jpg": [
-      "sanValentino"
+      "sanValentino",
+      "tramonto"
     ],
     "daffy_lay_pound.jpg": [
       "svago",
@@ -1162,7 +1157,8 @@
       "pomeriggio"
     ],
     "daffy_porky_doctor_apple.jpg": [
-      "lavoro"
+      "lavoro",
+      "mattino"
     ],
     "daffy_porky_hotel_bill.jpg": [
       "jolly"
@@ -1251,12 +1247,19 @@
         "from": "sunrise +60m",
         "to": "10:00",
         "include": [
-          "alba"
+          "alba",
+          "lavoro"
         ],
         "exclude": [
-          "notte"
+          "mattino",
+          "notte",
+          "pomeriggio",
+          "smart",
+          "svago",
+          "tramonto",
+          "weekend"
         ],
-        "match": "all",
+        "match": "any",
         "rotate_minutes": 60
       },
       {
@@ -1320,7 +1323,9 @@
         "include": [
           "tramonto"
         ],
-        "exclude": [],
+        "exclude": [
+          "alba"
+        ],
         "match": "all",
         "rotate_minutes": 60
       },
@@ -1330,7 +1335,9 @@
         "include": [
           "crepuscolo"
         ],
-        "exclude": [],
+        "exclude": [
+          "alba"
+        ],
         "match": "all",
         "rotate_minutes": 60
       },
@@ -1397,7 +1404,8 @@
         "from": "sunrise +60m",
         "to": "10:00",
         "include": [
-          "mattino"
+          "alba",
+          "svago"
         ],
         "exclude": [
           "lavoro",
@@ -1863,26 +1871,22 @@
       "random_rules": {
         "weekday": [
           {
-            "from": "dusk +60",
-            "to": "22:00",
+            "from": "15:00",
+            "to": "sunset -50",
             "include": [
+              "pomeriggio",
               "sanValentino"
             ],
-            "exclude": [
-              "alba",
-              "mattino",
-              "pomeriggio",
-              "tramonto"
-            ],
-            "match": "any",
+            "exclude": [],
+            "match": "all",
             "rotate_minutes": 60
           },
           {
-            "from": "15:00",
-            "to": "16:00",
+            "from": "sunset -50",
+            "to": "dusk",
             "include": [
-              "pomeriggio",
-              "sanValentino"
+              "sanValentino",
+              "tramonto"
             ],
             "exclude": [],
             "match": "all",
@@ -1900,18 +1904,15 @@
             "rotate_minutes": 60
           },
           {
-            "from": "14:00",
-            "to": "sunset-50",
+            "from": "dusk +60",
+            "to": "00:00",
             "include": [
-              "lavoro",
-              "pomeriggio",
               "sanValentino"
             ],
             "exclude": [
-              "notte",
-              "sera",
-              "smart",
-              "svago",
+              "alba",
+              "mattino",
+              "pomeriggio",
               "tramonto"
             ],
             "match": "any",
@@ -1921,19 +1922,20 @@
         "weekend": [
           {
             "from": "08:00",
-            "to": "12:00",
+            "to": "13:00",
             "include": [
               "sanValentino"
             ],
             "exclude": [
               "notte",
-              "sera"
+              "sera",
+              "tramonto"
             ],
             "match": "all",
             "rotate_minutes": 60
           },
           {
-            "from": "12:00",
+            "from": "14:00",
             "to": "sunset-40",
             "include": [
               "sanValentino",
@@ -1950,10 +1952,48 @@
             "match": "any",
             "rotate_minutes": 60
           }
-        ]
+        ],
+        "overrides": {
+          "monday": [
+            {
+              "from": "14:00",
+              "to": "sunset - 50",
+              "include": [
+                "sanValentino"
+              ],
+              "exclude": [
+                "alba",
+                "crepuscolo",
+                "notte",
+                "sera"
+              ],
+              "match": "any",
+              "rotate_minutes": 60
+            }
+          ],
+          "wednesday": [
+            {
+              "from": "14:00",
+              "to": "sunset-50",
+              "include": [
+                "jolly",
+                "sanValentino"
+              ],
+              "exclude": [
+                "alba",
+                "mattino",
+                "notte",
+                "sera",
+                "tramonto"
+              ],
+              "match": "any",
+              "rotate_minutes": 60
+            }
+          ]
+        }
       },
       "name": "San Valentino",
-      "from": "01-10",
+      "from": "01-9",
       "to": "01-15",
       "tags": [
         "sanValentino"

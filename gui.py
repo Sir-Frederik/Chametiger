@@ -1024,6 +1024,125 @@ class TagsTab(tk.Frame):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
+class TagPicker(ttk.Button):
+    """Bottone a tendina che apre un pannello di spunte per scegliere più tag."""
+
+    COLUMNS = 3
+    MAX_TEXT = 32
+
+    def __init__(self, parent, label: str, on_change, overlay: tk.Widget):
+        super().__init__(parent, command=self._toggle_popup, width=self.MAX_TEXT + 6)
+        self._label = label
+        self._on_change = on_change
+        # widget sopra cui si apre la tendina (deve contenere il bottone):
+        # stando dentro la finestra non può finirle dietro e sparisce col tab
+        self._overlay = overlay
+        self._all: list[str] = []
+        self.selected: set[str] = set()
+        self._popup = None
+        self._update_text()
+
+        # click fuori dalla tendina o Esc la chiudono
+        top = self.winfo_toplevel()
+        top.bind("<Button-1>", self._on_click, add="+")
+        top.bind("<Escape>", lambda e: self._close(), add="+")
+
+    def set_tags(self, tags: list[str]):
+        self._all = list(tags)
+        self.selected &= set(tags)
+        self._close()
+        self._update_text()
+
+    def set_selected(self, selected: set[str]):
+        self.selected = set(selected)
+        self._close()
+        self._update_text()
+
+    def _update_text(self):
+        if not self.selected:
+            summary = "(nessuno)"
+        else:
+            summary = ", ".join(sorted(self.selected, key=str.lower))
+            if len(summary) > self.MAX_TEXT:
+                summary = summary[: self.MAX_TEXT - 1] + "…"
+        self.configure(text=f"{self._label}: {summary}  ▾")
+
+    # ── Pannello ─────────────────────────────────────────────────────────────
+    def _toggle_popup(self):
+        if self._popup is not None:
+            self._close()
+        else:
+            self._open()
+
+    def _open(self):
+        pop = tk.Frame(self._overlay, bg=ACCENT)
+        self._popup = pop
+
+        inner = tk.Frame(pop, bg=BG, padx=10, pady=8)
+        inner.pack(padx=1, pady=1)
+
+        if not self._all:
+            tk.Label(
+                inner,
+                text="Nessun tag definito.",
+                bg=BG,
+                fg=FG2,
+                font=("Segoe UI Italic", 9),
+            ).grid(row=0, column=0, sticky="w")
+
+        for i, tag in enumerate(self._all):
+            var = tk.BooleanVar(value=tag in self.selected)
+            ttk.Checkbutton(
+                inner,
+                text=tag,
+                variable=var,
+                command=lambda t=tag, v=var: self._on_check(t, v.get()),
+            ).grid(row=i // self.COLUMNS, column=i % self.COLUMNS, sticky="w", padx=(0, 12))
+
+        bottom = tk.Frame(inner, bg=BG)
+        bottom.grid(row=len(self._all) // self.COLUMNS + 1, column=0,
+                    columnspan=self.COLUMNS, sticky="e", pady=(8, 0))
+        ttk.Button(bottom, text="Nessuno", command=self._clear).pack(side="left")
+        ttk.Button(bottom, text="Chiudi", command=self._close).pack(side="left", padx=(6, 0))
+
+        pop.place(
+            x=self.winfo_rootx() - self._overlay.winfo_rootx(),
+            y=self.winfo_rooty() - self._overlay.winfo_rooty() + self.winfo_height(),
+        )
+        pop.lift()
+
+    def _on_click(self, event):
+        pop = self._popup
+        if pop is None or not isinstance(event.widget, tk.Misc):
+            return
+        # il bottone stesso gestisce apertura/chiusura col suo command
+        path = str(event.widget)
+        if event.widget is self or path == str(pop) or path.startswith(str(pop) + "."):
+            return
+        self._close()
+
+    def _close(self):
+        if self._popup is not None:
+            self._popup.destroy()
+            self._popup = None
+
+    def _on_check(self, tag: str, checked: bool):
+        if checked:
+            self.selected.add(tag)
+        else:
+            self.selected.discard(tag)
+        self._update_text()
+        self._on_change()
+
+    def _clear(self):
+        if not self.selected:
+            return
+        self.selected.clear()
+        self._close()
+        self._update_text()
+        self._on_change()
+
+
 class LibraryTab(tk.Frame):
     def __init__(self, parent, config_data: dict):
         super().__init__(parent, bg=BG)
@@ -1081,18 +1200,42 @@ class LibraryTab(tk.Frame):
             font=("Segoe UI", 9),
         ).pack(side="left", padx=6)
 
-        tk.Label(filt, text="Filtra per tag:", bg=BG, fg=FG, font=("Segoe UI", 9)).pack(
-            side="left", padx=(16, 0)
-        )
-        self._filter_tag_var = tk.StringVar(value="(tutti)")
-        self._filter_cb = ttk.Combobox(
+        self._untagged_var = tk.BooleanVar()
+        ttk.Checkbutton(
             filt,
-            textvariable=self._filter_tag_var,
-            width=20,
+            text="Solo senza tag",
+            variable=self._untagged_var,
+            command=self._on_filter_change,
+        ).pack(side="left", padx=(16, 0))
+
+        ttk.Button(filt, text="Azzera filtri", command=self._reset_filters).pack(
+            side="right"
+        )
+
+        # Filtri per tag: più tag richiesti e/o più tag vietati
+        tfilt = tk.Frame(self, bg=BG)
+        tfilt.pack(fill="x", pady=(0, 8))
+
+        self._inc_picker = TagPicker(
+            tfilt, "Con i tag", lambda: self._on_picker_change(self._inc_picker), self
+        )
+        self._inc_picker.pack(side="left")
+
+        self._match_var = tk.StringVar(value="tutti questi")
+        match_cb = ttk.Combobox(
+            tfilt,
+            textvariable=self._match_var,
+            values=["tutti questi", "almeno uno"],
+            width=12,
             state="readonly",
         )
-        self._filter_cb.pack(side="left", padx=6)
-        self._filter_cb.bind("<<ComboboxSelected>>", lambda e: self._on_filter_change())
+        match_cb.pack(side="left", padx=6)
+        match_cb.bind("<<ComboboxSelected>>", lambda e: self._on_filter_change())
+
+        self._exc_picker = TagPicker(
+            tfilt, "Senza i tag", lambda: self._on_picker_change(self._exc_picker), self
+        )
+        self._exc_picker.pack(side="left", padx=(16, 0))
 
         # Corpo
         body = tk.Frame(self, bg=BG)
@@ -1229,9 +1372,8 @@ class LibraryTab(tk.Frame):
                     command=lambda tag=t: self._on_tag_toggle(tag),
                 ).pack(anchor="w")
 
-        self._filter_cb.configure(values=["(tutti)", "(senza tag)"] + tags)
-        if self._filter_tag_var.get() not in ["(tutti)", "(senza tag)"] + tags:
-            self._filter_tag_var.set("(tutti)")
+        self._inc_picker.set_tags(tags)
+        self._exc_picker.set_tags(tags)
 
         self._on_select()
 
@@ -1240,20 +1382,43 @@ class LibraryTab(tk.Frame):
         self._pinned.clear()
         self._refresh_list()
 
+    def _on_picker_change(self, picker: "TagPicker"):
+        # un tag non può essere insieme richiesto e vietato: vince l'ultima scelta
+        other = self._exc_picker if picker is self._inc_picker else self._inc_picker
+        if other.selected & picker.selected:
+            other.set_selected(other.selected - picker.selected)
+        self._on_filter_change()
+
+    def _reset_filters(self):
+        self._search_var.set("")
+        self._untagged_var.set(False)
+        self._match_var.set("tutti questi")
+        self._inc_picker.set_selected(set())
+        self._exc_picker.set_selected(set())
+        self._on_filter_change()
+
     def _refresh_list(self):
         self._listbox.delete(0, "end")
         library = self._library()
         search = self._search_var.get().strip().lower()
-        ftag = self._filter_tag_var.get()
+        only_untagged = self._untagged_var.get()
+        required = self._inc_picker.selected
+        forbidden = self._exc_picker.selected
+        match_all = self._match_var.get() == "tutti questi"
 
         for image in sorted(library.keys(), key=str.lower):
             tags = library.get(image) or []
             if image not in self._pinned:
                 if search and search not in image.lower():
                     continue
-                if ftag == "(senza tag)" and tags:
+                if only_untagged and tags:
                     continue
-                if ftag not in ("(tutti)", "(senza tag)") and ftag not in tags:
+                tagset = set(tags)
+                if required:
+                    ok = required <= tagset if match_all else required & tagset
+                    if not ok:
+                        continue
+                if forbidden & tagset:
                     continue
             marker = f"  [{', '.join(tags)}]" if tags else "  [-]"
             self._listbox.insert("end", image + marker)
