@@ -1516,16 +1516,6 @@
         ],
         "match": "any",
         "rotate_minutes": 60
-      },
-      {
-        "from": "23:00",
-        "to": "dawn -20m",
-        "include": [
-          "notte"
-        ],
-        "exclude": [],
-        "match": "all",
-        "rotate_minutes": 60
       }
     ],
     "overrides": {
