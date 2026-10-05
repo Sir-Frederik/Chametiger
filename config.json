@@ -1138,7 +1138,8 @@
     ],
     "cicogna_ubriaca.jpg": [
       "lavoro",
-      "smart"
+      "smart",
+      "svago"
     ],
     "daffy_artwork_paint.jpg": [
       "jolly"
@@ -1565,6 +1566,7 @@
             "notte",
             "pranzo",
             "sera",
+            "svago",
             "tramonto"
           ],
           "match": "any",
