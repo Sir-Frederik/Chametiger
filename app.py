@@ -1061,11 +1061,43 @@ def set_wallpaper(path: str, category: str = "") -> bool:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
-def get_exe_path() -> str:
-    """Percorso dell'eseguibile (o dello script Python)."""
+def _target_path() -> Path:
+    """File che l'avvio automatico deve lanciare: l'exe o questo script."""
     if getattr(sys, "frozen", False):
-        return sys.executable
-    return f'"{sys.executable}" "{Path(__file__).resolve()}"'
+        return Path(sys.executable).resolve()
+    return Path(__file__).resolve()
+
+
+def get_exe_path() -> str:
+    """Comando da registrare per l'avvio automatico."""
+    if getattr(sys, "frozen", False):
+        return f'"{_target_path()}"'
+    # pythonw evita la finestra della console a ogni accensione
+    pythonw = Path(sys.executable).with_name("pythonw.exe")
+    interprete = pythonw if pythonw.exists() else Path(sys.executable)
+    return f'"{interprete}" "{_target_path()}"'
+
+
+def _voci_autostart(key) -> list[str]:
+    """
+    Nomi di tutte le voci Run che lanciano questa app, comunque si chiamino.
+
+    Le versioni precedenti si registravano con nomi diversi ("ChamerTiger",
+    " chameTiger", "   Chametiger"...) e ogni rinomina lasciava una voce in piu'.
+    Riconoscerle dal comando, non dal nome, permette di ripulirle.
+    """
+    target = os.path.normcase(str(_target_path()))
+    nomi = []
+    i = 0
+    while True:
+        try:
+            nome, valore, _ = winreg.EnumValue(key, i)
+        except OSError:
+            break
+        if isinstance(valore, str) and target in os.path.normcase(valore):
+            nomi.append(nome)
+        i += 1
+    return nomi
 
 
 def is_autostart_enabled() -> bool:
@@ -1079,24 +1111,44 @@ def is_autostart_enabled() -> bool:
 
 
 def enable_autostart():
-    key = winreg.OpenKey(
-        winreg.HKEY_CURRENT_USER, REGISTRY_KEY, 0, winreg.KEY_SET_VALUE
-    )
-    winreg.SetValueEx(key, APP_NAME, 0, winreg.REG_SZ, get_exe_path())
-    winreg.CloseKey(key)
-    log("[OK] Avvio automatico abilitato.")
+    """
+    Registra l'avvio automatico sotto APP_NAME e rimuove le voci duplicate.
+    Si puo' chiamare a ogni avvio: logga solo quando cambia qualcosa.
+    """
+    comando = get_exe_path()
+    with winreg.OpenKey(
+        winreg.HKEY_CURRENT_USER,
+        REGISTRY_KEY,
+        0,
+        winreg.KEY_READ | winreg.KEY_SET_VALUE,
+    ) as key:
+        for nome in _voci_autostart(key):
+            if nome != APP_NAME:
+                winreg.DeleteValue(key, nome)
+                log(f"[OK] Rimossa voce di avvio duplicata: {nome!r}")
+
+        try:
+            attuale = winreg.QueryValueEx(key, APP_NAME)[0]
+        except FileNotFoundError:
+            attuale = None
+        if attuale != comando:
+            winreg.SetValueEx(key, APP_NAME, 0, winreg.REG_SZ, comando)
+            log("[OK] Avvio automatico abilitato.")
 
 
 def disable_autostart():
-    try:
-        key = winreg.OpenKey(
-            winreg.HKEY_CURRENT_USER, REGISTRY_KEY, 0, winreg.KEY_SET_VALUE
-        )
-        winreg.DeleteValue(key, APP_NAME)
-        winreg.CloseKey(key)
+    """Rimuove tutte le voci che lanciano l'app, anche quelle con nomi vecchi."""
+    with winreg.OpenKey(
+        winreg.HKEY_CURRENT_USER,
+        REGISTRY_KEY,
+        0,
+        winreg.KEY_READ | winreg.KEY_SET_VALUE,
+    ) as key:
+        nomi = _voci_autostart(key)
+        for nome in nomi:
+            winreg.DeleteValue(key, nome)
+    if nomi:
         log("[OK] Avvio automatico disabilitato.")
-    except FileNotFoundError:
-        pass
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1248,8 +1300,7 @@ class ChametigerTray:
         if not acquisisci_istanza_unica():
             log("[INFO] Chametiger e' gia' in esecuzione, questa istanza si chiude.")
             return
-        if not is_autostart_enabled():
-            enable_autostart()
+        enable_autostart()
 
         log(f"Avvio Chametiger {VERSIONE}.")
         self._apply_now(None, None)
