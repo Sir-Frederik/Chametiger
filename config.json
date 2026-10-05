@@ -1170,7 +1170,12 @@
     "daffy_porky_hotel_bill.jpg": [
       "jolly"
     ],
-    "daffy_porky_lay_egg.jpg": [],
+    "daffy_porky_lay_egg.jpg": [
+      "lavoro",
+      "smart",
+      "pomeriggio",
+      "pasqua"
+    ],
     "daffy_porky_moustache_paint.jpg": [
       "pomeriggio",
       "jolly"
@@ -1241,6 +1246,48 @@
       "weekend",
       "inverno",
       "autunno"
+    ],
+    "Foghorn_Barnyard_Henery.jpg": [
+      "jolly",
+      "alba",
+      "mattino"
+    ],
+    "Bugs_giovanni_authograph.jpg": [
+      "spettacolo",
+      "sera"
+    ],
+    "Bugs_penelope_dinner_carrotblanca.jpg": [
+      "sera",
+      "svago",
+      "sanValentino",
+      "inverno"
+    ],
+    "Bugs_Sylvester_Daffy_Elmes_Aliens_basketball.jpg": [
+      "sport",
+      "mattino"
+    ],
+    "bugs_wife_honeymoon.jpg": [
+      "sanValentino"
+    ],
+    "Daffy_easter_eggs_costume_sea.jpg": [
+      "pasqua",
+      "mattino"
+    ],
+    "rocky_mugsy_hideaway.jpg": [
+      "crepuscolo",
+      "inverno",
+      "autunno"
+    ],
+    "Sylvester-Daffy_golden_egg.jpg": [
+      "pomeriggio",
+      "pasqua",
+      "primavera"
+    ],
+    "easter_bunny.jpg": [
+      "pomeriggio",
+      "pasqua",
+      "primavera",
+      "tramonto"
     ]
   },
   "random_rules": {
@@ -1312,7 +1359,7 @@
       },
       {
         "from": "14:00",
-        "to": "sunset -50m",
+        "to": "sunset - 58m",
         "include": [
           "lavoro",
           "pomeriggio",
@@ -1333,8 +1380,8 @@
         "rotate_minutes": 60
       },
       {
-        "from": "sunset -50m",
-        "to": "sunset +9m",
+        "from": "sunset - 58m",
+        "to": "sunset +2 m",
         "include": [
           "tramonto"
         ],
@@ -1345,7 +1392,7 @@
         "rotate_minutes": 60
       },
       {
-        "from": "sunset +9m",
+        "from": "sunset +2 m",
         "to": "dusk +40m",
         "include": [
           "crepuscolo"
@@ -1464,7 +1511,7 @@
       },
       {
         "from": "noon +2h",
-        "to": "sunset -50m",
+        "to": "sunset - 58m",
         "include": [
           "pomeriggio",
           "sport",
@@ -1481,8 +1528,8 @@
         "rotate_minutes": 60
       },
       {
-        "from": "sunset -50m",
-        "to": "sunset +9m",
+        "from": "sunset - 58m",
+        "to": "sunset +2m",
         "include": [
           "tramonto"
         ],
@@ -1491,7 +1538,7 @@
         "rotate_minutes": 60
       },
       {
-        "from": "sunset +9m",
+        "from": "sunset +2m",
         "to": "dusk +30m",
         "include": [
           "crepuscolo"
@@ -1631,7 +1678,7 @@
         },
         {
           "from": "14:00",
-          "to": "sunset -40m",
+          "to": "sunset -58m",
           "include": [
             "lavoro",
             "pomeriggio",
@@ -2009,6 +2056,33 @@
       ]
     },
     {
+      "random_rules": {
+        "weekday": [
+          {
+            "from": "09:00",
+            "to": "12:00",
+            "include": [
+              "pasqua"
+            ],
+            "exclude": [
+              "pomeriggio"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "12:00",
+            "to": "sunset-58",
+            "include": [
+              "pasqua",
+              "pomeriggio"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          }
+        ]
+      },
       "name": "Pasqua",
       "from": "pasqua-5",
       "to": "pasqua+2",
