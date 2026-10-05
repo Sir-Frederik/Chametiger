@@ -696,8 +696,10 @@
     ],
     "daffy_venditore.png": [
       "lavoro",
-      "mattino",
-      "alba"
+      "alba",
+      "pomeriggio",
+      "autunno",
+      "inverno"
     ],
     "foghorn_taz_inseguimento.png": [
       "mattino",
