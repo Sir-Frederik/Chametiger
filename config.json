@@ -482,14 +482,12 @@
       "mattino"
     ],
     "Looney Tunes Sports/personaggi_sport_riquadri_colorati.jpg": [
-      "jolly",
-      "sport"
+      "sport",
+      "mattino"
     ],
     "Looney Tunes Sports/personaggi_sport_riquadri_colorati_striscia.jpg": [
-      "jolly",
       "sport",
-      "mattino",
-      "pomeriggio"
+      "mattino"
     ],
     "Looney Tunes Sports/team_usa_personaggi_divise.jpg": [
       "sport",
@@ -1371,6 +1369,7 @@
         "exclude": [
           "alba",
           "crepuscolo",
+          "mattino",
           "notte",
           "sera",
           "smart",
@@ -1494,6 +1493,7 @@
           "crepuscolo",
           "lavoro",
           "notte",
+          "pomeriggio",
           "sera",
           "tramonto"
         ],
@@ -1524,6 +1524,7 @@
         "exclude": [
           "crepuscolo",
           "lavoro",
+          "mattino",
           "notte",
           "sera"
         ],
@@ -1536,7 +1537,9 @@
         "include": [
           "tramonto"
         ],
-        "exclude": [],
+        "exclude": [
+          "lavoro"
+        ],
         "match": "all",
         "rotate_minutes": 60
       },
@@ -1637,6 +1640,7 @@
           "exclude": [
             "alba",
             "crepuscolo",
+            "mattino",
             "notte",
             "pranzo",
             "sera",
