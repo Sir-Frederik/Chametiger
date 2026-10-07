@@ -210,7 +210,7 @@ e delle **regole**:
 | `include`        | Tag che l'immagine deve avere                                 |
 | `exclude`        | Tag che l'immagine non deve avere                             |
 | `match`          | `"all"` = tutti gli include, `"any"` = ne basta uno           |
-| `rotate_minutes` | Ogni quanto cambiare immagine dentro la fascia                |
+| `rotate_minutes` | Ogni quanto cambiare immagine dentro la fascia (circa: la fascia si divide in parti uguali, senza spezzoni corti) |
 | `prefer`         | Tag preferiti: restringe il pool a quelli, se ne resta abbastanza |
 | `prefer_min`     | Quante immagini devono restare perché `prefer` si applichi (default 1) |
 

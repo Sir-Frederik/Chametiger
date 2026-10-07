@@ -14,7 +14,6 @@ import threading
 import subprocess
 import winreg
 import socket
-import math
 from datetime import date, datetime, timedelta
 from functools import lru_cache
 from pathlib import Path
@@ -630,11 +629,21 @@ def _window_entry(entries: list[dict], day: str, sig: str, bucket: int) -> dict 
     return None
 
 
+def _lunghezza(start: int, end: int) -> int:
+    """Durata della fascia in minuti. Inizio e fine uguali: tutto il giorno."""
+    return (end - start) % 1440 or 1440
+
+
 def _finestre_del_giorno(rule: dict, giorno: date, rotate: int, config: dict) -> int:
-    """Quante finestre di rotazione ha la regola in quel giorno."""
+    """
+    Quante finestre di rotazione ha la regola in quel giorno.
+
+    Arrotondato, non per eccesso: la fascia si divide in parti uguali di durata
+    vicina a `rotate`. Per eccesso, una fascia solare di 66 minuti con rotate=60
+    aveva una seconda finestra di 6 minuti, e lo sfondo cambiava per niente.
+    """
     start, end = slot_bounds(rule, giorno, config)
-    lunghezza = (end - start) % 1440 or 1440
-    return max(1, math.ceil(lunghezza / rotate))
+    return max(1, int(_lunghezza(start, end) / rotate + 0.5))
 
 
 # Somme cumulative delle finestre, per non ripercorrere l'anno a ogni chiamata.
@@ -698,17 +707,18 @@ def _window_ordinal(rule: dict, now: datetime, rotate: int, config: dict) -> int
     start, end = slot_bounds(rule, giorno, config)
     cur = now.hour * 60 + now.minute
 
-    if start > end and cur <= end:
+    if start >= end and cur < end:
         # Coda dopo la mezzanotte: la finestra e' iniziata ieri e al conteggio
         # di ieri appartiene.
         giorno -= timedelta(days=1)
-        start, _ = slot_bounds(rule, giorno, config)
+        start, end = slot_bounds(rule, giorno, config)
         cur += 1440
     elif cur < start:
-        cur = start  # minuto di confine: si resta sulla prima finestra
+        cur = start  # fuori fascia: si resta sulla prima finestra
 
+    # Finestre di uguale durata: la fascia e' divisa in per_giorno parti
     per_giorno = _finestre_del_giorno(rule, giorno, rotate, config)
-    offset = min((cur - start) // rotate, per_giorno - 1)
+    offset = min((cur - start) * per_giorno // _lunghezza(start, end), per_giorno - 1)
     return _finestre_fino_a(rule, giorno, rotate, config) + offset
 
 
@@ -804,10 +814,17 @@ def _regole_del_giorno(config: dict, giorno: date) -> list[tuple[dict, str, int,
 
 
 def _copre(start: int, end: int, minuto: int) -> bool:
-    """Se la fascia (in minuti) contiene quel minuto. Gestisce la mezzanotte."""
-    if start <= end:
-        return start <= minuto <= end
-    return minuto >= start or minuto <= end
+    """
+    Se la fascia (in minuti) contiene quel minuto. Gestisce la mezzanotte.
+
+    La fine e' esclusa: con 10:00-13:00 e 13:00-14:00 il minuto 13:00 e' della
+    seconda. Inclusa, vinceva la fascia uscente e il cambio slittava alle 13:01.
+    """
+    if start == end:
+        return True  # come in _lunghezza: tutto il giorno
+    if start < end:
+        return start <= minuto < end
+    return minuto >= start or minuto < end
 
 
 def regole_candidate(config: dict, quando: datetime) -> list[tuple[dict, str]]:
