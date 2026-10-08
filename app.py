@@ -463,11 +463,25 @@ def image_matches_rule(image_tags, rule: dict) -> bool:
     taggata solo primavera resta fuori dall'inverno come prima; una senza tag
     stagionali esce sempre. Col divieto secco, invece, bastava un tag di troppo
     perche' l'immagine non si vedesse in tutto l'anno.
+
+    Quando piove (`meteo` pioggia o temporale) lo stesso vale per i momenti
+    della giornata (TAG_ORARI) delle immagini di pioggia: una taggata
+    pioggia+mattino+pomeriggio esce sia di mattina sia di pomeriggio, anche se
+    la fascia del pomeriggio esclude `mattino`. Cade solo se OGNI suo momento
+    e' escluso. Le fasce si escludono a vicenda i tag orari, e col divieto
+    secco un'immagine di pioggia doveva averne uno solo. Gli altri esclusi
+    (`smart`, `weekend`...) restano secchi, e il resto della libreria pure.
     """
     tags = set(image_tags or [])
 
-    for t in rule.get("exclude", []):
-        if t in tags:
+    escluse = rule.get("exclude", [])
+    orari_per_insieme = rule.get("meteo") in _TAG_METEO and bool(tags & _TAG_METEO)
+    for t in escluse:
+        if t in tags and not (orari_per_insieme and t in TAG_ORARI):
+            return False
+    if orari_per_insieme:
+        orari = tags & TAG_ORARI
+        if orari and orari <= set(escluse):
             return False
     if tags & set(rule.get("veto") or ()):
         return False
@@ -538,6 +552,19 @@ def candidates_for_rule(config: dict, rule: dict) -> list[str]:
 
 
 _TAG_METEO = {meteo.TEMPORALE, meteo.PIOGGIA}
+
+# I momenti della giornata: per le immagini di pioggia, quando piove, valgono
+# per insieme come le stagioni (vedi image_matches_rule).
+TAG_ORARI = {
+    "alba",
+    "mattino",
+    "pranzo",
+    "pomeriggio",
+    "tramonto",
+    "crepuscolo",
+    "sera",
+    "notte",
+}
 
 
 def _secondo_meteo(
@@ -1286,14 +1313,18 @@ class ChametigerTray:
 
     # ── Thread principale del polling ────────────────────────────────────────
     def _run_scheduler(self):
+        primo_giro = True
         while not self._stop_event.is_set():
             try:
                 self.config = load_config()  # rilegge la config ad ogni ciclo
                 invalida_cache_file()
-                # Quasi sempre non fa niente: scarica solo ogni `aggiorna_ore`.
-                # Qui e non al primo avvio, cosi' il tray compare subito anche
-                # con la rete lenta.
-                meteo.aggiorna_se_serve(self.config, log)
+                # Al primo giro scarica sempre, anche se meteo.json e' recente:
+                # l'ora attuale va osservata adesso, non presa da un download
+                # di ore fa. Poi solo ogni `aggiorna_ore`. Qui nel thread e non
+                # prima del tray, cosi' l'icona compare subito anche con la
+                # rete lenta.
+                meteo.aggiorna_se_serve(self.config, log, forza=primo_giro)
+                primo_giro = False
                 wallpaper, category = resolve_wallpaper(self.config)
                 if wallpaper:
                     self._no_slot_logged = False

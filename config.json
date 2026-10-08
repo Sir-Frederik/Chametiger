@@ -898,7 +898,9 @@
       "alba"
     ],
     "Daffy_rainy.jpg": [
-      "pioggia"
+      "pioggia",
+      "pomeriggio",
+      "sera"
     ],
     "daffy_elmer_cake.jpg": [
       "jolly",
@@ -1296,10 +1298,16 @@
       "pomeriggio"
     ],
     "bugs_lightning_storm.jpg": [
-      "temporale"
+      "temporale",
+      "alba",
+      "mattino",
+      "pomeriggio",
+      "sera"
     ],
     "daffy_cloud_rain_desert.jpg": [
-      "pioggia"
+      "pioggia",
+      "pomeriggio",
+      "mattino"
     ]
   },
   "random_rules": {

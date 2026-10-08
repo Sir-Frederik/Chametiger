@@ -1,7 +1,7 @@
 # 🦎 Chametiger
 
-**v4.3** — 8 ottobre 2026
-Meteo: quando piove escono le immagini di pioggia.
+**v4.4** — 8 ottobre 2026
+Meteo più affidabile: Met Norway, ora attuale osservata dal METAR, immagini di pioggia in più fasce.
 
 
 Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno**, al **giorno della settimana**, alla **stagione**, agli **eventi** dell'anno e agli **orari reali di alba e tramonto**.
@@ -10,9 +10,17 @@ Ogni fascia oraria pesca fra le immagini che hanno certi **tag**, e le fa scorre
 
 ---
 
+## Novità della 4.4
+
+- **Met Norway al posto di Open-Meteo** per le previsioni. Il giorno del rilascio della 4.3 Open-Meteo dava "coperto" su Napoli durante un temporale, e lo spostava di due ore dopo.
+- **L'ora attuale è osservata, non prevista**: viene dal METAR della stazione più vicina entro 30 km (a Napoli, Capodichino), e per quell'ora vince sulla previsione.
+- **10 ore di meteo**, quella attuale compresa, invece di 48: oltre le 10 ore si sceglie senza meteo.
+- **Download all'avvio**, anche se `meteo.json` è recente, e poi ogni `aggiorna_ore`.
+- **Immagini di pioggia in più momenti della giornata.** Quando piove, per le immagini `pioggia`/`temporale` i tag orari valgono per insieme, come le stagioni: una `pioggia + mattino + pomeriggio` esce sia di mattina sia di pomeriggio, anche se la fascia del pomeriggio esclude `mattino`. Vedi [Meteo](#meteo).
+
 ## Novità della 4.3
 
-- **Meteo.** Ogni 5 ore, se c'è connessione, Chametiger scarica le previsioni orarie delle prossime 48 ore da [Open-Meteo](https://open-meteo.com) (gratuito, senza chiave) per le coordinate già impostate. Nelle ore di pioggia hanno la precedenza le immagini taggate `pioggia`, in quelle di temporale le `temporale`; col bel tempo quelle immagini si mettono da parte. Senza previsioni valide tutto funziona come prima. Vedi [Meteo](#meteo).
+- **Meteo.** Ogni 5 ore, se c'è connessione, Chametiger scarica le previsioni orarie delle prossime 48 ore da Open-Meteo per le coordinate già impostate. Nelle ore di pioggia hanno la precedenza le immagini taggate `pioggia`, in quelle di temporale le `temporale`; col bel tempo quelle immagini si mettono da parte. Senza previsioni valide tutto funziona come prima. Vedi [Meteo](#meteo).
 - **Soglia minima** (`"minimo": 2`): il meteo restringe la fascia solo se restano almeno 2 immagini, così una sola immagine di pioggia non resta sullo sfondo per tutto il temporale.
 - **"Carica meteo"** nel menu del tray: riscarica subito le previsioni e cambia lo sfondo se non corrisponde più al tempo che fa.
 - **Impostazioni → Meteo**: ogni quante ore riscaricare, da 1 a 10, con l'ora dell'ultimo download.
@@ -95,7 +103,7 @@ Ogni fascia oraria pesca fra le immagini che hanno certi **tag**, e le fa scorre
 ├── verifica_immagini.py ← Simula un anno e trova le immagini che non escono mai
 ├── versione.py     ← Numero di versione, mostrato nel tray e nell'editor
 ├── date_mobili.py  ← Date di stagioni ed eventi, comprese quelle relative a Pasqua
-├── meteo.py        ← Previsioni orarie (Open-Meteo) per le immagini di pioggia
+├── meteo.py        ← Meteo delle prossime 10 ore (Met Norway + METAR) per le immagini di pioggia
 ├── config.json     ← Configurazione: regole, stagioni, eventi, tag, libreria
 ├── log.json        ← Storico delle estrazioni casuali (generato)
 ├── chametiger.log  ← Log testuale (generato)
@@ -403,7 +411,14 @@ Un giorno che **nessuna** stagione copre non applica nessun filtro di stagione: 
 
 ## Meteo
 
-Ogni `aggiorna_ore` ore (default 5, da 1 a 10, si cambia in **Impostazioni → Meteo**) lo scheduler scarica le previsioni **orarie** delle prossime 48 ore da Open-Meteo, per la latitudine e longitudine del config, e le salva in `meteo.json`. Fra un download e l'altro non serve la rete: la giornata è già programmata ora per ora.
+All'avvio dell'app, e poi ogni `aggiorna_ore` ore (default 5, da 1 a 10, si cambia in **Impostazioni → Meteo**), lo scheduler scarica il meteo **ora per ora** delle prossime 10 ore, quella attuale compresa, per la latitudine e longitudine del config, e lo salva in `meteo.json`. Fra un download e l'altro non serve la rete: le ore sono già programmate. Per esempio: avvio alle 10, meteo dalle 10:00 alle 20:00; alle 15 nuovo download, meteo dalle 15:00 all'01:00.
+
+| Fonte | Cosa dà |
+| ----- | ------- |
+| [Met Norway](https://api.met.no) (`locationforecast`) | Le previsioni ora per ora |
+| METAR ([aviationweather.gov](https://aviationweather.gov)) | Il tempo **osservato** adesso, dalla stazione più vicina entro 30 km e non più vecchio di 90 minuti. Per l'ora attuale vince sulla previsione |
+
+Il METAR c'è perché una previsione può sbagliare l'ora: l'8 ottobre 2026 Open-Meteo, la fonte delle prime prove, dava "coperto" su Napoli mentre a Capodichino il METAR riportava `-TSRA`, e spostava il temporale di due ore dopo. Le ore oltre le 10 scaricate restano senza meteo, come col ripiego.
 
 | Tempo dell'ora | Effetto sul pool della fascia                                       |
 | -------------- | ------------------------------------------------------------------- |
@@ -412,13 +427,23 @@ Ogni `aggiorna_ore` ore (default 5, da 1 a 10, si cambia in **Impostazioni → M
 | sereno, nuvoloso, neve, nebbia | le immagini `pioggia` e `temporale` si mettono da parte |
 | previsioni assenti | nessun effetto: i due tag contano come tutti gli altri          |
 
-Come `prefer` con `prefer_min`, il meteo **restringe** il pool della fascia solo se restano almeno `minimo` immagini (default 2): se alle 10 piove ma una sola immagine `mattino` ha anche `pioggia`, esce una `mattino` qualsiasi, invece di tenere ferma quella per tutte le ore di pioggia. Il meteo è l'**ultimo setaccio**: sceglie fra le immagini che fascia, stagione, evento e veto hanno già ammesso, e non ne aggiunge. A Natale, col temporale, la sera escono le immagini `natale` con `temporale`; un'immagine `estate + temporale` o `horror + temporale` resta fuori come sempre. Per vedere la pioggia in ogni momento della giornata servono quindi almeno due immagini `pioggia` per fascia: di mattina, di pomeriggio, di sera…
+Come `prefer` con `prefer_min`, il meteo **restringe** il pool della fascia solo se restano almeno `minimo` immagini (default 2): se alle 10 piove ma una sola immagine `mattino` ha anche `pioggia`, esce una `mattino` qualsiasi, invece di tenere ferma quella per tutte le ore di pioggia. **Più momenti della giornata.** Le fasce si escludono a vicenda i tag orari (il pomeriggio esclude `mattino` e `sera`, la sera esclude `pomeriggio`), quindi con il divieto secco un'immagine taggata `mattino + pomeriggio` non uscirebbe in nessuna delle due. Per le immagini di **pioggia e temporale**, quando piove, i momenti della giornata valgono invece **per insieme**, come le stagioni: l'immagine cade solo se *tutti* i suoi momenti sono esclusi dalla fascia.
+
+```
+pioggia + mattino + pomeriggio   ->  esce di mattina e di pomeriggio, non la sera
+pioggia + pomeriggio + sera      ->  esce di pomeriggio e di sera
+pioggia + pomeriggio + smart     ->  nel pomeriggio dei feriali no: smart resta un divieto secco
+```
+
+I momenti sono `alba`, `mattino`, `pranzo`, `pomeriggio`, `tramonto`, `crepuscolo`, `sera`, `notte` (`TAG_ORARI` in `app.py`). Il resto della libreria, e le immagini di pioggia col bel tempo o senza previsioni, seguono le regole di sempre.
+
+Il meteo è l'**ultimo setaccio**: sceglie fra le immagini che fascia, stagione, evento e veto hanno già ammesso, e non ne aggiunge. A Natale, col temporale, la sera escono le immagini `natale` con `temporale`; un'immagine `estate + temporale` o `horror + temporale` resta fuori come sempre. Per vedere la pioggia in ogni momento della giornata servono quindi almeno due immagini `pioggia` per fascia: di mattina, di pomeriggio, di sera…
 
 **Carica meteo**, nel menu del tray, scarica subito le previsioni senza aspettare l'intervallo, e cambia lo sfondo solo se il tempo dell'ora rende inadatta l'immagine attuale.
 
-**Ripiego.** Senza connessione si riprova ogni 30 minuti e intanto si sceglie come se il meteo non esistesse. Lo stesso succede se le previsioni hanno più di 12 ore, se le coordinate sono cambiate o se `"attivo": false`.
+**Ripiego.** Senza connessione si riprova ogni 30 minuti e intanto si sceglie come se il meteo non esistesse. Lo stesso succede se i dati hanno più di 12 ore, se le coordinate sono cambiate o se `"attivo": false`.
 
-**Peso.** Il download lo fa `curl.exe`, già incluso in Windows 10/11, in un processo separato che termina subito: l'app nel tray non carica le librerie di rete di Python (~4 MB) e la sua memoria non cambia. Le previsioni sono 48 righe.
+**Peso.** Il download lo fa `curl.exe`, già incluso in Windows 10/11, in un processo separato che termina subito: l'app nel tray non carica le librerie di rete di Python (~4 MB) e la sua memoria non cambia. Il meteo sono 10 righe.
 
 **Più PC.** Due PC con le stesse coordinate ricevono le stesse previsioni e restano allineati. Se uno dei due è offline, nelle ore di pioggia mostra immagini diverse finché non riscarica.
 
@@ -465,8 +490,8 @@ In **Impostazioni → Posizione** si impostano latitudine e longitudine, con un 
 `chametiger.log` registra ogni cambio di sfondo indicando **quale regola** ha vinto:
 
 ```
-[2026-12-25 15:00:03] Avvio Chametiger 4.3.
-[2026-12-25 15:00:04] [METEO] Previsioni aggiornate: pioggia 16-19.
+[2026-12-25 15:00:03] Avvio Chametiger 4.4.
+[2026-12-25 15:00:04] [METEO] Aggiornato (Met Norway, adesso METAR LIRN -RA): pioggia 15-19.
 [2026-12-25 15:00:03] [OK] Sfondo impostato (weekday [Inverno] 14:00-18:00 [lavoro/pomeriggio -smart]): G:\Temi\...
 [2026-12-25 16:00:07] [OK] Sfondo impostato (evento Natale weekday sunset-40m (15:57)-23:30 [natale @pioggia]): G:\Temi\...
 ```

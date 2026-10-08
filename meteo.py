@@ -1,25 +1,31 @@
 """
-Meteo per la scelta delle immagini: previsioni orarie da Open-Meteo.
+Meteo per la scelta delle immagini: le prossime 10 ore, ora attuale compresa.
 
-Open-Meteo e' gratuito, senza chiave e senza registrazione, e lavora sulle
-stesse latitudine e longitudine degli orari solari. Il METAR sarebbe stato
-un'osservazione puntuale di un aeroporto: va bene per "piove adesso", non per
-programmare le prossime ore fra un download e l'altro.
+Due fonti, gratuite e senza chiave, sulle stesse coordinate degli orari solari:
+
+  Met Norway   le previsioni ora per ora (locationforecast). Sostituisce
+               Open-Meteo, che l'8/10/2026 dava "coperto" su Napoli mentre a
+               Capodichino c'era il temporale, e lo spostava di due ore dopo
+  METAR        l'ora attuale, dalla stazione meteo piu' vicina entro 30 km
+               (a Napoli Capodichino, LIRN). E' un'osservazione, non una
+               previsione: quando c'e' vince lei. Se manca o e' vecchia
+               resta la previsione
 
 Il download lo fa curl.exe, incluso in Windows 10/11, in un processo a parte.
 Con urllib l'app si sarebbe portata dietro per sempre http e ssl (circa 4 MB
-misurati) per una richiesta ogni cinque ore; cosi' il processo del tray non
+misurati) per una richiesta ogni qualche ora; cosi' il processo del tray non
 cresce di niente.
 
-Le previsioni finiscono in meteo.json, una riga per ora: la legge anche la GUI
-per l'anteprima, e dopo un riavvio non serve riscaricare.
+Le ore finiscono in meteo.json: la legge anche la GUI per l'anteprima, e dopo
+un riavvio non serve riscaricare.
 
-Ripiego: senza previsioni valide (nessuna connessione, file vecchio, coordinate
+Ripiego: senza dati validi (nessuna connessione, file vecchio, coordinate
 cambiate, curl assente) `del_giorno` ritorna None e il motore ignora il meteo e
-i tag pioggia/temporale, come prima di questo modulo.
+i tag pioggia/temporale. Anche le ore oltre le 10 scaricate restano senza meteo.
 """
 
 import json
+import math
 import os
 import subprocess
 import threading
@@ -28,32 +34,59 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import sun
+from versione import VERSIONE
 
 METEO_FILE = Path(__file__).parent.resolve() / "meteo.json"
 
-URL = (
-    "https://api.open-meteo.com/v1/forecast?latitude={lat:.4f}&longitude={lon:.4f}"
-    "&hourly=weather_code&forecast_days=2&timezone=auto&timeformat=unixtime"
+URL_PREVISIONI = (
+    "https://api.met.no/weatherapi/locationforecast/2.0/compact"
+    "?lat={lat:.2f}&lon={lon:.2f}"
 )
+URL_METAR = (
+    "https://aviationweather.gov/api/data/metar"
+    "?bbox={sud:.2f},{ovest:.2f},{nord:.2f},{est:.2f}&format=json"
+)
+# Met Norway rifiuta (403) le richieste senza un'identita' dell'applicazione.
+USER_AGENT = f"Chametiger/{VERSIONE} github.com/Sir-Frederik/Chametiger"
 
+ORE_PREVISTE = 10  # quante ore tenere, quella attuale compresa
 DEFAULT_ORE = 5  # ogni quante ore riscaricare
 ORE_MIN, ORE_MAX = 1, 10  # limiti di aggiorna_ore, gli stessi della GUI
-MAX_ETA_ORE = 12  # oltre, le previsioni non si usano piu'
+MAX_ETA_ORE = 12  # oltre, i dati non si usano piu'
 DEFAULT_MINIMO = 2  # immagini sotto cui il meteo non restringe il pool
 RIPROVA_MINUTI = 30  # dopo un download fallito, prima di riprovare
+METAR_RAGGIO_KM = 30  # stazioni piu' lontane non dicono che tempo fa qui
+METAR_MAX_ETA_MIN = 90  # i METAR escono ogni 30-60 minuti
 
-# Stati di un'ora. "asciutto" non e' l'assenza di dati: vuol dire che le
-# previsioni ci sono e non danno pioggia.
+# Stati di un'ora. "asciutto" non e' l'assenza di dati: vuol dire che i dati
+# ci sono e non danno pioggia.
 TEMPORALE = "temporale"
 PIOGGIA = "pioggia"
 ASCIUTTO = "asciutto"
 
 
-def stato_da_codice(codice: int) -> str:
-    """Codice meteo WMO -> stato. Neve e nebbia contano come asciutto."""
-    if codice in (95, 96, 99):
+def stato_da_simbolo(simbolo: str) -> str:
+    """
+    Simbolo di Met Norway -> stato: 'heavyrainandthunder' -> temporale,
+    'lightrainshowers_day' -> pioggia. Neve e nebbia contano come asciutto.
+    """
+    s = simbolo.split("_")[0]
+    if "thunder" in s:
         return TEMPORALE
-    if 51 <= codice <= 67 or 80 <= codice <= 82:  # pioviggine, pioggia, rovesci
+    if "rain" in s or "sleet" in s:
+        return PIOGGIA
+    return ASCIUTTO
+
+
+def stato_da_metar(wx: str | None) -> str:
+    """
+    Fenomeni del METAR -> stato: '-TSRA' e 'VCTS' -> temporale, 'SHRA' e
+    '-DZ' -> pioggia, nessun fenomeno -> asciutto. Il temporale vince su tutto.
+    """
+    gruppi = [g.lstrip("+-") for g in (wx or "").split()]
+    if any("TS" in g for g in gruppi):
+        return TEMPORALE
+    if any("RA" in g or "DZ" in g or g in ("SH", "VCSH") for g in gruppi):
         return PIOGGIA
     return ASCIUTTO
 
@@ -110,7 +143,7 @@ def _carica() -> dict | None:
 
 
 def _valide(dati: dict | None, config: dict) -> bool:
-    """Previsioni recenti e scaricate per la posizione attuale."""
+    """Dati recenti e scaricati per la posizione attuale."""
     if not dati or not impostazioni(config)[0]:
         return False
     if [dati.get("lat"), dati.get("lon")] != list(_coords(config)):
@@ -124,8 +157,8 @@ def _valide(dati: dict | None, config: dict) -> bool:
 
 def del_giorno(config: dict, giorno: date) -> dict[int, str] | None:
     """
-    {ora: stato} per quel giorno, con le sole ore coperte dalle previsioni.
-    None se non ci sono previsioni valide: il motore ignora il meteo.
+    {ora: stato} per quel giorno, con le sole ore coperte dai dati.
+    None se non ci sono dati validi: il motore ignora il meteo.
     """
     dati = _carica()
     if not _valide(dati, config):
@@ -139,11 +172,86 @@ def del_giorno(config: dict, giorno: date) -> dict[int, str] | None:
 
 
 def ultimo_download() -> datetime | None:
-    """Quando sono state scaricate le previsioni in meteo.json, se ci sono."""
+    """Quando sono stati scaricati i dati in meteo.json, se ci sono."""
     try:
         return datetime.fromtimestamp(float((_carica() or {})["scaricato"]))
     except (KeyError, TypeError, ValueError, OSError):
         return None
+
+
+# ── Download ────────────────────────────────────────────────────────────────
+
+
+def _scarica(url: str):
+    """JSON da un URL, via curl. Solleva se qualcosa va storto."""
+    uscita = subprocess.run(
+        ["curl.exe", "-s", "-f", "--max-time", "20", "-A", USER_AGENT, url],
+        capture_output=True,
+        timeout=30,
+        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+    )
+    if uscita.returncode != 0:
+        raise RuntimeError(f"curl ha risposto {uscita.returncode}")
+    return json.loads(uscita.stdout)
+
+
+def _chiave(t: datetime) -> str:
+    return t.strftime("%Y-%m-%dT%H")
+
+
+def _previsioni(lat: float, lon: float) -> dict[str, str]:
+    """
+    {ora locale: stato} da Met Norway, dall'ora attuale per ORE_PREVISTE ore.
+    Gli orari arrivano in UTC: fromtimestamp applica il fuso e l'ora legale
+    del sistema, come per gli orari solari.
+    """
+    risposta = _scarica(URL_PREVISIONI.format(lat=lat, lon=lon))
+    adesso = _chiave(datetime.now())
+    ore = {}
+    for passo in risposta["properties"]["timeseries"]:
+        simbolo = (
+            passo["data"].get("next_1_hours", {}).get("summary", {}).get("symbol_code")
+        )
+        if not simbolo:
+            continue  # oltre le prime ~60 ore Met Norway passa a passi di 6 ore
+        utc = datetime.fromisoformat(passo["time"].replace("Z", "+00:00"))
+        chiave = _chiave(datetime.fromtimestamp(utc.timestamp()))
+        if chiave >= adesso:
+            ore[chiave] = stato_da_simbolo(simbolo)
+        if len(ore) == ORE_PREVISTE:
+            break
+    return ore
+
+
+def _km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Distanza approssimata: entro qualche decina di km basta e avanza."""
+    x = math.radians(lon2 - lon1) * math.cos(math.radians((lat1 + lat2) / 2))
+    y = math.radians(lat2 - lat1)
+    return 6371 * math.hypot(x, y)
+
+
+def _metar(lat: float, lon: float) -> tuple[str, str] | None:
+    """
+    (descrizione, stato) dell'osservazione piu' vicina e recente, per esempio
+    ('LIRN -TSRA', 'temporale'). None se non c'e' una stazione entro
+    METAR_RAGGIO_KM con un METAR degli ultimi METAR_MAX_ETA_MIN minuti.
+    """
+    zona = URL_METAR.format(sud=lat - 0.5, nord=lat + 0.5, ovest=lon - 0.5, est=lon + 0.5)
+    limite = time.time() - METAR_MAX_ETA_MIN * 60
+    candidati = []
+    for m in _scarica(zona):
+        try:
+            distanza = _km(lat, lon, float(m["lat"]), float(m["lon"]))
+            quando = float(m["obsTime"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if distanza <= METAR_RAGGIO_KM and quando >= limite:
+            candidati.append((distanza, -quando, m))
+    if not candidati:
+        return None
+    m = min(candidati, key=lambda c: c[:2])[2]
+    wx = m.get("wxString") or ""
+    return f"{m.get('icaoId', '?')} {wx or 'niente fenomeni'}", stato_da_metar(wx)
 
 
 # Ultimo tentativo fallito, per non lanciare curl a ogni giro quando si e'
@@ -156,8 +264,8 @@ _download_lock = threading.Lock()
 
 def aggiorna_se_serve(config: dict, log, forza: bool = False) -> bool:
     """
-    Riscarica le previsioni se sono piu' vecchie di `aggiorna_ore` o se la
-    posizione e' cambiata; con forza=True subito, anche dopo un errore recente.
+    Riscarica il meteo se e' piu' vecchio di `aggiorna_ore` o se la posizione
+    e' cambiata; con forza=True subito, anche dopo un errore recente.
     True se ha scaricato. Non solleva mai: un errore vuol dire solo niente
     meteo fino al prossimo tentativo.
     """
@@ -181,36 +289,39 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
             return False
 
     lat, lon = _coords(config)
+    errori = []
     try:
-        uscita = subprocess.run(
-            ["curl.exe", "-s", "-f", "--max-time", "20", URL.format(lat=lat, lon=lon)],
-            capture_output=True,
-            timeout=30,
-            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
-        )
-        if uscita.returncode != 0:
-            raise RuntimeError(f"curl ha risposto {uscita.returncode}")
-        risposta = json.loads(uscita.stdout)
-        orari = risposta["hourly"]["time"]
-        codici = risposta["hourly"]["weather_code"]
+        ore_meteo = _previsioni(lat, lon)
     except Exception as e:
+        ore_meteo = {}
+        errori.append(f"Met Norway: {e}")
+    try:
+        osservato = _metar(lat, lon)
+    except Exception as e:
+        osservato = None
+        errori.append(f"METAR: {e}")
+
+    # L'osservazione dice che tempo fa davvero adesso: vince sulla previsione.
+    # Senza previsioni resta comunque l'ora attuale.
+    if osservato:
+        ore_meteo[_chiave(datetime.now())] = osservato[1]
+
+    if not ore_meteo:
         # Lo scheduler lo dice una volta per serie di errori; una richiesta
         # dal menu vuole sempre una risposta.
         if forza or not _ultimo_errore:
-            log(f"[METEO] Previsioni non disponibili ({e}): scelgo senza meteo.")
+            motivo = "; ".join(errori) or "nessun dato"
+            log(f"[METEO] Meteo non disponibile ({motivo}): scelgo senza meteo.")
         _ultimo_errore = time.time()
         return False
 
-    # Ora locale del PC, come gli orari solari: fromtimestamp applica il fuso
-    # e l'ora legale del sistema.
-    ore_previste = {}
-    for ts, codice in zip(orari, codici):
-        if codice is None:
-            continue
-        chiave = datetime.fromtimestamp(ts).strftime("%Y-%m-%dT%H")
-        ore_previste[chiave] = stato_da_codice(int(codice))
-
-    nuovo = {"scaricato": time.time(), "lat": lat, "lon": lon, "ore": ore_previste}
+    nuovo = {
+        "scaricato": time.time(),
+        "lat": lat,
+        "lon": lon,
+        "osservato": osservato[0] if osservato else None,
+        "ore": dict(sorted(ore_meteo.items())),
+    }
     try:
         with open(METEO_FILE, "w", encoding="utf-8") as f:
             json.dump(nuovo, f, indent=1)
@@ -219,13 +330,17 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
         return False
 
     _ultimo_errore = 0.0
-    log(f"[METEO] Previsioni aggiornate: {riassunto(ore_previste)}.")
+    fonti = [] if any(e.startswith("Met Norway") for e in errori) else ["Met Norway"]
+    if osservato:
+        fonti.append(f"adesso METAR {osservato[0]}")
+    nota = f" Non disponibile: {'; '.join(errori)}." if errori else ""
+    log(f"[METEO] Aggiornato ({', '.join(fonti)}): {riassunto(ore_meteo)}.{nota}")
     return True
 
 
 def riassunto(ore: dict[str, str]) -> str:
     """'pioggia 14-17, temporale 20-21' sulle ore a venire, per il log."""
-    adesso = datetime.now().strftime("%Y-%m-%dT%H")
+    adesso = _chiave(datetime.now())
     tratti: list[list] = []  # [stato, prima ora, ultima ora, chiave dell'ultima]
     for chiave in sorted(ore):
         if chiave < adesso or ore[chiave] == ASCIUTTO:
@@ -236,7 +351,7 @@ def riassunto(ore: dict[str, str]) -> str:
         else:
             tratti.append([ore[chiave], h, h, chiave])
     if not tratti:
-        return "niente pioggia nelle prossime ore"
+        return f"niente pioggia nelle prossime {ORE_PREVISTE} ore"
     return ", ".join(f"{s} {a}-{int(b) + 1:02d}" for s, a, b, _ in tratti)
 
 
