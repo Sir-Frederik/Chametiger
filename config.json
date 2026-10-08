@@ -192,7 +192,11 @@
       "weekend",
       "capodanno"
     ],
-    "Daffy and Porky/porky_daffy_neonati_pozza.jpg": [],
+    "Daffy and Porky/porky_daffy_neonati_pozza.jpg": [
+      "pioggia",
+      "alba",
+      "smart"
+    ],
     "Daffy and Porky/daffy_leva_gomme_super_stretchy.png": [
       "lavoro",
       "mattino"
@@ -203,7 +207,8 @@
     ],
     "Daffy and Porky/scala_buia_guardiano_zombie.jpg": [
       "notte",
-      "horror"
+      "horror",
+      "temporale"
     ],
     "Daffy and Porky/porky_daffy_colazione_cucina.jpg": [
       "alba"
@@ -900,7 +905,8 @@
     "Daffy_rainy.jpg": [
       "pioggia",
       "pomeriggio",
-      "sera"
+      "sera",
+      "notte"
     ],
     "daffy_elmer_cake.jpg": [
       "jolly",
@@ -1072,8 +1078,10 @@
       "alba",
       "autunno",
       "inverno",
+      "smart",
       "primavera",
-      "smart"
+      "pioggia",
+      "temporale"
     ],
     "Bugs_bunny_Giant_“WhatsUp_Doc”.jpg": [
       "pomeriggio",
@@ -1085,7 +1093,8 @@
       "tramonto",
       "primavera",
       "estate",
-      "alba"
+      "alba",
+      "crepuscolo"
     ],
     "Daffy_duck_moments_sea.jpg": [
       "svago",
@@ -1302,12 +1311,48 @@
       "alba",
       "mattino",
       "pomeriggio",
-      "sera"
+      "sera",
+      "crepuscolo"
     ],
     "daffy_cloud_rain_desert.jpg": [
       "pioggia",
       "pomeriggio",
       "mattino"
+    ],
+    "bugs_hole_ rainy.png": [
+      "mattino",
+      "pioggia",
+      "temporale",
+      "alba"
+    ],
+    "daffy_bugs_rainy_singing.jpg": [
+      "spettacolo",
+      "pioggia",
+      "pomeriggio",
+      "sera"
+    ],
+    "lola_window_stalking_rainy_storm.jpg": [
+      "notte",
+      "pomeriggio",
+      "sera",
+      "temporale"
+    ],
+    "porky_daffy_storm.jpg": [
+      "temporale",
+      "spettacolo",
+      "sera"
+    ],
+    "willy_rainy_cloud.jpg": [
+      "pomeriggio",
+      "mattino",
+      "pioggia"
+    ],
+    "Daffy and Porky/Porky_daffy_storm_that'all_folks.png": [
+      "pomeriggio",
+      "tramonto",
+      "pioggia",
+      "temporale",
+      "crepuscolo"
     ]
   },
   "random_rules": {
