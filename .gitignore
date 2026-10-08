@@ -1,6 +1,7 @@
 # Generati a runtime dall'applicazione
 log.json
 chametiger.log
+meteo.json
 
 # Bytecode Python
 __pycache__/

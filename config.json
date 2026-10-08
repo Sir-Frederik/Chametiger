@@ -30,7 +30,9 @@
     "sanValentino",
     "capodanno",
     "compleanno",
-    "pasqua"
+    "pasqua",
+    "pioggia",
+    "temporale"
   ],
   "image_library": {
     "personaggi_riquadri_colorati_bianco_nero.jpg": [
@@ -743,7 +745,8 @@
       "lavoro",
       "crepuscolo",
       "primavera",
-      "autunno"
+      "autunno",
+      "mattino"
     ],
     "speedy_gonzales_amore.png": [
       "pomeriggio",
@@ -895,7 +898,7 @@
       "alba"
     ],
     "Daffy_rainy.jpg": [
-      "inverno"
+      "pioggia"
     ],
     "daffy_elmer_cake.jpg": [
       "jolly",
@@ -1291,6 +1294,12 @@
     ],
     "wile_coyote_falling_phone.jpg": [
       "pomeriggio"
+    ],
+    "bugs_lightning_storm.jpg": [
+      "temporale"
+    ],
+    "daffy_cloud_rain_desert.jpg": [
+      "pioggia"
     ]
   },
   "random_rules": {
@@ -1738,6 +1747,11 @@
   "theme": "dark",
   "latitude": 40.8518,
   "longitude": 14.2681,
+  "meteo": {
+    "attivo": true,
+    "aggiorna_ore": 5,
+    "minimo": 2
+  },
   "seasons": [
     {
       "name": "Inverno",
@@ -2107,7 +2121,7 @@
         "weekday": [
           {
             "from": "sunset -40m",
-            "to": "dusk +40m",
+            "to": "dusk +2m",
             "include": [
               "crepuscolo",
               "horror"
@@ -2117,7 +2131,7 @@
             "rotate_minutes": 60
           },
           {
-            "from": "dusk +40m",
+            "from": "dusk +2m",
             "to": "21:00",
             "include": [
               "horror",

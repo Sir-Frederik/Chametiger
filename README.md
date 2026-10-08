@@ -1,7 +1,7 @@
 # 🦎 Chametiger
 
-**v4.2** — 1 ottobre 2026
-Pasqua: date relative alla festa mobile, ricalcolate ogni anno.
+**v4.3** — 8 ottobre 2026
+Meteo: quando piove escono le immagini di pioggia.
 
 
 Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno**, al **giorno della settimana**, alla **stagione**, agli **eventi** dell'anno e agli **orari reali di alba e tramonto**.
@@ -9,6 +9,14 @@ Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorn
 Ogni fascia oraria pesca fra le immagini che hanno certi **tag**, e le fa scorrere tutte prima di ripeterle.
 
 ---
+
+## Novità della 4.3
+
+- **Meteo.** Ogni 5 ore, se c'è connessione, Chametiger scarica le previsioni orarie delle prossime 48 ore da [Open-Meteo](https://open-meteo.com) (gratuito, senza chiave) per le coordinate già impostate. Nelle ore di pioggia hanno la precedenza le immagini taggate `pioggia`, in quelle di temporale le `temporale`; col bel tempo quelle immagini si mettono da parte. Senza previsioni valide tutto funziona come prima. Vedi [Meteo](#meteo).
+- **Soglia minima** (`"minimo": 2`): il meteo restringe la fascia solo se restano almeno 2 immagini, così una sola immagine di pioggia non resta sullo sfondo per tutto il temporale.
+- **"Carica meteo"** nel menu del tray: riscarica subito le previsioni e cambia lo sfondo se non corrisponde più al tempo che fa.
+- **Impostazioni → Meteo**: ogni quante ore riscaricare, da 1 a 10, con l'ora dell'ultimo download.
+- **Nuovi tag** `pioggia` e `temporale` nel vocabolario: vanno assegnati alle immagini dalla tab *Libreria*.
 
 ## Novità della 4.2
 
@@ -87,14 +95,16 @@ Ogni fascia oraria pesca fra le immagini che hanno certi **tag**, e le fa scorre
 ├── verifica_immagini.py ← Simula un anno e trova le immagini che non escono mai
 ├── versione.py     ← Numero di versione, mostrato nel tray e nell'editor
 ├── date_mobili.py  ← Date di stagioni ed eventi, comprese quelle relative a Pasqua
+├── meteo.py        ← Previsioni orarie (Open-Meteo) per le immagini di pioggia
 ├── config.json     ← Configurazione: regole, stagioni, eventi, tag, libreria
 ├── log.json        ← Storico delle estrazioni casuali (generato)
 ├── chametiger.log  ← Log testuale (generato)
+├── meteo.json      ← Previsioni scaricate (generato)
 ├── requirements.txt
 └── README.md
 ```
 
-I due file generati si creano da soli al primo avvio: non vanno preparati né versionati.
+I file generati si creano da soli al primo avvio: non vanno preparati né versionati.
 
 ---
 
@@ -174,6 +184,7 @@ Oppure: click destro sull'icona tray → **Apri editor config**
 | `latitude` / `longitude`  | Posizione, per calcolare alba e tramonto. Default: Napoli            |
 | `base_path` / `path_map`  | Cartella base delle immagini, con override per singolo PC (hostname) |
 | `seasons` / `events`      | Stagioni ed eventi, che filtrano i tag (vedi sotto)                  |
+| `meteo`                   | `{"attivo": true, "aggiorna_ore": 5, "minimo": 2}`: previsioni sì/no, ogni quante ore riscaricarle (1–10), soglia minima del pool |
 
 ### Percorsi multi-PC
 
@@ -390,6 +401,31 @@ Un giorno che **nessuna** stagione copre non applica nessun filtro di stagione: 
 
 ---
 
+## Meteo
+
+Ogni `aggiorna_ore` ore (default 5, da 1 a 10, si cambia in **Impostazioni → Meteo**) lo scheduler scarica le previsioni **orarie** delle prossime 48 ore da Open-Meteo, per la latitudine e longitudine del config, e le salva in `meteo.json`. Fra un download e l'altro non serve la rete: la giornata è già programmata ora per ora.
+
+| Tempo dell'ora | Effetto sul pool della fascia                                       |
+| -------------- | ------------------------------------------------------------------- |
+| temporale      | prima le immagini `temporale`; se non bastano, `temporale` e `pioggia` insieme |
+| pioggia        | prima le immagini `pioggia`                                         |
+| sereno, nuvoloso, neve, nebbia | le immagini `pioggia` e `temporale` si mettono da parte |
+| previsioni assenti | nessun effetto: i due tag contano come tutti gli altri          |
+
+Come `prefer` con `prefer_min`, il meteo **restringe** il pool della fascia solo se restano almeno `minimo` immagini (default 2): se alle 10 piove ma una sola immagine `mattino` ha anche `pioggia`, esce una `mattino` qualsiasi, invece di tenere ferma quella per tutte le ore di pioggia. Il meteo è l'**ultimo setaccio**: sceglie fra le immagini che fascia, stagione, evento e veto hanno già ammesso, e non ne aggiunge. A Natale, col temporale, la sera escono le immagini `natale` con `temporale`; un'immagine `estate + temporale` o `horror + temporale` resta fuori come sempre. Per vedere la pioggia in ogni momento della giornata servono quindi almeno due immagini `pioggia` per fascia: di mattina, di pomeriggio, di sera…
+
+**Carica meteo**, nel menu del tray, scarica subito le previsioni senza aspettare l'intervallo, e cambia lo sfondo solo se il tempo dell'ora rende inadatta l'immagine attuale.
+
+**Ripiego.** Senza connessione si riprova ogni 30 minuti e intanto si sceglie come se il meteo non esistesse. Lo stesso succede se le previsioni hanno più di 12 ore, se le coordinate sono cambiate o se `"attivo": false`.
+
+**Peso.** Il download lo fa `curl.exe`, già incluso in Windows 10/11, in un processo separato che termina subito: l'app nel tray non carica le librerie di rete di Python (~4 MB) e la sua memoria non cambia. Le previsioni sono 48 righe.
+
+**Più PC.** Due PC con le stesse coordinate ricevono le stesse previsioni e restano allineati. Se uno dei due è offline, nelle ore di pioggia mostra immagini diverse finché non riscarica.
+
+Nel log e in **Anteprima** un'ora di pioggia compare come `@pioggia` (o `@temporale`) accanto ai tag della regola; ogni download scrive una riga `[METEO]` col riassunto delle ore di pioggia previste.
+
+---
+
 ## L'editor grafico
 
 | Tab                     | A cosa serve                                                        |
@@ -407,7 +443,7 @@ Nel **grafico** ogni stagione ed evento è una riga, coi mesi in colonna: le tra
 
 **Anteprima** è lo strumento da usare quando qualcosa non torna: per ogni finestra della giornata mostra la pila del giorno (*Inverno > Natale*), regola vincente, fascia con l'orario solare risolto, tag effettivi, dimensione del pool e immagine scelta. In fondo riporta quante immagini distinte escono e qual è il pool più piccolo.
 
-In **Impostazioni → Posizione** si impostano latitudine e longitudine, con un elenco delle principali città italiane e gli orari solari di oggi come conferma.
+In **Impostazioni → Posizione** si impostano latitudine e longitudine, con un elenco delle principali città italiane e gli orari solari di oggi come conferma. In **Impostazioni → Meteo** si sceglie ogni quante ore scaricare le previsioni (da 1 a 10).
 
 ---
 
@@ -417,6 +453,7 @@ In **Impostazioni → Posizione** si impostano latitudine e longitudine, con un 
 | ----------------------- | ------------------------------------------------ |
 | Applica adesso          | Forza il controllo immediato                     |
 | Cambia immagine adesso  | Nuova estrazione subito                          |
+| Carica meteo            | Riscarica le previsioni e adegua lo sfondo al tempo |
 | Apri editor config      | Apre la GUI di configurazione                    |
 | \* Avvio con Windows    | Toggle avvio automatico                          |
 | Esci                    | Chiude l'applicazione                            |
@@ -428,12 +465,13 @@ In **Impostazioni → Posizione** si impostano latitudine e longitudine, con un 
 `chametiger.log` registra ogni cambio di sfondo indicando **quale regola** ha vinto:
 
 ```
-[2026-12-25 15:00:03] Avvio Chametiger 4.2.
+[2026-12-25 15:00:03] Avvio Chametiger 4.3.
+[2026-12-25 15:00:04] [METEO] Previsioni aggiornate: pioggia 16-19.
 [2026-12-25 15:00:03] [OK] Sfondo impostato (weekday [Inverno] 14:00-18:00 [lavoro/pomeriggio -smart]): G:\Temi\...
-[2026-12-25 16:00:07] [OK] Sfondo impostato (evento Natale weekday sunset-40m (15:57)-23:30 [natale]): G:\Temi\...
+[2026-12-25 16:00:07] [OK] Sfondo impostato (evento Natale weekday sunset-40m (15:57)-23:30 [natale @pioggia]): G:\Temi\...
 ```
 
-Nei tag, `+` significa che servono **tutti** quelli elencati, `/` che ne basta **uno**, `-tag` sono le esclusioni della regola, `!tag` i tag vietati dal periodo e `~tag` i preferiti.
+Nei tag, `+` significa che servono **tutti** quelli elencati, `/` che ne basta **uno**, `-tag` sono le esclusioni della regola, `!tag` i tag vietati dal periodo, `~tag` i preferiti e `@pioggia` / `@temporale` il meteo dell'ora.
 
 La categoria dice anche **da quale strato** viene la regola. `evento Natale weekday` è una fascia propria dell'evento; `weekday [Inverno]` è una regola di base filtrata dalla stagione. Accanto alle ancore solari c'è l'orario a cui sono cadute davvero.
 

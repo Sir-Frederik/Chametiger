@@ -19,6 +19,7 @@ from functools import lru_cache
 from pathlib import Path
 
 import date_mobili
+import meteo
 import sun
 from versione import VERSIONE
 
@@ -96,6 +97,10 @@ def ensure_defaults(cfg: dict) -> dict:
     cfg.setdefault("events", [])
     cfg.setdefault("latitude", DEFAULT_LAT)
     cfg.setdefault("longitude", DEFAULT_LON)
+    cfg.setdefault(
+        "meteo",
+        {"attivo": True, "aggiorna_ore": meteo.DEFAULT_ORE, "minimo": meteo.DEFAULT_MINIMO},
+    )
 
     rules = cfg.setdefault("random_rules", {})
     rules.setdefault("weekday", [])
@@ -218,6 +223,8 @@ def _tags_of(rule: dict) -> str:
         parts.append("!" + ",!".join(rule["veto"]))
     if rule.get("prefer"):
         parts.append("~" + ",~".join(rule["prefer"]))
+    if rule.get("meteo") in _TAG_METEO:  # il sereno e' la norma, non lo si scrive
+        parts.append("@" + rule["meteo"])
     return f" [{' '.join(parts)}]" if parts else ""
 
 
@@ -525,9 +532,52 @@ def candidates_for_rule(config: dict, rule: dict) -> list[str]:
         # Si restringe solo se ne resta abbastanza: con pochi tag preferiti il
         # pool si ridurrebbe a una o due immagini e la fascia diventerebbe fissa.
         if len(scelti) >= minimo:
-            return scelti
+            out = scelti
 
-    return out
+    return _secondo_meteo(out, rule.get("meteo"), library, meteo.minimo(config))
+
+
+_TAG_METEO = {meteo.TEMPORALE, meteo.PIOGGIA}
+
+
+def _secondo_meteo(
+    pool: list[str], stato: str | None, library: dict, minimo: int
+) -> list[str]:
+    """
+    Il pool visto attraverso il tempo che fa, sopra `prefer`.
+
+    Con la pioggia hanno la precedenza le immagini taggate `pioggia`. Col
+    temporale quelle `temporale`, e se non bastano quelle `temporale` o
+    `pioggia` insieme. Col bel tempo le immagini di pioggia e temporale si
+    mettono da parte.
+
+    Come con `prefer_min`, il pool si restringe solo se restano almeno `minimo`
+    immagini: con una sola, la fascia resterebbe ferma su quella per tutte le
+    ore di pioggia.
+
+    Senza previsioni (stato None) non si tocca niente: i tag del meteo contano
+    come tutti gli altri.
+    """
+    if not stato:
+        return pool
+    if stato == meteo.ASCIUTTO:
+        scelti = [i for i in pool if not _TAG_METEO & set(library.get(i) or [])]
+        return scelti if len(scelti) >= minimo else pool
+    gruppi = [{meteo.TEMPORALE}, _TAG_METEO] if stato == meteo.TEMPORALE else [{meteo.PIOGGIA}]
+    for tag in gruppi:
+        scelti = [i for i in pool if tag & set(library.get(i) or [])]
+        if len(scelti) >= minimo:
+            return scelti
+    return pool
+
+
+def _con_meteo(rule: dict, stato: str | None) -> dict:
+    """La regola col tempo dell'ora. Una COPIA, come in patch_rule."""
+    if not stato:
+        return rule
+    patched = dict(rule)
+    patched["meteo"] = stato
+    return patched
 
 
 def _rule_signature(rule: dict) -> str:
@@ -555,6 +605,10 @@ def _rule_signature(rule: dict) -> str:
             parti.append("pm:" + str(rule["prefer_min"]))
     if rule.get("_period"):
         parti.append("s:" + str(rule["_period"]))
+    # Il tempo cambia il pool, quindi il mazzo: pioggia e sereno hanno ognuno il
+    # suo. Senza previsioni la firma resta quella di prima.
+    if rule.get("meteo"):
+        parti.append("m:" + rule["meteo"])
     return "|".join(parti)
 
 
@@ -828,10 +882,11 @@ def _copre(start: int, end: int, minuto: int) -> bool:
 
 
 def regole_candidate(config: dict, quando: datetime) -> list[tuple[dict, str]]:
-    """Le regole che coprono quell'istante, in ordine di priorita'."""
+    """Le regole che coprono quell'istante, in ordine di priorita', col meteo dell'ora."""
     minuto = quando.hour * 60 + quando.minute
+    stato = (meteo.del_giorno(config, quando.date()) or {}).get(quando.hour)
     return [
-        (rule, origine)
+        (_con_meteo(rule, stato), origine)
         for rule, origine, start, end in _regole_del_giorno(config, quando.date())
         if _copre(start, end, minuto)
     ]
@@ -864,6 +919,11 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
     if not regole:
         return []
 
+    # Il meteo e' per ora: le previsioni si leggono una volta per giornata, e
+    # ogni regola ha al piu' una variante per stato, non una per minuto.
+    ore_meteo = meteo.del_giorno(config, giorno) or {}
+    varianti: dict[tuple[int, str], dict] = {}
+
     pools: dict[str, list[str]] = {}  # una volta per regola, non per finestra
     usate: set[str] = set()
     sequenza: list[dict] = []
@@ -876,9 +936,14 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
         # stesso criterio di resolve_random, cosi' l'anteprima e lo scheduler non
         # possono divergere su una regola dal pool vuoto.
         scelto = None
-        for rule, origine, start, end in regole:
+        stato = ore_meteo.get(minuto // 60)
+        for i, (rule, origine, start, end) in enumerate(regole):
             if not _copre(start, end, minuto):
                 continue
+            if stato:
+                if (i, stato) not in varianti:
+                    varianti[(i, stato)] = _con_meteo(rule, stato)
+                rule = varianti[(i, stato)]
             sig = _rule_signature(rule)
             if sig not in pools:
                 pools[sig] = sorted(candidates_for_rule(config, rule))
@@ -1225,6 +1290,10 @@ class ChametigerTray:
             try:
                 self.config = load_config()  # rilegge la config ad ogni ciclo
                 invalida_cache_file()
+                # Quasi sempre non fa niente: scarica solo ogni `aggiorna_ore`.
+                # Qui e non al primo avvio, cosi' il tray compare subito anche
+                # con la rete lenta.
+                meteo.aggiorna_se_serve(self.config, log)
                 wallpaper, category = resolve_wallpaper(self.config)
                 if wallpaper:
                     self._no_slot_logged = False
@@ -1281,6 +1350,32 @@ class ChametigerTray:
         except Exception as e:
             log(f"[ERR] Shuffle: {e}")
 
+    def _carica_meteo(self, icon, item):
+        """Dal menu: in un thread, per non bloccare il tray mentre curl lavora."""
+        threading.Thread(target=self._carica_meteo_ora, daemon=True).start()
+
+    def _carica_meteo_ora(self):
+        """
+        Riscarica subito le previsioni e riapplica lo sfondo. Cambia solo se il
+        meteo dell'ora ha cambiato pool: la firma della regola contiene lo
+        stato del tempo, quindi un memo preso col tempo vecchio non vale piu'.
+        """
+        try:
+            self.config = load_config()
+            if not meteo.aggiorna_se_serve(self.config, log, forza=True):
+                return
+            invalida_cache_file()
+            wallpaper, category = resolve_wallpaper(self.config)
+            if not wallpaper:
+                self._report_no_slot(always=True)
+            elif wallpaper == _last_wallpaper:
+                log("[METEO] Lo sfondo attuale va gia' bene col meteo.")
+            else:
+                self._no_slot_logged = False
+                set_wallpaper(wallpaper, category)
+        except Exception as e:
+            log(f"[ERR] Carica meteo: {e}")
+
     def _toggle_autostart(self, icon, item):
         if is_autostart_enabled():
             disable_autostart()
@@ -1305,6 +1400,7 @@ class ChametigerTray:
             pystray.Menu.SEPARATOR,
             Item("Applica adesso", self._apply_now),
             Item("Cambia immagine adesso", self._shuffle_now),
+            Item("Carica meteo", self._carica_meteo),
             Item("Apri editor config", self._open_editor),
             pystray.Menu.SEPARATOR,
             Item(autostart_label, self._toggle_autostart),

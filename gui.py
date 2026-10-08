@@ -15,6 +15,7 @@ from pathlib import Path
 from datetime import date, datetime, timedelta
 
 import date_mobili
+import meteo
 import sun
 from versione import VERSIONE
 
@@ -531,7 +532,45 @@ class ChametigerEditor(tk.Tk):
         frame = ttk.Frame(nb)
         nb.add(frame, text="Impostazioni")
 
-        inner = tk.Frame(frame, bg=BG)
+        # Scorrevole come l'area dei tag: con la sezione Meteo le impostazioni
+        # non stanno piu' in una finestra di altezza normale.
+        canvas = tk.Canvas(frame, bg=BG, highlightthickness=0, borderwidth=0)
+        sb = ttk.Scrollbar(frame, orient="vertical", command=canvas.yview)
+        contenuto = tk.Frame(canvas, bg=BG)
+        contenuto.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all")),
+        )
+        finestra = canvas.create_window((0, 0), window=contenuto, anchor="nw")
+        canvas.configure(yscrollcommand=sb.set)
+
+        # la scrollbar va impacchettata per prima, altrimenti il canvas la spinge fuori
+        sb.pack(side="right", fill="y")
+        canvas.pack(side="left", fill="both", expand=True)
+        canvas.bind(
+            "<Configure>", lambda e: canvas.itemconfigure(finestra, width=e.width)
+        )
+
+        def _on_wheel(event):
+            # Solo se il contenuto non sta tutto nella finestra: altrimenti la
+            # rotellina lo farebbe saltellare senza motivo.
+            if canvas.bbox("all")[3] > canvas.winfo_height():
+                canvas.yview_scroll(int(-event.delta / 120), "units")
+
+        # bind_all solo col mouse sopra la tab, come per i tag: cosi' la
+        # rotellina non scorre le impostazioni mentre si e' in un'altra tab.
+        def _esci(event):
+            # Tk manda <Leave> al canvas anche quando il puntatore passa su un
+            # campo al suo interno: si sgancia solo se e' uscito davvero.
+            w = canvas.winfo_containing(*canvas.winfo_pointerxy())
+            dentro = str(canvas)
+            if w is None or not (str(w) == dentro or str(w).startswith(dentro + ".")):
+                canvas.unbind_all("<MouseWheel>")
+
+        canvas.bind("<Enter>", lambda e: canvas.bind_all("<MouseWheel>", _on_wheel))
+        canvas.bind("<Leave>", _esci)
+
+        inner = tk.Frame(contenuto, bg=BG)
         inner.pack(padx=24, pady=24, anchor="nw", fill="x")
 
         # Intervallo
@@ -806,6 +845,64 @@ class ChametigerEditor(tk.Tk):
         ).grid(row=17, column=0, columnspan=3, sticky="w", pady=(4, 0))
 
         applica_coord()
+
+        # ── Meteo ───────────────────────────────────────────────────────────
+        tk.Label(
+            inner,
+            text="Meteo (immagini di pioggia e temporale)",
+            bg=BG,
+            fg=ACCENT,
+            font=("Segoe UI Semibold", 11),
+        ).grid(row=18, column=0, columnspan=3, sticky="w", pady=(24, 6))
+
+        tk.Label(
+            inner,
+            text="Scarica le previsioni ogni (ore):",
+            bg=BG,
+            fg=FG,
+            font=("Segoe UI", 10),
+        ).grid(row=19, column=0, sticky="w", pady=8)
+
+        _, ore = meteo.impostazioni(self.config_data)
+        self._meteo_ore_var = tk.IntVar(value=int(ore))
+        tk.Spinbox(
+            inner,
+            from_=meteo.ORE_MIN,
+            to=meteo.ORE_MAX,
+            textvariable=self._meteo_ore_var,
+            width=6,
+            state="readonly",  # solo le frecce: niente valori fuori dai limiti
+            readonlybackground=ENTRY_BG,
+            fg=FG,
+            buttonbackground=BG3,
+            relief="flat",
+            font=("Segoe UI", 10),
+        ).grid(row=19, column=1, padx=12, sticky="w")
+
+        self._meteo_status = tk.Label(
+            inner, bg=BG, fg=FG2, font=("Segoe UI", 9), justify="left", anchor="w"
+        )
+        self._meteo_status.grid(row=20, column=0, columnspan=3, sticky="w", pady=(4, 0))
+
+        def stato_meteo(prefisso: str = "", colore=FG2):
+            ultimo = meteo.ultimo_download()
+            quando = ultimo.strftime("%d/%m alle %H:%M") if ultimo else "mai"
+            self._meteo_status.config(
+                text=f"{prefisso}Ultimo download: {quando}.\n"
+                "Vale dopo \"Salva configurazione\"; \"Carica meteo\" nel menu del "
+                "tray scarica subito.",
+                fg=colore,
+            )
+
+        def applica_meteo():
+            ore = self._meteo_ore_var.get()
+            self.config_data.setdefault("meteo", {})["aggiorna_ore"] = ore
+            stato_meteo(f"Previsioni ogni {ore} ore. ", SUCCESS)
+
+        ttk.Button(inner, text="Applica", command=applica_meteo).grid(
+            row=19, column=2, padx=4
+        )
+        stato_meteo()
 
         self._base_status = tk.Label(inner, bg=BG, fg=FG2, font=("Segoe UI", 9))
         self._base_status.grid(row=12, column=0, columnspan=3, sticky="w", pady=(4, 0))
@@ -3588,6 +3685,8 @@ class PreviewTab(tk.Frame):
                 tag.append("!" + ",!".join(rule["veto"]))
             if rule.get("prefer"):
                 tag.append("~" + ",~".join(rule["prefer"]))
+            if rule.get("meteo") in ("pioggia", "temporale"):
+                tag.append("@" + rule["meteo"])
             self._tree.insert(
                 "",
                 "end",
