@@ -1357,6 +1357,12 @@
     "Porky_daffy_rainy_driving.png": [
       "lavoro",
       "pioggia"
+    ],
+    "bugs_lola_storm_boat.png": [
+      "mattino",
+      "pomeriggio",
+      "pioggia",
+      "temporale"
     ]
   },
   "random_rules": {
@@ -1802,8 +1808,8 @@
   },
   "history_days": 60,
   "theme": "dark",
-  "latitude": 41.0345,
-  "longitude": 13.9409,
+  "latitude": 41.0566,
+  "longitude": 13.9252,
   "meteo": {
     "attivo": true,
     "aggiorna_ore": 5,

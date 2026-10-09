@@ -760,6 +760,10 @@ class ChametigerEditor(tk.Tk):
 
         citta = {
             "Napoli": (40.8518, 14.2681),
+            "Portici": (40.8199, 14.3414),
+            "Pescopagano": (41.0566, 13.9252),
+            "Castel Volturno": (41.0345, 13.9409),
+            "Manduria": (40.4028, 17.6343),
             "Roma": (41.9028, 12.4964),
             "Milano": (45.4642, 9.1900),
             "Torino": (45.0703, 7.6869),
@@ -908,7 +912,7 @@ class ChametigerEditor(tk.Tk):
             quando = ultimo.strftime("%d/%m alle %H:%M") if ultimo else "mai"
             self._meteo_status.config(
                 text=f"{prefisso}Ultimo download: {quando}.\n"
-                "Vale dopo \"Salva configurazione\"; \"Carica meteo\" nel menu del "
+                'Vale dopo "Salva configurazione"; "Carica meteo" nel menu del '
                 "tray scarica subito.",
                 fg=colore,
             )
@@ -1213,13 +1217,22 @@ class TagPicker(ttk.Button):
                 text=tag,
                 variable=var,
                 command=lambda t=tag, v=var: self._on_check(t, v.get()),
-            ).grid(row=i // self.COLUMNS, column=i % self.COLUMNS, sticky="w", padx=(0, 12))
+            ).grid(
+                row=i // self.COLUMNS, column=i % self.COLUMNS, sticky="w", padx=(0, 12)
+            )
 
         bottom = tk.Frame(inner, bg=BG)
-        bottom.grid(row=len(self._all) // self.COLUMNS + 1, column=0,
-                    columnspan=self.COLUMNS, sticky="e", pady=(8, 0))
+        bottom.grid(
+            row=len(self._all) // self.COLUMNS + 1,
+            column=0,
+            columnspan=self.COLUMNS,
+            sticky="e",
+            pady=(8, 0),
+        )
         ttk.Button(bottom, text="Nessuno", command=self._clear).pack(side="left")
-        ttk.Button(bottom, text="Chiudi", command=self._close).pack(side="left", padx=(6, 0))
+        ttk.Button(bottom, text="Chiudi", command=self._close).pack(
+            side="left", padx=(6, 0)
+        )
 
         pop.place(
             x=self.winfo_rootx() - self._overlay.winfo_rootx(),
@@ -2390,6 +2403,7 @@ MESI_IT = [
     "dicembre",
 ]
 
+
 def md_valido(s: str) -> bool:
     """'10-20' o 'pasqua-5' validi. Il 29 febbraio si accetta: l'anno non entra nel confronto."""
     return date_mobili.valida(s)
@@ -2518,7 +2532,12 @@ class GraficoAnno(tk.Canvas):
 
         # L'anno in alto a sinistra: le date relative a Pasqua sono quelle sue
         self.create_text(
-            6, 8, anchor="w", text=str(date.today().year), fill=FG2, font=("Segoe UI", 8)
+            6,
+            8,
+            anchor="w",
+            text=str(date.today().year),
+            fill=FG2,
+            font=("Segoe UI", 8),
         )
 
         # Mesi
@@ -2531,7 +2550,11 @@ class GraficoAnno(tk.Canvas):
 
         if not righe:
             self.create_text(
-                x0, self.TESTATA + 10, anchor="w", fill=FG2, font=("Segoe UI", 9),
+                x0,
+                self.TESTATA + 10,
+                anchor="w",
+                fill=FG2,
+                font=("Segoe UI", 9),
                 text="Nessuna stagione e nessun evento.",
             )
             return
@@ -2545,8 +2568,13 @@ class GraficoAnno(tk.Canvas):
             etichetta = f"{chiave}:{i}"
 
             self.create_text(
-                x0 - 6, y + self.RIGA / 2, anchor="e", text=p.get("name", "?"),
-                fill=FG, font=("Segoe UI", 8), tags=(etichetta,),
+                x0 - 6,
+                y + self.RIGA / 2,
+                anchor="e",
+                text=p.get("name", "?"),
+                fill=FG,
+                font=("Segoe UI", 8),
+                tags=(etichetta,),
             )
 
             a, b = giorno_anno(p.get("from", "")), giorno_anno(p.get("to", ""))
@@ -2556,10 +2584,17 @@ class GraficoAnno(tk.Canvas):
             pezzi = [(a, b)] if a <= b else [(a, 365), (0, b)]
             for inizio, fine in pezzi:
                 self.create_rectangle(
-                    x0 + inizio * px, y + 2, x0 + (fine + 1) * px, y + self.RIGA - 2,
-                    fill=colore, outline="", tags=(etichetta,),
+                    x0 + inizio * px,
+                    y + 2,
+                    x0 + (fine + 1) * px,
+                    y + self.RIGA - 2,
+                    fill=colore,
+                    outline="",
+                    tags=(etichetta,),
                 )
-            self.tag_bind(etichetta, "<Button-1>", lambda e, c=chiave, k=i: self._click(c, k))
+            self.tag_bind(
+                etichetta, "<Button-1>", lambda e, c=chiave, k=i: self._click(c, k)
+            )
 
         if n_stagioni and len(righe) > n_stagioni:
             y = self.TESTATA + n_stagioni * self.RIGA + self.SEPARATORE / 2
@@ -2590,7 +2625,10 @@ class TabellaPeriodi(tk.Frame):
         ).pack(anchor="w", pady=(0, 4))
 
         self._tree = ttk.Treeview(
-            self, columns=("nome", "dal", "al", "tag", "fasce"), show="headings", height=5
+            self,
+            columns=("nome", "dal", "al", "tag", "fasce"),
+            show="headings",
+            height=5,
         )
         for c, t, w in (
             ("nome", "Nome", 95),
@@ -2686,7 +2724,10 @@ class TabellaPeriodi(tk.Frame):
         """Le fasce orarie proprie del periodo selezionato."""
         i = self._selected()
         if i is None:
-            messagebox.showinfo("Fasce", f"Seleziona prima una riga fra le {TIPI_PERIODO[self.chiave][0].lower()}.")
+            messagebox.showinfo(
+                "Fasce",
+                f"Seleziona prima una riga fra le {TIPI_PERIODO[self.chiave][0].lower()}.",
+            )
             return
         PeriodRulesDialog(self, self.config_data, self.chiave, i)
         self._changed(i)
@@ -2742,7 +2783,9 @@ class PeriodsTab(tk.Frame):
         # Va a capo sulla larghezza vera della tab, qualunque sia lo scaling
         intro.bind("<Configure>", lambda e: intro.configure(wraplength=e.width - 4))
 
-        self._grafico = GraficoAnno(self, self.config_data, on_click=self._click_grafico)
+        self._grafico = GraficoAnno(
+            self, self.config_data, on_click=self._click_grafico
+        )
         self._grafico.pack(fill="x", padx=12)
 
         bar = tk.Frame(self, bg=BG)
@@ -2752,11 +2795,15 @@ class PeriodsTab(tk.Frame):
         )
         self._btn_verifica.pack(side="right", anchor="n")
         self._status = tk.Label(
-            bar, bg=BG, fg=FG2, font=("Segoe UI", 9), justify="left", anchor="w",
+            bar,
+            bg=BG,
+            fg=FG2,
+            font=("Segoe UI", 9),
+            justify="left",
+            anchor="w",
             wraplength=820,
         )
         self._status.pack(side="left", fill="x", expand=True)
-
 
         tabelle = tk.Frame(self, bg=BG)
         tabelle.pack(fill="both", expand=True, padx=12, pady=(10, 0))
@@ -3032,7 +3079,13 @@ class PeriodDialog(tk.Toplevel):
     """Editor di una stagione o di un evento."""
 
     def __init__(
-        self, parent, config_data: dict, chiave: str, title="Periodo", initial=None, indice=None
+        self,
+        parent,
+        config_data: dict,
+        chiave: str,
+        title="Periodo",
+        initial=None,
+        indice=None,
     ):
         super().__init__(parent)
         self.title(title)
@@ -3189,7 +3242,9 @@ class PeriodDialog(tk.Toplevel):
 
         fasce = tk.Frame(self, bg=BG)
         fasce.grid(row=7, column=0, columnspan=4, sticky="w", padx=16, pady=(10, 0))
-        self._btn_fasce = ttk.Button(fasce, text="Fasce orarie proprie", command=self._fasce)
+        self._btn_fasce = ttk.Button(
+            fasce, text="Fasce orarie proprie", command=self._fasce
+        )
         self._btn_fasce.pack(side="left")
         self._lbl_fasce = tk.Label(fasce, bg=BG, fg=FG2, font=("Segoe UI", 9))
         self._lbl_fasce.pack(side="left", padx=10)
@@ -3313,7 +3368,9 @@ class PeriodDialog(tk.Toplevel):
         ]
         if nome in altri:
             messagebox.showerror(
-                "Errore", f"Esiste gia' una stagione o un evento chiamato '{nome}'.", parent=self
+                "Errore",
+                f"Esiste gia' una stagione o un evento chiamato '{nome}'.",
+                parent=self,
             )
             return
 
@@ -3333,7 +3390,17 @@ class PeriodDialog(tk.Toplevel):
         period = {
             k: v
             for k, v in self._initial.items()
-            if k not in ("name", "from", "to", "tags", "veto", "prefer", "prefer_min", "require")
+            if k
+            not in (
+                "name",
+                "from",
+                "to",
+                "tags",
+                "veto",
+                "prefer",
+                "prefer_min",
+                "require",
+            )
         }
         period.update({"name": nome, "from": a, "to": b})
         tags = self._collect(self._tags)
@@ -3425,7 +3492,10 @@ class PeriodRulesDialog(tk.Toplevel):
         nb = ttk.Notebook(self)
         nb.pack(fill="both", expand=True, padx=14)
 
-        for chiave_regole, etichetta in (("weekday", "Feriali"), ("weekend", "Weekend")):
+        for chiave_regole, etichetta in (
+            ("weekday", "Feriali"),
+            ("weekend", "Weekend"),
+        ):
             frame = ttk.Frame(nb)
             nb.add(frame, text=etichetta)
             RuleEditor(
