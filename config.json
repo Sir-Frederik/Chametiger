@@ -1363,6 +1363,15 @@
       "pomeriggio",
       "pioggia",
       "temporale"
+    ],
+    "sylvester_storm_inside_house.png": [
+      "mattino",
+      "pomeriggio",
+      "temporale"
+    ],
+    "tweety_house_night_moon.png": [
+      "notte",
+      "sera"
     ]
   },
   "random_rules": {
