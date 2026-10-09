@@ -14,6 +14,7 @@ sono naive-locali, gli stessi con cui lavora `datetime.now()` in app.py.
 
 import re
 import math
+import socket
 import calendar
 from datetime import date, datetime, timedelta
 from functools import lru_cache
@@ -157,12 +158,24 @@ def solar_minutes(
     return evento.hour * 60 + evento.minute + offset
 
 
+# Il nome del PC non cambia mentre l'app gira: coords lo chiede di continuo.
+HOSTNAME = socket.gethostname()
+
+
 def coords(config: dict) -> tuple[float, float]:
-    """Latitudine e longitudine dal config. Default: Napoli."""
+    """
+    Latitudine e longitudine di questo PC. Default: Napoli.
+
+    Come la cartella delle immagini (`base_path` + `path_map`): `latitude` e
+    `longitude` valgono per tutti, `position_map` le sostituisce sui PC
+    elencati, col nome del computer come chiave. Unico posto da cui passano
+    orari solari, meteo e GUI, cosi' nessuno legge le coordinate di un altro.
+    """
+    voce = (config.get("position_map") or {}).get(HOSTNAME) or {}
     try:
-        lat = float(config.get("latitude", 40.8518))
-        lon = float(config.get("longitude", 14.2681))
-    except (TypeError, ValueError):
+        lat = float(voce.get("latitude", config.get("latitude", 40.8518)))
+        lon = float(voce.get("longitude", config.get("longitude", 14.2681)))
+    except (TypeError, ValueError, AttributeError):
         return 40.8518, 14.2681
     return lat, lon
 
