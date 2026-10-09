@@ -1,7 +1,7 @@
 # 🦎 Chametiger
 
-**v4.4** — 8 ottobre 2026
-Meteo più affidabile: Met Norway, ora attuale osservata dal METAR, immagini di pioggia in più fasce.
+**v4.5** — 9 ottobre 2026
+Pioggia anche nelle fasce che chiedono un'attività, e posizione diversa per ogni PC.
 
 
 Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno**, al **giorno della settimana**, alla **stagione**, agli **eventi** dell'anno e agli **orari reali di alba e tramonto**.
@@ -9,6 +9,11 @@ Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorn
 Ogni fascia oraria pesca fra le immagini che hanno certi **tag**, e le fa scorrere tutte prima di ripeterle.
 
 ---
+
+## Novità della 4.5
+
+- **La pioggia entra anche nelle fasce senza un momento della giornata.** Quando piove, un'immagine di pioggia entra in una fascia anche senza i tag che la fascia richiede, purché abbia il suo momento: la fascia del venerdì 9–11 chiede `jolly`/`sport`, e alle 10 prende le immagini di pioggia del `mattino`. Il momento si ricava dalle regole, non dal codice; i tag di evento (`natale`) restano obbligatori. Vedi [Meteo](#meteo).
+- **Posizione per PC.** Come la cartella delle immagini: `latitude`/`longitude` valgono per tutti, `position_map` le sostituisce sui PC elencati. Nell'editor, **Impostazioni → Posizione** ha la casella *Vale solo per questo PC*. Vedi [Posizione multi-PC](#posizione-multi-pc).
 
 ## Novità della 4.4
 
@@ -189,7 +194,8 @@ Oppure: click destro sull'icona tray → **Apri editor config**
 | ------------------------- | ------------------------------------------------------------------- |
 | `check_interval_minutes`  | Ogni quanto lo scheduler ricontrolla                                 |
 | `history_days`            | Per quanti giorni conservare le righe di `log.json` (default 7). Non è nell'editor: **non** influenza quale immagine esce |
-| `latitude` / `longitude`  | Posizione, per calcolare alba e tramonto. Default: Napoli            |
+| `latitude` / `longitude`  | Posizione, per alba, tramonto e meteo. Default: Napoli               |
+| `position_map`            | Posizione per singolo PC (hostname), sopra `latitude`/`longitude`    |
 | `base_path` / `path_map`  | Cartella base delle immagini, con override per singolo PC (hostname) |
 | `seasons` / `events`      | Stagioni ed eventi, che filtrano i tag (vedi sotto)                  |
 | `meteo`                   | `{"attivo": true, "aggiorna_ore": 5, "minimo": 2}`: previsioni sì/no, ogni quante ore riscaricarle (1–10), soglia minima del pool |
@@ -197,6 +203,22 @@ Oppure: click destro sull'icona tray → **Apri editor config**
 ### Percorsi multi-PC
 
 `base_path` è la cartella di riferimento; `path_map` la sostituisce sui PC elencati, usando il **nome del computer** come chiave. Nella libreria le immagini si indicano con percorsi **relativi** a quella cartella, così la stessa `config.json` funziona ovunque.
+
+### Posizione multi-PC
+
+Allo stesso modo `latitude` e `longitude` valgono per tutti, e `position_map` le sostituisce sui PC elencati:
+
+```json
+"latitude": 40.8518,
+"longitude": 14.2681,
+"position_map": {
+  "FedericoAsus": { "latitude": 45.4642, "longitude": 9.19 }
+}
+```
+
+Da lì passano orari solari e meteo. Nell'editor, **Impostazioni → Posizione** mostra le coordinate del PC su cui gira; con *Vale solo per questo PC* le salva in `position_map`, senza la casella cambia quelle comuni.
+
+> Due PC con posizioni diverse **non** mostrano più le stesse immagini: le fasce solari cadono in orari diversi, e il meteo è diverso.
 
 ---
 
@@ -435,7 +457,14 @@ pioggia + pomeriggio + sera      ->  esce di pomeriggio e di sera
 pioggia + pomeriggio + smart     ->  nel pomeriggio dei feriali no: smart resta un divieto secco
 ```
 
-I momenti sono `alba`, `mattino`, `pranzo`, `pomeriggio`, `tramonto`, `crepuscolo`, `sera`, `notte` (`TAG_ORARI` in `app.py`). Il resto della libreria, e le immagini di pioggia col bel tempo o senza previsioni, seguono le regole di sempre.
+I momenti sono `alba`, `mattino`, `pranzo`, `pomeriggio`, `tramonto`, `crepuscolo`, `sera`, `notte` (`TAG_ORARI` in `app.py`).
+
+**Fasce che non chiedono un momento.** Una fascia può chiedere un'attività invece di un momento: quella del venerdì 9–11 vuole `jolly`/`sport`, e nessuna immagine di pioggia ce l'ha. Quando piove, un'immagine di pioggia entra anche senza i tag richiesti dalla fascia, purché abbia il **momento** della fascia:
+
+- il momento è il tag orario che la fascia richiede (`pranzo`, `tramonto`…);
+- se non ne richiede, è quello della prima fascia sotto di lei che copre la stessa ora: alle 10 del venerdì la feriale 10–13, cioè `mattino`. Gli orari non sono scritti nel codice: li dicono le tue regole.
+
+Le esclusioni restano (i momenti per insieme, il resto secco), e restano obbligatori i tag di **evento** richiesti in AND: nella fascia `crepuscolo + natale` un'immagine di pioggia deve avere anche `natale`, così la pioggia non porta via il Natale. Il resto della libreria, e le immagini di pioggia col bel tempo o senza previsioni, seguono le regole di sempre.
 
 Il meteo è l'**ultimo setaccio**: sceglie fra le immagini che fascia, stagione, evento e veto hanno già ammesso, e non ne aggiunge. A Natale, col temporale, la sera escono le immagini `natale` con `temporale`; un'immagine `estate + temporale` o `horror + temporale` resta fuori come sempre. Per vedere la pioggia in ogni momento della giornata servono quindi almeno due immagini `pioggia` per fascia: di mattina, di pomeriggio, di sera…
 
@@ -445,7 +474,7 @@ Il meteo è l'**ultimo setaccio**: sceglie fra le immagini che fascia, stagione,
 
 **Peso.** Il download lo fa `curl.exe`, già incluso in Windows 10/11, in un processo separato che termina subito: l'app nel tray non carica le librerie di rete di Python (~4 MB) e la sua memoria non cambia. Il meteo sono 10 righe.
 
-**Più PC.** Due PC con le stesse coordinate ricevono le stesse previsioni e restano allineati. Se uno dei due è offline, nelle ore di pioggia mostra immagini diverse finché non riscarica.
+**Più PC.** Ogni PC scarica il meteo della sua posizione (vedi [Posizione multi-PC](#posizione-multi-pc)). Due PC con le stesse coordinate ricevono le stesse previsioni e restano allineati. Se uno dei due è offline, nelle ore di pioggia mostra immagini diverse finché non riscarica.
 
 Nel log e in **Anteprima** un'ora di pioggia compare come `@pioggia` (o `@temporale`) accanto ai tag della regola; ogni download scrive una riga `[METEO]` col riassunto delle ore di pioggia previste.
 
@@ -468,7 +497,7 @@ Nel **grafico** ogni stagione ed evento è una riga, coi mesi in colonna: le tra
 
 **Anteprima** è lo strumento da usare quando qualcosa non torna: per ogni finestra della giornata mostra la pila del giorno (*Inverno > Natale*), regola vincente, fascia con l'orario solare risolto, tag effettivi, dimensione del pool e immagine scelta. In fondo riporta quante immagini distinte escono e qual è il pool più piccolo.
 
-In **Impostazioni → Posizione** si impostano latitudine e longitudine, con un elenco delle principali città italiane e gli orari solari di oggi come conferma. In **Impostazioni → Meteo** si sceglie ogni quante ore scaricare le previsioni (da 1 a 10).
+In **Impostazioni → Posizione** si impostano latitudine e longitudine, per tutti i PC o solo per quello su cui gira l'editor, con un elenco delle principali città italiane e gli orari solari di oggi come conferma. In **Impostazioni → Meteo** si sceglie ogni quante ore scaricare le previsioni (da 1 a 10).
 
 ---
 
@@ -490,7 +519,7 @@ In **Impostazioni → Posizione** si impostano latitudine e longitudine, con un 
 `chametiger.log` registra ogni cambio di sfondo indicando **quale regola** ha vinto:
 
 ```
-[2026-12-25 15:00:03] Avvio Chametiger 4.4.
+[2026-12-25 15:00:03] Avvio Chametiger 4.5.
 [2026-12-25 15:00:04] [METEO] Aggiornato (Met Norway, adesso METAR LIRN -RA): pioggia 15-19.
 [2026-12-25 15:00:03] [OK] Sfondo impostato (weekday [Inverno] 14:00-18:00 [lavoro/pomeriggio -smart]): G:\Temi\...
 [2026-12-25 16:00:07] [OK] Sfondo impostato (evento Natale weekday sunset-40m (15:57)-23:30 [natale @pioggia]): G:\Temi\...

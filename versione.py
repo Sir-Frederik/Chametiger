@@ -4,4 +4,4 @@ e l'editor (gui.py), che cosi' non deve importare il tray per saperla.
 Tenerla allineata con l'intestazione del README.
 """
 
-VERSIONE = "4.4"
+VERSIONE = "4.5"

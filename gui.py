@@ -725,12 +725,13 @@ class ChametigerEditor(tk.Tk):
         coord = tk.Frame(inner, bg=BG)
         coord.grid(row=14, column=0, columnspan=3, sticky="w")
 
+        # I campi mostrano le coordinate di QUESTO PC, comprese quelle proprie
+        lat_pc, lon_pc = sun.coords(self.config_data)
+
         tk.Label(coord, text="Latitudine", bg=BG, fg=FG, font=("Segoe UI", 10)).pack(
             side="left"
         )
-        self._lat_var = tk.StringVar(
-            value=str(self.config_data.get("latitude", 40.8518))
-        )
+        self._lat_var = tk.StringVar(value=str(lat_pc))
         tk.Entry(
             coord,
             textvariable=self._lat_var,
@@ -745,9 +746,7 @@ class ChametigerEditor(tk.Tk):
         tk.Label(coord, text="Longitudine", bg=BG, fg=FG, font=("Segoe UI", 10)).pack(
             side="left"
         )
-        self._lon_var = tk.StringVar(
-            value=str(self.config_data.get("longitude", 14.2681))
-        )
+        self._lon_var = tk.StringVar(value=str(lon_pc))
         tk.Entry(
             coord,
             textvariable=self._lon_var,
@@ -812,8 +811,15 @@ class ChametigerEditor(tk.Tk):
                     fg=DANGER,
                 )
                 return
-            self.config_data["latitude"] = lat
-            self.config_data["longitude"] = lon
+            posizioni = self.config_data.setdefault("position_map", {})
+            if self._coord_only_here.get():
+                posizioni[hostname] = {"latitude": lat, "longitude": lon}
+            else:
+                self.config_data["latitude"] = lat
+                self.config_data["longitude"] = lon
+                posizioni.pop(hostname, None)
+            if not posizioni:
+                self.config_data.pop("position_map")  # niente chiave vuota nel config
             orari = sun.sun_times(date.today(), lat, lon)
 
             def hm(k):
@@ -830,14 +836,27 @@ class ChametigerEditor(tk.Tk):
             if hasattr(self, "_preview_tab"):
                 self._preview_tab._calcola()
 
-        ttk.Button(inner, text="Applica posizione", command=applica_coord).grid(
-            row=15, column=0, sticky="w", pady=(8, 0)
+        # Riga del pulsante: un frame suo, perche' la casella e' lunga e in
+        # colonna 1 allargherebbe la griglia di tutte le impostazioni.
+        riga_coord = tk.Frame(inner, bg=BG)
+        riga_coord.grid(row=15, column=0, columnspan=3, sticky="w", pady=(8, 0))
+        ttk.Button(riga_coord, text="Applica posizione", command=applica_coord).pack(
+            side="left"
         )
+        self._coord_only_here = tk.BooleanVar(
+            value=hostname in (self.config_data.get("position_map") or {})
+        )
+        ttk.Checkbutton(
+            riga_coord,
+            text=f"Vale solo per questo PC ({hostname})",
+            variable=self._coord_only_here,
+        ).pack(side="left", padx=(16, 0))
 
         tk.Label(
             inner,
-            text="Servono alle fasce ancorate al sole (sunset-40m, dawn-20m): con le\n"
-            "coordinate sbagliate le fasce serali cadono nell'ora sbagliata.",
+            text="Servono alle fasce ancorate al sole (sunset-40m, dawn-20m) e al meteo:\n"
+            "con le coordinate sbagliate le fasce serali cadono nell'ora sbagliata.\n"
+            "Due PC con posizioni diverse non mostrano piu' le stesse immagini.",
             bg=BG,
             fg=FG2,
             font=("Segoe UI", 9),
