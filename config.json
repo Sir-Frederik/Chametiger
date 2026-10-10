@@ -4,7 +4,7 @@
     "FedericoAsus": "C:/Users/Asus/Pictures/Temi/Looney tunes",
     "Federico": "G:/Altri computer/Asus/Temi/Looney tunes"
   },
-  "check_interval_minutes": 7,
+  "check_interval_minutes": 5,
   "tags": [
     "mattino",
     "lavoro",
@@ -136,8 +136,7 @@
       "lavoro"
     ],
     "casetta_scogliera_notturna.jpg": [
-      "notte",
-      "sera"
+      "notte"
     ],
     "collage_locandine_classiche.jpg": [
       "jolly",
@@ -1377,6 +1376,38 @@
     ],
     "sylvester_sings_moonlight.jpg": [
       "notte"
+    ],
+    "Daffy and Porky/diner_night_storm.jpg": [
+      "notte",
+      "temporale"
+    ],
+    "abominable_snowman.jpeg": [
+      "crepuscolo",
+      "inverno"
+    ],
+    "Daffy and Porky/spotlight_daffy_porky.jpg": [
+      "spettacolo",
+      "svago",
+      "sera"
+    ],
+    "daffy_bugs_running_prairie.jpg": [
+      "primavera",
+      "pomeriggio"
+    ],
+    "sylvester_nap.jpg": [
+      "pomeriggio",
+      "svago",
+      "weekend",
+      "autunno",
+      "primavera",
+      "inverno"
+    ],
+    "tweety_sylvester_nap.jpg": [
+      "inverno",
+      "weekend",
+      "svago",
+      "crepuscolo",
+      "pomeriggio"
     ]
   },
   "random_rules": {
