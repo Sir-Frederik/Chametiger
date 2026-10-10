@@ -905,8 +905,7 @@
     "Daffy_rainy.jpg": [
       "pioggia",
       "pomeriggio",
-      "sera",
-      "notte"
+      "sera"
     ],
     "daffy_elmer_cake.jpg": [
       "jolly",
@@ -1372,6 +1371,12 @@
     "tweety_house_night_moon.png": [
       "notte",
       "sera"
+    ],
+    "daffy_elmer_sleep.jpg": [
+      "notte"
+    ],
+    "sylvester_sings_moonlight.jpg": [
+      "notte"
     ]
   },
   "random_rules": {
