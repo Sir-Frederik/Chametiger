@@ -1375,7 +1375,8 @@ class ChametigerTray:
                 # l'ora attuale va osservata adesso, non presa da un download
                 # di ore fa. Poi solo ogni `aggiorna_ore`. Qui nel thread e non
                 # prima del tray, cosi' l'icona compare subito anche con la
-                # rete lenta.
+                # rete lenta. Il primo sfondo aspetta il download (al massimo
+                # i timeout di curl): senza rete si sceglie senza meteo.
                 meteo.aggiorna_se_serve(self.config, log, forza=primo_giro)
                 primo_giro = False
                 wallpaper, category = resolve_wallpaper(self.config)
@@ -1500,7 +1501,9 @@ class ChametigerTray:
         enable_autostart()
 
         log(f"Avvio Chametiger {VERSIONE}.")
-        self._apply_now(None, None)
+        # Niente sfondo qui: lo imposta il primo giro dello scheduler, dopo aver
+        # scaricato il meteo. Applicarlo prima faceva il calcolo due volte e
+        # poteva cambiare l'immagine dopo un paio di secondi.
 
         t = threading.Thread(target=self._run_scheduler, daemon=True)
         t.start()
