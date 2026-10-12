@@ -908,9 +908,7 @@
     "daffy_elmer_cake.jpg": [
       "jolly",
       "compleanno",
-      "pranzo",
-      "sera",
-      "notte"
+      "pranzo"
     ],
     "duck_tracy.jpg": [
       "spettacolo",
@@ -920,14 +918,11 @@
     "daffy_paperclip.jpg": [
       "svago",
       "capodanno",
-      "compleanno",
-      "mattino",
-      "pomeriggio"
+      "compleanno"
     ],
     "daffy_porky_compleanno.jpg": [
       "svago",
-      "compleanno",
-      "sera"
+      "compleanno"
     ],
     "daffy_porky_cinema.jpg": [
       "spettacolo",
@@ -1148,10 +1143,7 @@
       "pomeriggio"
     ],
     "toons_birthday_party.jpg": [
-      "compleanno",
-      "tramonto",
-      "sera",
-      "notte"
+      "compleanno"
     ],
     "bugs_porky_tamburo_thatsallfolks.jpg": [
       "spettacolo",
@@ -1166,9 +1158,7 @@
       "jolly"
     ],
     "daffy_cake_birthday_porky.jpeg": [
-      "compleanno",
-      "mattino",
-      "pomeriggio"
+      "compleanno"
     ],
     "daffy_elmer_cupid_valentine.jpg": [
       "sanValentino",
@@ -1475,11 +1465,6 @@
     "winter_house_porky.jpg": [
       "notte",
       "inverno"
-    ],
-    "birthday_bugs_table.jpeg": [
-      "sera",
-      "compleanno",
-      "notte"
     ]
   },
   "random_rules": {
@@ -2360,29 +2345,12 @@
       "random_rules": {
         "weekday": [
           {
-            "from": "7:00",
-            "to": "sunset",
+            "from": "00:00",
+            "to": "00:00",
             "include": [
               "compleanno"
             ],
-            "exclude": [
-              "notte",
-              "sera"
-            ],
-            "match": "all",
-            "rotate_minutes": 60
-          },
-          {
-            "from": "sunset",
-            "to": "02:00",
-            "include": [
-              "compleanno"
-            ],
-            "exclude": [
-              "alba",
-              "mattino",
-              "pomeriggio"
-            ],
+            "exclude": [],
             "match": "all",
             "rotate_minutes": 60
           }
