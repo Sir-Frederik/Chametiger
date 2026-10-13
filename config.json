@@ -84,8 +84,9 @@
       "primavera"
     ],
     "bugs_compleanno_festa.jpg": [
-      "svago",
-      "compleanno"
+      "compleanno",
+      "pomeriggio",
+      "sera"
     ],
     "bugs_daffy_bar_notte.jpg": [
       "notte",
@@ -918,7 +919,8 @@
     "daffy_paperclip.jpg": [
       "svago",
       "capodanno",
-      "compleanno"
+      "compleanno",
+      "mattino"
     ],
     "daffy_porky_compleanno.jpg": [
       "svago",
@@ -1143,7 +1145,8 @@
       "pomeriggio"
     ],
     "toons_birthday_party.jpg": [
-      "compleanno"
+      "compleanno",
+      "sera"
     ],
     "bugs_porky_tamburo_thatsallfolks.jpg": [
       "spettacolo",
@@ -1158,7 +1161,9 @@
       "jolly"
     ],
     "daffy_cake_birthday_porky.jpeg": [
-      "compleanno"
+      "compleanno",
+      "mattino",
+      "pomeriggio"
     ],
     "daffy_elmer_cupid_valentine.jpg": [
       "sanValentino",
@@ -1465,6 +1470,12 @@
     "winter_house_porky.jpg": [
       "notte",
       "inverno"
+    ],
+    "birthday_bugs_table.jpeg": [
+      "compleanno",
+      "crepuscolo",
+      "sera",
+      "notte"
     ]
   },
   "random_rules": {
@@ -2345,12 +2356,30 @@
       "random_rules": {
         "weekday": [
           {
-            "from": "00:00",
-            "to": "00:00",
+            "from": "07:00",
+            "to": "sunset",
             "include": [
               "compleanno"
             ],
-            "exclude": [],
+            "exclude": [
+              "crepuscolo",
+              "notte",
+              "sera"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "sunset",
+            "to": "02:00",
+            "include": [
+              "compleanno"
+            ],
+            "exclude": [
+              "alba",
+              "mattino",
+              "pomeriggio"
+            ],
             "match": "all",
             "rotate_minutes": 60
           }
