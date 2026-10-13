@@ -2357,7 +2357,7 @@
         "weekday": [
           {
             "from": "07:00",
-            "to": "sunset",
+            "to": "sunset-1h",
             "include": [
               "compleanno"
             ],
@@ -2370,7 +2370,7 @@
             "rotate_minutes": 60
           },
           {
-            "from": "sunset",
+            "from": "sunset -1h",
             "to": "02:00",
             "include": [
               "compleanno"
