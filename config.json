@@ -4,35 +4,35 @@
     "FedericoAsus": "C:/Users/Asus/Pictures/Temi/Looney tunes",
     "Federico": "G:/Altri computer/Asus/Temi/Looney tunes"
   },
-  "check_interval_minutes": 5,
+  "check_interval_minutes": 7,
   "tags": [
+    "alba",
     "mattino",
-    "lavoro",
     "pranzo",
-    "smart",
     "pomeriggio",
     "tramonto",
     "crepuscolo",
-    "alba",
     "sera",
-    "notte",
     "spettacolo",
+    "notte",
+    "lavoro",
+    "smart",
     "weekend",
     "svago",
-    "estate",
-    "inverno",
-    "autunno",
-    "primavera",
-    "natale",
     "sport",
-    "horror",
-    "jolly",
-    "sanValentino",
-    "capodanno",
-    "compleanno",
-    "pasqua",
+    "primavera",
+    "estate",
+    "autunno",
+    "inverno",
     "pioggia",
-    "temporale"
+    "temporale",
+    "natale",
+    "capodanno",
+    "sanValentino",
+    "pasqua",
+    "compleanno",
+    "horror",
+    "jolly"
   ],
   "image_library": {
     "personaggi_riquadri_colorati_bianco_nero.jpg": [
@@ -1531,12 +1531,12 @@
         ],
         "exclude": [
           "mattino",
-          "notte",
           "pomeriggio",
-          "smart",
-          "svago",
           "tramonto",
-          "weekend"
+          "notte",
+          "smart",
+          "weekend",
+          "svago"
         ],
         "match": "any",
         "rotate_minutes": 60
@@ -1545,19 +1545,19 @@
         "from": "10:00",
         "to": "13:00",
         "include": [
-          "jolly",
+          "mattino",
           "lavoro",
-          "mattino"
+          "jolly"
         ],
         "exclude": [
           "alba",
-          "crepuscolo",
-          "notte",
-          "sera",
-          "smart",
-          "svago",
           "tramonto",
-          "weekend"
+          "crepuscolo",
+          "sera",
+          "notte",
+          "smart",
+          "weekend",
+          "svago"
         ],
         "match": "any",
         "rotate_minutes": 60
@@ -1578,21 +1578,21 @@
         "from": "14:00",
         "to": "sunset - 58m",
         "include": [
-          "lavoro",
           "pomeriggio",
+          "lavoro",
           "sport"
         ],
         "exclude": [
           "alba",
-          "crepuscolo",
           "mattino",
-          "notte",
-          "sera",
-          "smart",
-          "spettacolo",
-          "svago",
           "tramonto",
-          "weekend"
+          "crepuscolo",
+          "sera",
+          "spettacolo",
+          "notte",
+          "smart",
+          "weekend",
+          "svago"
         ],
         "match": "any",
         "rotate_minutes": 60
@@ -1631,10 +1631,10 @@
         ],
         "exclude": [
           "alba",
-          "crepuscolo",
           "mattino",
           "pomeriggio",
-          "tramonto"
+          "tramonto",
+          "crepuscolo"
         ],
         "match": "any",
         "rotate_minutes": 60
@@ -1643,15 +1643,15 @@
         "from": "22:00",
         "to": "23:00",
         "include": [
-          "notte",
-          "spettacolo"
+          "spettacolo",
+          "notte"
         ],
         "exclude": [
           "alba",
-          "crepuscolo",
           "mattino",
           "pomeriggio",
-          "tramonto"
+          "tramonto",
+          "crepuscolo"
         ],
         "match": "any",
         "rotate_minutes": 60
@@ -1688,8 +1688,8 @@
           "svago"
         ],
         "exclude": [
-          "lavoro",
-          "notte"
+          "notte",
+          "lavoro"
         ],
         "match": "all",
         "rotate_minutes": 60
@@ -1698,20 +1698,20 @@
         "from": "10:00",
         "to": "13:00",
         "include": [
-          "jolly",
           "mattino",
-          "sport",
+          "weekend",
           "svago",
-          "weekend"
+          "sport",
+          "jolly"
         ],
         "exclude": [
           "alba",
-          "crepuscolo",
-          "lavoro",
-          "notte",
           "pomeriggio",
+          "tramonto",
+          "crepuscolo",
           "sera",
-          "tramonto"
+          "notte",
+          "lavoro"
         ],
         "match": "any",
         "rotate_minutes": 60
@@ -1733,16 +1733,16 @@
         "to": "sunset - 58m",
         "include": [
           "pomeriggio",
-          "sport",
+          "weekend",
           "svago",
-          "weekend"
+          "sport"
         ],
         "exclude": [
-          "crepuscolo",
-          "lavoro",
           "mattino",
+          "crepuscolo",
+          "sera",
           "notte",
-          "sera"
+          "lavoro"
         ],
         "match": "any",
         "rotate_minutes": 60
@@ -1777,17 +1777,17 @@
         "include": [
           "sera",
           "spettacolo",
-          "svago",
-          "weekend"
+          "weekend",
+          "svago"
         ],
         "exclude": [
           "alba",
-          "crepuscolo",
-          "lavoro",
           "mattino",
-          "pomeriggio",
           "pranzo",
-          "tramonto"
+          "pomeriggio",
+          "tramonto",
+          "crepuscolo",
+          "lavoro"
         ],
         "match": "any",
         "rotate_minutes": 60
@@ -1799,16 +1799,16 @@
           "from": "10:00",
           "to": "13:00",
           "include": [
-            "lavoro",
-            "mattino"
+            "mattino",
+            "lavoro"
           ],
           "exclude": [
-            "crepuscolo",
-            "pomeriggio",
             "pranzo",
+            "pomeriggio",
+            "tramonto",
+            "crepuscolo",
             "sera",
-            "svago",
-            "tramonto"
+            "svago"
           ],
           "match": "any",
           "rotate_minutes": 60
@@ -1827,18 +1827,18 @@
           "from": "14:00",
           "to": "18:00",
           "include": [
-            "jolly",
-            "lavoro",
             "pomeriggio",
-            "smart"
+            "lavoro",
+            "smart",
+            "jolly"
           ],
           "exclude": [
-            "crepuscolo",
-            "notte",
             "pranzo",
+            "tramonto",
+            "crepuscolo",
             "sera",
-            "svago",
-            "tramonto"
+            "notte",
+            "svago"
           ],
           "match": "any",
           "rotate_minutes": 60
@@ -1849,20 +1849,20 @@
           "from": "15:00",
           "to": "sunset -50m",
           "include": [
-            "lavoro",
             "pomeriggio",
+            "lavoro",
             "sport"
           ],
           "exclude": [
             "alba",
-            "crepuscolo",
             "mattino",
-            "notte",
             "pranzo",
+            "tramonto",
+            "crepuscolo",
             "sera",
+            "notte",
             "smart",
-            "svago",
-            "tramonto"
+            "svago"
           ],
           "match": "any",
           "rotate_minutes": 60
@@ -1873,18 +1873,18 @@
           "from": "10:00",
           "to": "13:00",
           "include": [
-            "jolly",
-            "lavoro",
             "mattino",
-            "smart"
+            "lavoro",
+            "smart",
+            "jolly"
           ],
           "exclude": [
-            "crepuscolo",
-            "pomeriggio",
             "pranzo",
+            "pomeriggio",
+            "tramonto",
+            "crepuscolo",
             "sera",
-            "svago",
-            "tramonto"
+            "svago"
           ],
           "match": "any",
           "rotate_minutes": 60
@@ -1903,19 +1903,19 @@
           "from": "14:00",
           "to": "sunset -58m",
           "include": [
-            "lavoro",
             "pomeriggio",
+            "lavoro",
             "smart",
             "sport"
           ],
           "exclude": [
             "alba",
-            "crepuscolo",
-            "notte",
             "pranzo",
+            "tramonto",
+            "crepuscolo",
             "sera",
-            "svago",
-            "tramonto"
+            "notte",
+            "svago"
           ],
           "match": "any",
           "rotate_minutes": 60
@@ -1927,18 +1927,18 @@
           "from": "09:00",
           "to": "11:00",
           "include": [
-            "jolly",
-            "sport"
+            "sport",
+            "jolly"
           ],
           "exclude": [
-            "notte",
-            "pomeriggio",
             "pranzo",
-            "sera",
-            "smart",
-            "svago",
+            "pomeriggio",
             "tramonto",
-            "weekend"
+            "sera",
+            "notte",
+            "smart",
+            "weekend",
+            "svago"
           ],
           "match": "any",
           "rotate_minutes": 60

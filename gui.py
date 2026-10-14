@@ -1020,7 +1020,7 @@ class TagsTab(tk.Frame):
 
     def _refresh(self):
         self._listbox.delete(0, "end")
-        for t in sorted(self._tags(), key=str.lower):
+        for t in self._tags():
             self._listbox.insert("end", t)
         self._refresh_usage()
 
@@ -1472,7 +1472,8 @@ class LibraryTab(tk.Frame):
         return self.config_data.setdefault("image_library", {})
 
     def _tags(self) -> list:
-        return sorted(self.config_data.get("tags", []), key=str.lower)
+        # return sorted(self.config_data.get("tags", []), key=str.lower)
+        return self.config_data.get("tags", [])
 
     def refresh_tag_widgets(self):
         """Ricostruisce le checkbox dei tag (dopo modifiche al vocabolario)."""
@@ -2154,7 +2155,7 @@ class RuleDialog(tk.Toplevel):
         self.result: dict | None = None
 
         initial = initial or {}
-        all_tags = sorted(config_data.get("tags", []), key=str.lower)
+        all_tags = config_data.get("tags", [])
 
         # Orari
         times = tk.Frame(self, bg=BG)
@@ -3101,7 +3102,7 @@ class PeriodDialog(tk.Toplevel):
         self.indice = indice
         self._fasce_prima = copy.deepcopy(self._initial.get("random_rules"))
         initial = self._initial
-        all_tags = sorted(config_data.get("tags", []), key=str.lower)
+        all_tags = config_data.get("tags", [])
         evento = chiave == "events"
 
         top = tk.Frame(self, bg=BG)
