@@ -127,12 +127,13 @@
       "primavera"
     ],
     "cane_pastore_coyote_burrone.jpg": [
-      "tramonto",
       "alba",
       "autunno",
       "estate",
       "primavera",
-      "lavoro"
+      "lavoro",
+      "tramonto",
+      "crepuscolo"
     ],
     "casetta_scogliera_notturna.jpg": [
       "notte"
@@ -169,9 +170,9 @@
       "pomeriggio"
     ],
     "coyote_travestito_pecora_gregge.jpg": [
+      "lavoro",
       "alba",
-      "tramonto",
-      "lavoro"
+      "crepuscolo"
     ],
     "porky_bugs_daffy_ombra_mostro.jpg": [
       "horror",
@@ -1511,7 +1512,7 @@
     "weekday": [
       {
         "from": "dawn -20m",
-        "to": "sunrise +60m",
+        "to": "sunrise",
         "include": [
           "crepuscolo"
         ],
@@ -1523,7 +1524,7 @@
         "rotate_minutes": 60
       },
       {
-        "from": "sunrise +60m",
+        "from": "sunrise",
         "to": "10:00",
         "include": [
           "alba",
@@ -1531,8 +1532,11 @@
         ],
         "exclude": [
           "mattino",
+          "pranzo",
           "pomeriggio",
           "tramonto",
+          "crepuscolo",
+          "sera",
           "notte",
           "smart",
           "weekend",
@@ -1551,6 +1555,8 @@
         ],
         "exclude": [
           "alba",
+          "pranzo",
+          "pomeriggio",
           "tramonto",
           "crepuscolo",
           "sera",
@@ -1585,8 +1591,55 @@
         "exclude": [
           "alba",
           "mattino",
+          "pranzo",
           "tramonto",
           "crepuscolo",
+          "sera",
+          "spettacolo",
+          "notte",
+          "smart",
+          "weekend",
+          "svago"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunset - 58m",
+        "to": "min(sunset +2 m, 18:00)",
+        "include": [
+          "tramonto",
+          "lavoro"
+        ],
+        "exclude": [
+          "alba",
+          "mattino",
+          "pranzo",
+          "pomeriggio",
+          "crepuscolo",
+          "sera",
+          "spettacolo",
+          "notte",
+          "smart",
+          "weekend",
+          "svago"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunset +2 m",
+        "to": "min(dusk +2m, 18:00)",
+        "include": [
+          "crepuscolo",
+          "lavoro"
+        ],
+        "exclude": [
+          "alba",
+          "mattino",
+          "pranzo",
+          "pomeriggio",
+          "tramonto",
           "sera",
           "spettacolo",
           "notte",
@@ -1603,9 +1656,7 @@
         "include": [
           "tramonto"
         ],
-        "exclude": [
-          "alba"
-        ],
+        "exclude": [],
         "match": "all",
         "rotate_minutes": 60
       },
@@ -1615,8 +1666,28 @@
         "include": [
           "crepuscolo"
         ],
+        "exclude": [],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "16:00",
+        "to": "18:00",
+        "include": [
+          "lavoro"
+        ],
         "exclude": [
-          "alba"
+          "alba",
+          "mattino",
+          "pranzo",
+          "pomeriggio",
+          "tramonto",
+          "crepuscolo",
+          "spettacolo",
+          "notte",
+          "smart",
+          "weekend",
+          "svago"
         ],
         "match": "all",
         "rotate_minutes": 60
@@ -1632,9 +1703,11 @@
         "exclude": [
           "alba",
           "mattino",
+          "pranzo",
           "pomeriggio",
           "tramonto",
-          "crepuscolo"
+          "crepuscolo",
+          "notte"
         ],
         "match": "any",
         "rotate_minutes": 60
@@ -1649,9 +1722,11 @@
         "exclude": [
           "alba",
           "mattino",
+          "pranzo",
           "pomeriggio",
           "tramonto",
-          "crepuscolo"
+          "crepuscolo",
+          "sera"
         ],
         "match": "any",
         "rotate_minutes": 60
@@ -1688,6 +1763,12 @@
           "svago"
         ],
         "exclude": [
+          "mattino",
+          "pranzo",
+          "pomeriggio",
+          "tramonto",
+          "crepuscolo",
+          "sera",
           "notte",
           "lavoro"
         ],
@@ -1706,6 +1787,7 @@
         ],
         "exclude": [
           "alba",
+          "pranzo",
           "pomeriggio",
           "tramonto",
           "crepuscolo",
@@ -1738,7 +1820,10 @@
           "sport"
         ],
         "exclude": [
+          "alba",
           "mattino",
+          "pranzo",
+          "tramonto",
           "crepuscolo",
           "sera",
           "notte",
@@ -1787,6 +1872,7 @@
           "pomeriggio",
           "tramonto",
           "crepuscolo",
+          "notte",
           "lavoro"
         ],
         "match": "any",
@@ -1803,11 +1889,13 @@
             "lavoro"
           ],
           "exclude": [
+            "alba",
             "pranzo",
             "pomeriggio",
             "tramonto",
             "crepuscolo",
             "sera",
+            "notte",
             "svago"
           ],
           "match": "any",
@@ -1833,6 +1921,8 @@
             "jolly"
           ],
           "exclude": [
+            "alba",
+            "mattino",
             "pranzo",
             "tramonto",
             "crepuscolo",
@@ -1879,11 +1969,13 @@
             "jolly"
           ],
           "exclude": [
+            "alba",
             "pranzo",
             "pomeriggio",
             "tramonto",
             "crepuscolo",
             "sera",
+            "notte",
             "svago"
           ],
           "match": "any",
@@ -1910,6 +2002,7 @@
           ],
           "exclude": [
             "alba",
+            "mattino",
             "pranzo",
             "tramonto",
             "crepuscolo",
@@ -1934,6 +2027,7 @@
             "pranzo",
             "pomeriggio",
             "tramonto",
+            "crepuscolo",
             "sera",
             "notte",
             "smart",
@@ -1949,7 +2043,7 @@
     }
   },
   "history_days": 60,
-  "theme": "light",
+  "theme": "dark",
   "latitude": 40.8199,
   "longitude": 14.3414,
   "meteo": {
@@ -2003,7 +2097,9 @@
             ],
             "exclude": [
               "mattino",
-              "pomeriggio"
+              "pranzo",
+              "pomeriggio",
+              "tramonto"
             ],
             "match": "all",
             "rotate_minutes": 60
@@ -2015,8 +2111,10 @@
               "capodanno"
             ],
             "exclude": [
-              "notte",
-              "sera"
+              "tramonto",
+              "crepuscolo",
+              "sera",
+              "notte"
             ],
             "match": "all",
             "rotate_minutes": 60
@@ -2039,9 +2137,12 @@
               "capodanno"
             ],
             "exclude": [
+              "alba",
               "mattino",
+              "pranzo",
               "pomeriggio",
-              "tramonto"
+              "tramonto",
+              "crepuscolo"
             ],
             "match": "all",
             "rotate_minutes": 60
@@ -2089,10 +2190,11 @@
             ],
             "exclude": [
               "alba",
-              "crepuscolo",
               "mattino",
+              "pranzo",
               "pomeriggio",
-              "tramonto"
+              "tramonto",
+              "crepuscolo"
             ],
             "match": "all",
             "rotate_minutes": 60
@@ -2117,9 +2219,11 @@
               "natale"
             ],
             "exclude": [
-              "notte",
+              "pranzo",
               "pomeriggio",
-              "sera"
+              "tramonto",
+              "sera",
+              "notte"
             ],
             "match": "any",
             "rotate_minutes": 60
@@ -2137,10 +2241,12 @@
               "weekend"
             ],
             "exclude": [
-              "notte",
+              "pranzo",
               "pomeriggio",
+              "tramonto",
+              "crepuscolo",
               "sera",
-              "tramonto"
+              "notte"
             ],
             "match": "any",
             "rotate_minutes": 60
@@ -2193,8 +2299,10 @@
             "exclude": [
               "alba",
               "mattino",
+              "pranzo",
               "pomeriggio",
-              "tramonto"
+              "tramonto",
+              "crepuscolo"
             ],
             "match": "any",
             "rotate_minutes": 60
@@ -2208,9 +2316,12 @@
               "sanValentino"
             ],
             "exclude": [
-              "notte",
+              "pranzo",
+              "pomeriggio",
+              "tramonto",
+              "crepuscolo",
               "sera",
-              "tramonto"
+              "notte"
             ],
             "match": "all",
             "rotate_minutes": 60
@@ -2226,9 +2337,11 @@
             "exclude": [
               "alba",
               "mattino",
-              "notte",
+              "pranzo",
+              "tramonto",
+              "crepuscolo",
               "sera",
-              "tramonto"
+              "notte"
             ],
             "match": "any",
             "rotate_minutes": 60
@@ -2244,9 +2357,12 @@
               ],
               "exclude": [
                 "alba",
+                "mattino",
+                "pranzo",
+                "tramonto",
                 "crepuscolo",
-                "notte",
-                "sera"
+                "sera",
+                "notte"
               ],
               "match": "any",
               "rotate_minutes": 60
@@ -2263,9 +2379,11 @@
               "exclude": [
                 "alba",
                 "mattino",
-                "notte",
+                "pranzo",
+                "tramonto",
+                "crepuscolo",
                 "sera",
-                "tramonto"
+                "notte"
               ],
               "match": "any",
               "rotate_minutes": 60
@@ -2274,8 +2392,8 @@
         }
       },
       "name": "San Valentino",
-      "from": "01-9",
-      "to": "01-15",
+      "from": "02-9",
+      "to": "02-15",
       "tags": [
         "sanValentino"
       ],
@@ -2293,7 +2411,12 @@
               "pasqua"
             ],
             "exclude": [
-              "pomeriggio"
+              "pranzo",
+              "pomeriggio",
+              "tramonto",
+              "crepuscolo",
+              "sera",
+              "notte"
             ],
             "match": "all",
             "rotate_minutes": 60
@@ -2391,9 +2514,10 @@
               "compleanno"
             ],
             "exclude": [
+              "tramonto",
               "crepuscolo",
-              "notte",
-              "sera"
+              "sera",
+              "notte"
             ],
             "match": "all",
             "rotate_minutes": 60
@@ -2407,6 +2531,7 @@
             "exclude": [
               "alba",
               "mattino",
+              "pranzo",
               "pomeriggio"
             ],
             "match": "all",
@@ -2491,9 +2616,10 @@
               "compleanno"
             ],
             "exclude": [
+              "tramonto",
               "crepuscolo",
-              "notte",
-              "sera"
+              "sera",
+              "notte"
             ],
             "match": "all",
             "rotate_minutes": 60
@@ -2507,6 +2633,7 @@
             "exclude": [
               "alba",
               "mattino",
+              "pranzo",
               "pomeriggio"
             ],
             "match": "all",

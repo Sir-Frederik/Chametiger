@@ -174,6 +174,11 @@ def _resolve_minuti(t: str, giorno: date, lat: float, lon: float) -> int:
     In cache perche' `_scelta_giornaliera` ricostruisce la giornata minuto per
     minuto e rivaluta gli stessi confini centinaia di volte.
     """
+    if sun.is_minmax(t):
+        # 'min(sunset+2m, 18:00)': il primo degli orari, giorno per giorno. Una
+        # fascia cosi' non scavalca la mezzanotte, vedi sun.fascia_assente
+        minuti = sun.minmax_minutes(t, giorno, lat, lon)
+        return 0 if minuti is None else minuti
     ancora = sun.parse_anchor(t)
     if ancora:
         minuti = sun.solar_minutes(ancora[0], ancora[1], giorno, lat, lon)
@@ -464,15 +469,15 @@ def image_matches_rule(image_tags, rule: dict) -> bool:
     stagionali esce sempre. Col divieto secco, invece, bastava un tag di troppo
     perche' l'immagine non si vedesse in tutto l'anno.
 
-    Quando piove (`meteo` pioggia o temporale) lo stesso vale per i momenti
-    della giornata (TAG_ORARI) delle immagini di pioggia: una taggata
-    pioggia+mattino+pomeriggio esce sia di mattina sia di pomeriggio, anche se
-    la fascia del pomeriggio esclude `mattino`. Cade solo se OGNI suo momento
-    e' escluso. Le fasce si escludono a vicenda i tag orari, e col divieto
-    secco un'immagine di pioggia doveva averne uno solo. Gli altri esclusi
-    (`smart`, `weekend`...) restano secchi, e il resto della libreria pure.
+    Lo stesso vale per i momenti della giornata (TAG_ORARI) nell'`exclude`:
+    una taggata alba+tramonto esce al tramonto anche se la fascia esclude
+    `alba`, e una mattino+pomeriggio esce sia di mattina sia di pomeriggio.
+    Cade solo se OGNI suo momento e' escluso: con `-alba` una taggata solo
+    alba resta fuori. Le fasce si escludono a vicenda i tag orari, e col
+    divieto secco un'immagine doveva averne uno solo. Gli altri esclusi
+    (`smart`, `weekend`...) restano secchi.
 
-    Sempre quando piove, un'immagine di pioggia entra anche senza i tag che la
+    Quando piove (`meteo` pioggia o temporale), un'immagine di pioggia entra anche senza i tag che la
     fascia richiede, purche' abbia uno dei suoi `momenti` (vedi _campi_meteo):
     alle 10 del venerdi' la fascia jolly/sport prende le immagini di pioggia
     del mattino. I tag di evento richiesti (`tema`) restano obbligatori, cosi'
@@ -480,15 +485,12 @@ def image_matches_rule(image_tags, rule: dict) -> bool:
     """
     tags = set(image_tags or [])
 
-    escluse = rule.get("exclude", [])
-    orari_per_insieme = rule.get("meteo") in _TAG_METEO and bool(tags & _TAG_METEO)
-    for t in escluse:
-        if t in tags and not (orari_per_insieme and t in TAG_ORARI):
-            return False
-    if orari_per_insieme:
-        orari = tags & TAG_ORARI
-        if orari and orari <= set(escluse):
-            return False
+    escluse = set(rule.get("exclude", []))
+    if tags & (escluse - TAG_ORARI):
+        return False
+    orari = tags & TAG_ORARI
+    if orari and orari <= escluse:
+        return False
     if tags & set(rule.get("veto") or ()):
         return False
 
@@ -508,7 +510,8 @@ def image_matches_rule(image_tags, rule: dict) -> bool:
     elif all(t in tags for t in include):
         return True
 
-    if orari_per_insieme and tags & set(rule.get("momenti") or ()):
+    piove = rule.get("meteo") in _TAG_METEO and bool(tags & _TAG_METEO)
+    if piove and tags & set(rule.get("momenti") or ()):
         return set(rule.get("tema") or ()) <= tags
     return False
 
@@ -565,8 +568,8 @@ def candidates_for_rule(config: dict, rule: dict) -> list[str]:
 
 _TAG_METEO = {meteo.TEMPORALE, meteo.PIOGGIA}
 
-# I momenti della giornata: per le immagini di pioggia, quando piove, valgono
-# per insieme come le stagioni (vedi image_matches_rule).
+# I momenti della giornata: nell'exclude valgono per insieme, come le stagioni
+# (vedi image_matches_rule).
 TAG_ORARI = {
     "alba",
     "mattino",
@@ -764,6 +767,8 @@ def _finestre_del_giorno(rule: dict, giorno: date, rotate: int, config: dict) ->
     aveva una seconda finestra di 6 minuti, e lo sfondo cambiava per niente.
     """
     start, end = slot_bounds(rule, giorno, config)
+    if sun.fascia_assente(rule.get("from"), rule.get("to"), start, end):
+        return 0  # quel giorno la fascia non c'e': il mazzo non deve avanzare
     return max(1, int(_lunghezza(start, end) / rotate + 0.5))
 
 
@@ -914,6 +919,8 @@ def _regole_del_giorno(config: dict, giorno: date) -> list[tuple[dict, str, int,
         for regole, origine in fonti:
             for rule in regole or []:
                 start, end = slot_bounds(rule, giorno, config)
+                if sun.fascia_assente(rule.get("from"), rule.get("to"), start, end):
+                    continue
                 out.append(
                     (patch_rule(rule, strato, config), origine + suffisso, start, end)
                 )

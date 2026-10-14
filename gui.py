@@ -1884,7 +1884,12 @@ class RuleEditor(tk.Frame):
                 "end",
                 values=(
                     sun.describe(r.get("from", ""), oggi, lat, lon),
-                    sun.describe(r.get("to", ""), oggi, lat, lon),
+                    sun.describe(r.get("to", ""), oggi, lat, lon)
+                    + (
+                        "  (oggi non c'è)"
+                        if fascia_assente_oggi(r.get("from", ""), r.get("to", ""), self.config_data)
+                        else ""
+                    ),
                     inc,
                     ", ".join(r.get("exclude", [])) or "-",
                     f"{r.get('rotate_minutes', 60)} min",
@@ -2038,8 +2043,18 @@ def match_rule(image_tags, rule: dict) -> bool:
     """
     Stessa logica di app.image_matches_rule, comprese le stagioni vietate dal
     periodo: quelle non sono un divieto per tag ma per insieme, e l'immagine
-    cade solo se ogni stagione che dichiara e' vietata.
+    cade solo se ogni stagione che dichiara e' vietata. Lo stesso per i momenti
+    della giornata nell'exclude.
+
+    Chiede al motore, come anteprima e verifica anno: i conteggi dell'editor
+    devono coincidere con quello che lo scheduler pesca davvero. La copia qui
+    sotto, senza i momenti per insieme, resta solo per quando app.py non si
+    carica.
     """
+    motore = carica_motore()
+    if motore is not None:
+        return motore.image_matches_rule(image_tags, rule)
+
     tags = set(image_tags or [])
 
     vietate = set(rule.get("season_exclude") or ())
@@ -2067,7 +2082,7 @@ def valid_time(t: str) -> bool:
     resta corretta da giugno a dicembre senza essere spostata a mano.
     """
     t = str(t).strip()
-    if sun.is_solar(t):
+    if sun.is_solar(t) or sun.is_minmax(t):
         return True
     try:
         h, m = t.split(":")
@@ -2080,12 +2095,25 @@ def coords_of(config_data: dict) -> tuple[float, float]:
     return sun.coords(config_data)
 
 
+def fascia_assente_oggi(frm, to, config_data: dict, giorno: date | None = None) -> bool:
+    """True se la fascia usa min/max e quel giorno (default oggi) non esiste."""
+    lat, lon = coords_of(config_data)
+    giorno = giorno or date.today()
+    start, end = sun.minutes(frm, giorno, lat, lon), sun.minutes(to, giorno, lat, lon)
+    if start is None or end is None:
+        return False
+    return sun.fascia_assente(frm, to, start, end)
+
+
 def descrivi_fascia(rule: dict, giorno: date, config_data: dict) -> str:
     """'sunset-40m (19:18)-dusk+30m (20:58)' per la lista delle regole."""
     lat, lon = coords_of(config_data)
+    frm, to = rule.get("from", "?"), rule.get("to", "?")
+    assente = fascia_assente_oggi(frm, to, config_data, giorno)
     return (
-        f"{sun.describe(rule.get('from', '?'), giorno, lat, lon)}"
-        f"-{sun.describe(rule.get('to', '?'), giorno, lat, lon)}"
+        f"{sun.describe(frm, giorno, lat, lon)}"
+        f"-{sun.describe(to, giorno, lat, lon)}"
+        + (" (quel giorno non c'è)" if assente else "")
     )
 
 
@@ -2268,7 +2296,9 @@ class RuleDialog(tk.Toplevel):
             self,
             text="Negli orari puoi scrivere un'ancora solare invece dell'orologio:\n  "
             + "    ".join(pezzi)
-            + "  (oggi)\ncon scostamento in minuti oppure ore: sunset-40m, dawn-20m, dusk+1h.",
+            + "  (oggi)\ncon scostamento in minuti oppure ore: sunset-40m, dawn-20m, dusk+1h."
+            + "\nmin(sunset+2m, 18:00) = il primo dei due, max(...) = l'ultimo. Una fascia"
+            + "\ncon min/max non passa la mezzanotte: se finisce prima di iniziare, quel giorno non c'è.",
             bg=BG,
             fg=ACCENT2,
             font=("Segoe UI", 8),
@@ -2309,10 +2339,13 @@ class RuleDialog(tk.Toplevel):
             valore = var.get().strip()
             if not valid_time(valore):
                 pezzi.append(f"{etichetta} ?")
-            elif sun.is_solar(valore):
+            elif sun.is_solar(valore) or sun.is_minmax(valore):
                 pezzi.append(f"{etichetta} {sun.describe(valore, oggi, lat, lon)}")
             else:
                 pezzi.append(f"{etichetta} {valore}")
+        frm, to = self._from.get().strip(), self._to.get().strip()
+        if valid_time(frm) and valid_time(to) and fascia_assente_oggi(frm, to, self.config_data):
+            pezzi.append("(oggi la fascia non c'è)")
         self._risolti.config(text="Oggi: " + "   ".join(pezzi))
 
     def _make_tag_list(self, all_tags, selected) -> tk.Listbox:

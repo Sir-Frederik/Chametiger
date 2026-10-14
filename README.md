@@ -1,101 +1,12 @@
 # 🦎 Chametiger
 
-**v4.5** — 9 ottobre 2026
-Pioggia anche nelle fasce che chiedono un'attività, e posizione diversa per ogni PC.
+**v4.6** — 14 ottobre 2026
+Fasce che seguono il sole fino a un orario fisso (`min`/`max`), e momenti della giornata esclusi per insieme.
 
 
 Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno**, al **giorno della settimana**, alla **stagione**, agli **eventi** dell'anno e agli **orari reali di alba e tramonto**.
 
 Ogni fascia oraria pesca fra le immagini che hanno certi **tag**, e le fa scorrere tutte prima di ripeterle.
-
----
-
-## Novità della 4.5
-
-- **La pioggia entra anche nelle fasce senza un momento della giornata.** Quando piove, un'immagine di pioggia entra in una fascia anche senza i tag che la fascia richiede, purché abbia il suo momento: la fascia del venerdì 9–11 chiede `jolly`/`sport`, e alle 10 prende le immagini di pioggia del `mattino`. Il momento si ricava dalle regole, non dal codice; i tag di evento (`natale`) restano obbligatori. Vedi [Meteo](#meteo).
-- **Posizione per PC.** Come la cartella delle immagini: `latitude`/`longitude` valgono per tutti, `position_map` le sostituisce sui PC elencati. Nell'editor, **Impostazioni → Posizione** ha la casella *Vale solo per questo PC*. Vedi [Posizione multi-PC](#posizione-multi-pc).
-
-## Novità della 4.4
-
-- **Met Norway al posto di Open-Meteo** per le previsioni. Il giorno del rilascio della 4.3 Open-Meteo dava "coperto" su Napoli durante un temporale, e lo spostava di due ore dopo.
-- **L'ora attuale è osservata, non prevista**: viene dal METAR della stazione più vicina entro 30 km (a Napoli, Capodichino), e per quell'ora vince sulla previsione.
-- **10 ore di meteo**, quella attuale compresa, invece di 48: oltre le 10 ore si sceglie senza meteo.
-- **Download all'avvio**, anche se `meteo.json` è recente, e poi ogni `aggiorna_ore`.
-- **Immagini di pioggia in più momenti della giornata.** Quando piove, per le immagini `pioggia`/`temporale` i tag orari valgono per insieme, come le stagioni: una `pioggia + mattino + pomeriggio` esce sia di mattina sia di pomeriggio, anche se la fascia del pomeriggio esclude `mattino`. Vedi [Meteo](#meteo).
-
-## Novità della 4.3
-
-- **Meteo.** Ogni 5 ore, se c'è connessione, Chametiger scarica le previsioni orarie delle prossime 48 ore da Open-Meteo per le coordinate già impostate. Nelle ore di pioggia hanno la precedenza le immagini taggate `pioggia`, in quelle di temporale le `temporale`; col bel tempo quelle immagini si mettono da parte. Senza previsioni valide tutto funziona come prima. Vedi [Meteo](#meteo).
-- **Soglia minima** (`"minimo": 2`): il meteo restringe la fascia solo se restano almeno 2 immagini, così una sola immagine di pioggia non resta sullo sfondo per tutto il temporale.
-- **"Carica meteo"** nel menu del tray: riscarica subito le previsioni e cambia lo sfondo se non corrisponde più al tempo che fa.
-- **Impostazioni → Meteo**: ogni quante ore riscaricare, da 1 a 10, con l'ora dell'ultimo download.
-- **Nuovi tag** `pioggia` e `temporale` nel vocabolario: vanno assegnati alle immagini dalla tab *Libreria*.
-
-## Novità della 4.2
-
-- **Date relative a Pasqua.** Le date di stagioni ed eventi accettano, oltre a `MM-GG`, anche `pasqua`, `pasqua-5`, `pasqua+2`: giorni prima o dopo la domenica di Pasqua, ricalcolata ogni anno (algoritmo di Meeus, in `date_mobili.py`, senza dipendenze). La durata la decidi tu con lo scostamento. Vedi [Feste mobili](#feste-mobili).
-- **Evento Pasqua** nel config, da `pasqua-5` a `pasqua+2` (8 giorni: nel 2027 dal 23 al 30 marzo), col tag `pasqua` e niente horror.
-- **Il dialogo mostra dove cadono le date mobili** quest'anno e il prossimo; il grafico dell'anno indica l'anno a cui si riferisce.
-
-## Novità della 4.1
-
-- **Vietati sempre (`veto`)**: ogni stagione o evento può vietare dei tag senza appello, accanto al divieto morbido dei tag di stagione. A Natale "no horror" toglie ogni immagine horror, anche quelle taggate `inverno` o `natale`; finito Natale il veto sparisce. Il veto scende lungo la pila (vale anche nelle ore che si torna alla stagione) ma non sale negli eventi annidati sopra. Vedi [Vietati sempre](#vietati-sempre).
-- **Nel config**: niente horror a Natale, Capodanno e San Valentino; niente `natale` né `sanValentino` ad Halloween. Capodanno ha il suo veto perché, stando sopra Natale, non eredita quello di Natale.
-- **Anteprima e log** mostrano i tag vietati dal periodo come `!horror`; la tabella degli eventi come "natale  no horror".
-
-## Novità della 4.0
-
-- **Stagioni ed eventi al posto dei periodi.** Prima c'era un elenco solo, e vinceva il primo periodo che copriva la data: un evento doveva stare sopra la stagione per vincere, ma vincendo la sostituiva per intero. San Valentino, messo sotto l'Inverno, non usciva mai; Natale, messo sopra, si mangiava l'Inverno dal 1° dicembre al 6 gennaio, e nelle ore senza fasce proprie le regole di base venivano filtrate coi divieti di Natale. Ora sono due livelli: le **stagioni** coprono l'anno, gli **eventi** ci si appoggiano sopra. Vedi [Stagioni ed eventi](#stagioni-ed-eventi).
-- **Gli eventi si annidano come matrioske**: Capodanno sopra Natale sopra l'Inverno. Ogni strato ha le sue fasce; nelle ore che non copre si scende allo strato sotto, con i tag ammessi da quello strato.
-- **Le transizioni sono sovrapposizioni.** Non servono più le righe `Inv-Prim`, `Prim-Est`…: dove Inverno e Primavera si sovrappongono valgono entrambe.
-- **Niente più tag vietati da scrivere a mano.** Ogni stagione ed evento dichiara i *suoi* tag; un tag di stagione o di evento vale solo nei giorni del suo periodo. Prima `sanValentino` non lo vietava nessun periodo, e tre immagini con solo quel tag potevano uscire a luglio.
-- **Grafico dell'anno** nella tab *Stagioni ed eventi*: una riga per stagione e per evento, con le sovrapposizioni incolonnate e la linea di oggi.
-- **Rimossa la modalità programmata**, con il suo ripiego, i giorni speciali, le impostazioni e le tab. I due giorni speciali ancora utili sono diventati eventi (*Capodanno*, *Compleanno*). Le tab dell'editor ora stanno su una fila sola.
-- **Verifica regole conta per strato**: per ogni regola mostra quante immagini pesca in ogni combinazione dell'anno in cui viene davvero letta (*Inverno*, *Inverno/Primavera*, *Inverno > Natale*…). Le regole di base si contano sotto ogni stagione, le fasce di un evento solo nel suo strato.
-- **Verifica anno controlla ogni combinazione**: oltre al 15 di ogni mese prende il primo giorno di ogni pila distinta, così anche un evento di un giorno solo e ogni transizione passano il controllo.
-- **Anteprima e log dicono da quale strato viene la regola**: `evento Natale weekday`, `stagione Estate weekday`, oppure `weekday [Inverno]` per una regola di base filtrata dalla stagione. Sparisce l'elenco `!tag` delle stagioni vietate, che con tutti i tag di stagione ed evento sarebbe diventato illeggibile.
-- **Un nome solo per periodo**: l'editor rifiuta due stagioni o eventi con lo stesso nome, che nel log e nell'anteprima si confonderebbero.
-
-### Aggiornare dalla 3.x
-
-- **La chiave `periods` non viene più letta.** Va divisa in `seasons` ed `events`, e ogni periodo dichiara i suoi `tags` al posto della lista `exclude`. Il `config.json` di questo repository è già convertito; le chiavi `mode`, `schedules`, `overrides` e `special_days` sono state tolte.
-- **Riavvia l'app nel tray** dopo l'aggiornamento: un'istanza col codice vecchio, letto il config nuovo, smetterebbe di cambiare lo sfondo.
-- **I mazzi si rimescolano una volta**: la firma delle regole contiene il nome dello strato, quindi le sequenze non riprendono da dove erano.
-- **Un tag di evento vale solo nell'evento.** Le immagini con solo `horror` ora escono nelle sere di Halloween e basta (in un anno simulato: da 1120 a 125 uscite); prima uscivano anche in primavera, estate e autunno. Per riaverle tutto l'anno basta togliere `horror` dai tag di Halloween.
-
----
-
-## Novità della 3.1
-
-- **Un'immagine può appartenere a più stagioni.** I tag stagionali erano un divieto secco per tag: `autunno + primavera` non voleva dire *"va bene in autunno e in primavera"*, ma *"vietata in autunno"* **e** *"vietata in primavera"*. Più stagioni si assegnavano a un'immagine, meno la si vedeva. In una libreria di 197 immagini ce n'erano **nove** taggate con cura e **mai mostrate in tutto l'anno**. Ora un'immagine cade solo se **tutte** le stagioni che dichiara sono vietate, e il campo delle stagioni è separato dall'`exclude` della regola, che resta un divieto secco (`-smart` toglie e basta). Il cambio **aggiunge soltanto**: verificato su 196 combinazioni periodo × fascia, 410 immagini tornate in circolo, **zero** tolte. Vedi [Un'immagine in più stagioni](#unimmagine-in-più-stagioni).
-- **Quali tag siano "stagioni" non è più una lista nel codice**: sono tutti quelli che almeno un periodo vieta. Aggiungere `carnevale` non richiede di toccare niente, e `tramonto`, che nessun periodo vieta, non rende stagionale l'immagine che lo porta.
-- **Le fasce proprie dei periodi si modificano dall'editor**, col pulsante **Fasce del periodo** nella tab *Periodi dell'anno*: feriali, weekend e override di giorno, con lo stesso editor delle regole di base — ancore solari e conteggio immagini compresi. Prima erano l'unica parte del config che restava da scrivere a mano. Le liste rimaste vuote vengono tolte alla chiusura, così un periodo senza fasce resta pulito nel `config.json`.
-- **Nel log le stagioni vietate dal periodo si distinguono** dalle esclusioni della regola: `!estate,!natale` contro `-smart`.
-- **La GUI non conta più per conto suo.** *Verifica regole* costruiva la patch del periodo rifacendo la logica del motore, e dopo questo cambio avrebbe contato col criterio vecchio: ora chiama `patch_rule`, come già facevano *Anteprima giorno* e *Verifica anno*.
-
-## Novità della 3.0
-
-- **Fasce ancorate al sole**: invece di `19:00`, scrivi `sunset-40m`. Il tramonto a Napoli si sposta di **4 ore e 4 minuti** fra giugno e dicembre, e una fascia a orario fisso è corretta per due settimane l'anno. Le ancore seguono il sole ogni giorno, **ora legale compresa**.
-- **Periodi dell'anno**: intervalli di date che filtrano i tag senza duplicare le regole. Un periodo stagionale sono tre campi (nome, intervallo, tag vietati); uno festivo (Halloween, Natale) può aggiungere fasce proprie solo per le ore che gli interessano, lasciando intatto il resto della giornata.
-- **Tab "Anteprima giorno"**: scegli una data e vedi la giornata risolta — periodo attivo, regola vincente, orari solari reali, quante immagini ci sono in pool e quale uscirebbe. Usa il motore vero, non una sua imitazione.
-- **Tab "Periodi dell'anno"** con avviso sui giorni non coperti e **"Verifica anno"**, che passa i mesi in rassegna e segnala le fasce rimaste con poche immagini.
-- **Nessuna dipendenza nuova**: gli orari solari sono calcolati in casa (algoritmo NOAA, `sun.py`), e l'ora legale la applica il sistema operativo.
-
-### Correzioni nella 3.0
-
-- **Rinominare un tag non funzionava.** `notify_tags_changed` era definita annidata dentro un altro metodo, quindi non era un metodo della finestra: ogni rinomina, aggiunta o eliminazione di un tag finiva in `AttributeError`.
-- **Il mazzo saltava con le fasce a durata variabile.** Il conteggio delle finestre era una moltiplicazione, e il primo giorno in cui il numero di finestre cambiava il mazzo avanzava di centinaia di posizioni invece di una, saltando immagini che non si vedevano mai. Ora è una somma cumulativa (vedi *Le fasce solari e il mazzo*).
-- **Ripiego più solido:** se la regola vincente non ha immagini valide si prova la successiva in ordine di priorità, invece di lasciare lo sfondo fermo. Prima l'anteprima della giornata e lo scheduler potevano scegliere regole diverse in questo caso.
-- **`resolve_wallpaper` è ~11 volte più veloce** (da 228 ms a 21 ms): i controlli di esistenza dei file sono condivisi per giro di scheduler e i confini delle fasce si risolvono una volta al giorno invece che a ogni minuto.
-- **Rimossa l'impostazione "Memoria estrazioni (giorni)".** Prometteva di decidere quali immagini uscivano, contando le uscite degli ultimi `history_days` giorni, ma da quando la scelta viene dal mazzo non fa più niente di tutto questo — verificato: la sequenza di una giornata è **identica** con `history_days` a 1, 7, 60 o 3650. L'unico effetto rimasto era la potatura di `log.json`, che ora è fissata a 7 giorni nel codice. La chiave nel `config.json` viene ancora rispettata se presente, quindi i config esistenti non cambiano comportamento.
-
-## Novità della 2.0
-
-- **Modalità casuale con tag**: invece di assegnare un'immagine a ogni fascia, descrivi che *tipo* di immagine vuoi (`mattino` + `lavoro`, senza `inverno`) e Chametiger sceglie.
-- **Memoria delle estrazioni**: un file `log.json` tiene traccia di cosa è già uscito. Il sorteggio pesca sempre e solo fra le immagini viste meno volte, così scorre tutta la raccolta prima di ripetersi.
-- **Log leggibile**: ogni cambio di sfondo scrive anche *quale regola* ha vinto, con fascia oraria e tag.
-- **"Cambia immagine adesso"** dal menu tray, per forzare una nuova estrazione senza aspettare il cambio di fascia.
-- **Libreria immagini e percorsi multi-PC** (`base_path` + `path_map`): la stessa configurazione funziona su computer diversi.
 
 ---
 
@@ -249,7 +160,7 @@ e delle **regole**:
 | Campo            | Significato                                                  |
 | ---------------- | ------------------------------------------------------------ |
 | `include`        | Tag che l'immagine deve avere                                 |
-| `exclude`        | Tag che l'immagine non deve avere                             |
+| `exclude`        | Tag che l'immagine non deve avere (i momenti della giornata [per insieme](#momenti-della-giornata-esclusi-per-insieme)) |
 | `match`          | `"all"` = tutti gli include, `"any"` = ne basta uno           |
 | `rotate_minutes` | Ogni quanto cambiare immagine dentro la fascia (circa: la fascia si divide in parti uguali, senza spezzoni corti) |
 | `prefer`         | Tag preferiti: restringe il pool a quelli, se ne resta abbastanza |
@@ -258,6 +169,22 @@ e delle **regole**:
 Se nessuna regola copre l'orario, lo sfondo resta quello che c'è.
 
 > I tag **stagionali** (`inverno`, `estate`, `natale`…) non vanno messi nell'`exclude` delle regole: è il lavoro di [stagioni ed eventi](#stagioni-ed-eventi). Ripetuti in ogni regola diventano decine di righe da tenere allineate a mano, e una stagione dimenticata si nota solo sei mesi dopo.
+
+### Momenti della giornata: esclusi per insieme
+
+I momenti sono `alba`, `mattino`, `pranzo`, `pomeriggio`, `tramonto`, `crepuscolo`, `sera`, `notte` (`TAG_ORARI` in `app.py`). Nell'`exclude` non sono un divieto per tag ma **per insieme**, come le stagioni: un'immagine cade solo se **tutti** i suoi momenti sono esclusi. Gli altri tag esclusi (`smart`, `svago`…) restano un divieto secco.
+
+```
+exclude: alba, mattino
+  lavoro + alba                ->  fuori: il suo unico momento è escluso
+  lavoro + alba + tramonto     ->  dentro: tramonto non è escluso
+  mattino + pomeriggio         ->  dentro: pomeriggio non è escluso
+  alba + svago                 ->  fuori se svago è escluso, qualunque momento abbia
+```
+
+Le fasce si escludono a vicenda i momenti, e col divieto secco un'immagine `mattino + pomeriggio` non usciva né di mattina né di pomeriggio: ogni immagine doveva avere un momento solo.
+
+> Di conseguenza, **un momento che la fascia non esclude la apre** a tutte le immagini che lo portano. In una fascia `"match": "any"` con un'attività nell'include (`lavoro`, `svago`) conviene escludere *tutti* i momenti che non c'entrano: se la sera esclude `pomeriggio` e `tramonto` ma non `pranzo`, un'immagine `svago + pranzo + tramonto` esce alle 21.
 
 ### Come viene scelta l'immagine
 
@@ -316,7 +243,33 @@ Gestita automaticamente e **senza dipendenze**. L'orario dell'evento si calcola 
 
 Va benissimo: le fasce legate al **tuo orario** (lavoro, pranzo) restano a orologio, quelle **astronomiche** vanno al sole. Un solo accorgimento: **le fasce solari vanno prima nella lista**, perché vince la prima che copre l'ora. Così il riempitivo `18:00-21:00` cede il passo quando il tramonto entra nel suo intervallo, senza doverlo spostare per stagione.
 
-> ⚠️ Evita gli estremi misti tipo `"from": "18:00", "to": "sunset-40m"`: d'inverno `sunset-40m` cade *prima* delle 18:00, la fascia si inverte e si mangia tutta la notte. Meglio due estremi solari, o due d'orologio.
+> ⚠️ Evita gli estremi misti tipo `"from": "18:00", "to": "sunset-40m"`: d'inverno `sunset-40m` cade *prima* delle 18:00, la fascia si inverte e si mangia tutta la notte. Meglio due estremi solari, o due d'orologio, oppure `min`/`max` (sotto).
+
+### Il primo o l'ultimo di più orari: `min` e `max`
+
+Quando una fascia deve seguire il sole **ma non oltre** (o **non prima di**) un orario fisso:
+
+```json
+{ "from": "sunset-58m", "to": "min(sunset+2m, 18:00)", "include": ["tramonto", "lavoro"], "match": "any" }
+```
+
+| Scrittura                 | Vale                                     |
+| ------------------------- | ---------------------------------------- |
+| `min(sunset+2m, 18:00)`   | il **primo** dei due: al tramonto, ma non dopo le 18 |
+| `max(dusk+2m, 16:00)`     | l'**ultimo** dei due: dal crepuscolo, ma non prima delle 16 |
+
+Dentro le parentesi vanno orari d'orologio o ancore solari, due o più, separati da virgola. Si usano in `from`, in `to` o in entrambi.
+
+**Una fascia con `min`/`max` non scavalca mai la mezzanotte.** Se in un giorno finisce prima di cominciare, o coincide, **quel giorno la fascia non c'è** e si passa alla regola successiva. È proprio ciò che serve: la fascia sopra, "tramonto in orario di lavoro", a gennaio va dalle 16:07 alle 17:07; a marzo si ferma alle 18:00; a giugno diventerebbe 19:38 → 18:00, e sparisce. Senza `min`/`max`, quella stessa inversione verrebbe letta come una fascia a cavallo della mezzanotte e coprirebbe quasi tutto il giorno. Le fasce senza `min`/`max` restano come sempre: `23:00 → dawn-20m` scavalca la mezzanotte.
+
+Nei giorni in cui manca, la fascia non conta nel mazzo: le sue immagini riprendono da dove erano. Nell'editor, l'anteprima dell'orario e la lista delle regole segnalano *"oggi non c'è"*.
+
+Lo schema tipico è una coppia di regole, la limitata **prima** della normale:
+
+```
+sunset-58m → min(sunset+2m, 18:00)   tramonto o lavoro, niente svago   ← finché si lavora
+sunset-58m → sunset+2m               tramonto                         ← il resto, e d'estate tutto
+```
 
 ### Le fasce solari e il mazzo
 
@@ -449,15 +402,7 @@ Il METAR c'è perché una previsione può sbagliare l'ora: l'8 ottobre 2026 Open
 | sereno, nuvoloso, neve, nebbia | le immagini `pioggia` e `temporale` si mettono da parte |
 | previsioni assenti | nessun effetto: i due tag contano come tutti gli altri          |
 
-Come `prefer` con `prefer_min`, il meteo **restringe** il pool della fascia solo se restano almeno `minimo` immagini (default 2): se alle 10 piove ma una sola immagine `mattino` ha anche `pioggia`, esce una `mattino` qualsiasi, invece di tenere ferma quella per tutte le ore di pioggia. **Più momenti della giornata.** Le fasce si escludono a vicenda i tag orari (il pomeriggio esclude `mattino` e `sera`, la sera esclude `pomeriggio`), quindi con il divieto secco un'immagine taggata `mattino + pomeriggio` non uscirebbe in nessuna delle due. Per le immagini di **pioggia e temporale**, quando piove, i momenti della giornata valgono invece **per insieme**, come le stagioni: l'immagine cade solo se *tutti* i suoi momenti sono esclusi dalla fascia.
-
-```
-pioggia + mattino + pomeriggio   ->  esce di mattina e di pomeriggio, non la sera
-pioggia + pomeriggio + sera      ->  esce di pomeriggio e di sera
-pioggia + pomeriggio + smart     ->  nel pomeriggio dei feriali no: smart resta un divieto secco
-```
-
-I momenti sono `alba`, `mattino`, `pranzo`, `pomeriggio`, `tramonto`, `crepuscolo`, `sera`, `notte` (`TAG_ORARI` in `app.py`).
+Come `prefer` con `prefer_min`, il meteo **restringe** il pool della fascia solo se restano almeno `minimo` immagini (default 2): se alle 10 piove ma una sola immagine `mattino` ha anche `pioggia`, esce una `mattino` qualsiasi, invece di tenere ferma quella per tutte le ore di pioggia. Un'immagine di pioggia con più momenti esce in ognuno, come tutte le altre: vedi [Momenti della giornata](#momenti-della-giornata-esclusi-per-insieme).
 
 **Fasce che non chiedono un momento.** Una fascia può chiedere un'attività invece di un momento: quella del venerdì 9–11 vuole `jolly`/`sport`, e nessuna immagine di pioggia ce l'ha. Quando piove, un'immagine di pioggia entra anche senza i tag richiesti dalla fascia, purché abbia il **momento** della fascia:
 

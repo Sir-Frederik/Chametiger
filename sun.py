@@ -62,6 +62,89 @@ def parse_anchor(t: str) -> tuple[str, int] | None:
     return anchor.lower(), offset
 
 
+# "min(sunset+2m, 18:00)", "max(dusk, 16:00)": il primo / l'ultimo degli orari
+# elencati, ricalcolato giorno per giorno. Dentro: orologio o ancore solari.
+_MINMAX_RE = re.compile(r"^(min|max)\s*\((.*)\)$", re.IGNORECASE)
+_CLOCK_RE = re.compile(r"^(\d{1,2}):(\d{2})$")
+
+
+def parse_clock(t) -> int | None:
+    """'18:00' -> 1080 minuti. None se non e' un orario di orologio valido."""
+    m = _CLOCK_RE.match(str(t).strip())
+    if not m:
+        return None
+    h, mi = int(m.group(1)), int(m.group(2))
+    return h * 60 + mi if h <= 23 and mi <= 59 else None
+
+
+def parse_minmax(t) -> tuple[str, list[str]] | None:
+    """
+    'min(sunset+2m, 18:00)' -> ('min', ['sunset+2m', '18:00']). None se non e'
+    un min/max valido: almeno due orari, ognuno orologio o ancora solare.
+    """
+    m = _MINMAX_RE.match(str(t).strip())
+    if not m:
+        return None
+    orari = [o.strip() for o in m.group(2).split(",")]
+    if len(orari) < 2 or not all(is_solar(o) or parse_clock(o) is not None for o in orari):
+        return None
+    return m.group(1).lower(), orari
+
+
+def is_minmax(t) -> bool:
+    """True se l'orario e' un min(...) / max(...)."""
+    return isinstance(t, str) and parse_minmax(t) is not None
+
+
+def minmax_minutes(t, giorno: date, lat: float, lon: float) -> int | None:
+    """
+    Il min/max in minuti dalla mezzanotte di quel giorno, in [0, 1440).
+    None se non e' un min/max o se quel giorno uno degli eventi non avviene.
+
+    Il confronto e' fatto prima di riportare in [0, 1440): 'min(dusk+3h, 23:30)'
+    a giugno vale 23:30 anche se dusk+3h cade dopo la mezzanotte.
+    """
+    parsed = parse_minmax(t)
+    if not parsed:
+        return None
+    funzione, orari = parsed
+    valori = []
+    for o in orari:
+        ancora = parse_anchor(o)
+        minuti = solar_minutes(ancora[0], ancora[1], giorno, lat, lon) if ancora else parse_clock(o)
+        if minuti is None:
+            return None
+        valori.append(minuti)
+    return (min(valori) if funzione == "min" else max(valori)) % 1440
+
+
+def minutes(t, giorno: date, lat: float, lon: float) -> int | None:
+    """
+    Qualunque orario valido in minuti [0, 1440) di quel giorno: orologio,
+    ancora o min/max. None se non e' valido o se l'evento quel giorno manca.
+    """
+    if is_minmax(t):
+        return minmax_minutes(t, giorno, lat, lon)
+    ancora = parse_anchor(t)
+    if ancora:
+        minuti = solar_minutes(ancora[0], ancora[1], giorno, lat, lon)
+        return None if minuti is None else minuti % 1440
+    return parse_clock(t)
+
+
+def fascia_assente(frm, to, start: int, end: int) -> bool:
+    """
+    Una fascia con min()/max() non scavalca mai la mezzanotte: se quel giorno
+    finisce prima di cominciare, o insieme, quel giorno non esiste.
+
+    E' il motivo per cui min/max servono: 'sunset-58m -> min(sunset+2m, 18:00)'
+    a giugno diventa 19:30 -> 18:00, e letta come le altre fasce coprirebbe
+    tutto il giorno passando per la mezzanotte. Le fasce senza min/max
+    restano come sempre: '23:00 -> dawn-20m' scavalca la mezzanotte.
+    """
+    return (is_minmax(frm) or is_minmax(to)) and end <= start
+
+
 def format_anchor(anchor: str, offset: int) -> str:
     """('sunset', -40) -> 'sunset-40m'. L'inverso di parse_anchor."""
     if not offset:
@@ -185,6 +268,11 @@ def describe(t, giorno: date, lat: float, lon: float) -> str:
     'sunset-40m' -> 'sunset-40m (19:12)'. Per il log e per la GUI: senza l'orario
     reale accanto, una regola ancorata al sole non si riesce a verificare a occhio.
     """
+    if is_minmax(t):
+        minuti = minmax_minutes(t, giorno, lat, lon)
+        if minuti is None:
+            return f"{t} (n.d.)"
+        return f"{t} ({minuti // 60:02d}:{minuti % 60:02d})"
     parsed = parse_anchor(t) if isinstance(t, str) else None
     if not parsed:
         return str(t)
