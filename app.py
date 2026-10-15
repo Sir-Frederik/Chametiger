@@ -753,6 +753,29 @@ def _window_entry(entries: list[dict], day: str, sig: str, bucket: int) -> dict 
     return None
 
 
+def _senza_meteo(sig: str) -> str:
+    """La firma senza le parti del meteo: la stessa fascia, con qualunque tempo."""
+    return "|".join(p for p in sig.split("|") if not p.startswith(("m:", "mo:")))
+
+
+def _gemella_meteo(entries: list[dict], day: str, sig: str, bucket: int) -> dict | None:
+    """
+    La stessa finestra di rotazione registrata con un altro tempo, la piu'
+    recente. L'ordinale della finestra non dipende dal meteo, solo da orari e
+    rotazione, quindi il bucket coincide.
+    """
+    base = _senza_meteo(sig)
+    for e in reversed(entries):
+        if (
+            e.get("day") == day
+            and e.get("bucket") == bucket
+            and e.get("rule") != sig
+            and _senza_meteo(str(e.get("rule", ""))) == base
+        ):
+            return e
+    return None
+
+
 def _lunghezza(start: int, end: int) -> int:
     """Durata della fascia in minuti. Inizio e fine uguali: tutto il giorno."""
     return (end - start) % 1440 or 1440
@@ -1125,6 +1148,7 @@ def pick_from_rule(
     with _history_lock:
         entries = load_history()
         memo = _window_entry(entries, day, sig, bucket)
+        tenuta = False
 
         if force_new:
             corrente = memo.get("image") if memo else scelta
@@ -1147,26 +1171,39 @@ def pick_from_rule(
                 entries.remove(memo)
             forzata = True
         else:
+            forzata = False
             if memo:
-                # un'estrazione manuale vale fino alla fine della sua finestra
-                if memo.get("forced") and memo.get("image") in pool:
+                # un'estrazione manuale vale fino alla fine della sua finestra, e
+                # cosi' un'immagine tenuta al cambio di meteo (vedi sotto)
+                if (memo.get("forced") or memo.get("tenuta")) and memo.get("image") in pool:
                     return memo["image"]
                 # finestra gia' registrata con la stessa immagine: niente da scrivere
                 if memo.get("image") == scelta:
                     return scelta
                 entries.remove(memo)
-            forzata = False
+            else:
+                # Il meteo entra nella firma, quindi nel mazzo: un download che
+                # passa da "nessuna previsione" a "sereno" cambiava uno sfondo
+                # che col sereno andava benissimo. Se la finestra ha gia'
+                # un'immagine presa con un altro tempo, e il pool di adesso la
+                # ammette ancora, resta quella fino a fine finestra.
+                gemella = _gemella_meteo(entries, day, sig, bucket)
+                if gemella and gemella.get("image") in pool:
+                    scelta = gemella["image"]
+                    forzata = bool(gemella.get("forced"))
+                    tenuta = True
 
-        entries.append(
-            {
-                "ts": now.strftime("%Y-%m-%d %H:%M:%S"),
-                "day": day,
-                "image": scelta,
-                "rule": sig,
-                "bucket": bucket,
-                "forced": forzata,
-            }
-        )
+        voce = {
+            "ts": now.strftime("%Y-%m-%d %H:%M:%S"),
+            "day": day,
+            "image": scelta,
+            "rule": sig,
+            "bucket": bucket,
+            "forced": forzata,
+        }
+        if tenuta:
+            voce["tenuta"] = True
+        entries.append(voce)
         _save_history(_prune_history(entries, history_days(config), now))
 
     return scelta
