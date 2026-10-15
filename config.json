@@ -35,11 +35,6 @@
     "jolly"
   ],
   "image_library": {
-    "personaggi_riquadri_colorati_bianco_nero.jpg": [
-      "jolly",
-      "mattino",
-      "pomeriggio"
-    ],
     "bugs_daffy_sylvester_fuga_halloween.jpg": [
       "horror",
       "notte",
@@ -1203,7 +1198,8 @@
       "svago",
       "primavera",
       "pranzo",
-      "pomeriggio"
+      "pomeriggio",
+      "autunno"
     ],
     "daffy_valentine_chocolathe.jpg": [
       "sanValentino"
@@ -1506,6 +1502,31 @@
       "svago",
       "pomeriggio",
       "sera"
+    ],
+    "Bugs_clark_gable.jpg": [
+      "mattino",
+      "primavera"
+    ],
+    "daffy_porky_mummy.jpg": [
+      "alba",
+      "mattino",
+      "lavoro",
+      "horror"
+    ],
+    "personaggi_riquadri_colorati_bianco_nero.jpg": [],
+    "porky_sylvester_scaredy.jpg": [
+      "notte",
+      "sera",
+      "crepuscolo"
+    ],
+    "sylvester_splat.jpg": [
+      "pomeriggio",
+      "jolly"
+    ],
+    "bugs_elmer_birthday_dynamite.jpg": [
+      "compleanno",
+      "mattino",
+      "pranzo"
     ]
   },
   "random_rules": {
