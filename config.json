@@ -1527,6 +1527,18 @@
       "compleanno",
       "mattino",
       "pranzo"
+    ],
+    "Bugs_daffy_cowboy_campfire.png": [
+      "sera",
+      "svago"
+    ],
+    "Bugs_daffy_cowboy_menacing.png": [
+      "pomeriggio",
+      "estate",
+      "smart"
+    ],
+    "daffy_birthday_gift.png": [
+      "compleanno"
     ]
   },
   "random_rules": {
@@ -2075,24 +2087,24 @@
   "seasons": [
     {
       "name": "Inverno",
-      "from": "11-16",
-      "to": "04-05",
+      "from": "11-24",
+      "to": "03-7",
       "tags": [
         "inverno"
       ]
     },
     {
       "name": "Primavera",
-      "from": "03-06",
-      "to": "07-06",
+      "from": "02-22",
+      "to": "06-07",
       "tags": [
         "primavera"
       ]
     },
     {
       "name": "Estate",
-      "from": "06-06",
-      "to": "10-05",
+      "from": "05-25",
+      "to": "9-25",
       "tags": [
         "estate"
       ]
@@ -2100,7 +2112,7 @@
     {
       "name": "Autunno",
       "from": "09-10",
-      "to": "11-30",
+      "to": "12-10",
       "tags": [
         "autunno"
       ]
@@ -2469,66 +2481,6 @@
       "random_rules": {
         "weekday": [
           {
-            "from": "sunset -40m",
-            "to": "dusk +2m",
-            "include": [
-              "crepuscolo",
-              "horror"
-            ],
-            "exclude": [],
-            "match": "all",
-            "rotate_minutes": 60
-          },
-          {
-            "from": "dusk +2m",
-            "to": "21:00",
-            "include": [
-              "horror",
-              "sera"
-            ],
-            "exclude": [],
-            "match": "all",
-            "rotate_minutes": 60
-          },
-          {
-            "from": "21:00",
-            "to": "22:00",
-            "include": [
-              "horror",
-              "spettacolo"
-            ],
-            "exclude": [],
-            "match": "all",
-            "rotate_minutes": 60
-          },
-          {
-            "from": "22:00",
-            "to": "2:00",
-            "include": [
-              "horror",
-              "notte"
-            ],
-            "exclude": [],
-            "match": "all",
-            "rotate_minutes": 60
-          }
-        ]
-      },
-      "name": "Halloween",
-      "from": "10-20",
-      "to": "11-01",
-      "tags": [
-        "horror"
-      ],
-      "veto": [
-        "natale",
-        "sanValentino"
-      ]
-    },
-    {
-      "random_rules": {
-        "weekday": [
-          {
             "from": "07:00",
             "to": "sunset-1h",
             "include": [
@@ -2624,7 +2576,8 @@
       ],
       "veto": [
         "natale",
-        "sanValentino"
+        "sanValentino",
+        "pasqua"
       ]
     },
     {
