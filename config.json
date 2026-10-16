@@ -177,7 +177,8 @@
     "personaggi_finestra_ombra_mostro.jpg": [
       "horror",
       "notte",
-      "sera"
+      "sera",
+      "lavoro"
     ],
     "Daffy and Porky/daffy_porky_divano_popcorn.png": [
       "spettacolo",
@@ -495,7 +496,8 @@
       "jolly",
       "pomeriggio",
       "sera",
-      "crepuscolo"
+      "crepuscolo",
+      "weekend"
     ],
     "Looney Tunes Sports/daffy_bugs_golf_esplosivo_bunker.jpg": [
       "alba",
@@ -550,7 +552,9 @@
     "Looney Tunes Sports/team_usa_parigi_corsa.jpg": [],
     "marvin_daffy_porky_astronave.jpg": [
       "sera",
-      "notte"
+      "notte",
+      "lavoro",
+      "crepuscolo"
     ],
     "marvin_guarda_terra_spazio.jpg": [
       "notte"
@@ -586,7 +590,8 @@
       "estate",
       "smart",
       "weekend",
-      "sanValentino"
+      "sanValentino",
+      "svago"
     ],
     "personaggi_cerchio_bugs_centro.jpg": [
       "jolly",
@@ -1140,7 +1145,8 @@
     ],
     "toons_birthday_party.jpg": [
       "compleanno",
-      "sera"
+      "sera",
+      "svago"
     ],
     "bugs_porky_tamburo_thatsallfolks.jpg": [
       "spettacolo",
@@ -1211,7 +1217,8 @@
     "dorlock_holmes.jpg": [
       "notte",
       "inverno",
-      "autunno"
+      "autunno",
+      "lavoro"
     ],
     "duck_tracy_gangster.jpg": [
       "horror",
@@ -1222,7 +1229,8 @@
     ],
     "porky_bar_apple_juice.jpg": [
       "sera",
-      "svago"
+      "svago",
+      "weekend"
     ],
     "porky_cowboy.jpg": [
       "pomeriggio",
@@ -1271,7 +1279,8 @@
       "sera",
       "svago",
       "sanValentino",
-      "inverno"
+      "inverno",
+      "weekend"
     ],
     "Bugs_Sylvester_Daffy_Elmes_Aliens_basketball.jpg": [
       "sport",
@@ -1393,7 +1402,8 @@
       "pomeriggio"
     ],
     "sylvester_sings_moonlight.jpg": [
-      "notte"
+      "notte",
+      "spettacolo"
     ],
     "tweety_sylvester_nap.jpg": [
       "inverno",
@@ -1517,7 +1527,9 @@
     "porky_sylvester_scaredy.jpg": [
       "notte",
       "sera",
-      "crepuscolo"
+      "crepuscolo",
+      "horror",
+      "weekend"
     ],
     "sylvester_splat.jpg": [
       "pomeriggio",
@@ -2068,6 +2080,23 @@
             "svago"
           ],
           "match": "any",
+          "rotate_minutes": 60
+        },
+        {
+          "from": "21:00",
+          "to": "23:00",
+          "include": [
+            "sera",
+            "weekend"
+          ],
+          "exclude": [
+            "alba",
+            "mattino",
+            "pranzo",
+            "pomeriggio",
+            "tramonto"
+          ],
+          "match": "all",
           "rotate_minutes": 60
         }
       ],
