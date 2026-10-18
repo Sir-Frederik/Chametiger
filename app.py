@@ -597,8 +597,9 @@ def _secondo_meteo(
     immagini: con una sola, la fascia resterebbe ferma su quella per tutte le
     ore di pioggia.
 
-    Senza previsioni (stato None) non si tocca niente: i tag del meteo contano
-    come tutti gli altri.
+    Col meteo disattivato (stato None) non si tocca niente: i tag del meteo
+    contano come tutti gli altri. Senza previsioni lo stato e' asciutto (vedi
+    meteo.del_giorno).
     """
     if not stato:
         return pool
@@ -1420,7 +1421,7 @@ class ChametigerTray:
                 # di ore fa. Poi solo ogni `aggiorna_ore`. Qui nel thread e non
                 # prima del tray, cosi' l'icona compare subito anche con la
                 # rete lenta. Il primo sfondo aspetta il download (al massimo
-                # i timeout di curl): senza rete si sceglie senza meteo.
+                # i timeout di curl): senza rete si sceglie come col sereno.
                 meteo.aggiorna_se_serve(self.config, log, forza=primo_giro)
                 primo_giro = False
                 wallpaper, category = resolve_wallpaper(self.config)

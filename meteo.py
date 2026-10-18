@@ -20,8 +20,10 @@ Le ore finiscono in meteo.json: la legge anche la GUI per l'anteprima, e dopo
 un riavvio non serve riscaricare.
 
 Ripiego: senza dati validi (nessuna connessione, file vecchio, coordinate
-cambiate, curl assente) `del_giorno` ritorna None e il motore ignora il meteo e
-i tag pioggia/temporale. Anche le ore oltre le 10 scaricate restano senza meteo.
+cambiate, curl assente) `del_giorno` da' tutte le ore come asciutte, e cosi' le
+ore oltre le 10 scaricate: senza un motivo per crederla, la pioggia non si
+mostra. Solo col meteo disattivato ritorna None e il motore ignora il meteo:
+i tag pioggia/temporale contano come tutti gli altri.
 """
 
 import json
@@ -58,8 +60,8 @@ RIPROVA_MINUTI = 30  # dopo un download fallito, prima di riprovare
 METAR_RAGGIO_KM = 30  # stazioni piu' lontane non dicono che tempo fa qui
 METAR_MAX_ETA_MIN = 90  # i METAR escono ogni 30-60 minuti
 
-# Stati di un'ora. "asciutto" non e' l'assenza di dati: vuol dire che i dati
-# ci sono e non danno pioggia.
+# Stati di un'ora. Senza dati l'ora vale "asciutto": la pioggia si mostra solo
+# quando una fonte la da'.
 TEMPORALE = "temporale"
 PIOGGIA = "pioggia"
 ASCIUTTO = "asciutto"
@@ -157,18 +159,23 @@ def _valide(dati: dict | None, config: dict) -> bool:
 
 def del_giorno(config: dict, giorno: date) -> dict[int, str] | None:
     """
-    {ora: stato} per quel giorno, con le sole ore coperte dai dati.
-    None se non ci sono dati validi: il motore ignora il meteo.
+    {ora: stato} per tutte le 24 ore di quel giorno. Le ore che i dati non
+    coprono, o tutte se i dati mancano o non valgono, sono asciutte: offline
+    le immagini di pioggia uscivano a caso come le altre, anche col sole.
+    None solo col meteo disattivato: il motore ignora il meteo.
     """
-    dati = _carica()
-    if not _valide(dati, config):
+    if not impostazioni(config)[0]:
         return None
-    prefisso = giorno.isoformat() + "T"
-    return {
-        int(chiave[-2:]): stato
-        for chiave, stato in (dati.get("ore") or {}).items()
-        if chiave.startswith(prefisso)
-    }
+    ore = dict.fromkeys(range(24), ASCIUTTO)
+    dati = _carica()
+    if _valide(dati, config):
+        prefisso = giorno.isoformat() + "T"
+        ore.update(
+            (int(chiave[-2:]), stato)
+            for chiave, stato in (dati.get("ore") or {}).items()
+            if chiave.startswith(prefisso)
+        )
+    return ore
 
 
 def ultimo_download() -> datetime | None:
@@ -311,7 +318,7 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
         # dal menu vuole sempre una risposta.
         if forza or not _ultimo_errore:
             motivo = "; ".join(errori) or "nessun dato"
-            log(f"[METEO] Meteo non disponibile ({motivo}): scelgo senza meteo.")
+            log(f"[METEO] Meteo non disponibile ({motivo}): scelgo come col sereno.")
         _ultimo_errore = time.time()
         return False
 

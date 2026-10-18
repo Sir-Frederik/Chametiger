@@ -393,7 +393,7 @@ All'avvio dell'app, e poi ogni `aggiorna_ore` ore (default 5, da 1 a 10, si camb
 | [Met Norway](https://api.met.no) (`locationforecast`) | Le previsioni ora per ora |
 | METAR ([aviationweather.gov](https://aviationweather.gov)) | Il tempo **osservato** adesso, dalla stazione più vicina entro 30 km e non più vecchio di 90 minuti. Per l'ora attuale vince sulla previsione |
 
-Il METAR c'è perché una previsione può sbagliare l'ora: l'8 ottobre 2026 Open-Meteo, la fonte delle prime prove, dava "coperto" su Napoli mentre a Capodichino il METAR riportava `-TSRA`, e spostava il temporale di due ore dopo. Le ore oltre le 10 scaricate restano senza meteo, come col ripiego.
+Il METAR c'è perché una previsione può sbagliare l'ora: l'8 ottobre 2026 Open-Meteo, la fonte delle prime prove, dava "coperto" su Napoli mentre a Capodichino il METAR riportava `-TSRA`, e spostava il temporale di due ore dopo. Le ore oltre le 10 scaricate valgono come sereno, come col ripiego.
 
 | Tempo dell'ora | Effetto sul pool della fascia                                       |
 | -------------- | ------------------------------------------------------------------- |
@@ -415,11 +415,11 @@ Il meteo è l'**ultimo setaccio**: sceglie fra le immagini che fascia, stagione,
 
 **Carica meteo**, nel menu del tray, scarica subito le previsioni senza aspettare l'intervallo, e cambia lo sfondo solo se il tempo dell'ora rende inadatta l'immagine attuale.
 
-**Ripiego.** Senza connessione si riprova ogni 30 minuti e intanto si sceglie come se il meteo non esistesse. Lo stesso succede se i dati hanno più di 12 ore, se le coordinate sono cambiate o se `"attivo": false`.
+**Ripiego.** Senza connessione si riprova ogni 30 minuti e intanto si sceglie come col sereno: le immagini di pioggia e temporale restano da parte finché una fonte non dà pioggia. Lo stesso succede se i dati hanno più di 12 ore o se le coordinate sono cambiate. Solo con `"attivo": false` si sceglie come se il meteo non esistesse, e i tag `pioggia`/`temporale` contano come tutti gli altri.
 
 **Peso.** Il download lo fa `curl.exe`, già incluso in Windows 10/11, in un processo separato che termina subito: l'app nel tray non carica le librerie di rete di Python (~4 MB) e la sua memoria non cambia. Il meteo sono 10 righe.
 
-**Più PC.** Ogni PC scarica il meteo della sua posizione (vedi [Posizione multi-PC](#posizione-multi-pc)). Due PC con le stesse coordinate ricevono le stesse previsioni e restano allineati. Se uno dei due è offline, nelle ore di pioggia mostra immagini diverse finché non riscarica.
+**Più PC.** Ogni PC scarica il meteo della sua posizione (vedi [Posizione multi-PC](#posizione-multi-pc)). Due PC con le stesse coordinate ricevono le stesse previsioni e restano allineati. Se uno dei due è offline, nelle ore di pioggia sceglie come col sereno, quindi immagini diverse, finché non riscarica.
 
 Nel log e in **Anteprima** un'ora di pioggia compare come `@pioggia` (o `@temporale`) accanto ai tag della regola; ogni download scrive una riga `[METEO]` col riassunto delle ore di pioggia previste.
 
