@@ -1859,6 +1859,7 @@
         "from": "noon +2h",
         "to": "sunset - 58m",
         "include": [
+          "pranzo",
           "pomeriggio",
           "weekend",
           "svago",
@@ -1867,7 +1868,6 @@
         "exclude": [
           "alba",
           "mattino",
-          "pranzo",
           "tramonto",
           "crepuscolo",
           "sera",
