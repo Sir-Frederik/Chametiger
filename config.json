@@ -215,7 +215,6 @@
     ],
     "Daffy and Porky/chrome/locandina_the_day_the_earth_blew_up.png": [],
     "Daffy and Porky/chrome/daffy.png": [],
-    "Daffy and Porky/chrome/porky_daffy_finale_cerchi_rossi_hd.png": [],
     "Daffy and Porky/chrome/daffy_leva_gomme_super_stretchy_hd.png": [],
     "Daffy and Porky/chrome/porky_daffy_ufo_tetto_citta.png": [],
     "Daffy and Porky/chrome/porky_daffy_ufo_raggio_primo_piano.png": [],
@@ -997,7 +996,6 @@
       "natale",
       "notte"
     ],
-    "marv_space_extended2.jpg.png": [],
     "pepe_valentine.jpg": [
       "sanValentino",
       "smart"
@@ -1059,7 +1057,6 @@
       "tramonto",
       "smart"
     ],
-    "Sorceress_Petunia_29.png": [],
     "yosemite_danza.jpg": [
       "pomeriggio",
       "svago"
@@ -1551,6 +1548,65 @@
     ],
     "daffy_birthday_gift.png": [
       "compleanno"
+    ],
+    "bad_wolf_blow.png": [
+      "mattino",
+      "pomeriggio",
+      "pioggia"
+    ],
+    "bad_wolf_sketch.png": [
+      "lavoro",
+      "crepuscolo",
+      "sera"
+    ],
+    "cecil_animation.png": [
+      "lavoro",
+      "sera",
+      "crepuscolo"
+    ],
+    "daffy_airplane.png": [
+      "capodanno",
+      "pomeriggio"
+    ],
+    "duck_amuck.png": [
+      "primavera",
+      "estate",
+      "lavoro",
+      "mattino"
+    ],
+    "Looney tunes christmas/holyday_hustlers.png": [
+      "natale",
+      "lavoro",
+      "inverno"
+    ],
+    "mr_hyde.png": [
+      "horror",
+      "crepuscolo",
+      "tramonto"
+    ],
+    "pirate_beach_treasure.png": [
+      "pomeriggio",
+      "estate"
+    ],
+    "space_opera.png": [
+      "spettacolo",
+      "notte"
+    ],
+    "superhero.png": [
+      "notte",
+      "lavoro"
+    ],
+    "vintage_porky_petunia_gabby.png": [
+      "weekend",
+      "primavera",
+      "mattino",
+      "pranzo"
+    ],
+    "wacky_world.png": [
+      "primavera",
+      "estate",
+      "pomeriggio",
+      "mattino"
     ]
   },
   "random_rules": {
