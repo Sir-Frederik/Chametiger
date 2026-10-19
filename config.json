@@ -89,7 +89,6 @@
     ],
     "bugs_daffy_rabbit_season.jpg": [
       "autunno",
-      "pomeriggio",
       "mattino"
     ],
     "bugs_notte_parco_coniglietti.jpg": [
@@ -883,7 +882,6 @@
     ],
     "personaggi_cerchio_bugs_taz.jpg": [],
     "marvin_k9_pianeta_alieno_verticale.jpg": [],
-    "wabbit_season_with_gun_copy.jpg": [],
     "Daffy and Porky/chrome/porky_daffy_ufo_tetto_citta_panoramica.jpg": [],
     "Looney Tunes Sports/olimpiadi_1996_poster_completo.jpg": [],
     "Looney Tunes Sports/bugs_lola_pattinaggio_primo_piano.jpg": [],
@@ -897,7 +895,8 @@
       "primavera",
       "smart",
       "pomeriggio",
-      "alba"
+      "alba",
+      "pasqua"
     ],
     "Daffy_rainy.jpg": [
       "pioggia",
@@ -1607,6 +1606,9 @@
       "estate",
       "pomeriggio",
       "mattino"
+    ],
+    "easter_painting_group.jpg": [
+      "pasqua"
     ]
   },
   "random_rules": {
@@ -2161,7 +2163,7 @@
     }
   },
   "history_days": 60,
-  "theme": "dark",
+  "theme": "light",
   "latitude": 40.8199,
   "longitude": 14.3414,
   "meteo": {
