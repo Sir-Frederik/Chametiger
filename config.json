@@ -61,7 +61,7 @@
     "Daffy and Porky/daffy_lanciafiamme_porky_giardino.png": ["sera", "crepuscolo", "autunno"],
     "Daffy and Porky/porky_daffy_moto_bazooka.jpg": ["alba", "lavoro"],
     "Daffy and Porky/porky_daffy_finale_cerchi_rossi.png": ["spettacolo", "notte"],
-    "Daffy and Porky/porky_daffy_petunia_ombre_zombie.jpg": ["horror", "sera"],
+    "Daffy and Porky/porky_daffy_petunia_ombre_zombie.jpg": ["horror", "sera", "crepuscolo"],
     "Daffy and Porky/porky_astronauta_ufo_pianeta.jpg": [],
     "Daffy and Porky/porky_daffy_urlo_spirale.jpg": ["jolly"],
     "Daffy and Porky/porky_daffy_vialetto_casa.jpg": ["autunno", "estate", "mattino"],
@@ -174,7 +174,7 @@
     "whats_opera_doc.jpg": ["spettacolo", "crepuscolo"],
     "willy_beep_beep_zoom_and_bored.jpg": ["tramonto"],
     "joker_daffy_fumetto_risate.jpg": [],
-    "joker_daffy_fumetto_cella.jpg": [],
+    "joker_daffy_fumetto_cella.jpg": ["horror"],
     "coyotexlobo.jpg": [],
     "Daffy and Porky/daffy_coperto_gomma_rosa_verticale.jpg": [],
     "Daffy and Porky/daffy_porky_batti_cinque_verticale.jpg": [],
@@ -229,9 +229,9 @@
     "lola_land.png": ["sera", "svago", "spettacolo", "crepuscolo"],
     "Looney tunes christmas/taz_pupazzo_neve.jpg": ["natale", "notte"],
     "pepe_valentine.jpg": ["sanValentino", "smart"],
-    "taz_vampiro_halloween.jpg": ["horror"],
+    "taz_vampiro_halloween.jpg": ["horror", "notte"],
     "titti_crazy.png": ["crepuscolo", "smart"],
-    "titti_zucca.jpg": ["horror"],
+    "titti_zucca.jpg": ["horror", "notte"],
     "whats_opera_doc2.jpg": ["sera", "spettacolo"],
     "willy_lavagna.png": ["lavoro", "crepuscolo"],
     "Ralph_canna_pesca_pecora_lattuga.png": ["alba", "crepuscolo", "lavoro", "primavera", "autunno"],
@@ -358,7 +358,18 @@
     "superhero.png": ["notte", "lavoro"],
     "vintage_porky_petunia_gabby.png": ["weekend", "primavera", "mattino", "pranzo"],
     "wacky_world.png": ["primavera", "estate", "pomeriggio", "mattino"],
-    "easter_painting_group.jpg": ["pasqua"]
+    "easter_painting_group.jpg": ["pasqua"],
+    "daffy_bugs_halloween_flames.jpg": ["horror"],
+    "bugs_bloodcount.jpg": ["horror"],
+    "bugs_piramyd.jpg": ["horror", "mattino"],
+    "Coyote-vs-ACME-Bugs-sc.jpg": ["spettacolo"],
+    "Daffy and Porky/daffy_bambina_posseduta.png": ["pomeriggio", "horror"],
+    "Daffy and Porky/daffy_gum_vampire.jpg": ["horror", "mattino", "pomeriggio"],
+    "Daffy and Porky/Daffy_Porky_verricello.png": ["jolly", "notte"],
+    "Daffy and Porky/pedicure.jpg": ["lavoro", "mattino", "alba"],
+    "daffy_paperclip.jpg": ["compleanno", "jolly", "svago"],
+    "gossamer_art.jpg": ["horror"],
+    "wabbit_season_with_gun_copy.jpg": []
   },
   "random_rules": {
     "weekday": [
@@ -845,6 +856,14 @@
     {
       "random_rules": {
         "weekday": [
+          {
+            "from": "10:00",
+            "to": "11:00",
+            "include": ["horror"],
+            "exclude": ["tramonto", "crepuscolo", "sera", "notte"],
+            "match": "all",
+            "rotate_minutes": 60
+          },
           {
             "from": "sunset -40m",
             "to": "dusk +2m",
