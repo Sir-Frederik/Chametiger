@@ -865,6 +865,14 @@
             "rotate_minutes": 60
           },
           {
+            "from": "16:00",
+            "to": "sunset-40",
+            "include": ["horror"],
+            "exclude": ["tramonto", "crepuscolo", "sera"],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
             "from": "sunset -40m",
             "to": "dusk +2m",
             "include": ["crepuscolo", "horror"],
