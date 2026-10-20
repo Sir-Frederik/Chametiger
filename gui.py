@@ -152,6 +152,30 @@ def ensure_defaults(cfg: dict) -> dict:
     return cfg
 
 
+def dump_config(obj, width: int = 120, level: int = 0) -> str:
+    """
+    JSON compatto ma leggibile: le liste di tag stanno sempre su una riga, gli
+    oggetti (regole, stagioni...) su una riga se ci stanno in `width` colonne,
+    altrimenti vanno a capo come con indent=2. json.load lo legge identico.
+    """
+    flat = json.dumps(obj, ensure_ascii=False)
+    if not isinstance(obj, (dict, list)) or not obj:
+        return flat
+    if isinstance(obj, list) and not any(isinstance(v, (dict, list)) for v in obj):
+        return flat
+    if 2 * level + len(flat) <= width:
+        return flat
+    pad = "  " * (level + 1)
+    if isinstance(obj, dict):
+        righe = [
+            f"{pad}{json.dumps(k, ensure_ascii=False)}: {dump_config(v, width, level + 1)}"
+            for k, v in obj.items()
+        ]
+        return "{\n" + ",\n".join(righe) + "\n" + "  " * level + "}"
+    righe = [pad + dump_config(v, width, level + 1) for v in obj]
+    return "[\n" + ",\n".join(righe) + "\n" + "  " * level + "]"
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 #  Finestra principale
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -197,8 +221,11 @@ class ChametigerEditor(tk.Tk):
 
     def _save_config(self):
         try:
+            # Prima il testo, poi il file: se la serializzazione fallisce il
+            # config.json su disco resta intatto invece che troncato a meta'.
+            testo = dump_config(self.config_data) + "\n"
             with open(CONFIG_FILE, "w", encoding="utf-8") as f:
-                json.dump(self.config_data, f, indent=2, ensure_ascii=False)
+                f.write(testo)
             messagebox.showinfo("Salvato", "Configurazione salvata con successo!")
         except Exception as e:
             messagebox.showerror("Errore salvataggio", str(e))
