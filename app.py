@@ -675,7 +675,7 @@ def _rule_signature(rule: dict) -> str:
     if rule.get("_period"):
         parti.append("s:" + str(rule["_period"]))
     # Il tempo cambia il pool, quindi il mazzo: pioggia e sereno hanno ognuno il
-    # suo. Senza previsioni la firma resta quella di prima.
+    # suo. Col meteo disattivato la firma resta quella di prima.
     if rule.get("meteo"):
         parti.append("m:" + rule["meteo"])
     if rule.get("momenti"):
@@ -1149,7 +1149,6 @@ def pick_from_rule(
     with _history_lock:
         entries = load_history()
         memo = _window_entry(entries, day, sig, bucket)
-        tenuta = False
 
         if force_new:
             corrente = memo.get("image") if memo else scelta
@@ -1174,25 +1173,25 @@ def pick_from_rule(
         else:
             forzata = False
             if memo:
-                # un'estrazione manuale vale fino alla fine della sua finestra, e
-                # cosi' un'immagine tenuta al cambio di meteo (vedi sotto)
-                if (memo.get("forced") or memo.get("tenuta")) and memo.get("image") in pool:
+                # un'estrazione manuale vale fino alla fine della sua finestra
+                if memo.get("forced") and memo.get("image") in pool:
                     return memo["image"]
                 # finestra gia' registrata con la stessa immagine: niente da scrivere
                 if memo.get("image") == scelta:
                     return scelta
                 entries.remove(memo)
             else:
-                # Il meteo entra nella firma, quindi nel mazzo: un download che
-                # passa da "nessuna previsione" a "sereno" cambiava uno sfondo
-                # che col sereno andava benissimo. Se la finestra ha gia'
-                # un'immagine presa con un altro tempo, e il pool di adesso la
-                # ammette ancora, resta quella fino a fine finestra.
+                # Il meteo entra nella firma, quindi nel mazzo: quando il tempo
+                # dell'ora cambia, la finestra passa all'immagine del mazzo
+                # nuovo, la stessa che danno gli altri PC con quel tempo.
+                # Tenere quella vecchia perche' il pool nuovo la ammette ancora
+                # lasciava i PC disallineati fino a fine finestra (Gossamer su
+                # uno, daffy_bugs sugli altri). Resta solo un'estrazione
+                # manuale, che e' gia' di quel PC e basta.
                 gemella = _gemella_meteo(entries, day, sig, bucket)
-                if gemella and gemella.get("image") in pool:
+                if gemella and gemella.get("forced") and gemella.get("image") in pool:
                     scelta = gemella["image"]
-                    forzata = bool(gemella.get("forced"))
-                    tenuta = True
+                    forzata = True
 
         voce = {
             "ts": now.strftime("%Y-%m-%d %H:%M:%S"),
@@ -1202,8 +1201,6 @@ def pick_from_rule(
             "bucket": bucket,
             "forced": forzata,
         }
-        if tenuta:
-            voce["tenuta"] = True
         entries.append(voce)
         _save_history(_prune_history(entries, history_days(config), now))
 

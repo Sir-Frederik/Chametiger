@@ -413,13 +413,13 @@ Le esclusioni restano (i momenti per insieme, il resto secco), e restano obbliga
 
 Il meteo è l'**ultimo setaccio**: sceglie fra le immagini che fascia, stagione, evento e veto hanno già ammesso, e non ne aggiunge. A Natale, col temporale, la sera escono le immagini `natale` con `temporale`; un'immagine `estate + temporale` o `horror + temporale` resta fuori come sempre. Per vedere la pioggia in ogni momento della giornata servono quindi almeno due immagini `pioggia` per fascia: di mattina, di pomeriggio, di sera…
 
-**Carica meteo**, nel menu del tray, scarica subito le previsioni senza aspettare l'intervallo, e cambia lo sfondo solo se il tempo dell'ora rende inadatta l'immagine attuale.
+**Carica meteo**, nel menu del tray, scarica subito le previsioni senza aspettare l'intervallo, Se il tempo dell'ora cambia, lo sfondo passa all'immagine che quel tempo assegna alla finestra, la stessa degli altri PC; resta solo un'immagine estratta a mano.
 
 **Ripiego.** Senza connessione si riprova ogni 30 minuti e intanto si sceglie come col sereno: le immagini di pioggia e temporale restano da parte finché una fonte non dà pioggia. Lo stesso succede se i dati hanno più di 12 ore o se le coordinate sono cambiate. Solo con `"attivo": false` si sceglie come se il meteo non esistesse, e i tag `pioggia`/`temporale` contano come tutti gli altri.
 
 **Peso.** Il download lo fa `curl.exe`, già incluso in Windows 10/11, in un processo separato che termina subito: l'app nel tray non carica le librerie di rete di Python (~4 MB) e la sua memoria non cambia. Il meteo sono 10 righe.
 
-**Più PC.** Ogni PC scarica il meteo della sua posizione (vedi [Posizione multi-PC](#posizione-multi-pc)). Due PC con le stesse coordinate ricevono le stesse previsioni e restano allineati. Se uno dei due è offline, nelle ore di pioggia sceglie come col sereno, quindi immagini diverse, finché non riscarica.
+**Più PC.** Ogni PC scarica il meteo della sua posizione (vedi [Posizione multi-PC](#posizione-multi-pc)). Due PC con le stesse coordinate ricevono le stesse previsioni e restano allineati. Le previsioni però si aggiornano: due download fatti a ore diverse possono dare un tempo diverso per la stessa ora (alle 9:49 pioggia alle 10, alle 10:12 sereno), e fino al download successivo i due PC scelgono da mazzi diversi. Se uno dei due è offline, nelle ore di pioggia sceglie come col sereno, quindi immagini diverse, finché non riscarica.
 
 Nel log e in **Anteprima** un'ora di pioggia compare come `@pioggia` (o `@temporale`) accanto ai tag della regola; ogni download scrive una riga `[METEO]` col riassunto delle ore di pioggia previste.
 
