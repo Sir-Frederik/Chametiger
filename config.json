@@ -245,7 +245,7 @@
     "yosemite_danza.jpg": ["pomeriggio", "svago"],
     "yosemite_sam_Bugs_nozze.jpg": ["svago", "inverno"],
     "yosemite_sam_cavallo_schizzo.png": ["jolly", "mattino"],
-    "Bugs_bunny_Bed_Sun'sComingUp.jpeg": ["alba", "autunno", "inverno", "smart", "primavera", "pioggia", "temporale"],
+    "Bugs_bunny_Bed_Sun'sComingUp.jpeg": ["alba", "autunno", "inverno", "primavera", "pioggia", "temporale"],
     "Bugs_bunny_Giant_“WhatsUp_Doc”.jpg": ["pomeriggio", "smart", "svago"],
     "Bugs_Bunny_Ocean_BookOfRhymes.jpeg": ["svago", "tramonto", "primavera", "estate", "alba", "crepuscolo"],
     "Daffy_duck_moments_sea.jpg": ["svago", "mattino", "pomeriggio", "primavera", "autunno"],
@@ -613,7 +613,7 @@
   "theme": "dark",
   "latitude": 40.8199,
   "longitude": 14.3414,
-  "meteo": {"attivo": true, "aggiorna_ore": 5, "minimo": 2},
+  "meteo": {"attivo": true, "aggiorna_ore": 4, "minimo": 2},
   "seasons": [
     {"name": "Inverno", "from": "11-24", "to": "03-7", "tags": ["inverno"]},
     {"name": "Primavera", "from": "02-22", "to": "06-07", "tags": ["primavera"]},
@@ -868,7 +868,7 @@
             "from": "16:00",
             "to": "sunset-40",
             "include": ["horror"],
-            "exclude": ["tramonto", "crepuscolo", "sera"],
+            "exclude": ["tramonto", "crepuscolo", "sera", "notte"],
             "match": "all",
             "rotate_minutes": 60
           },
@@ -940,7 +940,7 @@
     }
   ],
   "position_map": {
-    "Federico": {"latitude": 40.8518, "longitude": 14.2681},
+    "Federico": {"latitude": 40.8199, "longitude": 14.3414},
     "Federico_Lenovo": {"latitude": 40.8199, "longitude": 14.3414},
     "FedericoAsus": {"latitude": 40.8199, "longitude": 14.3414}
   }
