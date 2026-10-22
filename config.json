@@ -79,7 +79,6 @@
     "fudd_daffy-1_copy.jpg": ["tramonto"],
     "halloween_personaggi_mostri_cimitero.jpg": ["horror", "notte", "sera"],
     "logo_looney_tunes_pattern.jpg": ["jolly", "mattino"],
-    "Looney tunes christmas/coyote_sci_salto_montagna.jpeg": ["inverno", "mattino", "pomeriggio", "sport"],
     "Looney tunes christmas/natale_personaggi_comignolo_neve.jpg": ["natale", "notte"],
     "Looney tunes christmas/daffy_ho_ho_ho_quackers.jpg": ["natale"],
     "Looney tunes christmas/natale_personaggi_ho_ho_ho_rosso.png": [],
@@ -92,9 +91,7 @@
     "Looney tunes christmas/chrome/natale_personaggi_addobbano_albero.jpg": ["natale"],
     "Looney tunes christmas/elmer_daffy_slittino_neve.jpg": ["inverno", "sport", "pomeriggio", "mattino"],
     "Looney tunes christmas/bugs_lola_albero_natale_iceberg.jpg": ["natale", "mattino"],
-    "Looney tunes christmas/inadeguate/bugs_ghirlanda_natale_verticale.jpg": [],
     "Looney tunes christmas/inadeguate/tiny_toons_coro_natalizio.jpg": [],
-    "Looney tunes christmas/inadeguate/daffy_babbo_natale_pila_regali.jpg": ["natale", "crepuscolo", "alba"],
     "Looney tunes christmas/nonna_sylvester_tweety_regalo_natale.png": ["natale", "mattino"],
     "Looney tunes christmas/taz_happy_holidays_neve.jpg": ["natale", "notte", "sera"],
     "Looney tunes christmas/cartoline_natalizie_personaggi.jpg": ["natale", "crepuscolo", "sera"],
@@ -175,7 +172,6 @@
     "willy_beep_beep_zoom_and_bored.jpg": ["tramonto"],
     "joker_daffy_fumetto_risate.jpg": [],
     "joker_daffy_fumetto_cella.jpg": ["horror"],
-    "coyotexlobo.jpg": [],
     "Daffy and Porky/daffy_coperto_gomma_rosa_verticale.jpg": [],
     "Daffy and Porky/daffy_porky_batti_cinque_verticale.jpg": [],
     "Daffy and Porky/porky_bolla_gomma_rosa_verticale.jpg": [],
@@ -210,7 +206,6 @@
     "Daffy_rainy.jpg": ["pioggia", "pomeriggio", "sera"],
     "daffy_elmer_cake.jpg": ["jolly", "compleanno", "pranzo"],
     "duck_tracy.jpg": ["spettacolo", "notte", "horror"],
-    "daffy_paperlayer.jpg": ["svago", "capodanno", "compleanno", "mattino"],
     "daffy_porky_compleanno.jpg": ["svago", "compleanno"],
     "daffy_porky_cinema.jpg": ["spettacolo", "weekend"],
     "bugs_bunny_arpa.jpg": ["crepuscolo", "svago"],
@@ -383,7 +378,11 @@
     "porky_dogs_cookies.jpeg": ["primavera", "svago", "weekend", "autunno", "mattino", "pranzo"],
     "robin_hood_friar_porky.jpeg": ["lavoro", "primavera", "autunno", "pomeriggio", "mattino"],
     "wile_batsuit.jpeg": ["crepuscolo"],
-    "wile_detour.jpeg": ["lavoro", "pomeriggio"]
+    "wile_detour.jpeg": ["lavoro", "pomeriggio"],
+    "coyote_sci_salto_montagna.jpeg": ["inverno", "sport", "alba", "pomeriggio"],
+    "Looney tunes christmas/bugs_ghirlanda_natale.jpg": ["natale"],
+    "Looney tunes christmas/bugs_ghirlanda_natale_verticale.jpg": [],
+    "Looney tunes christmas/daffy_babbo_natale_pila_regali.jpg": ["crepuscolo", "natale"]
   },
   "random_rules": {
     "weekday": [
@@ -624,7 +623,7 @@
     }
   },
   "history_days": 60,
-  "theme": "light",
+  "theme": "dark",
   "latitude": 40.8199,
   "longitude": 14.3414,
   "meteo": {"attivo": true, "aggiorna_ore": 3, "minimo": 2},
