@@ -283,7 +283,7 @@
     "porky_fly_wackyland_night.jpg": ["spettacolo", "notte", "horror"],
     "porky_tamburo.jpg": ["spettacolo", "notte"],
     "porky_valentine_flowers.jpg": ["sanValentino"],
-    "robin_hood_daffy_forest.jpg": ["pomeriggio", "primavera", "svago"],
+    "robin_hood_daffy_forest.jpg": ["pomeriggio", "primavera", "svago", "alba"],
     "sylvester_tweety_christmas_present_dynamite.jpg": ["natale"],
     "black_and_white_smocking.jpg": ["jolly", "sera", "spettacolo", "weekend", "inverno", "autunno"],
     "Foghorn_Barnyard_Henery.jpg": ["jolly", "alba", "mattino"],
@@ -373,7 +373,17 @@
     "bugs_car_mini_Umbrella.png": ["mattino", "temporale"],
     "bugs_door_rainy.jpg": ["temporale", "sera", "pomeriggio", "crepuscolo", "tramonto"],
     "daffy_storm_armchair.jpg": ["svago", "temporale", "sera", "crepuscolo"],
-    "journal_forecast_rainy.jpg": ["pioggia", "mattino", "alba"]
+    "journal_forecast_rainy.jpg": ["pioggia", "mattino", "alba"],
+    "bugs_superrabbit.jpeg": ["spettacolo", "alba", "lavoro"],
+    "daffy_cowboy_porky_horses.jpeg": ["pioggia", "estate", "pomeriggio", "mattino", "alba"],
+    "dogs_poker.jpeg": ["svago", "notte", "sera"],
+    "marvin_gossamer_gun.jpeg": ["horror", "sera", "crepuscolo"],
+    "mistery_machine_dogs.jpg": ["crepuscolo", "horror"],
+    "pepe_penelope_dogs.jpeg": ["primavera", "pomeriggio", "smart", "autunno"],
+    "porky_dogs_cookies.jpeg": ["primavera", "svago", "weekend", "autunno", "mattino", "pranzo"],
+    "robin_hood_friar_porky.jpeg": ["lavoro", "primavera", "autunno", "pomeriggio", "mattino"],
+    "wile_batsuit.jpeg": ["crepuscolo"],
+    "wile_detour.jpeg": ["lavoro", "pomeriggio"]
   },
   "random_rules": {
     "weekday": [
@@ -461,7 +471,7 @@
         "from": "dusk +2m",
         "to": "22:00",
         "include": ["sera", "spettacolo", "svago"],
-        "exclude": ["alba", "mattino", "pranzo", "pomeriggio", "tramonto", "crepuscolo", "notte"],
+        "exclude": ["alba", "mattino", "pranzo", "pomeriggio", "tramonto", "notte"],
         "match": "any",
         "rotate_minutes": 60
       },
@@ -614,7 +624,7 @@
     }
   },
   "history_days": 60,
-  "theme": "dark",
+  "theme": "light",
   "latitude": 40.8199,
   "longitude": 14.3414,
   "meteo": {"attivo": true, "aggiorna_ore": 3, "minimo": 2},
