@@ -617,7 +617,7 @@
   "theme": "dark",
   "latitude": 40.8199,
   "longitude": 14.3414,
-  "meteo": {"attivo": true, "aggiorna_ore": 4, "minimo": 2},
+  "meteo": {"attivo": true, "aggiorna_ore": 3, "minimo": 2},
   "seasons": [
     {"name": "Inverno", "from": "11-24", "to": "03-7", "tags": ["inverno"]},
     {"name": "Primavera", "from": "02-22", "to": "06-07", "tags": ["primavera"]},
