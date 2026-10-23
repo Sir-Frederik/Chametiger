@@ -623,7 +623,7 @@
     }
   },
   "history_days": 60,
-  "theme": "dark",
+  "theme": "light",
   "latitude": 40.8199,
   "longitude": 14.3414,
   "meteo": {"attivo": true, "aggiorna_ore": 3, "minimo": 2},
@@ -953,7 +953,7 @@
     }
   ],
   "position_map": {
-    "Federico": {"latitude": 40.8199, "longitude": 14.3414},
+    "Federico": {"latitude": 40.8518, "longitude": 14.2681},
     "Federico_Lenovo": {"latitude": 40.8199, "longitude": 14.3414},
     "FedericoAsus": {"latitude": 40.8199, "longitude": 14.3414}
   }

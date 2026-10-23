@@ -80,17 +80,17 @@ def stato_da_simbolo(simbolo: str) -> str:
     return ASCIUTTO
 
 
-def stato_da_metar(wx: str | None) -> str:
-    """
-    Fenomeni del METAR -> stato: '-TSRA' e 'VCTS' -> temporale, 'SHRA' e
-    '-DZ' -> pioggia, nessun fenomeno -> asciutto. Il temporale vince su tutto.
-    """
-    gruppi = [g.lstrip("+-") for g in (wx or "").split()]
-    if any("TS" in g for g in gruppi):
-        return TEMPORALE
-    if any("RA" in g or "DZ" in g or g in ("SH", "VCSH") for g in gruppi):
-        return PIOGGIA
-    return ASCIUTTO
+# def stato_da_metar(wx: str | None) -> str:
+#     """
+#     Fenomeni del METAR -> stato: '-TSRA' e 'VCTS' -> temporale, 'SHRA' e
+#     '-DZ' -> pioggia, nessun fenomeno -> asciutto. Il temporale vince su tutto.
+#     """
+#     gruppi = [g.lstrip("+-") for g in (wx or "").split()]
+#     if any("TS" in g for g in gruppi):
+#         return TEMPORALE
+#     if any("RA" in g or "DZ" in g or g in ("SH", "VCSH") for g in gruppi):
+#         return PIOGGIA
+#     return ASCIUTTO
 
 
 def impostazioni(config: dict) -> tuple[bool, float]:
@@ -243,7 +243,9 @@ def _metar(lat: float, lon: float) -> tuple[str, str] | None:
     ('LIRN -TSRA', 'temporale'). None se non c'e' una stazione entro
     METAR_RAGGIO_KM con un METAR degli ultimi METAR_MAX_ETA_MIN minuti.
     """
-    zona = URL_METAR.format(sud=lat - 0.5, nord=lat + 0.5, ovest=lon - 0.5, est=lon + 0.5)
+    zona = URL_METAR.format(
+        sud=lat - 0.5, nord=lat + 0.5, ovest=lon - 0.5, est=lon + 0.5
+    )
     limite = time.time() - METAR_MAX_ETA_MIN * 60
     candidati = []
     for m in _scarica(zona):
@@ -258,7 +260,10 @@ def _metar(lat: float, lon: float) -> tuple[str, str] | None:
         return None
     m = min(candidati, key=lambda c: c[:2])[2]
     wx = m.get("wxString") or ""
-    return f"{m.get('icaoId', '?')} {wx or 'niente fenomeni'}", stato_da_metar(wx)
+    # Ho temporaneamente tolto Metar perchè non è affidabile per i luoghi lontani dagli aereoporti.
+    # Meglio usare direttamente Met Norway
+
+    # return f"{m.get('icaoId', '?')} {wx or 'niente fenomeni'}", stato_da_metar(wx)
 
 
 # Ultimo tentativo fallito, per non lanciare curl a ogni giro quando si e'
@@ -290,7 +295,10 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
         return False
     if not forza:
         dati = _carica()
-        if _valide(dati, config) and time.time() - float(dati["scaricato"]) < ore * 3600:
+        if (
+            _valide(dati, config)
+            and time.time() - float(dati["scaricato"]) < ore * 3600
+        ):
             return False
         if time.time() - _ultimo_errore < RIPROVA_MINUTI * 60:
             return False
@@ -302,20 +310,20 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
     except Exception as e:
         ore_meteo = {}
         errori.append(f"Met Norway: {e}")
-    try:
-        osservato = _metar(lat, lon)
-    except Exception as e:
-        osservato = None
-        errori.append(f"METAR: {e}")
+        # try:
+        #     osservato = _metar(lat, lon)
+        # except Exception as e:
+        #     osservato = None
+        #     errori.append(f"METAR: {e}")
 
-    # L'osservazione dice che tempo fa davvero adesso: vince sulla previsione.
-    # Senza previsioni resta comunque l'ora attuale.
-    if osservato:
-        ore_meteo[_chiave(datetime.now())] = osservato[1]
+        # # L'osservazione dice che tempo fa davvero adesso: vince sulla previsione.
+        # # Senza previsioni resta comunque l'ora attuale.
+        # if osservato:
+        #     ore_meteo[_chiave(datetime.now())] = osservato[1]
 
-    if not ore_meteo:
-        # Lo scheduler lo dice una volta per serie di errori; una richiesta
-        # dal menu vuole sempre una risposta.
+        # if not ore_meteo:
+        #     # Lo scheduler lo dice una volta per serie di errori; una richiesta
+        #     # dal menu vuole sempre una risposta.
         if forza or not _ultimo_errore:
             motivo = "; ".join(errori) or "nessun dato"
             log(f"[METEO] Meteo non disponibile ({motivo}): scelgo come col sereno.")
@@ -326,7 +334,7 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
         "scaricato": time.time(),
         "lat": lat,
         "lon": lon,
-        "osservato": osservato[0] if osservato else None,
+        # "osservato": osservato[0] if osservato else None,
         "ore": dict(sorted(ore_meteo.items())),
     }
     try:
@@ -338,8 +346,8 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
 
     _ultimo_errore = 0.0
     fonti = [] if any(e.startswith("Met Norway") for e in errori) else ["Met Norway"]
-    if osservato:
-        fonti.append(f"adesso METAR {osservato[0]}")
+    # if osservato:
+    #     fonti.append(f"adesso METAR {osservato[0]}")
     nota = f" Non disponibile: {'; '.join(errori)}." if errori else ""
     log(f"[METEO] Aggiornato ({', '.join(fonti)}): {riassunto(ore_meteo)}.{nota}")
     return True
@@ -353,7 +361,11 @@ def riassunto(ore: dict[str, str]) -> str:
         if chiave < adesso or ore[chiave] == ASCIUTTO:
             continue
         h = chiave[-2:]
-        if tratti and tratti[-1][0] == ore[chiave] and tratti[-1][3] == _precedente(chiave):
+        if (
+            tratti
+            and tratti[-1][0] == ore[chiave]
+            and tratti[-1][3] == _precedente(chiave)
+        ):
             tratti[-1][2], tratti[-1][3] = h, chiave
         else:
             tratti.append([ore[chiave], h, h, chiave])
