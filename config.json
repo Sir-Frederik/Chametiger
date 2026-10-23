@@ -314,7 +314,7 @@
     "bird_watching.jpg": ["lavoro", "mattino"],
     "cluck_trent_office_water.jpg": ["lavoro", "mattino"],
     "detective_study.jpg": ["lavoro", "sera"],
-    "duck_amuck_background_sketch.jpg": ["jolly", "mattino", "pomeriggio"],
+    "duck_amuck_background_sketch.jpg": ["jolly", "mattino", "alba"],
     "end_of_road.jpg": ["pomeriggio", "lavoro"],
     "ice_breaked_sylvester.jpg": ["inverno", "sera", "crepuscolo"],
     "night_castel_pumpernickel.jpg": ["notte"],
@@ -382,7 +382,10 @@
     "coyote_sci_salto_montagna.jpeg": ["inverno", "sport", "alba", "pomeriggio"],
     "Looney tunes christmas/bugs_ghirlanda_natale.jpg": ["natale"],
     "Looney tunes christmas/bugs_ghirlanda_natale_verticale.jpg": [],
-    "Looney tunes christmas/daffy_babbo_natale_pila_regali.jpg": ["crepuscolo", "natale"]
+    "Looney tunes christmas/daffy_babbo_natale_pila_regali.jpg": ["crepuscolo", "natale"],
+    "Daffy and Porky/daffy_bugs_hole_filled_water.png": ["mattino", "temporale"],
+    "daffy_hot_dry.jpeg": ["estate", "pomeriggio"],
+    "sylvester_hector_rainy.jpg": ["pioggia", "pomeriggio"]
   },
   "random_rules": {
     "weekday": [
@@ -623,7 +626,7 @@
     }
   },
   "history_days": 60,
-  "theme": "light",
+  "theme": "dark",
   "latitude": 40.8199,
   "longitude": 14.3414,
   "meteo": {"attivo": true, "aggiorna_ore": 3, "minimo": 2},

@@ -1422,7 +1422,7 @@ class ChametigerTray:
                 server.bind((IPC_HOST, IPC_PORT))
                 server.listen()
                 server.settimeout(1)
-                log("[INFO] Server IPC locale pronto.")
+                # log("[INFO] Server IPC locale pronto.")
 
                 while not self._stop_event.is_set():
                     try:
