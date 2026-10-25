@@ -924,7 +924,7 @@
       },
       "name": "Halloween",
       "from": "10-20",
-      "to": "11-01",
+      "to": "11-02",
       "tags": ["horror"],
       "veto": ["natale", "sanValentino", "pasqua"]
     },
