@@ -385,7 +385,19 @@
     "Looney tunes christmas/daffy_babbo_natale_pila_regali.jpg": ["crepuscolo", "natale"],
     "Daffy and Porky/daffy_bugs_hole_filled_water.png": ["mattino", "temporale"],
     "daffy_hot_dry.jpeg": ["estate", "pomeriggio"],
-    "sylvester_hector_rainy.jpg": ["pioggia", "pomeriggio"]
+    "sylvester_hector_rainy.jpg": ["pioggia", "pomeriggio"],
+    "bugs_gossamer_haircut.jpg": ["lavoro", "horror", "pomeriggio", "mattino"],
+    "casino_gamble.jpg": ["svago", "notte", "weekend"],
+    "Looney Tunes Sports/bugs_bunjee.jpg": ["sport", "mattino"],
+    "Looney Tunes Sports/climbing_sylvester.jpg": ["pomeriggio", "tramonto", "sport"],
+    "Looney Tunes Sports/daffy_mountain_bike_falling_extreme.jpeg": ["crepuscolo", "sport"],
+    "Looney Tunes Sports/daffy_shark_scooter.jpg": ["alba", "sport", "estate", "primavera"],
+    "Looney Tunes Sports/daffy_taz_rafting_xtreme.jpeg": ["crepuscolo", "sport", "primavera", "estate"],
+    "Looney Tunes Sports/wile_roller_xtreme.jpg": ["pomeriggio", "tramonto", "sport", "primavera", "autunno"],
+    "Looney Tunes Sports/wile_skying_tree.jpeg": ["sport", "inverno", "mattino"],
+    "subway.jpg": ["alba", "lavoro", "autunno", "inverno", "primavera"],
+    "sylvester_tweety_fitness.jpg": ["sport", "weekend", "pomeriggio"],
+    "tweety_sylvester_autumn_rainy.jpg": ["pomeriggio", "mattino", "alba", "pioggia", "smart", "autunno", "inverno"]
   },
   "random_rules": {
     "weekday": [
