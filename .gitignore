@@ -14,6 +14,3 @@ __pycache__/
 build/
 dist/
 *.spec
-
-# Il config condiviso sta nella cartella delle immagini (vedi cartella_config.json)
-/config.json

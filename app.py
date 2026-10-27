@@ -23,7 +23,7 @@ import date_mobili
 import meteo
 import sun
 from versione import VERSIONE
-from posizione_config import percorso_config
+from posizione_config import leggi_config
 
 try:
     import pystray
@@ -123,9 +123,11 @@ def ensure_defaults(cfg: dict) -> dict:
 
 
 def load_config() -> dict:
-    """Il config.json condiviso, nella cartella indicata da cartella_config.json."""
-    with open(percorso_config(), encoding="utf-8") as f:
-        return ensure_defaults(json.load(f))
+    """
+    Il config.json condiviso, nella cartella indicata da cartella_config.json.
+    Solleva un'eccezione se manca o non e' completo, mai un config vuoto.
+    """
+    return ensure_defaults(leggi_config())
 
 
 def is_absolute_path(p: str) -> bool:
@@ -1430,13 +1432,11 @@ _mutex = None
 
 class ChametigerTray:
     def __init__(self):
-        try:
-            self.config = load_config()
-        except Exception as e:
-            # Il tray parte lo stesso: lo scheduler riprova a leggerlo.
-            log(f"[WARN] config.json non leggibile all'avvio: {e}")
-            self.config = {}
+        # None finche' non c'e' una configurazione letta con successo: mai un
+        # config vuoto al suo posto. Lo scheduler riprova a leggerla.
+        self.config = None
         self._config_illeggibile = False
+        self._rileggi_config()
         self._stop_event = threading.Event()
         self._icon = None
         self._no_slot_logged = False
@@ -1491,22 +1491,40 @@ class ChametigerTray:
             log("[INFO] Nessuno slot attivo al momento.")
         self._no_slot_logged = True
 
+    def _rileggi_config(self) -> bool:
+        """
+        Rilegge config.json. Se non si legge, perche' Drive non ha montato la
+        cartella, lo sta scrivendo o il file e' troncato, tiene l'ultima
+        configurazione letta con successo: ripartire da zero vorrebbe dire
+        restare senza regole, e quindi senza sfondo. Come per log.json, ma con
+        "tengo la precedente" al posto di "riparto da zero".
+
+        False solo se una configurazione buona non c'e' ancora mai stata.
+        """
+        try:
+            self.config = load_config()
+        except Exception as e:
+            if not self._config_illeggibile:
+                if self.config is None:
+                    log(f"[WARN] config.json non leggibile, riprovo ogni "
+                        f"{RIPROVA_CONFIG_S} s: {e}")
+                else:
+                    log(f"[WARN] config.json non leggibile, continuo con "
+                        f"l'ultima configurazione letta: {e}")
+            self._config_illeggibile = True
+            return self.config is not None
+        if self._config_illeggibile:
+            log("[INFO] config.json di nuovo leggibile.")
+            self._config_illeggibile = False
+        return True
+
     # ── Thread principale del polling ────────────────────────────────────────
     def _run_scheduler(self):
         primo_giro = True
         while not self._stop_event.is_set():
-            try:
-                self.config = load_config()  # rilegge la config ad ogni ciclo
-            except Exception as e:
-                if not self._config_illeggibile:
-                    log(f"[WARN] config.json non leggibile, riprovo ogni "
-                        f"{RIPROVA_CONFIG_S} s: {e}")
-                self._config_illeggibile = True
+            if not self._rileggi_config():  # rilegge la config ad ogni ciclo
                 self._stop_event.wait(RIPROVA_CONFIG_S)
                 continue
-            if self._config_illeggibile:
-                log("[INFO] config.json di nuovo leggibile.")
-                self._config_illeggibile = False
             try:
                 invalida_cache_file()
                 # Al primo giro scarica sempre, anche se meteo.json e' recente:
@@ -1536,7 +1554,8 @@ class ChametigerTray:
 
     def _apply_now(self, icon, item):
         try:
-            self.config = load_config()
+            if not self._rileggi_config():
+                return
             invalida_cache_file()
             wallpaper, category = resolve_wallpaper(self.config)
             if wallpaper:
@@ -1550,7 +1569,8 @@ class ChametigerTray:
     def _shuffle_now(self, icon, item):
         """Forza una nuova estrazione ignorando la finestra di rotazione."""
         try:
-            self.config = load_config()
+            if not self._rileggi_config():
+                return
             invalida_cache_file()
 
             now = datetime.now()
@@ -1588,7 +1608,8 @@ class ChametigerTray:
         stato del tempo, quindi un memo preso col tempo vecchio non vale piu'.
         """
         try:
-            self.config = load_config()
+            if not self._rileggi_config():
+                return
             if not meteo.aggiorna_se_serve(self.config, log, forza=True):
                 return
             invalida_cache_file()

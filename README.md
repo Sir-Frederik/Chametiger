@@ -1,7 +1,13 @@
 # 🦎 Chametiger
 
-**v4.6.2** — 23 ottobre 2026
-Escluso meteo Metar. Aggunto bottone "carica meteo" anche nella Gui
+**v4.7.0** — 27 ottobre 2026
+
+> **⚠️ La 4.7.0 non è compatibile con le versioni precedenti: aggiorna tutti i PC insieme e riavvia ogni tray.**
+>
+> - **Il mazzo si ordina diversamente.** Prima si mescolava con `random.shuffle`, ora l'ordine viene da `sha256("firma|giro|immagine")`, che dà gli stessi byte in qualsiasi linguaggio e versione di Python. Tutti i mazzi si sono spostati, una volta sola.
+> - **`config.json` si legge dalla cartella delle immagini su Drive**, non più da quella del programma (vedi [Dove sta `config.json`](#dove-sta-configjson)).
+>
+> Il codice si carica all'avvio, quindi dopo l'aggiornamento **ogni tray va chiuso e riaperto**. Un PC che gira ancora col codice vecchio mostra immagini diverse dagli altri **senza segnalare niente**. Per controllare, guarda la versione nel menu del tray di ogni PC.
 
 
 Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno**, al **giorno della settimana**, alla **stagione**, agli **eventi** dell'anno e agli **orari reali di alba e tramonto**.
@@ -20,8 +26,9 @@ Ogni fascia oraria pesca fra le immagini che hanno certi **tag**, e le fa scorre
 ├── versione.py     ← Numero di versione, mostrato nel tray e nell'editor
 ├── date_mobili.py  ← Date di stagioni ed eventi, comprese quelle relative a Pasqua
 ├── meteo.py        ← Meteo delle prossime 10 ore (Met Norway + METAR) per le immagini di pioggia
-├── posizione_config.py ← Trova config.json nella cartella delle immagini
+├── posizione_config.py ← Trova e legge config.json nella cartella delle immagini
 ├── cartella_config.json ← Dove sta quella cartella su ogni PC
+├── config.json     ← Solo backup: la copia buona sta su Drive (vedi sotto)
 ├── log.json        ← Storico delle estrazioni casuali (generato)
 ├── chametiger.log  ← Log testuale (generato)
 ├── meteo.json      ← Previsioni scaricate (generato)
@@ -114,7 +121,9 @@ Oppure: click destro sull'icona tray → **Apri editor config**
 
 ### Dove sta `config.json`
 
-`config.json` non sta nel repository ma nella **cartella delle immagini**, su Google Drive: è un solo file per tutti i PC e per il telefono, che lo legge da lì con l'API di Drive. Se ogni dispositivo avesse la sua copia, prima o poi le copie divergerebbero, e con loro le immagini mostrate.
+**La copia che conta è quella su Drive**, nella cartella delle immagini. È un solo file per tutti i PC e per il telefono. Se ogni dispositivo avesse la sua copia, prima o poi le copie divergerebbero, e con loro le immagini mostrate.
+
+**Il `config.json` del repository è solo un backup**, un'istantanea fatta ogni tanto. Può essere indietro rispetto a quello su Drive, e né il tray né l'editor lo leggono. Le modifiche vanno fatte sempre su quello di Drive, con l'editor o a mano.
 
 Il config non può dire dove si trova lui stesso, quindi la cartella di ogni PC è scritta in `cartella_config.json`, accanto ad `app.py`. Ha la stessa forma di `base_path` / `path_map`:
 
@@ -125,7 +134,16 @@ Il config non può dire dove si trova lui stesso, quindi la cartella di ogni PC 
 }
 ```
 
-Il tray e l'editor leggono e salvano lo stesso file. Se all'avvio la cartella non è ancora raggiungibile, per esempio perché Drive non l'ha ancora montata, il tray riprova ogni 30 secondi. Senza `cartella_config.json` si usa il `config.json` accanto ad `app.py`, come prima.
+Il tray e l'editor leggono e salvano lo stesso file. Siccome sta su un disco di rete, la lettura può fallire:
+
+| Caso | Tray | Editor |
+| --- | --- | --- |
+| All'avvio la cartella non c'è ancora, per esempio perché Drive non l'ha montata | Parte senza configurazione e riprova ogni 30 secondi | Mostra l'errore e si chiude |
+| A tray avviato il file sparisce, è troncato, non è JSON (Drive lo sta scrivendo, un conflitto) o non ha `image_library` / `random_rules` | Continua con **l'ultima configurazione letta con successo** e scrive un avviso nel log, una volta sola finché il problema dura | Mostra l'errore e si chiude, così non lo apre vuoto e non lo salva sopra quello buono |
+
+Il tray non lavora mai con una configurazione vuota o a metà: senza regole resterebbe senza sfondo. Quando il file torna leggibile lo scrive nel log.
+
+Senza `cartella_config.json` si usa il `config.json` accanto ad `app.py`, come prima della 4.7.0.
 
 ### Percorsi multi-PC
 
@@ -520,6 +538,8 @@ L'eseguibile comparirà in `dist/app.exe`.
 | Esce sempre la stessa                 | La regola ha pochi candidati: usa **Verifica anno** in Stagioni ed eventi |
 | Le immagini si ripetono troppo spesso | Il pool è piccolo: il mazzo si riavvolge presto. Taggane altre, o allarga i tag della regola. `history_days` **non** c'entra |
 | Su un altro PC non trova le immagini  | Aggiungi il suo hostname in `path_map`                                  |
+| Due PC mostrano immagini diverse alla stessa ora | Uno dei due gira con codice vecchio: confronta la versione nel menu del tray, aggiorna e riavvia il tray |
+| `config.json non leggibile` nel log    | Drive non ha montato la cartella, o il file è a metà sincronizzazione. Il tray continua con l'ultima configurazione buona; controlla `cartella_config.json` se non passa |
 | Le fasce serali cadono nell'ora sbagliata | Coordinate sbagliate: **Impostazioni → Posizione**                  |
 | Un'immagine stagionale non esce mai   | Tutti i suoi tag di stagione o evento sono fuori periodo, ha un tag vietato (`!tag`), oppure è ammessa solo in uno strato le cui fasce non la pescano: guarda **Anteprima** |
 | A luglio escono immagini invernali    | Un giorno dell'anno non è coperto da nessuna stagione: la tab Stagioni ed eventi lo segnala |

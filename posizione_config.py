@@ -45,3 +45,35 @@ def percorso_config() -> Path:
     if cartella is None:
         return BASE_DIR / NOME_CONFIG
     return cartella / NOME_CONFIG
+
+
+# Senza queste un config e' vuoto o tagliato, non "un config con pochi dati".
+CHIAVI_ESSENZIALI = ("image_library", "random_rules")
+
+
+class ConfigIllegibile(Exception):
+    """config.json c'e' ma non si puo' usare: troncato, a meta' scrittura, non JSON."""
+
+
+def leggi_config(percorso: Path | None = None) -> dict:
+    """
+    Il config cosi' com'e' sul disco, senza i default.
+
+    Su Drive il file puo' trovarsi a meta' di una scrittura o di una
+    sincronizzazione. Un file che non e' un config completo solleva
+    ConfigIllegibile invece di passare per un config vuoto: ensure_defaults lo
+    riempirebbe di liste vuote, e chi lo usa resterebbe senza regole. Il file
+    assente o la cartella non montata arrivano come OSError.
+    """
+    percorso = percorso or percorso_config()
+    try:
+        with open(percorso, encoding="utf-8") as f:
+            cfg = json.load(f)
+    except ValueError as e:  # JSONDecodeError e UnicodeDecodeError
+        raise ConfigIllegibile(f"{percorso} non e' un JSON valido: {e}") from e
+    if not isinstance(cfg, dict):
+        raise ConfigIllegibile(f"{percorso} non contiene un oggetto JSON")
+    mancanti = [k for k in CHIAVI_ESSENZIALI if not cfg.get(k)]
+    if mancanti:
+        raise ConfigIllegibile(f"{percorso}: mancano o sono vuote {', '.join(mancanti)}")
+    return cfg

@@ -18,7 +18,7 @@ import date_mobili
 import meteo
 import sun
 from versione import VERSIONE
-from posizione_config import percorso_config
+from posizione_config import ConfigIllegibile, leggi_config, percorso_config
 
 try:
     from PIL import Image, ImageTk
@@ -212,14 +212,15 @@ class ChametigerEditor(tk.Tk):
     # ── Carica / Salva config ────────────────────────────────────────────────
     def _load_config(self):
         try:
-            with open(percorso_config(), encoding="utf-8") as f:
-                self.config_data = ensure_defaults(json.load(f))
+            self.config_data = ensure_defaults(leggi_config())
         except OSError as e:
             # Anche la cartella su Drive non ancora montata: meglio chiudere che
             # aprire un config vuoto e poi salvarlo sopra quello vero.
             messagebox.showerror("Errore", f"config.json non leggibile:\n{e}")
             self.destroy()
-        except json.JSONDecodeError as e:
+        except ConfigIllegibile as e:
+            # Troncato o a meta' di una sincronizzazione: aprirlo e salvarlo
+            # sovrascriverebbe quello buono.
             messagebox.showerror("config.json non valido", str(e))
             self.destroy()
 
