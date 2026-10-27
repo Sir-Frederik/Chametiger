@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.chametigermobile"
+    namespace = "io.github.sirfrederik.chametiger"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.example.chametigermobile"
+        applicationId = "io.github.sirfrederik.chametiger"
         minSdk = 26
         targetSdk = 37
         versionCode = 1
