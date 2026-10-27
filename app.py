@@ -8,6 +8,7 @@ Richiede: pystray, Pillow, pywin32
 import sys
 import os
 import json
+import hashlib
 import random
 import ctypes
 import threading
@@ -884,22 +885,37 @@ def _window_ordinal(rule: dict, now: datetime, rotate: int, config: dict) -> int
     return _finestre_fino_a(rule, giorno, rotate, config) + offset
 
 
+def _ordine(pool: list[str], sig: str, giro: int) -> list[str]:
+    """
+    Il pool ordinato per sha256("firma|giro|immagine"): una permutazione che
+    cambia a ogni giro.
+
+    Non random.Random: il suo shuffle dipende dagli interni di CPython (seme da
+    stringa, Mersenne Twister, campionamento con rigetto), che nessuno garantisce
+    stabili fra una versione e l'altra. SHA-256 da' gli stessi byte in qualunque
+    linguaggio, ed e' questo che permette all'app Android di calcolare lo stesso
+    mazzo dei PC.
+    """
+    return sorted(
+        pool,
+        key=lambda img: hashlib.sha256(f"{sig}|{giro}|{img}".encode("utf-8")).digest(),
+    )
+
+
 def _mazzo(pool: list[str], sig: str, giro: int) -> list[str]:
     """
     L'ordine delle immagini per un giro completo. Deterministico: due PC con la
     stessa libreria e la stessa regola ottengono lo stesso mazzo senza parlarsi.
     """
-    m = sorted(pool)
-    if len(m) <= 2:
-        return m  # con una o due immagini l'unica sequenza sensata e' l'alternanza
+    if len(pool) <= 2:
+        return sorted(pool)  # con una o due immagini l'unica sequenza sensata e' l'alternanza
 
-    random.Random(f"{sig}|{giro}").shuffle(m)
+    m = _ordine(pool, sig, giro)
 
     # Evita che l'ultima carta di un giro e la prima del successivo coincidano.
     # Si scambiano le posizioni 0 e 1 e non 0 e ultima, altrimenti la correzione
     # cambierebbe la carta finale e il controllo diventerebbe ricorsivo.
-    prec = sorted(pool)
-    random.Random(f"{sig}|{giro - 1}").shuffle(prec)
+    prec = _ordine(pool, sig, giro - 1)
     if m[0] == prec[-1]:
         m[0], m[1] = m[1], m[0]
 
