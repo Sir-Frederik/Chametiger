@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Measure-Command *)",
+      "PowerShell(.\\\\gradlew.bat :motore:compileTestKotlin --console=plain 2>&1 | Select-Object -Last 40)",
+      "PowerShell(.\\\\gradlew.bat :motore:compileTestKotlin --console=plain -q 2>&1 | Select-Object -Last 30)",
+      "PowerShell($x = [xml]\\(Get-Content motore\\\\build\\\\test-results\\\\test\\\\TEST-com.example.chametigermobile.motore.RiferimentoTest.xml\\); $x.testsuite.testcase.failure.message.Substring\\(0, [Math]::Min\\(900, $x.testsuite.testcase.failure.message.Length\\)\\))"
+    ]
+  }
+}
