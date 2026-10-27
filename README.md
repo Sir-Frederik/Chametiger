@@ -20,7 +20,8 @@ Ogni fascia oraria pesca fra le immagini che hanno certi **tag**, e le fa scorre
 ├── versione.py     ← Numero di versione, mostrato nel tray e nell'editor
 ├── date_mobili.py  ← Date di stagioni ed eventi, comprese quelle relative a Pasqua
 ├── meteo.py        ← Meteo delle prossime 10 ore (Met Norway + METAR) per le immagini di pioggia
-├── config.json     ← Configurazione: regole, stagioni, eventi, tag, libreria
+├── posizione_config.py ← Trova config.json nella cartella delle immagini
+├── cartella_config.json ← Dove sta quella cartella su ogni PC
 ├── log.json        ← Storico delle estrazioni casuali (generato)
 ├── chametiger.log  ← Log testuale (generato)
 ├── meteo.json      ← Previsioni scaricate (generato)
@@ -110,6 +111,21 @@ Oppure: click destro sull'icona tray → **Apri editor config**
 | `base_path` / `path_map`  | Cartella base delle immagini, con override per singolo PC (hostname) |
 | `seasons` / `events`      | Stagioni ed eventi, che filtrano i tag (vedi sotto)                  |
 | `meteo`                   | `{"attivo": true, "aggiorna_ore": 5, "minimo": 2}`: previsioni sì/no, ogni quante ore riscaricarle (1–10), soglia minima del pool |
+
+### Dove sta `config.json`
+
+`config.json` non sta nel repository ma nella **cartella delle immagini**, su Google Drive: è un solo file per tutti i PC e per il telefono, che lo legge da lì con l'API di Drive. Se ogni dispositivo avesse la sua copia, prima o poi le copie divergerebbero, e con loro le immagini mostrate.
+
+Il config non può dire dove si trova lui stesso, quindi la cartella di ogni PC è scritta in `cartella_config.json`, accanto ad `app.py`. Ha la stessa forma di `base_path` / `path_map`:
+
+```json
+{
+  "cartella": "G:/Altri computer/Asus/Temi/Looney tunes",
+  "per_pc": { "FedericoAsus": "C:/Users/Asus/Pictures/Temi/Looney tunes" }
+}
+```
+
+Il tray e l'editor leggono e salvano lo stesso file. Se all'avvio la cartella non è ancora raggiungibile, per esempio perché Drive non l'ha ancora montata, il tray riprova ogni 30 secondi. Senza `cartella_config.json` si usa il `config.json` accanto ad `app.py`, come prima.
 
 ### Percorsi multi-PC
 

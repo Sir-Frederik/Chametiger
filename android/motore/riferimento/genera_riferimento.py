@@ -130,8 +130,8 @@ def genera(nome: str, config: dict, dal: date, al: date):
 
 def main():
     prepara()
-    with open(CHAMETIGER / "config.json", encoding="utf-8") as f:
-        base = app.ensure_defaults(json.load(f))
+    # Lo stesso config.json condiviso che leggono il tray e il telefono.
+    base = app.load_config()
     for nome, (dal, al, attivo) in SCENARI.items():
         config = copy.deepcopy(base)
         config["meteo"]["attivo"] = attivo

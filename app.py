@@ -23,6 +23,7 @@ import date_mobili
 import meteo
 import sun
 from versione import VERSIONE
+from posizione_config import percorso_config
 
 try:
     import pystray
@@ -34,7 +35,6 @@ except ImportError:
 
 # ── Percorsi ─────────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).parent.resolve()
-CONFIG_FILE = BASE_DIR / "config.json"
 APP_NAME = "Chametiger"
 REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 LOG_FILE = BASE_DIR / "chametiger.log"
@@ -47,6 +47,9 @@ IPC_PORT = 48621
 # mezzanotte: una settimana e' margine abbondante. Non ha effetto su quale
 # immagine esce - la scelta viene dal mazzo e non legge lo storico.
 DEFAULT_HISTORY_DAYS = 7
+# Se config.json non si legge (all'avvio Drive puo' non aver ancora montato la
+# cartella) si riprova dopo questi secondi, non dopo l'intervallo intero.
+RIPROVA_CONFIG_S = 30
 # Origine del conteggio delle finestre. NON cambiarla mai dopo il primo avvio:
 # spostarla trasla l'intero mazzo e i PC gia' allineati si disallineano.
 EPOCH = date(2026, 1, 1)
@@ -120,7 +123,8 @@ def ensure_defaults(cfg: dict) -> dict:
 
 
 def load_config() -> dict:
-    with open(CONFIG_FILE, encoding="utf-8") as f:
+    """Il config.json condiviso, nella cartella indicata da cartella_config.json."""
+    with open(percorso_config(), encoding="utf-8") as f:
         return ensure_defaults(json.load(f))
 
 
@@ -1426,7 +1430,13 @@ _mutex = None
 
 class ChametigerTray:
     def __init__(self):
-        self.config = load_config()
+        try:
+            self.config = load_config()
+        except Exception as e:
+            # Il tray parte lo stesso: lo scheduler riprova a leggerlo.
+            log(f"[WARN] config.json non leggibile all'avvio: {e}")
+            self.config = {}
+        self._config_illeggibile = False
         self._stop_event = threading.Event()
         self._icon = None
         self._no_slot_logged = False
@@ -1487,6 +1497,17 @@ class ChametigerTray:
         while not self._stop_event.is_set():
             try:
                 self.config = load_config()  # rilegge la config ad ogni ciclo
+            except Exception as e:
+                if not self._config_illeggibile:
+                    log(f"[WARN] config.json non leggibile, riprovo ogni "
+                        f"{RIPROVA_CONFIG_S} s: {e}")
+                self._config_illeggibile = True
+                self._stop_event.wait(RIPROVA_CONFIG_S)
+                continue
+            if self._config_illeggibile:
+                log("[INFO] config.json di nuovo leggibile.")
+                self._config_illeggibile = False
+            try:
                 invalida_cache_file()
                 # Al primo giro scarica sempre, anche se meteo.json e' recente:
                 # l'ora attuale va osservata adesso, non presa da un download
