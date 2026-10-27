@@ -30,6 +30,8 @@ BASE_DIR = Path(__file__).parent.resolve()
 CONFIG_FILE = BASE_DIR / "config.json"
 ICON_FILE = BASE_DIR / "icon.ico"
 LOG_FILE = BASE_DIR / "chametiger.log"
+IPC_HOST = "127.0.0.1"
+IPC_PORT = 48621
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".webp", ".gif"}
 
@@ -932,15 +934,15 @@ class ChametigerEditor(tk.Tk):
         self._meteo_status = tk.Label(
             inner, bg=BG, fg=FG2, font=("Segoe UI", 9), justify="left", anchor="w"
         )
-        self._meteo_status.grid(row=20, column=0, columnspan=3, sticky="w", pady=(4, 0))
+        self._meteo_status.grid(row=22, column=0, columnspan=3, sticky="w", pady=(4, 0))
 
         def stato_meteo(prefisso: str = "", colore=FG2):
             ultimo = meteo.ultimo_download()
             quando = ultimo.strftime("%d/%m alle %H:%M") if ultimo else "mai"
             self._meteo_status.config(
                 text=f"{prefisso}Ultimo download: {quando}.\n"
-                'Vale dopo "Salva configurazione"; "Carica meteo" nel menu del '
-                "tray scarica subito.",
+                'Vale dopo "Salva configurazione"; "Carica Meteo" qui o nel '
+                "menu del tray scarica subito.",
                 fg=colore,
             )
 
@@ -951,6 +953,29 @@ class ChametigerEditor(tk.Tk):
 
         ttk.Button(inner, text="Applica", command=applica_meteo).grid(
             row=19, column=2, padx=4
+        )
+
+        def carica_meteo():
+            try:
+                with socket.create_connection(
+                    (IPC_HOST, IPC_PORT), timeout=2
+                ) as connessione:
+                    connessione.sendall(b"carica_meteo\n")
+                    with connessione.makefile("r", encoding="utf-8") as stream:
+                        risposta = stream.readline().strip()
+            except OSError as e:
+                messagebox.showerror(
+                    "Meteo",
+                    "Impossibile comunicare con Chametiger nel tray. "
+                    f"Verifica che sia in esecuzione.\n\n{e}",
+                )
+                return
+
+            if risposta != "OK":
+                messagebox.showerror("Meteo", risposta or "Nessuna risposta dal tray.")
+
+        ttk.Button(inner, text="Carica Meteo", command=carica_meteo).grid(
+            row=20, column=2, padx=4
         )
         stato_meteo()
 
@@ -1914,7 +1939,9 @@ class RuleEditor(tk.Frame):
                     sun.describe(r.get("to", ""), oggi, lat, lon)
                     + (
                         "  (oggi non c'è)"
-                        if fascia_assente_oggi(r.get("from", ""), r.get("to", ""), self.config_data)
+                        if fascia_assente_oggi(
+                            r.get("from", ""), r.get("to", ""), self.config_data
+                        )
                         else ""
                     ),
                     inc,
@@ -2371,7 +2398,11 @@ class RuleDialog(tk.Toplevel):
             else:
                 pezzi.append(f"{etichetta} {valore}")
         frm, to = self._from.get().strip(), self._to.get().strip()
-        if valid_time(frm) and valid_time(to) and fascia_assente_oggi(frm, to, self.config_data):
+        if (
+            valid_time(frm)
+            and valid_time(to)
+            and fascia_assente_oggi(frm, to, self.config_data)
+        ):
             pezzi.append("(oggi la fascia non c'è)")
         self._risolti.config(text="Oggi: " + "   ".join(pezzi))
 

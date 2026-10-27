@@ -158,7 +158,7 @@
     "looney-tunes-art-opening.jpg": ["jolly"],
     "LOONEY_TUNES_PARATA_HOLLYWOOD.png": ["spettacolo", "pomeriggio", "smart"],
     "marv_space_extended2.jpg": ["notte"],
-    "marvin_amateurs.jpg": ["sera", "horror", "crepuscolo"],
+    "marvin_amateurs.jpg": ["horror", "crepuscolo"],
     "paris.png": ["pomeriggio", "svago", "weekend", "capodanno", "sanValentino"],
     "psicologo_beep_beep.png": ["lavoro", "pomeriggio", "crepuscolo"],
     "quincy_jones_recordings.jpg": ["spettacolo", "crepuscolo", "lavoro"],
@@ -314,7 +314,7 @@
     "bird_watching.jpg": ["lavoro", "mattino"],
     "cluck_trent_office_water.jpg": ["lavoro", "mattino"],
     "detective_study.jpg": ["lavoro", "sera"],
-    "duck_amuck_background_sketch.jpg": ["jolly", "mattino", "pomeriggio"],
+    "duck_amuck_background_sketch.jpg": ["jolly", "mattino", "alba"],
     "end_of_road.jpg": ["pomeriggio", "lavoro"],
     "ice_breaked_sylvester.jpg": ["inverno", "sera", "crepuscolo"],
     "night_castel_pumpernickel.jpg": ["notte"],
@@ -382,7 +382,22 @@
     "coyote_sci_salto_montagna.jpeg": ["inverno", "sport", "alba", "pomeriggio"],
     "Looney tunes christmas/bugs_ghirlanda_natale.jpg": ["natale"],
     "Looney tunes christmas/bugs_ghirlanda_natale_verticale.jpg": [],
-    "Looney tunes christmas/daffy_babbo_natale_pila_regali.jpg": ["crepuscolo", "natale"]
+    "Looney tunes christmas/daffy_babbo_natale_pila_regali.jpg": ["crepuscolo", "natale"],
+    "Daffy and Porky/daffy_bugs_hole_filled_water.png": ["mattino", "temporale"],
+    "daffy_hot_dry.jpeg": ["estate", "pomeriggio"],
+    "sylvester_hector_rainy.jpg": ["pioggia", "pomeriggio"],
+    "bugs_gossamer_haircut.jpg": ["lavoro", "horror", "pomeriggio", "mattino"],
+    "casino_gamble.jpg": ["svago", "notte", "weekend"],
+    "Looney Tunes Sports/bugs_bunjee.jpg": ["sport", "mattino"],
+    "Looney Tunes Sports/climbing_sylvester.jpg": ["pomeriggio", "tramonto", "sport"],
+    "Looney Tunes Sports/daffy_mountain_bike_falling_extreme.jpeg": ["crepuscolo", "sport"],
+    "Looney Tunes Sports/daffy_shark_scooter.jpg": ["alba", "sport", "estate", "primavera"],
+    "Looney Tunes Sports/daffy_taz_rafting_xtreme.jpeg": ["crepuscolo", "sport", "primavera", "estate"],
+    "Looney Tunes Sports/wile_roller_xtreme.jpg": ["pomeriggio", "tramonto", "sport", "primavera", "autunno"],
+    "Looney Tunes Sports/wile_skying_tree.jpeg": ["sport", "inverno", "mattino"],
+    "subway.jpg": ["alba", "lavoro", "autunno", "inverno", "primavera"],
+    "sylvester_tweety_fitness.jpg": ["sport", "weekend", "pomeriggio"],
+    "tweety_sylvester_autumn_rainy.jpg": ["pomeriggio", "mattino", "alba", "pioggia", "smart", "autunno", "inverno"]
   },
   "random_rules": {
     "weekday": [
@@ -878,15 +893,15 @@
             "rotate_minutes": 60
           },
           {
-            "from": "16:00",
-            "to": "sunset-40",
+            "from": "15:00",
+            "to": "sunset-58",
             "include": ["horror"],
             "exclude": ["tramonto", "crepuscolo", "sera", "notte"],
             "match": "all",
             "rotate_minutes": 60
           },
           {
-            "from": "sunset -40m",
+            "from": "dusk -40m",
             "to": "dusk +2m",
             "include": ["crepuscolo", "horror"],
             "exclude": [],
@@ -921,7 +936,7 @@
       },
       "name": "Halloween",
       "from": "10-20",
-      "to": "11-01",
+      "to": "11-02",
       "tags": ["horror"],
       "veto": ["natale", "sanValentino", "pasqua"]
     },
@@ -953,7 +968,7 @@
     }
   ],
   "position_map": {
-    "Federico": {"latitude": 40.8199, "longitude": 14.3414},
+    "Federico": {"latitude": 40.8518, "longitude": 14.2681},
     "Federico_Lenovo": {"latitude": 40.8199, "longitude": 14.3414},
     "FedericoAsus": {"latitude": 40.8199, "longitude": 14.3414}
   }

@@ -1,7 +1,7 @@
 # 🦎 Chametiger
 
-**v4.6** — 14 ottobre 2026
-Fasce che seguono il sole fino a un orario fisso (`min`/`max`), e momenti della giornata esclusi per insieme.
+**v4.6.2** — 23 ottobre 2026
+Escluso meteo Metar. Aggunto bottone "carica meteo" anche nella Gui
 
 
 Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno**, al **giorno della settimana**, alla **stagione**, agli **eventi** dell'anno e agli **orari reali di alba e tramonto**.
@@ -387,13 +387,15 @@ Un giorno che **nessuna** stagione copre non applica nessun filtro di stagione: 
 ## Meteo
 
 All'avvio dell'app, e poi ogni `aggiorna_ore` ore (default 5, da 1 a 10, si cambia in **Impostazioni → Meteo**), lo scheduler scarica il meteo **ora per ora** delle prossime 10 ore, quella attuale compresa, per la latitudine e longitudine del config, e lo salva in `meteo.json`. Fra un download e l'altro non serve la rete: le ore sono già programmate. Per esempio: avvio alle 10, meteo dalle 10:00 alle 20:00; alle 15 nuovo download, meteo dalle 15:00 all'01:00.
+Il METAR è stato inserito inizialmente perchè ritenuto affidabile, ma ciò è vero solo nei luoghi vicini all'aereoporto. Successivamente è stato disabilitato per usare invece di dati elaborati di Met Norway.
+
 
 | Fonte | Cosa dà |
 | ----- | ------- |
 | [Met Norway](https://api.met.no) (`locationforecast`) | Le previsioni ora per ora |
 | METAR ([aviationweather.gov](https://aviationweather.gov)) | Il tempo **osservato** adesso, dalla stazione più vicina entro 30 km e non più vecchio di 90 minuti. Per l'ora attuale vince sulla previsione |
 
-Il METAR c'è perché una previsione può sbagliare l'ora: l'8 ottobre 2026 Open-Meteo, la fonte delle prime prove, dava "coperto" su Napoli mentre a Capodichino il METAR riportava `-TSRA`, e spostava il temporale di due ore dopo. Le ore oltre le 10 scaricate valgono come sereno, come col ripiego.
+
 
 | Tempo dell'ora | Effetto sul pool della fascia                                       |
 | -------------- | ------------------------------------------------------------------- |
@@ -413,7 +415,7 @@ Le esclusioni restano (i momenti per insieme, il resto secco), e restano obbliga
 
 Il meteo è l'**ultimo setaccio**: sceglie fra le immagini che fascia, stagione, evento e veto hanno già ammesso, e non ne aggiunge. A Natale, col temporale, la sera escono le immagini `natale` con `temporale`; un'immagine `estate + temporale` o `horror + temporale` resta fuori come sempre. Per vedere la pioggia in ogni momento della giornata servono quindi almeno due immagini `pioggia` per fascia: di mattina, di pomeriggio, di sera…
 
-**Carica meteo**, nel menu del tray, scarica subito le previsioni senza aspettare l'intervallo, Se il tempo dell'ora cambia, lo sfondo passa all'immagine che quel tempo assegna alla finestra, la stessa degli altri PC; resta solo un'immagine estratta a mano.
+**Carica meteo**, dal pulsante nella GUI o dal menu del tray, scarica subito le previsioni senza aspettare l'intervallo. Se il tempo dell'ora cambia, lo sfondo passa all'immagine che quel tempo assegna alla finestra, la stessa degli altri PC; resta solo un'immagine estratta a mano.
 
 **Ripiego.** Senza connessione si riprova ogni 30 minuti e intanto si sceglie come col sereno: le immagini di pioggia e temporale restano da parte finché una fonte non dà pioggia. Lo stesso succede se i dati hanno più di 12 ore o se le coordinate sono cambiate. Solo con `"attivo": false` si sceglie come se il meteo non esistesse, e i tag `pioggia`/`temporale` contano come tutti gli altri.
 

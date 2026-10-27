@@ -39,6 +39,8 @@ REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 LOG_FILE = BASE_DIR / "chametiger.log"
 MAX_LOG_BYTES = 200_000
 HISTORY_FILE = BASE_DIR / "log.json"
+IPC_HOST = "127.0.0.1"
+IPC_PORT = 48621
 # Per quanti giorni tenere le voci di log.json. Al memo della finestra servono
 # solo quelle di oggi, piu' quelle di ieri per una fascia a cavallo della
 # mezzanotte: una settimana e' margine abbondante. Non ha effetto su quale
@@ -99,7 +101,11 @@ def ensure_defaults(cfg: dict) -> dict:
     cfg.setdefault("longitude", DEFAULT_LON)
     cfg.setdefault(
         "meteo",
-        {"attivo": True, "aggiorna_ore": meteo.DEFAULT_ORE, "minimo": meteo.DEFAULT_MINIMO},
+        {
+            "attivo": True,
+            "aggiorna_ore": meteo.DEFAULT_ORE,
+            "minimo": meteo.DEFAULT_MINIMO,
+        },
     )
 
     rules = cfg.setdefault("random_rules", {})
@@ -373,7 +379,9 @@ def strati_del_giorno(config: dict, giorno: date) -> list[dict]:
         )
         nome = "nessuna stagione"
 
-    strati = [{"nome": nome, "tipo": "stagione", "periodi": stagioni, "ammessi": ammessi}]
+    strati = [
+        {"nome": nome, "tipo": "stagione", "periodi": stagioni, "ammessi": ammessi}
+    ]
     for evento in reversed(eventi_attivi(config, giorno)):
         ammessi = ammessi | set(tag_del_periodo(evento))
         strati.append(
@@ -606,7 +614,11 @@ def _secondo_meteo(
     if stato == meteo.ASCIUTTO:
         scelti = [i for i in pool if not _TAG_METEO & set(library.get(i) or [])]
         return scelti if len(scelti) >= minimo else pool
-    gruppi = [{meteo.TEMPORALE}, _TAG_METEO] if stato == meteo.TEMPORALE else [{meteo.PIOGGIA}]
+    gruppi = (
+        [{meteo.TEMPORALE}, _TAG_METEO]
+        if stato == meteo.TEMPORALE
+        else [{meteo.PIOGGIA}]
+    )
     for tag in gruppi:
         scelti = [i for i in pool if tag & set(library.get(i) or [])]
         if len(scelti) >= minimo:
@@ -930,7 +942,10 @@ def _regole_del_giorno(config: dict, giorno: date) -> list[tuple[dict, str, int,
 
     def fonti_di(regole: dict, etichetta: str) -> list[tuple[list | None, str]]:
         fonti = [
-            ((regole.get("overrides") or {}).get(day_name), f"{etichetta}override {day_name}"),
+            (
+                (regole.get("overrides") or {}).get(day_name),
+                f"{etichetta}override {day_name}",
+            ),
             (regole.get(key), f"{etichetta}{key}"),
         ]
         if key == "weekend":
@@ -1044,13 +1059,19 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
         # possono divergere su una regola dal pool vuoto.
         scelto = None
         stato = ore_meteo.get(minuto // 60)
-        coprono = [k for k, (_, _, start, end) in enumerate(regole) if _copre(start, end, minuto)]
+        coprono = [
+            k
+            for k, (_, _, start, end) in enumerate(regole)
+            if _copre(start, end, minuto)
+        ]
         for pos, k in enumerate(coprono):
             rule, origine, _, _ = regole[k]
             if stato:
                 campi = None
                 if stato in _TAG_METEO:
-                    campi = _campi_meteo([regole[j][0] for j in coprono], pos, vocabolario)
+                    campi = _campi_meteo(
+                        [regole[j][0] for j in coprono], pos, vocabolario
+                    )
                 chiave = (k, stato, repr(campi))
                 if chiave not in varianti:
                     varianti[chiave] = _con_meteo(rule, stato, campi)
@@ -1394,6 +1415,44 @@ class ChametigerTray:
         self._icon = None
         self._no_slot_logged = False
 
+    def _ascolta_richieste(self):
+        """Riceve comandi locali dalla GUI e li inoltra all'istanza del tray."""
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
+                server.bind((IPC_HOST, IPC_PORT))
+                server.listen()
+                server.settimeout(1)
+                # log("[INFO] Server IPC locale pronto.")
+
+                while not self._stop_event.is_set():
+                    try:
+                        connessione, _ = server.accept()
+                    except socket.timeout:
+                        continue
+
+                    with connessione:
+                        try:
+                            connessione.settimeout(2)
+                            richiesta = bytearray()
+                            while b"\n" not in richiesta and len(richiesta) <= 128:
+                                blocco = connessione.recv(129 - len(richiesta))
+                                if not blocco:
+                                    break
+                                richiesta.extend(blocco)
+
+                            if (
+                                len(richiesta) <= 128
+                                and bytes(richiesta).strip() == b"carica_meteo"
+                            ):
+                                self.carica_meteo()
+                                connessione.sendall(b"OK\n")
+                            else:
+                                connessione.sendall(b"Comando non riconosciuto\n")
+                        except OSError as e:
+                            log(f"[ERR] Richiesta IPC: {e}")
+        except OSError as e:
+            log(f"[ERR] Server IPC: {e}")
+
     def _report_no_slot(self, always: bool = False):
         """
         Logga l'assenza di slot attivi.
@@ -1478,7 +1537,11 @@ class ChametigerTray:
             log(f"[ERR] Shuffle: {e}")
 
     def _carica_meteo(self, icon, item):
-        """Dal menu: in un thread, per non bloccare il tray mentre curl lavora."""
+        """Callback del tray per avviare il caricamento meteo."""
+        self.carica_meteo()
+
+    def carica_meteo(self):
+        """Avvia il caricamento meteo senza bloccare l'interfaccia chiamante."""
         threading.Thread(target=self._carica_meteo_ora, daemon=True).start()
 
     def _carica_meteo_ora(self):
@@ -1543,6 +1606,8 @@ class ChametigerTray:
         enable_autostart()
 
         log(f"Avvio Chametiger {VERSIONE}.")
+        threading.Thread(target=self._ascolta_richieste, daemon=True).start()
+
         # Niente sfondo qui: lo imposta il primo giro dello scheduler, dopo aver
         # scaricato il meteo. Applicarlo prima faceva il calcolo due volte e
         # poteva cambiare l'immagine dopo un paio di secondi.
