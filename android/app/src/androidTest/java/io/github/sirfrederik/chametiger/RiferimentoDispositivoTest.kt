@@ -8,6 +8,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import io.github.sirfrederik.chametiger.motore.Config
 import io.github.sirfrederik.chametiger.motore.Motore
 import io.github.sirfrederik.chametiger.motore.StatoMeteo
+import io.github.sirfrederik.chametiger.strato.ZONA
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test

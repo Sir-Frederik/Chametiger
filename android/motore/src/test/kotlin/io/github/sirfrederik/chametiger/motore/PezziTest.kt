@@ -86,4 +86,28 @@ class PezziTest {
         assertEquals(45.0 to 9.0, config.coordinate("altro"))
         assertEquals(DEFAULT_LAT to DEFAULT_LON, Config.leggi("{}").coordinate("altro"))
     }
+
+    @Test
+    fun mazzoDellaFinestraEScelta() {
+        // Su ogni finestra di un mese, la prima carta del suo mazzo non ancora
+        // uscita oggi e' proprio l'immagine scelta, e sceltaIn sulla giornata
+        // intera da' la stessa finestra di scelta
+        val testo = requireNotNull(javaClass.getResource("/riferimento/con_meteo/config.json")).readText()
+        val motore = Motore(Config.leggi(testo), "Federico", ZoneId.of("Europe/Rome"))
+        for (d in 0 until 31L) {
+            val giorno = LocalDate.of(2027, 3, 15).plusDays(d)
+            val sequenza = motore.sequenzaGiornaliera(giorno)
+            val usate = HashSet<String>()
+            for (f in sequenza) {
+                val mazzo = motore.mazzoDi(f)
+                assertEquals(f.pool, mazzo.size)
+                assertEquals("$giorno ${f.minuto}", f.immagine, mazzo.firstOrNull { it !in usate } ?: mazzo[0])
+                usate += f.immagine
+            }
+            for (ora in 0 until 24) {
+                val adesso = giorno.atTime(ora, 30)
+                assertEquals("$adesso", motore.scelta(adesso), motore.sceltaIn(adesso, sequenza))
+            }
+        }
+    }
 }

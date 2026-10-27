@@ -476,9 +476,30 @@ class Motore(
      * resolve_random, senza il memo di log.json: un'estrazione forzata o un
      * file mancante li gestisce chi sta sopra.
      */
-    fun scelta(quando: LocalDateTime): Finestra? {
+    fun scelta(quando: LocalDateTime): Finestra? =
+        sceltaIn(quando, sequenzaGiornaliera(quando.toLocalDate(), quando.hour * 60 + quando.minute))
+
+    /**
+     * Come scelta, su una sequenza del giorno gia' calcolata, intera o fino ad
+     * adesso: le finestre fino a un minuto non dipendono da quelle dopo.
+     */
+    fun sceltaIn(quando: LocalDateTime, sequenza: List<Finestra>): Finestra? {
         if (regoleCandidate(quando).none { (regola, _) -> candidate(regola).isNotEmpty() }) return null
-        return sequenzaGiornaliera(quando.toLocalDate(), quando.hour * 60 + quando.minute).lastOrNull()
+        val minuto = quando.hour * 60 + quando.minute
+        return sequenza.lastOrNull { it.minuto <= minuto }
+    }
+
+    /**
+     * Il mazzo della finestra a partire dalla sua posizione: il primo elemento
+     * non ancora uscito oggi e' l'immagine della finestra. Serve a chi sta
+     * sopra per scegliere un ripiego senza toccare la sequenza.
+     */
+    fun mazzoDi(finestra: Finestra): List<String> {
+        val pool = candidate(finestra.regola).ordinate()
+        val n = pool.size
+        val mazzo = mazzo(pool, finestra.firma, Math.floorDiv(finestra.ordinale, n))
+        val pos = Math.floorMod(finestra.ordinale, n)
+        return (0 until n).map { mazzo[(pos + it) % n] }
     }
 
     companion object {
