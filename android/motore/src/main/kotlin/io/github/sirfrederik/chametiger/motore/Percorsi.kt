@@ -17,8 +17,14 @@ fun percorsoAssoluto(p: String): Boolean {
  *  - assoluto: rimappato sulla cartella base del dispositivo se inizia con una
  *    delle basi conosciute, altrimenti lasciato com'e'
  */
-fun risolviPercorso(config: Config, dispositivo: String, immagine: String): String {
-    val base = config.pathMap[dispositivo] ?: config.basePath
+fun risolviPercorso(config: Config, dispositivo: String, immagine: String): String =
+    risolviSu(config, config.pathMap[dispositivo] ?: config.basePath, immagine)
+
+/**
+ * Come risolviPercorso, ma su una cartella base data da fuori: il telefono non
+ * sta in path_map, la sua cartella e' quella privata dell'app.
+ */
+fun risolviSu(config: Config, base: String, immagine: String): String {
     if (!percorsoAssoluto(immagine)) return unisci(base, immagine)
 
     val normalizzato = immagine.replace("\\", "/")

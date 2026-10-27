@@ -1,0 +1,2963 @@
+{
+  "base_path": "G:/Altri computer/Asus/Temi/Looney tunes",
+  "path_map": {
+    "FedericoAsus": "C:/Users/Asus/Pictures/Temi/Looney tunes",
+    "Federico": "G:/Altri computer/Asus/Temi/Looney tunes"
+  },
+  "check_interval_minutes": 7,
+  "tags": [
+    "alba",
+    "mattino",
+    "pranzo",
+    "pomeriggio",
+    "tramonto",
+    "crepuscolo",
+    "sera",
+    "spettacolo",
+    "notte",
+    "lavoro",
+    "smart",
+    "weekend",
+    "svago",
+    "sport",
+    "primavera",
+    "estate",
+    "autunno",
+    "inverno",
+    "pioggia",
+    "temporale",
+    "natale",
+    "capodanno",
+    "sanValentino",
+    "pasqua",
+    "compleanno",
+    "horror",
+    "jolly"
+  ],
+  "image_library": {
+    "bugs_daffy_sylvester_fuga_halloween.jpg": [
+      "horror",
+      "notte",
+      "sera",
+      "crepuscolo"
+    ],
+    "sylvester_arrampicata_corda.jpg": [
+      "pomeriggio",
+      "sport",
+      "smart",
+      "alba"
+    ],
+    "sylvester_tweety_nido.jpg": [
+      "crepuscolo"
+    ],
+    "amour-parisienne.jpg": [
+      "primavera",
+      "tramonto",
+      "sanValentino"
+    ],
+    "backrooms_daffy_bugs_gossamer.jpg": [
+      "horror",
+      "notte",
+      "jolly"
+    ],
+    "basket.jpg": [
+      "pomeriggio",
+      "estate",
+      "primavera",
+      "autunno",
+      "sport",
+      "svago",
+      "smart"
+    ],
+    "bracco_foghorn_leghorn_fattoria.jpg": [
+      "mattino",
+      "lavoro"
+    ],
+    "bugs_cassetta_postale_autunno.jpg": [
+      "autunno",
+      "tramonto",
+      "primavera"
+    ],
+    "bugs_compleanno_festa.jpg": [
+      "compleanno"
+    ],
+    "bugs_daffy_bar_notte.jpg": [
+      "notte",
+      "weekend",
+      "svago",
+      "capodanno"
+    ],
+    "bugs_daffy_rabbit_season.jpg": [
+      "autunno",
+      "mattino"
+    ],
+    "bugs_notte_parco_coniglietti.jpg": [
+      "sera",
+      "spettacolo",
+      "crepuscolo"
+    ],
+    "bugs_sdraio_spiaggia_carote.jpg": [
+      "estate",
+      "svago",
+      "weekend",
+      "tramonto",
+      "pomeriggio",
+      "mattino"
+    ],
+    "bugs_smoking_palco_rose.jpg": [
+      "spettacolo"
+    ],
+    "bugs_taz_cassa_pericolo.jpeg": [
+      "pomeriggio",
+      "smart"
+    ],
+    "bugs_yosemite_sam_pesca_barca.jpg": [
+      "tramonto",
+      "svago",
+      "sport",
+      "alba",
+      "autunno",
+      "estate",
+      "primavera"
+    ],
+    "cane_pastore_coyote_burrone.jpg": [
+      "alba",
+      "autunno",
+      "estate",
+      "primavera",
+      "lavoro",
+      "tramonto",
+      "crepuscolo"
+    ],
+    "casetta_scogliera_notturna.jpg": [
+      "notte"
+    ],
+    "collage_locandine_classiche.jpg": [
+      "jolly",
+      "mattino"
+    ],
+    "coyote_caduta_vuoto.jpg": [
+      "tramonto"
+    ],
+    "coyote_esplosione_binario.jpg": [
+      "mattino",
+      "pomeriggio",
+      "lavoro"
+    ],
+    "coyote_razzo_tramonto_deserto.jpg": [
+      "tramonto",
+      "capodanno"
+    ],
+    "coyote_roadrunner_corsa_nomi_latini.jpg": [
+      "pranzo"
+    ],
+    "coyote_roadrunner_forchetta_deserto.jpg": [
+      "pranzo",
+      "inverno"
+    ],
+    "coyote_sagoma_salto_luna.jpeg": [
+      "notte"
+    ],
+    "coyote_sub_mina_squalo.jpg": [
+      "estate",
+      "mattino",
+      "pomeriggio"
+    ],
+    "coyote_travestito_pecora_gregge.jpg": [
+      "lavoro",
+      "alba",
+      "crepuscolo"
+    ],
+    "porky_bugs_daffy_ombra_mostro.jpg": [
+      "horror",
+      "notte",
+      "sera"
+    ],
+    "personaggi_finestra_ombra_mostro.jpg": [
+      "horror",
+      "notte",
+      "sera",
+      "lavoro"
+    ],
+    "Daffy and Porky/daffy_porky_divano_popcorn.png": [
+      "spettacolo",
+      "sera",
+      "svago",
+      "weekend",
+      "capodanno"
+    ],
+    "Daffy and Porky/porky_daffy_neonati_pozza.jpg": [
+      "pioggia",
+      "alba",
+      "smart"
+    ],
+    "Daffy and Porky/daffy_leva_gomme_super_stretchy.png": [
+      "lavoro",
+      "mattino"
+    ],
+    "Daffy and Porky/alieno_cattivo_schermi_daffy.jpg": [],
+    "Daffy and Porky/porky_daffy_petunia_astronauti.jpg": [
+      "sera"
+    ],
+    "Daffy and Porky/scala_buia_guardiano_zombie.jpg": [
+      "notte",
+      "horror",
+      "temporale"
+    ],
+    "Daffy and Porky/porky_daffy_colazione_cucina.jpg": [
+      "alba"
+    ],
+    "Daffy and Porky/porky_daffy_ufo_tetto_verticale.jpg": [],
+    "Daffy and Porky/porky_daffy_lavano_denti.jpg": [
+      "alba",
+      "smart"
+    ],
+    "Daffy and Porky/chrome/locandina_the_day_the_earth_blew_up.png": [],
+    "Daffy and Porky/chrome/daffy.png": [],
+    "Daffy and Porky/chrome/daffy_leva_gomme_super_stretchy_hd.png": [],
+    "Daffy and Porky/chrome/porky_daffy_ufo_tetto_citta.png": [],
+    "Daffy and Porky/chrome/porky_daffy_ufo_raggio_primo_piano.png": [],
+    "Daffy and Porky/chrome/tab dark.png": [],
+    "Daffy and Porky/chrome/tab.png": [],
+    "Daffy and Porky/porky_daffy_urlano_raggio_ufo.webp": [
+      "horror",
+      "notte"
+    ],
+    "Daffy and Porky/daffy_porky_leva_sala_macchine.jpg": [
+      "lavoro",
+      "pomeriggio"
+    ],
+    "Daffy and Porky/daffy_porky_petunia_ombre_alieni_tenda.jpg": [
+      "horror",
+      "crepuscolo",
+      "notte",
+      "sera"
+    ],
+    "Daffy and Porky/porky_daffy_neonati_spaghetti.png": [
+      "pranzo",
+      "smart",
+      "weekend"
+    ],
+    "Daffy and Porky/contadino_porky_daffy_neonati.jpg": [
+      "alba",
+      "weekend",
+      "smart"
+    ],
+    "Daffy and Porky/daffy_porky_scivolano_corrimano.jpeg": [
+      "mattino",
+      "svago"
+    ],
+    "Daffy and Porky/porky_daffy_ballo_palco_art_deco.jpg": [
+      "lavoro",
+      "pomeriggio",
+      "mattino"
+    ],
+    "Daffy and Porky/porky_daffy_petunia_fuga_gomma_aliena.jpg": [
+      "spettacolo"
+    ],
+    "Daffy and Porky/porky_daffy_petunia_tavola_calda.png": [
+      "sera",
+      "svago"
+    ],
+    "Daffy and Porky/daffy_lanciafiamme_porky_giardino.png": [
+      "sera",
+      "crepuscolo",
+      "autunno"
+    ],
+    "Daffy and Porky/porky_daffy_moto_bazooka.jpg": [
+      "alba",
+      "lavoro"
+    ],
+    "Daffy and Porky/porky_daffy_finale_cerchi_rossi.png": [
+      "spettacolo",
+      "notte"
+    ],
+    "Daffy and Porky/porky_daffy_petunia_ombre_zombie.jpg": [
+      "horror",
+      "sera",
+      "crepuscolo"
+    ],
+    "Daffy and Porky/porky_astronauta_ufo_pianeta.jpg": [],
+    "Daffy and Porky/porky_daffy_urlo_spirale.jpg": [
+      "jolly"
+    ],
+    "Daffy and Porky/porky_daffy_vialetto_casa.jpg": [
+      "autunno",
+      "estate",
+      "mattino"
+    ],
+    "Daffy and Porky/porky_camera_daffy_vasca.jpg": [
+      "alba"
+    ],
+    "Daffy and Porky/porky_daffy_abbraccio_porta.jpg": [
+      "svago",
+      "mattino"
+    ],
+    "Daffy and Porky/daffy_astronauta_maxischermo_citta.png": [],
+    "daffy_amaca_spiaggia_ukulele.jpg": [
+      "estate",
+      "svago",
+      "mattino",
+      "pomeriggio",
+      "weekend"
+    ],
+    "daffy_bugs_faccia_a_faccia.jpg": [
+      "pomeriggio",
+      "mattino",
+      "autunno",
+      "primavera"
+    ],
+    "daffy_elmer_bugs_foresta_stagione_caccia.jpg": [
+      "autunno",
+      "estate",
+      "tramonto",
+      "primavera"
+    ],
+    "duck_dodgers_porky_marvin.jpg": [
+      "sera",
+      "notte"
+    ],
+    "daffy_cartello_duck_xing.jpg": [
+      "jolly"
+    ],
+    "elmer_bugs_daffy_caccia_foresta.jpg": [
+      "mattino",
+      "autunno",
+      "lavoro",
+      "primavera"
+    ],
+    "festa_hawaiana_notturna.jpg": [
+      "crepuscolo",
+      "sera",
+      "svago",
+      "estate",
+      "weekend"
+    ],
+    "foresta_notturna.jpg": [
+      "notte"
+    ],
+    "fudd_daffy-1_copy.jpg": [
+      "tramonto"
+    ],
+    "halloween_personaggi_mostri_cimitero.jpg": [
+      "horror",
+      "notte",
+      "sera"
+    ],
+    "logo_looney_tunes_pattern.jpg": [
+      "jolly",
+      "mattino"
+    ],
+    "Looney tunes christmas/natale_personaggi_comignolo_neve.jpg": [
+      "natale",
+      "notte"
+    ],
+    "Looney tunes christmas/daffy_ho_ho_ho_quackers.jpg": [
+      "natale"
+    ],
+    "Looney tunes christmas/natale_personaggi_ho_ho_ho_rosso.png": [],
+    "Looney tunes christmas/porky_daffy_bugs_regali_neve.jpg": [
+      "natale",
+      "crepuscolo"
+    ],
+    "Looney tunes christmas/natale_personaggi_albero_salotto.jpg": [
+      "natale",
+      "crepuscolo",
+      "mattino",
+      "pomeriggio",
+      "svago"
+    ],
+    "Looney tunes christmas/natale_trenino_merry_christmas.jpg": [
+      "natale",
+      "mattino"
+    ],
+    "Looney tunes christmas/bugs_daffy_sylvester_calze_natale.jpg": [
+      "natale",
+      "notte",
+      "sera"
+    ],
+    "Looney tunes christmas/bugs_lola_pattinaggio_ghiaccio.jpg": [
+      "inverno",
+      "mattino",
+      "pomeriggio",
+      "sport",
+      "svago"
+    ],
+    "Looney tunes christmas/capodanno_fuochi_artificio.jpg": [
+      "notte",
+      "capodanno"
+    ],
+    "Looney tunes christmas/chrome/natale_personaggi_addobbano_albero.jpg": [
+      "natale"
+    ],
+    "Looney tunes christmas/elmer_daffy_slittino_neve.jpg": [
+      "inverno",
+      "sport",
+      "pomeriggio",
+      "mattino"
+    ],
+    "Looney tunes christmas/bugs_lola_albero_natale_iceberg.jpg": [
+      "natale",
+      "mattino"
+    ],
+    "Looney tunes christmas/inadeguate/tiny_toons_coro_natalizio.jpg": [],
+    "Looney tunes christmas/nonna_sylvester_tweety_regalo_natale.png": [
+      "natale",
+      "mattino"
+    ],
+    "Looney tunes christmas/taz_happy_holidays_neve.jpg": [
+      "natale",
+      "notte",
+      "sera"
+    ],
+    "Looney tunes christmas/cartoline_natalizie_personaggi.jpg": [
+      "natale",
+      "crepuscolo",
+      "sera"
+    ],
+    "Looney tunes christmas/taz_babbo_natale_comignolo_luna.jpg": [
+      "natale",
+      "notte"
+    ],
+    "Looney tunes christmas/bugs_taz_snowboard_pupazzo_neve.jpg": [
+      "inverno",
+      "sport",
+      "pomeriggio",
+      "svago",
+      "alba"
+    ],
+    "Looney tunes christmas/taz_bugs_sylvester_albero_natale_neve.jpg": [
+      "mattino",
+      "alba",
+      "natale",
+      "tramonto"
+    ],
+    "Looney tunes christmas/daffy_cappello_natale_vintage.jpg": [
+      "natale"
+    ],
+    "Looney tunes christmas/coyote_babbo_natale_merry_xmas.jpg": [
+      "natale",
+      "mattino",
+      "pomeriggio"
+    ],
+    "Looney tunes christmas/personaggi_snowboard_neve.jpg": [
+      "inverno",
+      "mattino",
+      "pomeriggio",
+      "sport"
+    ],
+    "Looney Tunes Sports/bugs_daffy_golf_buca.jpg": [
+      "mattino",
+      "sport",
+      "svago"
+    ],
+    "Looney Tunes Sports/bugs_daffy_taz_baseball_stadio.jpg": [
+      "sport",
+      "jolly",
+      "smart"
+    ],
+    "Looney Tunes Sports/football_americano_mischia_bugs_foghorn.jpg": [
+      "sport",
+      "pomeriggio"
+    ],
+    "Looney Tunes Sports/space_jam_bugs_jordan_lebron.png": [
+      "sera",
+      "sport",
+      "spettacolo"
+    ],
+    "Looney Tunes Sports/football_americano_squadra_gossamer_bugs.jpg": [
+      "sport",
+      "pomeriggio",
+      "mattino"
+    ],
+    "Looney Tunes Sports/personaggi_sport_riquadri_colorati.jpg": [
+      "sport",
+      "mattino"
+    ],
+    "Looney Tunes Sports/personaggi_sport_riquadri_colorati_striscia.jpg": [
+      "sport",
+      "mattino"
+    ],
+    "Looney Tunes Sports/team_usa_personaggi_divise.jpg": [
+      "sport",
+      "jolly",
+      "pomeriggio",
+      "sera",
+      "crepuscolo",
+      "weekend"
+    ],
+    "Looney Tunes Sports/daffy_bugs_golf_esplosivo_bunker.jpg": [
+      "alba",
+      "sport",
+      "svago",
+      "weekend"
+    ],
+    "Looney Tunes Sports/baseball_stadio_battitore_bugs_taz.jpg": [
+      "sport",
+      "crepuscolo",
+      "sera"
+    ],
+    "surf_squali_spiaggia.jpg": [
+      "weekend",
+      "sport",
+      "mattino",
+      "estate",
+      "svago",
+      "pomeriggio"
+    ],
+    "Looney Tunes Sports/atletica_ostacoli_bugs_taz_daffy.jpg": [
+      "sport",
+      "pomeriggio",
+      "mattino",
+      "smart"
+    ],
+    "Looney Tunes Sports/daffy_goal_calcio_stivali_acme.jpg": [
+      "jolly",
+      "sport"
+    ],
+    "Looney Tunes Sports/olimpiadi_1996_centenario_carota.jpg": [
+      "sport",
+      "weekend",
+      "crepuscolo"
+    ],
+    "Looney Tunes Sports/olimpiadi_1996_atlanta_stadio.jpg": [
+      "sera",
+      "sport",
+      "weekend"
+    ],
+    "Looney Tunes Sports/taz_bugs_tennis_sparapalle.jpg": [
+      "sport",
+      "jolly",
+      "crepuscolo"
+    ],
+    "Looney Tunes Sports/team_usa_parigi_corsa_striscia.jpg": [
+      "jolly",
+      "autunno",
+      "inverno",
+      "mattino"
+    ],
+    "Looney Tunes Sports/team_usa_parigi_corsa.jpg": [],
+    "marvin_daffy_porky_astronave.jpg": [
+      "sera",
+      "notte",
+      "lavoro",
+      "crepuscolo"
+    ],
+    "marvin_guarda_terra_spazio.jpg": [
+      "notte"
+    ],
+    "marvin_pistola_raggio_luna.jpg": [
+      "crepuscolo"
+    ],
+    "cane_pastore_coyote_timbrano_neve.jpg": [
+      "alba",
+      "lavoro",
+      "inverno"
+    ],
+    "mosaico_personaggi_1.jpg": [
+      "jolly"
+    ],
+    "mosaico_personaggi_2.png": [
+      "jolly"
+    ],
+    "bugs_daffy_porky_gangster_noir.jpg": [
+      "horror",
+      "spettacolo",
+      "sera"
+    ],
+    "pepe_le_pew_penelope_bosco.jpg": [
+      "alba",
+      "primavera",
+      "sanValentino"
+    ],
+    "pepe_penelope_barca_luna_cuori.jpg": [
+      "crepuscolo",
+      "sera",
+      "primavera",
+      "estate",
+      "smart",
+      "weekend",
+      "sanValentino",
+      "svago"
+    ],
+    "personaggi_cerchio_bugs_centro.jpg": [
+      "jolly",
+      "mattino",
+      "smart"
+    ],
+    "personaggi_logo_warner_bros.jpg": [
+      "jolly"
+    ],
+    "personaggi_pausa_pranzo_trave.jpg": [
+      "pranzo",
+      "lavoro"
+    ],
+    "porky_daffy_sub_sfera_marina.jpg": [
+      "estate",
+      "pomeriggio",
+      "crepuscolo"
+    ],
+    "ralph_lupo_sam_pastore_pecora.jpg": [
+      "mattino",
+      "pomeriggio",
+      "primavera",
+      "estate",
+      "lavoro"
+    ],
+    "daffy_porky_detective_auto.jpg": [
+      "lavoro",
+      "spettacolo"
+    ],
+    "sfondo_deserto_notturno_binario.jpg": [
+      "crepuscolo",
+      "notte"
+    ],
+    "casa_stregata_notte_luna.jpg": [
+      "horror",
+      "notte"
+    ],
+    "speedy_gonzales_corsa_deserto.png": [
+      "mattino",
+      "pomeriggio",
+      "estate",
+      "autunno"
+    ],
+    "sylvester_tweety_bidoni_spazzatura.jpg": [
+      "pranzo"
+    ],
+    "sylvester_tweety_forbici_filo_luna.jpg": [
+      "notte",
+      "inverno",
+      "sera",
+      "autunno"
+    ],
+    "sylvester_tweety_spiaggia.jpg": [
+      "autunno",
+      "estate",
+      "pomeriggio",
+      "crepuscolo"
+    ],
+    "taz_hamburger_logo.jpg": [
+      "pranzo",
+      "smart"
+    ],
+    "thats_all_folks_personaggi_palco.jpg": [
+      "spettacolo"
+    ],
+    "thats_all_folks_testo_rosso.jpg": [
+      "notte"
+    ],
+    "daffy_albero_fattoria_contadino.png": [
+      "tramonto",
+      "autunno"
+    ],
+    "tutti_i_personaggi_poster.jpg": [
+      "alba",
+      "tramonto",
+      "smart"
+    ],
+    "tweety_sylvester_sega_albero.jpg": [
+      "pomeriggio"
+    ],
+    "ufficio_disegnatori_personaggi.jpg": [
+      "lavoro",
+      "mattino",
+      "pomeriggio"
+    ],
+    "coyote_caduta_vuoto_hd.jpg": [],
+    "amusement_park.png": [
+      "estate",
+      "primavera",
+      "pomeriggio",
+      "svago",
+      "weekend"
+    ],
+    "bugs_daffy_scrivania_ufficio.jpg": [
+      "lavoro",
+      "mattino"
+    ],
+    "daffy_cacciatori.png": [
+      "autunno",
+      "mattino"
+    ],
+    "daffy_hollywood_donald.png": [
+      "spettacolo",
+      "lavoro",
+      "smart"
+    ],
+    "daffy_venditore.png": [
+      "lavoro",
+      "alba",
+      "pomeriggio",
+      "autunno",
+      "inverno"
+    ],
+    "foghorn_taz_inseguimento.png": [
+      "mattino",
+      "autunno",
+      "primavera"
+    ],
+    "Looney tunes christmas/inadeguate/natale_happy_holidays_ghirlanda.jpg": [],
+    "looney-tunes-art-opening.jpg": [
+      "jolly"
+    ],
+    "LOONEY_TUNES_PARATA_HOLLYWOOD.png": [
+      "spettacolo",
+      "pomeriggio",
+      "smart"
+    ],
+    "marv_space_extended2.jpg": [
+      "notte"
+    ],
+    "marvin_amateurs.jpg": [
+      "horror",
+      "crepuscolo"
+    ],
+    "paris.png": [
+      "pomeriggio",
+      "svago",
+      "weekend",
+      "capodanno",
+      "sanValentino"
+    ],
+    "psicologo_beep_beep.png": [
+      "lavoro",
+      "pomeriggio",
+      "crepuscolo"
+    ],
+    "quincy_jones_recordings.jpg": [
+      "spettacolo",
+      "crepuscolo",
+      "lavoro"
+    ],
+    "ralph_chuck_jones.jpg": [
+      "lavoro",
+      "crepuscolo",
+      "primavera",
+      "autunno",
+      "mattino"
+    ],
+    "speedy_gonzales_amore.png": [
+      "pomeriggio",
+      "svago",
+      "sanValentino"
+    ],
+    "taz_bugs_daffy_foghorn_processo.png": [
+      "lavoro"
+    ],
+    "taz_bugs_pentola.jpg": [
+      "pranzo",
+      "primavera",
+      "autunno"
+    ],
+    "taz_cafè.png": [
+      "pomeriggio",
+      "tramonto",
+      "autunno",
+      "inverno",
+      "crepuscolo"
+    ],
+    "taz_golf.png": [
+      "sport"
+    ],
+    "whats_opera_doc.jpg": [
+      "spettacolo",
+      "crepuscolo"
+    ],
+    "willy_beep_beep_zoom_and_bored.jpg": [
+      "tramonto"
+    ],
+    "joker_daffy_fumetto_risate.jpg": [],
+    "joker_daffy_fumetto_cella.jpg": [
+      "horror"
+    ],
+    "Daffy and Porky/daffy_coperto_gomma_rosa_verticale.jpg": [],
+    "Daffy and Porky/daffy_porky_batti_cinque_verticale.jpg": [],
+    "Daffy and Porky/porky_bolla_gomma_rosa_verticale.jpg": [],
+    "Looney Tunes Sports/bagged_by_boony_bugs.jpg": [
+      "autunno",
+      "crepuscolo",
+      "svago",
+      "sport",
+      "inverno",
+      "pomeriggio"
+    ],
+    "Looney Tunes Sports/bugs_bunny_baseball.jpg": [
+      "crepuscolo",
+      "sport"
+    ],
+    "Looney Tunes Sports/hockey.png": [
+      "sport",
+      "sera"
+    ],
+    "Looney Tunes Sports/pepè_scii_inverno.png": [
+      "inverno",
+      "sport",
+      "pomeriggio",
+      "mattino"
+    ],
+    "Looney Tunes Sports/willy_golf.jpg": [
+      "primavera",
+      "weekend",
+      "sport",
+      "svago",
+      "alba"
+    ],
+    "daffyduck_auto_forchetta.png": [
+      "pranzo",
+      "svago",
+      "tramonto",
+      "weekend"
+    ],
+    "Willy_pittura_galleria.png": [
+      "lavoro",
+      "pomeriggio",
+      "mattino"
+    ],
+    "willy_mangia_pillole.png": [
+      "pranzo"
+    ],
+    "bugs_daffy_smocking.png": [
+      "spettacolo"
+    ],
+    "willy_fisarmonica_acme.png": [
+      "pomeriggio"
+    ],
+    "beacky.png": [
+      "pomeriggio"
+    ],
+    "melblanc.png": [
+      "spettacolo",
+      "sera",
+      "weekend"
+    ],
+    "wood_rabbit_season.jpg": [
+      "autunno",
+      "tramonto"
+    ],
+    "daffy_razzo_coscritto.png": [
+      "sera",
+      "capodanno"
+    ],
+    "daffy_doc.jpg": [
+      "lavoro",
+      "mattino"
+    ],
+    "bugs_veggente.png": [
+      "sera",
+      "inverno",
+      "primavera"
+    ],
+    "looney_hollywood_behind_scenes.png": [
+      "pomeriggio",
+      "lavoro",
+      "spettacolo"
+    ],
+    "Gossamer_movie.png": [
+      "horror",
+      "spettacolo"
+    ],
+    "carrotBlanca.jpg": [
+      "spettacolo",
+      "svago",
+      "weekend",
+      "sera",
+      "capodanno"
+    ],
+    "quadriglia.jpg": [
+      "jolly",
+      "svago",
+      "pomeriggio",
+      "mattino"
+    ],
+    "personaggi_cerchio_bugs_taz.jpg": [],
+    "marvin_k9_pianeta_alieno_verticale.jpg": [],
+    "Daffy and Porky/chrome/porky_daffy_ufo_tetto_citta_panoramica.jpg": [],
+    "Looney Tunes Sports/olimpiadi_1996_poster_completo.jpg": [],
+    "Looney Tunes Sports/bugs_lola_pattinaggio_primo_piano.jpg": [],
+    "willy_dirupo_dipinto.png": [
+      "alba"
+    ],
+    "sylvester_tweety_gabbia_anonymous.png": [
+      "pranzo"
+    ],
+    "elmer_travestito_coniglio_rabbit_season.png": [
+      "primavera",
+      "smart",
+      "pomeriggio",
+      "alba",
+      "pasqua"
+    ],
+    "Daffy_rainy.jpg": [
+      "pioggia",
+      "pomeriggio",
+      "sera"
+    ],
+    "daffy_elmer_cake.jpg": [
+      "jolly",
+      "compleanno",
+      "pranzo"
+    ],
+    "duck_tracy.jpg": [
+      "spettacolo",
+      "notte",
+      "horror"
+    ],
+    "daffy_porky_compleanno.jpg": [
+      "svago",
+      "compleanno"
+    ],
+    "daffy_porky_cinema.jpg": [
+      "spettacolo",
+      "weekend"
+    ],
+    "bugs_bunny_arpa.jpg": [
+      "crepuscolo",
+      "svago"
+    ],
+    "daffy_razzo_valigia.jpg": [
+      "jolly",
+      "mattino",
+      "svago",
+      "capodanno"
+    ],
+    "bugs_elmer_barber_seville.png": [
+      "lavoro"
+    ],
+    "looney_tunes_pinball.png": [
+      "jolly",
+      "smart"
+    ],
+    "coyote_vs_acme_wrecking.jpg": [
+      "estate",
+      "tramonto",
+      "autunno",
+      "alba"
+    ],
+    "Looney Tunes Sports/daffy_surf_onda_Porky.jpg": [
+      "estate"
+    ],
+    "Ralph_Sam_Beatup.jpg": [
+      "crepuscolo"
+    ],
+    "bugs_fox_police.png": [
+      "svago",
+      "pomeriggio",
+      "primavera"
+    ],
+    "bugs_halloween_zucca.jpg": [
+      "horror"
+    ],
+    "bugs_scherzi.jpg": [
+      "smart",
+      "crepuscolo",
+      "autunno",
+      "svago"
+    ],
+    "DuckAmuck.jpg": [
+      "spettacolo",
+      "tramonto",
+      "estate"
+    ],
+    "elmer_bosco_daffy.jpg": [
+      "smart",
+      "crepuscolo",
+      "primavera",
+      "autunno"
+    ],
+    "hazel_bugs.jpeg": [
+      "crepuscolo",
+      "horror"
+    ],
+    "lola_land.png": [
+      "sera",
+      "svago",
+      "spettacolo",
+      "crepuscolo"
+    ],
+    "Looney tunes christmas/taz_pupazzo_neve.jpg": [
+      "natale",
+      "notte"
+    ],
+    "pepe_valentine.jpg": [
+      "sanValentino",
+      "smart"
+    ],
+    "taz_vampiro_halloween.jpg": [
+      "horror",
+      "notte"
+    ],
+    "titti_crazy.png": [
+      "crepuscolo",
+      "smart"
+    ],
+    "titti_zucca.jpg": [
+      "horror",
+      "notte"
+    ],
+    "whats_opera_doc2.jpg": [
+      "sera",
+      "spettacolo"
+    ],
+    "willy_lavagna.png": [
+      "lavoro",
+      "crepuscolo"
+    ],
+    "Ralph_canna_pesca_pecora_lattuga.png": [
+      "alba",
+      "crepuscolo",
+      "lavoro",
+      "primavera",
+      "autunno"
+    ],
+    "Bugs_Bunny_spiaggia.jpg": [
+      "estate",
+      "svago",
+      "mattino"
+    ],
+    "Bugs_daffy_moschettieri.jpg": [
+      "sera",
+      "spettacolo"
+    ],
+    "looney_ambulanza.jpg": [
+      "lavoro",
+      "pomeriggio"
+    ],
+    "Pete_Puma_Bugs.jpg": [
+      "pomeriggio",
+      "svago"
+    ],
+    "petunia_porky_love.gif": [
+      "sanValentino",
+      "smart"
+    ],
+    "Planet_of_taz.jpg": [
+      "pomeriggio",
+      "estate",
+      "smart",
+      "tramonto"
+    ],
+    "Planet_of_taz_Daffy_Porky.gif": [
+      "estate",
+      "tramonto",
+      "smart"
+    ],
+    "yosemite_danza.jpg": [
+      "pomeriggio",
+      "svago"
+    ],
+    "yosemite_sam_Bugs_nozze.jpg": [
+      "svago",
+      "inverno"
+    ],
+    "yosemite_sam_cavallo_schizzo.png": [
+      "jolly",
+      "mattino"
+    ],
+    "Bugs_bunny_Bed_Sun'sComingUp.jpeg": [
+      "alba",
+      "autunno",
+      "inverno",
+      "primavera",
+      "pioggia",
+      "temporale"
+    ],
+    "Bugs_bunny_Giant_“WhatsUp_Doc”.jpg": [
+      "pomeriggio",
+      "smart",
+      "svago"
+    ],
+    "Bugs_Bunny_Ocean_BookOfRhymes.jpeg": [
+      "svago",
+      "tramonto",
+      "primavera",
+      "estate",
+      "alba",
+      "crepuscolo"
+    ],
+    "Daffy_duck_moments_sea.jpg": [
+      "svago",
+      "mattino",
+      "pomeriggio",
+      "primavera",
+      "autunno"
+    ],
+    "Daffy_duck_The_Warning_Deer.png": [
+      "autunno",
+      "tramonto"
+    ],
+    "Silvestro_balzo.png": [
+      "mattino"
+    ],
+    "daffy_bugs_taz_doctor.jpg": [
+      "lavoro"
+    ],
+    "daffy_shoot_faces.jpg": [
+      "jolly"
+    ],
+    "Group_cerchi_verdi_Alvarez.jpg": [
+      "jolly",
+      "smart"
+    ],
+    "Logo_mare.jpg": [
+      "estate",
+      "mattino",
+      "svago",
+      "weekend"
+    ],
+    "looney_saloon.jpg": [
+      "capodanno",
+      "tramonto",
+      "crepuscolo",
+      "svago",
+      "weekend"
+    ],
+    "Mosaico 3.jpg": [
+      "jolly",
+      "smart"
+    ],
+    "new_year_2000.jpg": [
+      "capodanno"
+    ],
+    "titti_silvestro_bugs_daffy_willy_altalena.jpg": [
+      "primavera",
+      "svago",
+      "pomeriggio"
+    ],
+    "toons_birthday_party.jpg": [
+      "compleanno",
+      "sera",
+      "svago"
+    ],
+    "bugs_porky_tamburo_thatsallfolks.jpg": [
+      "spettacolo",
+      "notte"
+    ],
+    "cicogna_ubriaca.jpg": [
+      "lavoro",
+      "smart",
+      "svago"
+    ],
+    "daffy_artwork_paint.jpg": [
+      "jolly"
+    ],
+    "daffy_cake_birthday_porky.jpeg": [
+      "compleanno",
+      "mattino",
+      "pomeriggio"
+    ],
+    "daffy_elmer_cupid_valentine.jpg": [
+      "sanValentino",
+      "tramonto"
+    ],
+    "daffy_lay_pound.jpg": [
+      "svago",
+      "autunno",
+      "primavera",
+      "mattino"
+    ],
+    "daffy_porky_cleaning_windows.jpg": [
+      "lavoro",
+      "pomeriggio"
+    ],
+    "daffy_porky_doctor_apple.jpg": [
+      "lavoro",
+      "mattino"
+    ],
+    "daffy_porky_hotel_bill.jpg": [
+      "jolly"
+    ],
+    "daffy_porky_lay_egg.jpg": [
+      "lavoro",
+      "smart",
+      "pomeriggio",
+      "pasqua"
+    ],
+    "daffy_porky_moustache_paint.jpg": [
+      "pomeriggio",
+      "jolly"
+    ],
+    "daffy_porky_new_year.jpg": [
+      "capodanno"
+    ],
+    "daffy_porky_picnic.jpg": [
+      "weekend",
+      "svago",
+      "primavera",
+      "pranzo",
+      "pomeriggio",
+      "autunno"
+    ],
+    "daffy_valentine_chocolathe.jpg": [
+      "sanValentino"
+    ],
+    "daffy_vassoio.jpg": [
+      "pranzo",
+      "smart"
+    ],
+    "dorlock_holmes.jpg": [
+      "notte",
+      "inverno",
+      "autunno",
+      "lavoro"
+    ],
+    "duck_tracy_gangster.jpg": [
+      "horror",
+      "notte"
+    ],
+    "elmer_daffy_cupid.jpg": [
+      "sanValentino"
+    ],
+    "porky_bar_apple_juice.jpg": [
+      "sera",
+      "svago",
+      "weekend"
+    ],
+    "porky_cowboy.jpg": [
+      "pomeriggio",
+      "mattino",
+      "estate",
+      "svago"
+    ],
+    "porky_fly_wackyland_night.jpg": [
+      "spettacolo",
+      "notte",
+      "horror"
+    ],
+    "porky_tamburo.jpg": [
+      "spettacolo",
+      "notte"
+    ],
+    "porky_valentine_flowers.jpg": [
+      "sanValentino"
+    ],
+    "robin_hood_daffy_forest.jpg": [
+      "pomeriggio",
+      "primavera",
+      "svago",
+      "alba"
+    ],
+    "sylvester_tweety_christmas_present_dynamite.jpg": [
+      "natale"
+    ],
+    "black_and_white_smocking.jpg": [
+      "jolly",
+      "sera",
+      "spettacolo",
+      "weekend",
+      "inverno",
+      "autunno"
+    ],
+    "Foghorn_Barnyard_Henery.jpg": [
+      "jolly",
+      "alba",
+      "mattino"
+    ],
+    "Bugs_giovanni_authograph.jpg": [
+      "spettacolo",
+      "sera"
+    ],
+    "Bugs_penelope_dinner_carrotblanca.jpg": [
+      "sera",
+      "svago",
+      "sanValentino",
+      "inverno",
+      "weekend"
+    ],
+    "Bugs_Sylvester_Daffy_Elmes_Aliens_basketball.jpg": [
+      "sport",
+      "mattino"
+    ],
+    "bugs_wife_honeymoon.jpg": [
+      "sanValentino"
+    ],
+    "Daffy_easter_eggs_costume_sea.jpg": [
+      "pasqua",
+      "mattino"
+    ],
+    "rocky_mugsy_hideaway.jpg": [
+      "crepuscolo",
+      "inverno",
+      "autunno"
+    ],
+    "Sylvester-Daffy_golden_egg.jpg": [
+      "pomeriggio",
+      "pasqua",
+      "primavera"
+    ],
+    "easter_bunny.jpg": [
+      "pomeriggio",
+      "pasqua",
+      "primavera",
+      "tramonto"
+    ],
+    "bugs_lightning_storm.jpg": [
+      "temporale",
+      "alba",
+      "mattino",
+      "pomeriggio",
+      "sera",
+      "crepuscolo"
+    ],
+    "daffy_cloud_rain_desert.jpg": [
+      "pioggia",
+      "pomeriggio",
+      "mattino"
+    ],
+    "bugs_hole_ rainy.png": [
+      "mattino",
+      "pioggia",
+      "temporale",
+      "alba",
+      "notte"
+    ],
+    "daffy_bugs_rainy_singing.jpg": [
+      "spettacolo",
+      "pioggia",
+      "pomeriggio",
+      "sera"
+    ],
+    "lola_window_stalking_rainy_storm.jpg": [
+      "notte",
+      "pomeriggio",
+      "sera",
+      "temporale",
+      "horror"
+    ],
+    "porky_daffy_storm.jpg": [
+      "temporale",
+      "spettacolo",
+      "sera"
+    ],
+    "willy_rainy_cloud.jpg": [
+      "pomeriggio",
+      "mattino",
+      "pioggia"
+    ],
+    "Daffy and Porky/Porky_daffy_storm_that'all_folks.png": [
+      "pomeriggio",
+      "tramonto",
+      "pioggia",
+      "temporale",
+      "crepuscolo"
+    ],
+    "Porky_daffy_rainy_driving.png": [
+      "lavoro",
+      "pioggia"
+    ],
+    "bugs_lola_storm_boat.png": [
+      "mattino",
+      "pomeriggio",
+      "temporale",
+      "smart",
+      "sanValentino"
+    ],
+    "sylvester_storm_inside_house.png": [
+      "mattino",
+      "pomeriggio",
+      "temporale"
+    ],
+    "tweety_house_night_moon.png": [
+      "notte",
+      "sera"
+    ],
+    "abominable_snowman.jpeg": [
+      "inverno",
+      "tramonto"
+    ],
+    "Daffy and Porky/diner_night_storm.jpg": [
+      "temporale",
+      "sera",
+      "pioggia"
+    ],
+    "Daffy and Porky/spotlight_daffy_porky.jpg": [
+      "spettacolo"
+    ],
+    "daffy_bugs_running_prairie.jpg": [
+      "primavera",
+      "mattino",
+      "svago"
+    ],
+    "daffy_elmer_sleep.jpg": [
+      "notte"
+    ],
+    "sylvester_nap.jpg": [
+      "svago",
+      "weekend",
+      "pomeriggio"
+    ],
+    "sylvester_sings_moonlight.jpg": [
+      "notte",
+      "spettacolo"
+    ],
+    "tweety_sylvester_nap.jpg": [
+      "inverno",
+      "weekend",
+      "pomeriggio",
+      "alba"
+    ],
+    "tweety_bugs_daffy_mountains.png": [
+      "inverno",
+      "crepuscolo",
+      "alba",
+      "sport"
+    ],
+    "bird_watching.jpg": [
+      "lavoro",
+      "mattino"
+    ],
+    "cluck_trent_office_water.jpg": [
+      "lavoro",
+      "mattino"
+    ],
+    "detective_study.jpg": [
+      "lavoro",
+      "sera"
+    ],
+    "duck_amuck_background_sketch.jpg": [
+      "jolly",
+      "mattino",
+      "alba"
+    ],
+    "end_of_road.jpg": [
+      "pomeriggio",
+      "lavoro"
+    ],
+    "ice_breaked_sylvester.jpg": [
+      "inverno",
+      "sera",
+      "crepuscolo"
+    ],
+    "night_castel_pumpernickel.jpg": [
+      "notte"
+    ],
+    "night_cliff_moon.jpg": [
+      "crepuscolo"
+    ],
+    "night_rain_house_spring.jpg": [
+      "pioggia",
+      "sera",
+      "crepuscolo",
+      "primavera",
+      "autunno",
+      "pomeriggio",
+      "notte"
+    ],
+    "Storm_porky_castel_night.jpg": [
+      "notte",
+      "temporale"
+    ],
+    "sunset_forest_pink.jpg": [
+      "crepuscolo",
+      "alba",
+      "primavera"
+    ],
+    "taz_wedding.jpg": [
+      "sanValentino",
+      "mattino"
+    ],
+    "winter_house_porky.jpg": [
+      "notte",
+      "inverno"
+    ],
+    "birthday_bugs_table.jpeg": [
+      "compleanno",
+      "crepuscolo",
+      "sera",
+      "svago"
+    ],
+    "bugs_bull.png": [
+      "estate",
+      "pomeriggio",
+      "primavera"
+    ],
+    "Coyote_road_runner_sitting_sky.jpg": [
+      "crepuscolo",
+      "svago"
+    ],
+    "Duck_dodgers_plan_sketch.png": [
+      "lavoro",
+      "smart"
+    ],
+    "marvin_k9_birthday.png": [
+      "compleanno",
+      "sera"
+    ],
+    "marvin_mars_rest.png": [
+      "svago",
+      "weekend",
+      "tramonto",
+      "pomeriggio"
+    ],
+    "wile_coyote_falling_phone.png": [
+      "pomeriggio",
+      "primavera",
+      "autunno",
+      "alba"
+    ],
+    "wile_coyote_painting_truck.png": [
+      "svago",
+      "pomeriggio",
+      "sera"
+    ],
+    "Bugs_clark_gable.jpg": [
+      "mattino",
+      "primavera"
+    ],
+    "daffy_porky_mummy.jpg": [
+      "alba",
+      "mattino",
+      "lavoro",
+      "horror"
+    ],
+    "personaggi_riquadri_colorati_bianco_nero.jpg": [],
+    "porky_sylvester_scaredy.jpg": [
+      "notte",
+      "sera",
+      "crepuscolo",
+      "horror",
+      "weekend"
+    ],
+    "sylvester_splat.jpg": [
+      "pomeriggio",
+      "jolly"
+    ],
+    "bugs_elmer_birthday_dynamite.jpg": [
+      "compleanno",
+      "mattino",
+      "pranzo"
+    ],
+    "Bugs_daffy_cowboy_campfire.png": [
+      "sera",
+      "svago"
+    ],
+    "Bugs_daffy_cowboy_menacing.png": [
+      "pomeriggio",
+      "estate",
+      "smart"
+    ],
+    "daffy_birthday_gift.png": [
+      "compleanno"
+    ],
+    "bad_wolf_blow.png": [
+      "mattino",
+      "pomeriggio",
+      "pioggia",
+      "lavoro"
+    ],
+    "bad_wolf_sketch.png": [
+      "lavoro",
+      "crepuscolo",
+      "sera"
+    ],
+    "cecil_animation.png": [
+      "lavoro",
+      "sera",
+      "crepuscolo"
+    ],
+    "daffy_airplane.png": [
+      "capodanno",
+      "pomeriggio"
+    ],
+    "duck_amuck.png": [
+      "primavera",
+      "estate",
+      "lavoro",
+      "mattino"
+    ],
+    "Looney tunes christmas/holyday_hustlers.png": [
+      "natale",
+      "lavoro",
+      "inverno"
+    ],
+    "mr_hyde.png": [
+      "horror",
+      "crepuscolo",
+      "tramonto"
+    ],
+    "pirate_beach_treasure.png": [
+      "pomeriggio",
+      "estate"
+    ],
+    "space_opera.png": [
+      "spettacolo",
+      "notte"
+    ],
+    "superhero.png": [
+      "notte",
+      "lavoro"
+    ],
+    "vintage_porky_petunia_gabby.png": [
+      "weekend",
+      "primavera",
+      "mattino",
+      "pranzo"
+    ],
+    "wacky_world.png": [
+      "primavera",
+      "estate",
+      "pomeriggio",
+      "mattino"
+    ],
+    "easter_painting_group.jpg": [
+      "pasqua"
+    ],
+    "daffy_bugs_halloween_flames.jpg": [
+      "horror"
+    ],
+    "bugs_bloodcount.jpg": [
+      "horror"
+    ],
+    "bugs_piramyd.jpg": [
+      "horror",
+      "mattino"
+    ],
+    "Coyote-vs-ACME-Bugs-sc.jpg": [
+      "spettacolo"
+    ],
+    "Daffy and Porky/daffy_bambina_posseduta.png": [
+      "pomeriggio",
+      "horror"
+    ],
+    "Daffy and Porky/daffy_gum_vampire.jpg": [
+      "horror",
+      "mattino",
+      "pomeriggio"
+    ],
+    "Daffy and Porky/Daffy_Porky_verricello.png": [
+      "jolly",
+      "notte"
+    ],
+    "Daffy and Porky/pedicure.jpg": [
+      "lavoro",
+      "mattino",
+      "alba"
+    ],
+    "daffy_paperclip.jpg": [
+      "compleanno",
+      "jolly",
+      "svago"
+    ],
+    "gossamer_art.jpg": [
+      "horror"
+    ],
+    "wabbit_season_with_gun_copy.jpg": [],
+    "bugs_car_mini_Umbrella.png": [
+      "mattino",
+      "temporale"
+    ],
+    "bugs_door_rainy.jpg": [
+      "temporale",
+      "sera",
+      "pomeriggio",
+      "crepuscolo",
+      "tramonto"
+    ],
+    "daffy_storm_armchair.jpg": [
+      "svago",
+      "temporale",
+      "sera",
+      "crepuscolo"
+    ],
+    "journal_forecast_rainy.jpg": [
+      "pioggia",
+      "mattino",
+      "alba"
+    ],
+    "bugs_superrabbit.jpeg": [
+      "spettacolo",
+      "alba",
+      "lavoro"
+    ],
+    "daffy_cowboy_porky_horses.jpeg": [
+      "pioggia",
+      "estate",
+      "pomeriggio",
+      "mattino",
+      "alba"
+    ],
+    "dogs_poker.jpeg": [
+      "svago",
+      "notte",
+      "sera"
+    ],
+    "marvin_gossamer_gun.jpeg": [
+      "horror",
+      "sera",
+      "crepuscolo"
+    ],
+    "mistery_machine_dogs.jpg": [
+      "crepuscolo",
+      "horror"
+    ],
+    "pepe_penelope_dogs.jpeg": [
+      "primavera",
+      "pomeriggio",
+      "smart",
+      "autunno"
+    ],
+    "porky_dogs_cookies.jpeg": [
+      "primavera",
+      "svago",
+      "weekend",
+      "autunno",
+      "mattino",
+      "pranzo"
+    ],
+    "robin_hood_friar_porky.jpeg": [
+      "lavoro",
+      "primavera",
+      "autunno",
+      "pomeriggio",
+      "mattino"
+    ],
+    "wile_batsuit.jpeg": [
+      "crepuscolo"
+    ],
+    "wile_detour.jpeg": [
+      "lavoro",
+      "pomeriggio"
+    ],
+    "coyote_sci_salto_montagna.jpeg": [
+      "inverno",
+      "sport",
+      "alba",
+      "pomeriggio"
+    ],
+    "Looney tunes christmas/bugs_ghirlanda_natale.jpg": [
+      "natale"
+    ],
+    "Looney tunes christmas/bugs_ghirlanda_natale_verticale.jpg": [],
+    "Looney tunes christmas/daffy_babbo_natale_pila_regali.jpg": [
+      "crepuscolo",
+      "natale"
+    ],
+    "Daffy and Porky/daffy_bugs_hole_filled_water.png": [
+      "mattino",
+      "temporale"
+    ],
+    "daffy_hot_dry.jpeg": [
+      "estate",
+      "pomeriggio"
+    ],
+    "sylvester_hector_rainy.jpg": [
+      "pioggia",
+      "pomeriggio"
+    ],
+    "bugs_gossamer_haircut.jpg": [
+      "lavoro",
+      "horror",
+      "pomeriggio",
+      "mattino"
+    ],
+    "casino_gamble.jpg": [
+      "svago",
+      "notte",
+      "weekend"
+    ],
+    "Looney Tunes Sports/bugs_bunjee.jpg": [
+      "sport",
+      "mattino"
+    ],
+    "Looney Tunes Sports/climbing_sylvester.jpg": [
+      "pomeriggio",
+      "tramonto",
+      "sport"
+    ],
+    "Looney Tunes Sports/daffy_mountain_bike_falling_extreme.jpeg": [
+      "crepuscolo",
+      "sport"
+    ],
+    "Looney Tunes Sports/daffy_shark_scooter.jpg": [
+      "alba",
+      "sport",
+      "estate",
+      "primavera"
+    ],
+    "Looney Tunes Sports/daffy_taz_rafting_xtreme.jpeg": [
+      "crepuscolo",
+      "sport",
+      "primavera",
+      "estate"
+    ],
+    "Looney Tunes Sports/wile_roller_xtreme.jpg": [
+      "pomeriggio",
+      "tramonto",
+      "sport",
+      "primavera",
+      "autunno"
+    ],
+    "Looney Tunes Sports/wile_skying_tree.jpeg": [
+      "sport",
+      "inverno",
+      "mattino"
+    ],
+    "subway.jpg": [
+      "alba",
+      "lavoro",
+      "autunno",
+      "inverno",
+      "primavera"
+    ],
+    "sylvester_tweety_fitness.jpg": [
+      "sport",
+      "weekend",
+      "pomeriggio"
+    ],
+    "tweety_sylvester_autumn_rainy.jpg": [
+      "pomeriggio",
+      "mattino",
+      "alba",
+      "pioggia",
+      "smart",
+      "autunno",
+      "inverno"
+    ]
+  },
+  "random_rules": {
+    "weekday": [
+      {
+        "from": "dawn -20m",
+        "to": "sunrise",
+        "include": [
+          "crepuscolo"
+        ],
+        "exclude": [
+          "smart",
+          "weekend"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunrise",
+        "to": "10:00",
+        "include": [
+          "alba",
+          "lavoro"
+        ],
+        "exclude": [
+          "mattino",
+          "pranzo",
+          "pomeriggio",
+          "tramonto",
+          "crepuscolo",
+          "sera",
+          "notte",
+          "smart",
+          "weekend",
+          "svago"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "10:00",
+        "to": "13:00",
+        "include": [
+          "mattino",
+          "lavoro",
+          "jolly"
+        ],
+        "exclude": [
+          "alba",
+          "pranzo",
+          "pomeriggio",
+          "tramonto",
+          "crepuscolo",
+          "sera",
+          "notte",
+          "smart",
+          "weekend",
+          "svago"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "13:00",
+        "to": "14:00",
+        "include": [
+          "pranzo"
+        ],
+        "exclude": [
+          "smart"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "14:00",
+        "to": "sunset - 58m",
+        "include": [
+          "pomeriggio",
+          "lavoro",
+          "sport"
+        ],
+        "exclude": [
+          "alba",
+          "mattino",
+          "pranzo",
+          "tramonto",
+          "crepuscolo",
+          "sera",
+          "spettacolo",
+          "notte",
+          "smart",
+          "weekend",
+          "svago"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunset - 58m",
+        "to": "min(sunset +2 m, 18:00)",
+        "include": [
+          "tramonto",
+          "lavoro"
+        ],
+        "exclude": [
+          "alba",
+          "mattino",
+          "pranzo",
+          "pomeriggio",
+          "crepuscolo",
+          "sera",
+          "spettacolo",
+          "notte",
+          "smart",
+          "weekend",
+          "svago"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunset +2 m",
+        "to": "min(dusk +2m, 18:00)",
+        "include": [
+          "crepuscolo",
+          "lavoro"
+        ],
+        "exclude": [
+          "alba",
+          "mattino",
+          "pranzo",
+          "pomeriggio",
+          "tramonto",
+          "sera",
+          "spettacolo",
+          "notte",
+          "smart",
+          "weekend",
+          "svago"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunset - 58m",
+        "to": "sunset +2 m",
+        "include": [
+          "tramonto"
+        ],
+        "exclude": [
+          "weekend"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunset +2 m",
+        "to": "dusk +2m",
+        "include": [
+          "crepuscolo"
+        ],
+        "exclude": [
+          "weekend"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "16:00",
+        "to": "18:00",
+        "include": [
+          "lavoro"
+        ],
+        "exclude": [
+          "alba",
+          "mattino",
+          "pranzo",
+          "pomeriggio",
+          "tramonto",
+          "crepuscolo",
+          "spettacolo",
+          "notte",
+          "smart",
+          "weekend",
+          "svago"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "dusk +2m",
+        "to": "22:00",
+        "include": [
+          "sera",
+          "spettacolo",
+          "svago"
+        ],
+        "exclude": [
+          "alba",
+          "mattino",
+          "pranzo",
+          "pomeriggio",
+          "tramonto",
+          "notte"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "22:00",
+        "to": "23:00",
+        "include": [
+          "spettacolo",
+          "notte"
+        ],
+        "exclude": [
+          "alba",
+          "mattino",
+          "pranzo",
+          "pomeriggio",
+          "tramonto",
+          "crepuscolo",
+          "sera"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "23:00",
+        "to": "dawn -20m",
+        "include": [
+          "notte"
+        ],
+        "exclude": [],
+        "match": "all",
+        "rotate_minutes": 90
+      }
+    ],
+    "weekend": [
+      {
+        "from": "dawn -20m",
+        "to": "sunrise +60m",
+        "include": [
+          "crepuscolo"
+        ],
+        "exclude": [
+          "lavoro"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunrise +60m",
+        "to": "10:00",
+        "include": [
+          "alba",
+          "svago"
+        ],
+        "exclude": [
+          "mattino",
+          "pranzo",
+          "pomeriggio",
+          "tramonto",
+          "crepuscolo",
+          "sera",
+          "notte",
+          "lavoro"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "10:00",
+        "to": "13:00",
+        "include": [
+          "mattino",
+          "weekend",
+          "svago",
+          "sport",
+          "jolly"
+        ],
+        "exclude": [
+          "alba",
+          "pranzo",
+          "pomeriggio",
+          "tramonto",
+          "crepuscolo",
+          "sera",
+          "notte",
+          "lavoro"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "13:00",
+        "to": "noon+2h",
+        "include": [
+          "pranzo"
+        ],
+        "exclude": [
+          "lavoro"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "noon +2h",
+        "to": "sunset - 58m",
+        "include": [
+          "pranzo",
+          "pomeriggio",
+          "weekend",
+          "svago",
+          "sport"
+        ],
+        "exclude": [
+          "alba",
+          "mattino",
+          "tramonto",
+          "crepuscolo",
+          "sera",
+          "notte",
+          "lavoro"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunset - 58m",
+        "to": "sunset +2m",
+        "include": [
+          "tramonto"
+        ],
+        "exclude": [
+          "lavoro"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "sunset +2m",
+        "to": "dusk +2m",
+        "include": [
+          "crepuscolo"
+        ],
+        "exclude": [
+          "lavoro"
+        ],
+        "match": "all",
+        "rotate_minutes": 60
+      },
+      {
+        "from": "dusk +2m",
+        "to": "22:00",
+        "include": [
+          "sera",
+          "spettacolo",
+          "weekend",
+          "svago"
+        ],
+        "exclude": [
+          "alba",
+          "mattino",
+          "pranzo",
+          "pomeriggio",
+          "tramonto",
+          "crepuscolo",
+          "notte",
+          "lavoro"
+        ],
+        "match": "any",
+        "rotate_minutes": 60
+      }
+    ],
+    "overrides": {
+      "monday": [
+        {
+          "from": "10:00",
+          "to": "13:00",
+          "include": [
+            "mattino",
+            "lavoro"
+          ],
+          "exclude": [
+            "alba",
+            "pranzo",
+            "pomeriggio",
+            "tramonto",
+            "crepuscolo",
+            "sera",
+            "notte",
+            "svago"
+          ],
+          "match": "any",
+          "rotate_minutes": 60
+        },
+        {
+          "from": "13:00",
+          "to": "14:00",
+          "include": [
+            "pranzo"
+          ],
+          "exclude": [],
+          "match": "all",
+          "rotate_minutes": 60
+        },
+        {
+          "from": "14:00",
+          "to": "18:00",
+          "include": [
+            "pomeriggio",
+            "lavoro",
+            "smart",
+            "jolly"
+          ],
+          "exclude": [
+            "alba",
+            "mattino",
+            "pranzo",
+            "tramonto",
+            "crepuscolo",
+            "sera",
+            "notte",
+            "svago"
+          ],
+          "match": "any",
+          "rotate_minutes": 60
+        }
+      ],
+      "tuesday": [
+        {
+          "from": "15:00",
+          "to": "sunset -50m",
+          "include": [
+            "pomeriggio",
+            "lavoro",
+            "sport"
+          ],
+          "exclude": [
+            "alba",
+            "mattino",
+            "pranzo",
+            "tramonto",
+            "crepuscolo",
+            "sera",
+            "notte",
+            "smart",
+            "svago"
+          ],
+          "match": "any",
+          "rotate_minutes": 60
+        }
+      ],
+      "wednesday": [
+        {
+          "from": "10:00",
+          "to": "13:00",
+          "include": [
+            "mattino",
+            "lavoro",
+            "smart",
+            "jolly"
+          ],
+          "exclude": [
+            "alba",
+            "pranzo",
+            "pomeriggio",
+            "tramonto",
+            "crepuscolo",
+            "sera",
+            "notte",
+            "svago"
+          ],
+          "match": "any",
+          "rotate_minutes": 60
+        },
+        {
+          "from": "13:00",
+          "to": "14:00",
+          "include": [
+            "pranzo"
+          ],
+          "exclude": [],
+          "match": "all",
+          "rotate_minutes": 60
+        },
+        {
+          "from": "14:00",
+          "to": "sunset -58m",
+          "include": [
+            "pomeriggio",
+            "lavoro",
+            "smart",
+            "sport"
+          ],
+          "exclude": [
+            "alba",
+            "mattino",
+            "pranzo",
+            "tramonto",
+            "crepuscolo",
+            "sera",
+            "notte",
+            "svago"
+          ],
+          "match": "any",
+          "rotate_minutes": 60
+        }
+      ],
+      "thursday": [],
+      "friday": [
+        {
+          "from": "09:00",
+          "to": "11:00",
+          "include": [
+            "sport",
+            "jolly"
+          ],
+          "exclude": [
+            "pranzo",
+            "pomeriggio",
+            "tramonto",
+            "crepuscolo",
+            "sera",
+            "notte",
+            "smart",
+            "weekend",
+            "svago"
+          ],
+          "match": "any",
+          "rotate_minutes": 60
+        },
+        {
+          "from": "21:00",
+          "to": "23:00",
+          "include": [
+            "sera",
+            "weekend"
+          ],
+          "exclude": [
+            "alba",
+            "mattino",
+            "pranzo",
+            "pomeriggio",
+            "tramonto"
+          ],
+          "match": "all",
+          "rotate_minutes": 60
+        }
+      ],
+      "saturday": [],
+      "sunday": []
+    }
+  },
+  "history_days": 60,
+  "theme": "dark",
+  "latitude": 40.8199,
+  "longitude": 14.3414,
+  "meteo": {
+    "attivo": false,
+    "aggiorna_ore": 3,
+    "minimo": 2
+  },
+  "seasons": [
+    {
+      "name": "Inverno",
+      "from": "11-24",
+      "to": "03-7",
+      "tags": [
+        "inverno"
+      ]
+    },
+    {
+      "name": "Primavera",
+      "from": "02-22",
+      "to": "06-07",
+      "tags": [
+        "primavera"
+      ]
+    },
+    {
+      "name": "Estate",
+      "from": "05-25",
+      "to": "9-25",
+      "tags": [
+        "estate"
+      ]
+    },
+    {
+      "name": "Autunno",
+      "from": "09-10",
+      "to": "12-10",
+      "tags": [
+        "autunno"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "random_rules": {
+        "weekday": [
+          {
+            "from": "00:00",
+            "to": "8:00",
+            "include": [
+              "capodanno"
+            ],
+            "exclude": [
+              "mattino",
+              "pranzo",
+              "pomeriggio",
+              "tramonto"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "8:00",
+            "to": "sunset-40",
+            "include": [
+              "capodanno"
+            ],
+            "exclude": [
+              "tramonto",
+              "crepuscolo",
+              "sera",
+              "notte"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "sunset-40",
+            "to": "dusk+30",
+            "include": [
+              "capodanno",
+              "tramonto"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "22:00",
+            "to": "00:00",
+            "include": [
+              "capodanno"
+            ],
+            "exclude": [
+              "alba",
+              "mattino",
+              "pranzo",
+              "pomeriggio",
+              "tramonto",
+              "crepuscolo"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          }
+        ]
+      },
+      "name": "Capodanno",
+      "from": "12-31",
+      "to": "01-01",
+      "tags": [
+        "capodanno"
+      ],
+      "veto": [
+        "horror"
+      ]
+    },
+    {
+      "name": "Natale",
+      "from": "12-01",
+      "to": "01-06",
+      "tags": [
+        "natale"
+      ],
+      "veto": [
+        "horror"
+      ],
+      "random_rules": {
+        "weekday": [
+          {
+            "from": "sunset -40m",
+            "to": "dusk",
+            "include": [
+              "crepuscolo",
+              "natale"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "dusk",
+            "to": "02:00",
+            "include": [
+              "natale"
+            ],
+            "exclude": [
+              "alba",
+              "mattino",
+              "pranzo",
+              "pomeriggio",
+              "tramonto",
+              "crepuscolo"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "sunrise +1h",
+            "to": "10:00",
+            "include": [
+              "mattino",
+              "natale"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "sunrise -30m",
+            "to": "sunrise +1h",
+            "include": [
+              "alba",
+              "mattino",
+              "natale"
+            ],
+            "exclude": [
+              "pranzo",
+              "pomeriggio",
+              "tramonto",
+              "sera",
+              "notte"
+            ],
+            "match": "any",
+            "rotate_minutes": 60
+          }
+        ],
+        "weekend": [
+          {
+            "from": "sunrise +1h",
+            "to": "noon",
+            "include": [
+              "mattino",
+              "natale",
+              "sport",
+              "svago",
+              "weekend"
+            ],
+            "exclude": [
+              "pranzo",
+              "pomeriggio",
+              "tramonto",
+              "crepuscolo",
+              "sera",
+              "notte"
+            ],
+            "match": "any",
+            "rotate_minutes": 60
+          }
+        ]
+      }
+    },
+    {
+      "random_rules": {
+        "weekday": [
+          {
+            "from": "15:00",
+            "to": "sunset -50",
+            "include": [
+              "pomeriggio",
+              "sanValentino"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "sunset -50",
+            "to": "dusk",
+            "include": [
+              "sanValentino",
+              "tramonto"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "dusk",
+            "to": "dusk +60",
+            "include": [
+              "crepuscolo",
+              "sanValentino"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "dusk +60",
+            "to": "00:00",
+            "include": [
+              "sanValentino"
+            ],
+            "exclude": [
+              "alba",
+              "mattino",
+              "pranzo",
+              "pomeriggio",
+              "tramonto",
+              "crepuscolo"
+            ],
+            "match": "any",
+            "rotate_minutes": 60
+          }
+        ],
+        "weekend": [
+          {
+            "from": "08:00",
+            "to": "13:00",
+            "include": [
+              "sanValentino"
+            ],
+            "exclude": [
+              "pranzo",
+              "pomeriggio",
+              "tramonto",
+              "crepuscolo",
+              "sera",
+              "notte"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "14:00",
+            "to": "sunset-40",
+            "include": [
+              "sanValentino",
+              "svago",
+              "weekend"
+            ],
+            "exclude": [
+              "alba",
+              "mattino",
+              "pranzo",
+              "tramonto",
+              "crepuscolo",
+              "sera",
+              "notte"
+            ],
+            "match": "any",
+            "rotate_minutes": 60
+          }
+        ],
+        "overrides": {
+          "monday": [
+            {
+              "from": "14:00",
+              "to": "sunset - 50",
+              "include": [
+                "sanValentino"
+              ],
+              "exclude": [
+                "alba",
+                "mattino",
+                "pranzo",
+                "tramonto",
+                "crepuscolo",
+                "sera",
+                "notte"
+              ],
+              "match": "any",
+              "rotate_minutes": 60
+            }
+          ],
+          "wednesday": [
+            {
+              "from": "14:00",
+              "to": "sunset-50",
+              "include": [
+                "jolly",
+                "sanValentino"
+              ],
+              "exclude": [
+                "alba",
+                "mattino",
+                "pranzo",
+                "tramonto",
+                "crepuscolo",
+                "sera",
+                "notte"
+              ],
+              "match": "any",
+              "rotate_minutes": 60
+            }
+          ]
+        }
+      },
+      "name": "San Valentino",
+      "from": "02-9",
+      "to": "02-15",
+      "tags": [
+        "sanValentino"
+      ],
+      "veto": [
+        "horror"
+      ]
+    },
+    {
+      "random_rules": {
+        "weekday": [
+          {
+            "from": "09:00",
+            "to": "12:00",
+            "include": [
+              "pasqua"
+            ],
+            "exclude": [
+              "pranzo",
+              "pomeriggio",
+              "tramonto",
+              "crepuscolo",
+              "sera",
+              "notte"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "12:00",
+            "to": "sunset-58",
+            "include": [
+              "pasqua",
+              "pomeriggio"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          }
+        ]
+      },
+      "name": "Pasqua",
+      "from": "pasqua-5",
+      "to": "pasqua+2",
+      "tags": [
+        "pasqua"
+      ],
+      "veto": [
+        "horror"
+      ]
+    },
+    {
+      "random_rules": {
+        "weekday": [
+          {
+            "from": "07:00",
+            "to": "sunset-1h",
+            "include": [
+              "compleanno"
+            ],
+            "exclude": [
+              "tramonto",
+              "crepuscolo",
+              "sera",
+              "notte"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "sunset -1h",
+            "to": "02:00",
+            "include": [
+              "compleanno"
+            ],
+            "exclude": [
+              "alba",
+              "mattino",
+              "pranzo",
+              "pomeriggio"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          }
+        ]
+      },
+      "name": "Compleanno Mio",
+      "from": "10-12",
+      "to": "10-14",
+      "tags": [
+        "compleanno"
+      ]
+    },
+    {
+      "random_rules": {
+        "weekday": [
+          {
+            "from": "10:00",
+            "to": "11:00",
+            "include": [
+              "horror"
+            ],
+            "exclude": [
+              "tramonto",
+              "crepuscolo",
+              "sera",
+              "notte"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "15:00",
+            "to": "sunset-58",
+            "include": [
+              "horror"
+            ],
+            "exclude": [
+              "tramonto",
+              "crepuscolo",
+              "sera",
+              "notte"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "dusk -40m",
+            "to": "dusk +2m",
+            "include": [
+              "crepuscolo",
+              "horror"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "dusk +2m",
+            "to": "21:00",
+            "include": [
+              "horror",
+              "sera"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "21:00",
+            "to": "22:00",
+            "include": [
+              "horror",
+              "spettacolo"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "22:00",
+            "to": "2:00",
+            "include": [
+              "horror",
+              "notte"
+            ],
+            "exclude": [],
+            "match": "all",
+            "rotate_minutes": 60
+          }
+        ]
+      },
+      "name": "Halloween",
+      "from": "10-20",
+      "to": "11-02",
+      "tags": [
+        "horror"
+      ],
+      "veto": [
+        "natale",
+        "sanValentino",
+        "pasqua"
+      ]
+    },
+    {
+      "random_rules": {
+        "weekday": [
+          {
+            "from": "07:00",
+            "to": "sunset-1h",
+            "include": [
+              "compleanno"
+            ],
+            "exclude": [
+              "tramonto",
+              "crepuscolo",
+              "sera",
+              "notte"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          },
+          {
+            "from": "sunset -1h",
+            "to": "02:00",
+            "include": [
+              "compleanno"
+            ],
+            "exclude": [
+              "alba",
+              "mattino",
+              "pranzo",
+              "pomeriggio"
+            ],
+            "match": "all",
+            "rotate_minutes": 60
+          }
+        ]
+      },
+      "name": "Compleanno Arianna",
+      "from": "05-05",
+      "to": "05-07",
+      "tags": [
+        "compleanno"
+      ]
+    }
+  ],
+  "position_map": {
+    "Federico": {
+      "latitude": 40.8518,
+      "longitude": 14.2681
+    },
+    "Federico_Lenovo": {
+      "latitude": 40.8199,
+      "longitude": 14.3414
+    },
+    "FedericoAsus": {
+      "latitude": 40.8199,
+      "longitude": 14.3414
+    }
+  }
+}

@@ -103,6 +103,10 @@ data class Config(
         return lat to lon
     }
 
+    /** Se il dispositivo ha una sua voce in position_map: senza, valgono latitude/longitude. */
+    fun inPositionMap(dispositivo: String): Boolean =
+        (positionMap as? JsonObject)?.containsKey(dispositivo) == true
+
     /** Tutti i tag dichiarati da stagioni ed eventi: il vocabolario "stagionale". */
     val tagStagionali: Set<String> by lazy {
         (stagioni + eventi).flatMapTo(mutableSetOf()) { it.tags }
