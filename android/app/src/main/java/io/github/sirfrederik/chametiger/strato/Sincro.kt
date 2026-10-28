@@ -366,7 +366,7 @@ class Sincro(
 
     companion object {
         const val NOME_CONFIG = "config.json"
-        private const val ETA_INDICE_S = 6 * 3600
+        private const val ETA_INDICE_S = 24 * 3600
         private const val ETA_PER_MANCANTE_S = 3600
         private const val RIPROVA_CHIAVE_MIN = 30
 
