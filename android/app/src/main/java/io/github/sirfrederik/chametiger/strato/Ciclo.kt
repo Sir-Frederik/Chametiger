@@ -23,6 +23,10 @@ sealed interface Valutazione {
         val decisione: Decisione,
         /** Non nullo: config.json non si legge, si usa l'ultimo buono. */
         val avvisoConfig: String?,
+        /** Le prime cifre dello SHA-256 del config usato, come nel log del tray. */
+        val impronta: String,
+        /** Lo stato del meteo in una riga. */
+        val meteo: String,
     ) : Valutazione
 
     data class Errore(val messaggio: String) : Valutazione
@@ -35,8 +39,9 @@ sealed interface Valutazione {
  * a ogni risveglio anche quando non cambia niente: i buchi fra due righe
  * dicono quando il sistema ha soppresso i risvegli.
  *
- * `cartella` e' quella condivisa via USB (config.json, immagini, log),
- * `interna` quella privata dell'app (ultimo config buono, forzata).
+ * `cartella` e' quella condivisa via USB (config.json, immagini, log,
+ * meteo.json), `interna` quella privata dell'app (ultimo config buono,
+ * forzata, ultimo errore del meteo).
  */
 class Ciclo(
     private val cartella: File,
@@ -46,22 +51,31 @@ class Ciclo(
     private val sfondo: Sfondo,
     private val diario: Diario = DiarioFile(File(cartella, NOME_LOG)),
     private val orologio: () -> LocalDateTime = { LocalDateTime.now(ZONA) },
+    rete: Rete = ReteHttp,
 ) {
     private val memoria = MemoriaForzataFile(File(interna, "forzata.txt"))
+    private val meteo = Meteo(File(cartella, "meteo.json"), File(interna, "meteo_errore.txt"), identita, versione, diario, rete)
 
-    /** Cosa si mostrerebbe adesso, per la schermata: non scrive il log e non mette sfondi. */
-    fun valuta(): Valutazione {
+    /** Cosa si mostrerebbe adesso, per la schermata: non scarica, non scrive il log e non mette sfondi. */
+    fun valuta(): Valutazione = valuta(aggiornaMeteo = false)
+
+    private fun valuta(aggiornaMeteo: Boolean): Valutazione {
         if (identita.isBlank()) return Valutazione.Errore("Imposta l'identità del dispositivo, per esempio android-federico.")
         val lettura = ConfigSicuro(File(cartella, NOME_CONFIG), File(interna, "config.ultimo.json")).leggi()
         if (lettura is ConfigSicuro.Lettura.Nessuna) return Valutazione.Errore(lettura.motivo)
-        val (config, avviso) = lettura as ConfigSicuro.Lettura.Ok
-        val decisore = Decisore(config, identita, ArchivioCartella(config, cartella))
+        val (config, avviso, impronta) = lettura as ConfigSicuro.Lettura.Ok
         val adesso = orologio()
-        return Valutazione.Pronta(config, decisore, adesso, decisore.decidi(adesso, memoria.leggi()), avviso)
+        // Come il tray: prima il meteo, poi la scelta. Senza dati validi si sceglie come col sereno
+        if (aggiornaMeteo) meteo.aggiornaSeServe(config, adesso)
+        val decisore = Decisore(config, identita, ArchivioCartella(config, cartella), meteo.fonte(config, adesso))
+        return Valutazione.Pronta(
+            config, decisore, adesso, decisore.decidi(adesso, memoria.leggi()), avviso, impronta,
+            meteo.descrizione(config, adesso),
+        )
     }
 
     fun giro(): Valutazione = synchronized(LOCK) {
-        val v = valuta()
+        val v = valuta(aggiornaMeteo = true)
         if (v !is Valutazione.Pronta) {
             diario.scrivi("[WARN] ${(v as Valutazione.Errore).messaggio} Nessuno sfondo.")
             return v
@@ -135,7 +149,7 @@ class Ciclo(
         val fonte = if (v.config.inPositionMap(identita)) "position_map" else "latitude/longitude"
         val pila = v.decisore.motore.stratiDelGiorno(v.adesso.toLocalDate()).reversed().joinToString(" > ") { it.nome }
         val riga = "$identita $versione, ${ZONA.id}, " +
-            "%.4f,%.4f".format(Locale.ROOT, lat, lon) + " ($fonte), pila $pila"
+            "%.4f,%.4f".format(Locale.ROOT, lat, lon) + " ($fonte), pila $pila, config ${v.impronta}"
         val file = File(interna, "info.txt")
         val chiave = "${v.adesso.toLocalDate()}\t$riga"
         if (file.exists() && file.readText(Charsets.UTF_8) == chiave) return

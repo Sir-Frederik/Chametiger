@@ -195,8 +195,8 @@ private fun Dettagli(a: Anteprima) {
     )
     Voce("Pila del giorno", a.pila)
     Voce("Sole", a.orariSolari.joinToString("  ") { (nome, ora) -> "$nome $ora" })
-    if (a.meteoAttivo) Voce("Meteo", "fisso su asciutto: allineato coi PC solo nelle ore senza pioggia")
-    a.avvisoConfig?.let { Voce("Config", "$it: uso l'ultimo letto", errore = true) }
+    Voce("Meteo", a.meteo)
+    Voce("Config", a.impronta + (a.avvisoConfig?.let { " (ultimo letto: $it)" } ?: ""), errore = a.avvisoConfig != null, mono = a.avvisoConfig == null)
     HorizontalDivider()
 
     val s = a.scelta

@@ -23,7 +23,7 @@ import date_mobili
 import meteo
 import sun
 from versione import VERSIONE
-from posizione_config import leggi_config
+from posizione_config import leggi_config_e_impronta
 
 try:
     import pystray
@@ -127,7 +127,13 @@ def load_config() -> dict:
     Il config.json condiviso, nella cartella indicata da cartella_config.json.
     Solleva un'eccezione se manca o non e' completo, mai un config vuoto.
     """
-    return ensure_defaults(leggi_config())
+    return load_config_e_impronta()[0]
+
+
+def load_config_e_impronta() -> tuple[dict, str]:
+    """Come load_config, con le prime cifre dello SHA-256 del file letto."""
+    cfg, impronta = leggi_config_e_impronta()
+    return ensure_defaults(cfg), impronta
 
 
 def is_absolute_path(p: str) -> bool:
@@ -1436,6 +1442,9 @@ class ChametigerTray:
         # config vuoto al suo posto. Lo scheduler riprova a leggerla.
         self.config = None
         self._config_illeggibile = False
+        # L'impronta dell'ultimo config letto: va nel log quando cambia, e il
+        # telefono mostra la stessa per lo stesso file
+        self._impronta = None
         self._rileggi_config()
         self._stop_event = threading.Event()
         self._icon = None
@@ -1502,7 +1511,7 @@ class ChametigerTray:
         False solo se una configurazione buona non c'e' ancora mai stata.
         """
         try:
-            self.config = load_config()
+            self.config, impronta = load_config_e_impronta()
         except Exception as e:
             if not self._config_illeggibile:
                 if self.config is None:
@@ -1516,6 +1525,9 @@ class ChametigerTray:
         if self._config_illeggibile:
             log("[INFO] config.json di nuovo leggibile.")
             self._config_illeggibile = False
+        if impronta != self._impronta:
+            log(f"[INFO] Config {impronta}{' (cambiato)' if self._impronta else ''}.")
+            self._impronta = impronta
         return True
 
     # ── Thread principale del polling ────────────────────────────────────────

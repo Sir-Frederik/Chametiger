@@ -15,6 +15,7 @@ import kotlinx.serialization.json.jsonObject
 const val DEFAULT_LAT = 40.8518
 const val DEFAULT_LON = 14.2681
 const val DEFAULT_MINIMO_METEO = 2
+const val DEFAULT_ORE_METEO = 5.0
 
 enum class StatoMeteo(val tag: String) {
     ASCIUTTO("asciutto"),
@@ -82,6 +83,8 @@ data class Config(
     val eventi: List<Periodo>,
     val meteoAttivo: Boolean,
     val meteoMinimo: Int,
+    /** meteo.impostazioni: ogni quante ore riscaricare le previsioni, fra 1 e 10. */
+    val meteoOre: Double,
     private val latitude: JsonElement?,
     private val longitude: JsonElement?,
     private val positionMap: JsonElement?,
@@ -131,6 +134,8 @@ data class Config(
                 // ensure_defaults mette {"attivo": true, ...} solo se la chiave manca
                 meteoAttivo = if (meteo == null) true else pyBool(m?.get("attivo") ?: JsonPrimitive(true)),
                 meteoMinimo = minimoMeteo(m),
+                meteoOre = (m?.get("aggiorna_ore")?.let { pyFloat(it) } ?: DEFAULT_ORE_METEO)
+                    .let { minOf(maxOf(it, 1.0), 10.0) },
                 latitude = cfg["latitude"],
                 longitude = cfg["longitude"],
                 positionMap = cfg["position_map"],

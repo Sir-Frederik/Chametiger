@@ -36,7 +36,7 @@ class TempiDecisioneTest {
 
         val tempi = istanti.map { adesso ->
             val inizio = System.nanoTime()
-            val config = ConfigSicuro.valida(testo)
+            val config = ConfigSicuro.valida(testo.toByteArray())
             val lettura = System.nanoTime()
             val d = Decisore(config, "android-federico", TuttiPresenti).decidi(adesso)
             val fine = System.nanoTime()

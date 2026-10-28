@@ -18,6 +18,7 @@ La usano sia il tray (app.py) sia l'editor (gui.py), che cosi' leggono e
 scrivono lo stesso file.
 """
 
+import hashlib
 import json
 import socket
 from pathlib import Path
@@ -50,14 +51,33 @@ def percorso_config() -> Path:
 # Senza queste un config e' vuoto o tagliato, non "un config con pochi dati".
 CHIAVI_ESSENZIALI = ("image_library", "random_rules")
 
+# Quante cifre dello SHA-256 formano l'impronta: le stesse sul telefono.
+CIFRE_IMPRONTA = 8
+
 
 class ConfigIllegibile(Exception):
     """config.json c'e' ma non si puo' usare: troncato, a meta' scrittura, non JSON."""
 
 
-def leggi_config(percorso: Path | None = None) -> dict:
+def impronta(byte: bytes) -> str:
     """
-    Il config cosi' com'e' sul disco, senza i default.
+    Le prime cifre dello SHA-256 dei byte del config. Il tray la scrive nel
+    log e il telefono la mostra: "stanno sullo stesso config?" diventa il
+    confronto di due stringhe.
+    """
+    return hashlib.sha256(byte).hexdigest()[:CIFRE_IMPRONTA]
+
+
+def leggi_config(percorso: Path | None = None) -> dict:
+    """Il config cosi' com'e' sul disco, senza i default: vedi leggi_config_e_impronta."""
+    return leggi_config_e_impronta(percorso)[0]
+
+
+def leggi_config_e_impronta(percorso: Path | None = None) -> tuple[dict, str]:
+    """
+    Il config cosi' com'e' sul disco, senza i default, con l'impronta dei
+    byte appena letti: una sola lettura, cosi' l'impronta e' proprio quella del
+    config usato.
 
     Su Drive il file puo' trovarsi a meta' di una scrittura o di una
     sincronizzazione. Un file che non e' un config completo solleva
@@ -66,9 +86,10 @@ def leggi_config(percorso: Path | None = None) -> dict:
     assente o la cartella non montata arrivano come OSError.
     """
     percorso = percorso or percorso_config()
+    with open(percorso, "rb") as f:
+        byte = f.read()
     try:
-        with open(percorso, encoding="utf-8") as f:
-            cfg = json.load(f)
+        cfg = json.loads(byte.decode("utf-8"))
     except ValueError as e:  # JSONDecodeError e UnicodeDecodeError
         raise ConfigIllegibile(f"{percorso} non e' un JSON valido: {e}") from e
     if not isinstance(cfg, dict):
@@ -76,4 +97,4 @@ def leggi_config(percorso: Path | None = None) -> dict:
     mancanti = [k for k in CHIAVI_ESSENZIALI if not cfg.get(k)]
     if mancanti:
         raise ConfigIllegibile(f"{percorso}: mancano o sono vuote {', '.join(mancanti)}")
-    return cfg
+    return cfg, impronta(byte)

@@ -181,7 +181,7 @@ class StratoTest {
         val sfondo = SfondoFinto()
         val diario = DiarioFinto()
         var adesso = giorno.atTime(9, 10)
-        val ciclo = Ciclo(cartella, tmp.newFolder("interna"), "android-prova", "1.0", sfondo, diario) { adesso }
+        val ciclo = Ciclo(cartella, tmp.newFolder("interna"), "android-prova", "1.0", sfondo, diario, orologio = { adesso })
 
         ciclo.giro()
         assertTrue(diario.righe[0], diario.righe[0].startsWith("[INFO] android-prova 1.0, Europe/Rome"))

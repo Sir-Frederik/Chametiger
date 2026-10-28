@@ -1,0 +1,1800 @@
+{
+ "type": "Feature",
+ "properties": {
+  "meta": {},
+  "timeseries": [
+   {
+    "time": "2027-05-01T00:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "clearsky"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T01:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "clearsky_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T02:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "clearsky_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T03:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "clearsky_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T04:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "cloudy"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T05:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "fair"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T06:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "fair_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T07:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "fair_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T08:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "fair_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T09:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "fog"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T10:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavyrain"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T11:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavyrainandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T12:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavyrainshowers"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T13:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavyrainshowers_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T14:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavyrainshowers_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T15:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavyrainshowers_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T16:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavyrainshowersandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T17:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavyrainshowersandthunder_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T18:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavyrainshowersandthunder_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T19:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavyrainshowersandthunder_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T20:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysleet"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T21:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysleetandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T22:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysleetshowers"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-01T23:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysleetshowers_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T00:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysleetshowers_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T01:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysleetshowers_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T02:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysleetshowersandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T03:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysleetshowersandthunder_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T04:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysleetshowersandthunder_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T05:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysleetshowersandthunder_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T06:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysnow"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T07:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysnowandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T08:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysnowshowers"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T09:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysnowshowers_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T10:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysnowshowers_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T11:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysnowshowers_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T12:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysnowshowersandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T13:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysnowshowersandthunder_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T14:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysnowshowersandthunder_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T15:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysnowshowersandthunder_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T16:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightrain"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T17:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightrainandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T18:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightrainshowers"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T19:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightrainshowers_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T20:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightrainshowers_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T21:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightrainshowers_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T22:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightrainshowersandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-02T23:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightrainshowersandthunder_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T00:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightrainshowersandthunder_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T01:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightrainshowersandthunder_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T02:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightsleet"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T03:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightsleetandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T04:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightsleetshowers"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T05:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightsleetshowers_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T06:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightsleetshowers_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T07:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightsleetshowers_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T08:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightsnow"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T09:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightsnowandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T10:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightsnowshowers"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T11:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightsnowshowers_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T12:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightsnowshowers_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T13:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightsnowshowers_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T14:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightssleetshowersandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T15:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightssleetshowersandthunder_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T16:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightssleetshowersandthunder_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T17:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightssleetshowersandthunder_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T18:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightssnowshowersandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T19:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightssnowshowersandthunder_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T20:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightssnowshowersandthunder_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T21:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightssnowshowersandthunder_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T22:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "partlycloudy"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-03T23:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "partlycloudy_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T00:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "partlycloudy_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T01:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "partlycloudy_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T02:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "rain"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T03:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "rainandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T04:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "rainshowers"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T05:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "rainshowers_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T06:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "rainshowers_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T07:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "rainshowers_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T08:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "rainshowersandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T09:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "rainshowersandthunder_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T10:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "rainshowersandthunder_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T11:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "rainshowersandthunder_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T12:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "sleet"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T13:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "sleetandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T14:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "sleetshowers"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T15:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "sleetshowers_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T16:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "sleetshowers_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T17:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "sleetshowers_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T18:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "sleetshowersandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T19:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "sleetshowersandthunder_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T20:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "sleetshowersandthunder_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T21:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "sleetshowersandthunder_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T22:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "snow"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-04T23:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "snowandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T00:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "snowshowers"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T01:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "snowshowers_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T02:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "snowshowers_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T03:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "snowshowers_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T04:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "snowshowersandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T05:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "snowshowersandthunder_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T06:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "snowshowersandthunder_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T07:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "snowshowersandthunder_polartwilight"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T08:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "Rain"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T09:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "rain_and_thunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T10:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "thunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T11:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T12:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "x_rain"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T13:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "pioggia"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T14:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "sleet_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-05-05T15:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "drizzle"
+      },
+      "details": {}
+     }
+    }
+   }
+  ]
+ }
+}

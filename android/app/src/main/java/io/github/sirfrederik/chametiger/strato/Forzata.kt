@@ -35,10 +35,12 @@ class MemoriaForzataFile(private val file: File) : MemoriaForzata {
 }
 
 /** Prima un file accanto, poi lo scambio: un'interruzione non lascia il file a meta'. */
-internal fun scriviIntero(file: File, testo: String) {
+internal fun scriviIntero(file: File, testo: String) = scriviIntero(file, testo.toByteArray(Charsets.UTF_8))
+
+internal fun scriviIntero(file: File, byte: ByteArray) {
     file.parentFile?.mkdirs()
     val tmp = File(file.path + ".tmp")
-    tmp.writeText(testo, Charsets.UTF_8)
+    tmp.writeBytes(byte)
     if (!tmp.renameTo(file)) {
         file.delete()
         check(tmp.renameTo(file)) { "Impossibile scrivere ${file.path}" }

@@ -1,0 +1,138 @@
+# Riferimento della conversione meteo: meteo.py di Chametiger. Generato da genera_riferimento_meteo.py, non modificare.
+S	clearsky	asciutto
+S	clearsky_day	asciutto
+S	clearsky_night	asciutto
+S	clearsky_polartwilight	asciutto
+S	cloudy	asciutto
+S	fair	asciutto
+S	fair_day	asciutto
+S	fair_night	asciutto
+S	fair_polartwilight	asciutto
+S	fog	asciutto
+S	heavyrain	pioggia
+S	heavyrainandthunder	temporale
+S	heavyrainshowers	pioggia
+S	heavyrainshowers_day	pioggia
+S	heavyrainshowers_night	pioggia
+S	heavyrainshowers_polartwilight	pioggia
+S	heavyrainshowersandthunder	temporale
+S	heavyrainshowersandthunder_day	temporale
+S	heavyrainshowersandthunder_night	temporale
+S	heavyrainshowersandthunder_polartwilight	temporale
+S	heavysleet	pioggia
+S	heavysleetandthunder	temporale
+S	heavysleetshowers	pioggia
+S	heavysleetshowers_day	pioggia
+S	heavysleetshowers_night	pioggia
+S	heavysleetshowers_polartwilight	pioggia
+S	heavysleetshowersandthunder	temporale
+S	heavysleetshowersandthunder_day	temporale
+S	heavysleetshowersandthunder_night	temporale
+S	heavysleetshowersandthunder_polartwilight	temporale
+S	heavysnow	asciutto
+S	heavysnowandthunder	temporale
+S	heavysnowshowers	asciutto
+S	heavysnowshowers_day	asciutto
+S	heavysnowshowers_night	asciutto
+S	heavysnowshowers_polartwilight	asciutto
+S	heavysnowshowersandthunder	temporale
+S	heavysnowshowersandthunder_day	temporale
+S	heavysnowshowersandthunder_night	temporale
+S	heavysnowshowersandthunder_polartwilight	temporale
+S	lightrain	pioggia
+S	lightrainandthunder	temporale
+S	lightrainshowers	pioggia
+S	lightrainshowers_day	pioggia
+S	lightrainshowers_night	pioggia
+S	lightrainshowers_polartwilight	pioggia
+S	lightrainshowersandthunder	temporale
+S	lightrainshowersandthunder_day	temporale
+S	lightrainshowersandthunder_night	temporale
+S	lightrainshowersandthunder_polartwilight	temporale
+S	lightsleet	pioggia
+S	lightsleetandthunder	temporale
+S	lightsleetshowers	pioggia
+S	lightsleetshowers_day	pioggia
+S	lightsleetshowers_night	pioggia
+S	lightsleetshowers_polartwilight	pioggia
+S	lightsnow	asciutto
+S	lightsnowandthunder	temporale
+S	lightsnowshowers	asciutto
+S	lightsnowshowers_day	asciutto
+S	lightsnowshowers_night	asciutto
+S	lightsnowshowers_polartwilight	asciutto
+S	lightssleetshowersandthunder	temporale
+S	lightssleetshowersandthunder_day	temporale
+S	lightssleetshowersandthunder_night	temporale
+S	lightssleetshowersandthunder_polartwilight	temporale
+S	lightssnowshowersandthunder	temporale
+S	lightssnowshowersandthunder_day	temporale
+S	lightssnowshowersandthunder_night	temporale
+S	lightssnowshowersandthunder_polartwilight	temporale
+S	partlycloudy	asciutto
+S	partlycloudy_day	asciutto
+S	partlycloudy_night	asciutto
+S	partlycloudy_polartwilight	asciutto
+S	rain	pioggia
+S	rainandthunder	temporale
+S	rainshowers	pioggia
+S	rainshowers_day	pioggia
+S	rainshowers_night	pioggia
+S	rainshowers_polartwilight	pioggia
+S	rainshowersandthunder	temporale
+S	rainshowersandthunder_day	temporale
+S	rainshowersandthunder_night	temporale
+S	rainshowersandthunder_polartwilight	temporale
+S	sleet	pioggia
+S	sleetandthunder	temporale
+S	sleetshowers	pioggia
+S	sleetshowers_day	pioggia
+S	sleetshowers_night	pioggia
+S	sleetshowers_polartwilight	pioggia
+S	sleetshowersandthunder	temporale
+S	sleetshowersandthunder_day	temporale
+S	sleetshowersandthunder_night	temporale
+S	sleetshowersandthunder_polartwilight	temporale
+S	snow	asciutto
+S	snowandthunder	temporale
+S	snowshowers	asciutto
+S	snowshowers_day	asciutto
+S	snowshowers_night	asciutto
+S	snowshowers_polartwilight	asciutto
+S	snowshowersandthunder	temporale
+S	snowshowersandthunder_day	temporale
+S	snowshowersandthunder_night	temporale
+S	snowshowersandthunder_polartwilight	temporale
+S	Rain	asciutto
+S	rain_and_thunder	pioggia
+S	thunder	temporale
+S	_day	asciutto
+S	x_rain	asciutto
+S	pioggia	asciutto
+S	sleet_night	pioggia
+S	drizzle	asciutto
+P	reale.json	2026-10-28T08:00	2026-10-28T11=asciutto,2026-10-28T12=asciutto,2026-10-28T13=asciutto,2026-10-28T14=asciutto,2026-10-28T15=asciutto,2026-10-28T16=asciutto,2026-10-28T17=asciutto,2026-10-28T18=asciutto,2026-10-28T19=asciutto,2026-10-28T20=asciutto	niente pioggia nelle prossime 10 ore
+P	reale.json	2026-10-28T11:00	2026-10-28T11=asciutto,2026-10-28T12=asciutto,2026-10-28T13=asciutto,2026-10-28T14=asciutto,2026-10-28T15=asciutto,2026-10-28T16=asciutto,2026-10-28T17=asciutto,2026-10-28T18=asciutto,2026-10-28T19=asciutto,2026-10-28T20=asciutto	niente pioggia nelle prossime 10 ore
+P	reale.json	2026-10-29T16:00	2026-10-29T16=asciutto,2026-10-29T17=asciutto,2026-10-29T18=asciutto,2026-10-29T19=asciutto,2026-10-29T20=asciutto,2026-10-29T21=asciutto,2026-10-29T22=asciutto,2026-10-29T23=asciutto,2026-10-30T00=asciutto,2026-10-30T01=asciutto	niente pioggia nelle prossime 10 ore
+P	reale.json	2026-11-05T19:00		niente pioggia nelle prossime 10 ore
+P	reale.json	2026-11-06T13:00		niente pioggia nelle prossime 10 ore
+P	simboli.json	2027-04-30T23:00	2027-05-01T02=asciutto,2027-05-01T03=asciutto,2027-05-01T04=asciutto,2027-05-01T05=asciutto,2027-05-01T06=asciutto,2027-05-01T07=asciutto,2027-05-01T08=asciutto,2027-05-01T09=asciutto,2027-05-01T10=asciutto,2027-05-01T11=asciutto	niente pioggia nelle prossime 10 ore
+P	simboli.json	2027-05-01T02:00	2027-05-01T02=asciutto,2027-05-01T03=asciutto,2027-05-01T04=asciutto,2027-05-01T05=asciutto,2027-05-01T06=asciutto,2027-05-01T07=asciutto,2027-05-01T08=asciutto,2027-05-01T09=asciutto,2027-05-01T10=asciutto,2027-05-01T11=asciutto	niente pioggia nelle prossime 10 ore
+P	simboli.json	2027-05-02T15:00	2027-05-02T15=temporale,2027-05-02T16=temporale,2027-05-02T17=temporale,2027-05-02T18=pioggia,2027-05-02T19=temporale,2027-05-02T20=pioggia,2027-05-02T21=pioggia,2027-05-02T22=pioggia,2027-05-02T23=pioggia,2027-05-03T00=temporale	temporale 15-18, pioggia 18-19, temporale 19-20, pioggia 20-24, temporale 00-01
+P	simboli.json	2027-05-05T14:00	2027-05-05T14=asciutto,2027-05-05T15=asciutto,2027-05-05T16=pioggia,2027-05-05T17=asciutto	pioggia 16-17
+P	simboli.json	2027-05-05T17:00	2027-05-05T17=asciutto	niente pioggia nelle prossime 10 ore
+P	ora_legale.json	2027-03-27T16:00	2027-03-27T19=pioggia,2027-03-27T20=asciutto,2027-03-27T21=temporale,2027-03-27T22=pioggia,2027-03-28T00=asciutto,2027-03-28T03=asciutto,2027-03-28T04=temporale,2027-03-28T06=asciutto,2027-03-28T07=asciutto,2027-03-28T08=pioggia	pioggia 19-20, temporale 21-22, pioggia 22-23, temporale 04-05, pioggia 08-09
+P	ora_legale.json	2027-03-27T19:00	2027-03-27T19=pioggia,2027-03-27T20=asciutto,2027-03-27T21=temporale,2027-03-27T22=pioggia,2027-03-28T00=asciutto,2027-03-28T03=asciutto,2027-03-28T04=temporale,2027-03-28T06=asciutto,2027-03-28T07=asciutto,2027-03-28T08=pioggia	pioggia 19-20, temporale 21-22, pioggia 22-23, temporale 04-05, pioggia 08-09
+P	ora_legale.json	2027-03-28T01:00	2027-03-28T03=asciutto,2027-03-28T04=temporale,2027-03-28T06=asciutto,2027-03-28T07=asciutto,2027-03-28T08=pioggia,2027-03-28T09=asciutto,2027-03-28T10=temporale,2027-03-28T11=pioggia,2027-03-28T12=asciutto,2027-03-28T13=asciutto	temporale 04-05, pioggia 08-09, temporale 10-11, pioggia 11-12
+P	ora_legale.json	2027-03-28T01:59	2027-03-28T03=asciutto,2027-03-28T04=temporale,2027-03-28T06=asciutto,2027-03-28T07=asciutto,2027-03-28T08=pioggia,2027-03-28T09=asciutto,2027-03-28T10=temporale,2027-03-28T11=pioggia,2027-03-28T12=asciutto,2027-03-28T13=asciutto	temporale 04-05, pioggia 08-09, temporale 10-11, pioggia 11-12
+P	ora_legale.json	2027-03-28T03:00	2027-03-28T03=asciutto,2027-03-28T04=temporale,2027-03-28T06=asciutto,2027-03-28T07=asciutto,2027-03-28T08=pioggia,2027-03-28T09=asciutto,2027-03-28T10=temporale,2027-03-28T11=pioggia,2027-03-28T12=asciutto,2027-03-28T13=asciutto	temporale 04-05, pioggia 08-09, temporale 10-11, pioggia 11-12
+P	ora_legale.json	2027-03-28T10:00	2027-03-28T10=temporale,2027-03-28T11=pioggia,2027-03-28T12=asciutto,2027-03-28T13=asciutto	temporale 10-11, pioggia 11-12
+P	ora_legale.json	2027-03-28T13:00	2027-03-28T13=asciutto	niente pioggia nelle prossime 10 ore
+P	ora_solare.json	2027-10-30T19:00	2027-10-30T22=pioggia,2027-10-30T23=asciutto,2027-10-31T00=temporale,2027-10-31T01=pioggia,2027-10-31T02=asciutto,2027-10-31T03=pioggia,2027-10-31T04=asciutto,2027-10-31T05=temporale,2027-10-31T06=pioggia,2027-10-31T07=asciutto	pioggia 22-23, temporale 00-01, pioggia 01-02, pioggia 03-04, temporale 05-06, pioggia 06-07
+P	ora_solare.json	2027-10-30T22:00	2027-10-30T22=pioggia,2027-10-30T23=asciutto,2027-10-31T00=temporale,2027-10-31T01=pioggia,2027-10-31T02=asciutto,2027-10-31T03=pioggia,2027-10-31T04=asciutto,2027-10-31T05=temporale,2027-10-31T06=pioggia,2027-10-31T07=asciutto	pioggia 22-23, temporale 00-01, pioggia 01-02, pioggia 03-04, temporale 05-06, pioggia 06-07
+P	ora_solare.json	2027-10-31T01:30	2027-10-31T01=pioggia,2027-10-31T02=asciutto,2027-10-31T03=pioggia,2027-10-31T04=asciutto,2027-10-31T05=temporale,2027-10-31T06=pioggia,2027-10-31T07=asciutto,2027-10-31T08=asciutto,2027-10-31T09=pioggia,2027-10-31T10=asciutto	pioggia 01-02, pioggia 03-04, temporale 05-06, pioggia 06-07, pioggia 09-10
+P	ora_solare.json	2027-10-31T02:00	2027-10-31T02=asciutto,2027-10-31T03=pioggia,2027-10-31T04=asciutto,2027-10-31T05=temporale,2027-10-31T06=pioggia,2027-10-31T07=asciutto,2027-10-31T08=asciutto,2027-10-31T09=pioggia,2027-10-31T10=asciutto,2027-10-31T11=temporale	pioggia 03-04, temporale 05-06, pioggia 06-07, pioggia 09-10, temporale 11-12
+P	ora_solare.json	2027-10-31T02:30	2027-10-31T02=asciutto,2027-10-31T03=pioggia,2027-10-31T04=asciutto,2027-10-31T05=temporale,2027-10-31T06=pioggia,2027-10-31T07=asciutto,2027-10-31T08=asciutto,2027-10-31T09=pioggia,2027-10-31T10=asciutto,2027-10-31T11=temporale	pioggia 03-04, temporale 05-06, pioggia 06-07, pioggia 09-10, temporale 11-12
+P	ora_solare.json	2027-10-31T09:00	2027-10-31T09=pioggia,2027-10-31T10=asciutto,2027-10-31T11=temporale,2027-10-31T12=pioggia	pioggia 09-10, temporale 11-12, pioggia 12-13
+P	ora_solare.json	2027-10-31T12:00	2027-10-31T12=pioggia	pioggia 12-13
+E	rotta.json	2027-01-01T12:00

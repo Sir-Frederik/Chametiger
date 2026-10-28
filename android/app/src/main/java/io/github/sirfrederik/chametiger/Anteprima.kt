@@ -21,7 +21,10 @@ data class Anteprima(
     val lon: Double,
     /** False: l'identita' non e' in position_map, valgono latitude/longitude. */
     val inPositionMap: Boolean,
-    val meteoAttivo: Boolean,
+    /** Lo stato del meteo in una riga: le ore di pioggia, o perche' si sceglie come col sereno. */
+    val meteo: String,
+    /** Le prime cifre dello SHA-256 del config, da confrontare col log del tray. */
+    val impronta: String,
     /** 'Inverno > Natale > Capodanno', dal basso. */
     val pila: String,
     /** dawn, alba, mezzogiorno, tramonto, dusk, in ora locale. */
@@ -86,7 +89,8 @@ fun anteprima(v: Valutazione.Pronta, identita: String): Anteprima {
         lat = lat,
         lon = lon,
         inPositionMap = v.config.inPositionMap(identita),
-        meteoAttivo = v.config.meteoAttivo,
+        meteo = v.meteo,
+        impronta = v.impronta,
         pila = motore.stratiDelGiorno(giorno).reversed().joinToString(" > ") { it.nome },
         orariSolari = orariSolari,
         avvisoConfig = v.avvisoConfig,

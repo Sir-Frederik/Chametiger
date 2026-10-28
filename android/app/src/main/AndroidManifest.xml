@@ -4,6 +4,8 @@
 
     <!-- Lo sfondo della schermata principale; il blocco schermo si decide dopo -->
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <!-- Le previsioni di Met Norway -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
