@@ -18,6 +18,7 @@ import date_mobili
 import meteo
 import sun
 from versione import VERSIONE
+from posizione_config import ConfigIllegibile, leggi_config, percorso_config
 
 try:
     from PIL import Image, ImageTk
@@ -27,7 +28,6 @@ except ImportError:
     HAS_PIL = False
 
 BASE_DIR = Path(__file__).parent.resolve()
-CONFIG_FILE = BASE_DIR / "config.json"
 ICON_FILE = BASE_DIR / "icon.ico"
 LOG_FILE = BASE_DIR / "chametiger.log"
 IPC_HOST = "127.0.0.1"
@@ -212,12 +212,15 @@ class ChametigerEditor(tk.Tk):
     # ── Carica / Salva config ────────────────────────────────────────────────
     def _load_config(self):
         try:
-            with open(CONFIG_FILE, encoding="utf-8") as f:
-                self.config_data = ensure_defaults(json.load(f))
-        except FileNotFoundError:
-            messagebox.showerror("Errore", f"config.json non trovato:\n{CONFIG_FILE}")
+            self.config_data = ensure_defaults(leggi_config())
+        except OSError as e:
+            # Anche la cartella su Drive non ancora montata: meglio chiudere che
+            # aprire un config vuoto e poi salvarlo sopra quello vero.
+            messagebox.showerror("Errore", f"config.json non leggibile:\n{e}")
             self.destroy()
-        except json.JSONDecodeError as e:
+        except ConfigIllegibile as e:
+            # Troncato o a meta' di una sincronizzazione: aprirlo e salvarlo
+            # sovrascriverebbe quello buono.
             messagebox.showerror("config.json non valido", str(e))
             self.destroy()
 
@@ -226,7 +229,7 @@ class ChametigerEditor(tk.Tk):
             # Prima il testo, poi il file: se la serializzazione fallisce il
             # config.json su disco resta intatto invece che troncato a meta'.
             testo = dump_config(self.config_data) + "\n"
-            with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            with open(percorso_config(), "w", encoding="utf-8") as f:
                 f.write(testo)
             messagebox.showinfo("Salvato", "Configurazione salvata con successo!")
         except Exception as e:

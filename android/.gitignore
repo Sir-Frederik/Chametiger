@@ -1,0 +1,13 @@
+*.iml
+.gradle
+/local.properties
+# Cambia a ogni apertura dell'IDE: su due PC genera solo conflitti
+/.idea/
+# Permessi locali di Claude Code
+/.claude/settings.local.json
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties

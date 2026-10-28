@@ -1,0 +1,294 @@
+{
+ "type": "Feature",
+ "properties": {
+  "meta": {},
+  "timeseries": [
+   {
+    "time": "2027-03-27T18:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "rain"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-27T19:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "clearsky_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-27T20:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightrainandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-27T21:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "sleet"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-27T22:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_6_hours": {
+      "summary": {
+       "symbol_code": "cloudy"
+      }
+     }
+    }
+   },
+   {
+    "time": "2027-03-27T23:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysnow"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-28T00:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": ""
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-28T01:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "clearsky_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-28T02:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightrainandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-28T03:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_6_hours": {
+      "summary": {
+       "symbol_code": "cloudy"
+      }
+     }
+    }
+   },
+   {
+    "time": "2027-03-28T04:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "fog"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-28T05:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysnow"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-28T06:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "rain"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-28T07:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "clearsky_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-28T08:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightrainandthunder"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-28T09:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "sleet"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-28T10:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "fog"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-03-28T11:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "heavysnow"
+      },
+      "details": {}
+     }
+    }
+   }
+  ]
+ }
+}

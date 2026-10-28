@@ -8,6 +8,7 @@ Richiede: pystray, Pillow, pywin32
 import sys
 import os
 import json
+import hashlib
 import random
 import ctypes
 import threading
@@ -22,6 +23,7 @@ import date_mobili
 import meteo
 import sun
 from versione import VERSIONE
+from posizione_config import leggi_config_e_impronta
 
 try:
     import pystray
@@ -33,7 +35,6 @@ except ImportError:
 
 # ── Percorsi ─────────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).parent.resolve()
-CONFIG_FILE = BASE_DIR / "config.json"
 APP_NAME = "Chametiger"
 REGISTRY_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 LOG_FILE = BASE_DIR / "chametiger.log"
@@ -46,6 +47,9 @@ IPC_PORT = 48621
 # mezzanotte: una settimana e' margine abbondante. Non ha effetto su quale
 # immagine esce - la scelta viene dal mazzo e non legge lo storico.
 DEFAULT_HISTORY_DAYS = 7
+# Se config.json non si legge (all'avvio Drive puo' non aver ancora montato la
+# cartella) si riprova dopo questi secondi, non dopo l'intervallo intero.
+RIPROVA_CONFIG_S = 30
 # Origine del conteggio delle finestre. NON cambiarla mai dopo il primo avvio:
 # spostarla trasla l'intero mazzo e i PC gia' allineati si disallineano.
 EPOCH = date(2026, 1, 1)
@@ -119,8 +123,17 @@ def ensure_defaults(cfg: dict) -> dict:
 
 
 def load_config() -> dict:
-    with open(CONFIG_FILE, encoding="utf-8") as f:
-        return ensure_defaults(json.load(f))
+    """
+    Il config.json condiviso, nella cartella indicata da cartella_config.json.
+    Solleva un'eccezione se manca o non e' completo, mai un config vuoto.
+    """
+    return load_config_e_impronta()[0]
+
+
+def load_config_e_impronta() -> tuple[dict, str]:
+    """Come load_config, con le prime cifre dello SHA-256 del file letto."""
+    cfg, impronta = leggi_config_e_impronta()
+    return ensure_defaults(cfg), impronta
 
 
 def is_absolute_path(p: str) -> bool:
@@ -884,22 +897,37 @@ def _window_ordinal(rule: dict, now: datetime, rotate: int, config: dict) -> int
     return _finestre_fino_a(rule, giorno, rotate, config) + offset
 
 
+def _ordine(pool: list[str], sig: str, giro: int) -> list[str]:
+    """
+    Il pool ordinato per sha256("firma|giro|immagine"): una permutazione che
+    cambia a ogni giro.
+
+    Non random.Random: il suo shuffle dipende dagli interni di CPython (seme da
+    stringa, Mersenne Twister, campionamento con rigetto), che nessuno garantisce
+    stabili fra una versione e l'altra. SHA-256 da' gli stessi byte in qualunque
+    linguaggio, ed e' questo che permette all'app Android di calcolare lo stesso
+    mazzo dei PC.
+    """
+    return sorted(
+        pool,
+        key=lambda img: hashlib.sha256(f"{sig}|{giro}|{img}".encode("utf-8")).digest(),
+    )
+
+
 def _mazzo(pool: list[str], sig: str, giro: int) -> list[str]:
     """
     L'ordine delle immagini per un giro completo. Deterministico: due PC con la
     stessa libreria e la stessa regola ottengono lo stesso mazzo senza parlarsi.
     """
-    m = sorted(pool)
-    if len(m) <= 2:
-        return m  # con una o due immagini l'unica sequenza sensata e' l'alternanza
+    if len(pool) <= 2:
+        return sorted(pool)  # con una o due immagini l'unica sequenza sensata e' l'alternanza
 
-    random.Random(f"{sig}|{giro}").shuffle(m)
+    m = _ordine(pool, sig, giro)
 
     # Evita che l'ultima carta di un giro e la prima del successivo coincidano.
     # Si scambiano le posizioni 0 e 1 e non 0 e ultima, altrimenti la correzione
     # cambierebbe la carta finale e il controllo diventerebbe ricorsivo.
-    prec = sorted(pool)
-    random.Random(f"{sig}|{giro - 1}").shuffle(prec)
+    prec = _ordine(pool, sig, giro - 1)
     if m[0] == prec[-1]:
         m[0], m[1] = m[1], m[0]
 
@@ -1410,7 +1438,14 @@ _mutex = None
 
 class ChametigerTray:
     def __init__(self):
-        self.config = load_config()
+        # None finche' non c'e' una configurazione letta con successo: mai un
+        # config vuoto al suo posto. Lo scheduler riprova a leggerla.
+        self.config = None
+        self._config_illeggibile = False
+        # L'impronta dell'ultimo config letto: va nel log quando cambia, e il
+        # telefono mostra la stessa per lo stesso file
+        self._impronta = None
+        self._rileggi_config()
         self._stop_event = threading.Event()
         self._icon = None
         self._no_slot_logged = False
@@ -1465,12 +1500,44 @@ class ChametigerTray:
             log("[INFO] Nessuno slot attivo al momento.")
         self._no_slot_logged = True
 
+    def _rileggi_config(self) -> bool:
+        """
+        Rilegge config.json. Se non si legge, perche' Drive non ha montato la
+        cartella, lo sta scrivendo o il file e' troncato, tiene l'ultima
+        configurazione letta con successo: ripartire da zero vorrebbe dire
+        restare senza regole, e quindi senza sfondo. Come per log.json, ma con
+        "tengo la precedente" al posto di "riparto da zero".
+
+        False solo se una configurazione buona non c'e' ancora mai stata.
+        """
+        try:
+            self.config, impronta = load_config_e_impronta()
+        except Exception as e:
+            if not self._config_illeggibile:
+                if self.config is None:
+                    log(f"[WARN] config.json non leggibile, riprovo ogni "
+                        f"{RIPROVA_CONFIG_S} s: {e}")
+                else:
+                    log(f"[WARN] config.json non leggibile, continuo con "
+                        f"l'ultima configurazione letta: {e}")
+            self._config_illeggibile = True
+            return self.config is not None
+        if self._config_illeggibile:
+            log("[INFO] config.json di nuovo leggibile.")
+            self._config_illeggibile = False
+        if impronta != self._impronta:
+            log(f"[INFO] Config {impronta}{' (cambiato)' if self._impronta else ''}.")
+            self._impronta = impronta
+        return True
+
     # ── Thread principale del polling ────────────────────────────────────────
     def _run_scheduler(self):
         primo_giro = True
         while not self._stop_event.is_set():
+            if not self._rileggi_config():  # rilegge la config ad ogni ciclo
+                self._stop_event.wait(RIPROVA_CONFIG_S)
+                continue
             try:
-                self.config = load_config()  # rilegge la config ad ogni ciclo
                 invalida_cache_file()
                 # Al primo giro scarica sempre, anche se meteo.json e' recente:
                 # l'ora attuale va osservata adesso, non presa da un download
@@ -1499,7 +1566,8 @@ class ChametigerTray:
 
     def _apply_now(self, icon, item):
         try:
-            self.config = load_config()
+            if not self._rileggi_config():
+                return
             invalida_cache_file()
             wallpaper, category = resolve_wallpaper(self.config)
             if wallpaper:
@@ -1513,7 +1581,8 @@ class ChametigerTray:
     def _shuffle_now(self, icon, item):
         """Forza una nuova estrazione ignorando la finestra di rotazione."""
         try:
-            self.config = load_config()
+            if not self._rileggi_config():
+                return
             invalida_cache_file()
 
             now = datetime.now()
@@ -1551,7 +1620,8 @@ class ChametigerTray:
         stato del tempo, quindi un memo preso col tempo vecchio non vale piu'.
         """
         try:
-            self.config = load_config()
+            if not self._rileggi_config():
+                return
             if not meteo.aggiorna_se_serve(self.config, log, forza=True):
                 return
             invalida_cache_file()
