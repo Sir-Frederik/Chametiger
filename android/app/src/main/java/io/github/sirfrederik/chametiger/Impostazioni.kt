@@ -38,4 +38,19 @@ object ImpostazioniDrive {
     }
 }
 
+/**
+ * Il velo scuro steso sopra lo sfondo, in percentuale: da' piu' contrasto a
+ * icone e testi. Riguarda solo come si mostra l'immagine, non quale esce, e il
+ * file in cache resta l'originale.
+ */
+object ImpostazioniSfondo {
+    const val VELO_MAX = 60
+
+    fun velo(context: Context): Int = preferenze(context).getInt("velo", 0)
+
+    fun scriviVelo(context: Context, percento: Int) {
+        preferenze(context).edit().putInt("velo", percento.coerceIn(0, VELO_MAX)).apply()
+    }
+}
+
 private fun preferenze(context: Context) = context.getSharedPreferences("impostazioni", Context.MODE_PRIVATE)

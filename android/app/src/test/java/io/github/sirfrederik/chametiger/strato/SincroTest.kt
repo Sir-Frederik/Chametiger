@@ -148,14 +148,14 @@ class SincroTest {
         assertEquals(listOf<Byte>(4, 5), File(files, "sotto/b.jpg").readBytes().toList())
         assertEquals("[DRIVE] Scaricata sotto/b.jpg (0 KB)", diario.righe.last())
 
-        // Gia' in cache e uguale: nessun download, e l'indice basta per sei ore
+        // Gia' in cache e uguale: nessun download, e l'indice basta per un giorno
         val chiamate = drive.chiamate
         assertTrue(sincro(drive, diario).assicura("sotto/b.jpg"))
         assertEquals(chiamate, drive.chiamate)
 
-        // Cambiata su Drive (md5 diverso): si riscarica dopo il rinnovo dell'indice
+        // Cambiata su Drive (md5 diverso): si riscarica dopo il rinnovo dell'indice, che dura 24 ore
         drive.file(sotto, "b.jpg", byteArrayOf(9))
-        adesso += 7 * 3600
+        adesso += 25 * 3600
         assertTrue(sincro(drive, diario).assicura("sotto/b.jpg"))
         assertEquals(listOf<Byte>(9), File(files, "sotto/b.jpg").readBytes().toList())
 

@@ -23,10 +23,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,6 +56,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -128,6 +131,7 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
             giro++
         }
         Text(statoDrive(context, cartella), style = MaterialTheme.typography.bodySmall)
+        Velo(context, abilitato = !occupato) { esegui { it.giro() } }
 
         Text("Cartella: ${cartella.path}", style = MaterialTheme.typography.bodySmall, fontFamily = FontFamily.Monospace)
         Batteria(context)
@@ -175,6 +179,33 @@ private fun Campo(etichetta: String, esempio: String, iniziale: String, numerico
             enabled = bozza.trim() != salvato,
             modifier = Modifier.padding(start = 8.dp),
         ) { Text("Salva") }
+    }
+}
+
+/**
+ * Il velo scuro sopra lo sfondo. Si salva quando si lascia lo slider, e
+ * `applica` rimette subito lo sfondo col velo nuovo.
+ */
+@Composable
+private fun Velo(context: Context, abilitato: Boolean, applica: () -> Unit) {
+    var velo by remember { mutableFloatStateOf(ImpostazioniSfondo.velo(context).toFloat()) }
+    Column(Modifier.fillMaxWidth()) {
+        Text(
+            "Velo scuro sullo sfondo: ${velo.roundToInt()}%" + if (velo.roundToInt() == 0) " (nessuno)" else "",
+            style = MaterialTheme.typography.labelLarge,
+        )
+        Slider(
+            value = velo,
+            onValueChange = { velo = it },
+            valueRange = 0f..ImpostazioniSfondo.VELO_MAX.toFloat(),
+            // A passi di 5: 0, 5, ..., 60
+            steps = ImpostazioniSfondo.VELO_MAX / 5 - 1,
+            enabled = abilitato,
+            onValueChangeFinished = {
+                ImpostazioniSfondo.scriviVelo(context, velo.roundToInt())
+                applica()
+            },
+        )
     }
 }
 
