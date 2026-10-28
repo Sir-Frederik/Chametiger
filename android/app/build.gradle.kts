@@ -1,6 +1,14 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+}
+
+// La chiave API di Drive sta in local.properties, fuori dal repository:
+// CHAMETIGER_DRIVE_API_KEY=... Senza, l'app funziona coi soli file copiati via USB.
+val locali = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.isFile }?.inputStream()?.use { load(it) }
 }
 
 android {
@@ -17,6 +25,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "DRIVE_API_KEY", "\"${locali.getProperty("CHAMETIGER_DRIVE_API_KEY", "").trim()}\"")
     }
 
     buildTypes {
@@ -33,6 +43,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
@@ -35,7 +36,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import io.github.sirfrederik.chametiger.strato.CartellaDrive
 import io.github.sirfrederik.chametiger.strato.Ciclo
 import io.github.sirfrederik.chametiger.strato.Motivo
 import io.github.sirfrederik.chametiger.strato.Valutazione
@@ -45,6 +48,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -78,15 +82,13 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val cartella = remember { cartella(context) }
-    var identita by remember { mutableStateOf(Identita.leggi(context)) }
-    var bozza by remember { mutableStateOf(identita) }
     var giro by remember { mutableIntStateOf(0) }
     var stato by remember { mutableStateOf<Stato>(Stato.InCorso) }
     var occupato by remember { mutableStateOf(false) }
 
-    // Ricalcola a ogni minuto, quando cambia l'identita' e dopo un'azione. Il
+    // Ricalcola a ogni minuto, quando cambia un'impostazione e dopo un'azione. Il
     // config si rilegge ogni volta: si aggiorna copiandolo via USB.
-    LaunchedEffect(identita, giro) {
+    LaunchedEffect(giro) {
         while (true) {
             stato = withContext(Dispatchers.Default) { valuta(context) }
             val adesso = LocalDateTime.now(ZONA)
@@ -110,25 +112,22 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
     ) {
         Text("Chametiger", style = MaterialTheme.typography.headlineSmall)
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            OutlinedTextField(
-                value = bozza,
-                onValueChange = { bozza = it },
-                label = { Text("Identità del dispositivo") },
-                placeholder = { Text("android-federico") },
-                singleLine = true,
-                modifier = Modifier.weight(1f),
-            )
-            Button(
-                onClick = {
-                    Identita.scrivi(context, bozza)
-                    identita = Identita.leggi(context)
-                    bozza = identita
-                },
-                enabled = bozza.trim() != identita,
-                modifier = Modifier.padding(start = 8.dp),
-            ) { Text("Salva") }
+        Campo("Identità del dispositivo", "android-federico", Identita.leggi(context)) {
+            Identita.scrivi(context, it)
+            giro++
         }
+        Campo("Cartella Drive (link)", "https://drive.google.com/drive/folders/…", ImpostazioniDrive.link(context)) {
+            ImpostazioniDrive.scriviLink(context, it)
+            giro++
+        }
+        Campo(
+            "Tetto della cache (MB)", ImpostazioniDrive.TETTO_MB_DEFAULT.toString(),
+            ImpostazioniDrive.tettoMb(context).toString(), numerico = true,
+        ) {
+            it.toIntOrNull()?.let { mb -> ImpostazioniDrive.scriviTettoMb(context, mb) }
+            giro++
+        }
+        Text(statoDrive(context, cartella), style = MaterialTheme.typography.bodySmall)
 
         Text("Cartella: ${cartella.path}", style = MaterialTheme.typography.bodySmall, fontFamily = FontFamily.Monospace)
         Batteria(context)
@@ -150,6 +149,45 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.bodySmall,
         )
     }
+}
+
+/** Un'impostazione con il suo pulsante Salva, attivo solo quando il testo cambia. */
+@Composable
+private fun Campo(etichetta: String, esempio: String, iniziale: String, numerico: Boolean = false, salva: (String) -> Unit) {
+    var salvato by remember { mutableStateOf(iniziale) }
+    var bozza by remember { mutableStateOf(iniziale) }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        OutlinedTextField(
+            value = bozza,
+            onValueChange = { bozza = it },
+            label = { Text(etichetta) },
+            placeholder = { Text(esempio) },
+            singleLine = true,
+            keyboardOptions = if (numerico) KeyboardOptions(keyboardType = KeyboardType.Number) else KeyboardOptions.Default,
+            modifier = Modifier.weight(1f),
+        )
+        Button(
+            onClick = {
+                salvato = bozza.trim()
+                bozza = salvato
+                salva(salvato)
+            },
+            enabled = bozza.trim() != salvato,
+            modifier = Modifier.padding(start = 8.dp),
+        ) { Text("Salva") }
+    }
+}
+
+/** Se Drive e' in uso, e quanto occupa la cache. */
+private fun statoDrive(context: Context, cartella: File): String {
+    if (BuildConfig.DRIVE_API_KEY.isBlank()) return "Drive: nessuna chiave API in questa build, valgono i file copiati via USB."
+    val link = ImpostazioniDrive.link(context)
+    if (link.isBlank()) return "Drive: incolla il link della cartella per scaricare config e immagini."
+    val drive = CartellaDrive.daLink(link) ?: return "Drive: il link non è di una cartella Drive."
+    val esclusi = setOf(Ciclo.NOME_CONFIG, Ciclo.NOME_LOG, "meteo.json")
+    val occupati = cartella.walkTopDown().filter { it.isFile && it.name !in esclusi }.sumOf { it.length() }
+    return "Drive: cartella ${drive.id.take(8)}…, cache %.0f MB su un tetto di %d MB."
+        .format(Locale.ROOT, occupati / 1048576.0, ImpostazioniDrive.tettoMb(context))
 }
 
 private fun valuta(context: Context): Stato {

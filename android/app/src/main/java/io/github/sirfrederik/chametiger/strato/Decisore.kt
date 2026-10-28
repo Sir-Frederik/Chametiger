@@ -5,6 +5,7 @@ import io.github.sirfrederik.chametiger.motore.FonteMeteo
 import io.github.sirfrederik.chametiger.motore.Finestra
 import io.github.sirfrederik.chametiger.motore.Motore
 import java.io.File
+import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.random.Random
 
@@ -48,9 +49,22 @@ class Decisore(
 ) {
     val motore = Motore(config, identita, ZONA, fonteMeteo)
 
+    // La sequenza di un giorno costa qualche decimo di secondo e in un giro
+    // serve piu' volte. Dentro l'istanza, come le cache del motore.
+    private val giornate = HashMap<LocalDate, List<Finestra>>()
+
+    fun giornata(giorno: LocalDate): List<Finestra> = giornate.getOrPut(giorno) { motore.sequenzaGiornaliera(giorno) }
+
+    /** La finestra dopo quella di adesso, oggi o domani: la sua immagine si scarica in anticipo. */
+    fun prossima(adesso: LocalDateTime): Finestra? {
+        val minuto = adesso.hour * 60 + adesso.minute
+        return giornata(adesso.toLocalDate()).firstOrNull { it.minuto > minuto }
+            ?: giornata(adesso.toLocalDate().plusDays(1)).firstOrNull()
+    }
+
     /** Cosa mostrare adesso, tenendo conto di un'eventuale forzata per questa finestra. */
     fun decidi(adesso: LocalDateTime, forzata: Forzata? = null): Decisione {
-        val giornata = motore.sequenzaGiornaliera(adesso.toLocalDate())
+        val giornata = giornata(adesso.toLocalDate())
         val finestra = motore.sceltaIn(adesso, giornata)
             ?: return Decisione.Niente("Nessuna regola copre questo istante")
         val cat = categoria(motore.sole, finestra, adesso.toLocalDate())
@@ -87,7 +101,7 @@ class Decisore(
      * Ritorna la forzata da ricordare, o il motivo per cui non c'e'.
      */
     fun forza(adesso: LocalDateTime, attuale: Forzata?, caso: Random = Random.Default): Result<Forzata> {
-        val giornata = motore.sequenzaGiornaliera(adesso.toLocalDate())
+        val giornata = giornata(adesso.toLocalDate())
         val finestra = motore.sceltaIn(adesso, giornata)
             ?: return Result.failure(IllegalStateException("Nessuna regola attiva adesso"))
         val corrente = (decidi(adesso, attuale) as? Decisione.Mostra)?.immagine

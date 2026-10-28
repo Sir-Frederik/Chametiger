@@ -10,15 +10,32 @@ import android.content.Context
  * default senza una ragione visibile.
  */
 object Identita {
-    private const val FILE = "impostazioni"
-    private const val CHIAVE = "identita"
-
-    fun leggi(context: Context): String =
-        context.getSharedPreferences(FILE, Context.MODE_PRIVATE).getString(CHIAVE, "").orEmpty()
+    fun leggi(context: Context): String = preferenze(context).getString("identita", "").orEmpty()
 
     fun scrivi(context: Context, identita: String) {
-        context.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit()
-            .putString(CHIAVE, identita.trim())
-            .apply()
+        preferenze(context).edit().putString("identita", identita.trim()).apply()
     }
 }
+
+/**
+ * La cartella Drive da cui arrivano config e immagini, e il tetto della cache.
+ * Senza link (o senza chiave API nella build) valgono solo i file copiati via
+ * USB, come prima.
+ */
+object ImpostazioniDrive {
+    const val TETTO_MB_DEFAULT = 300
+
+    fun link(context: Context): String = preferenze(context).getString("drive_link", "").orEmpty()
+
+    fun scriviLink(context: Context, link: String) {
+        preferenze(context).edit().putString("drive_link", link.trim()).apply()
+    }
+
+    fun tettoMb(context: Context): Int = preferenze(context).getInt("tetto_mb", TETTO_MB_DEFAULT)
+
+    fun scriviTettoMb(context: Context, mb: Int) {
+        preferenze(context).edit().putInt("tetto_mb", mb.coerceAtLeast(10)).apply()
+    }
+}
+
+private fun preferenze(context: Context) = context.getSharedPreferences("impostazioni", Context.MODE_PRIVATE)

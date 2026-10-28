@@ -1,9 +1,13 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package io.github.sirfrederik.chametiger.strato
 
 import io.github.sirfrederik.chametiger.motore.Config
 import io.github.sirfrederik.chametiger.motore.FonteMeteo
 import io.github.sirfrederik.chametiger.motore.StatoMeteo
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonUnquotedLiteral
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
@@ -217,7 +221,8 @@ class Meteo(
         }
 
         val nuovo = buildJsonObject {
-            put("scaricato", ora)
+            // Per esteso come lo scrive json.dump sul PC, non 1.79E9: i due file si confrontano a occhio
+            put("scaricato", JsonUnquotedLiteral(BigDecimal.valueOf(ora).toPlainString()))
             put("lat", lat)
             put("lon", lon)
             put("ore", buildJsonObject { ore.toSortedMap().forEach { (k, v) -> put(k, v.tag) } })
