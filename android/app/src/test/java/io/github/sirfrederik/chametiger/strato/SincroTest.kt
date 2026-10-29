@@ -327,4 +327,50 @@ class SincroTest {
         assertEquals(Motivo.RIPIEGO, d2.motivo)
         assertTrue(d2.immagine in setOf(d.immagine, prossima))
     }
+
+    // ── Il pulsante "Ricontrolla le immagini" ────────────────────────────────
+
+    @Test
+    fun ilRicontrolloRiscaricaLeCambiateAncheConLIndiceFresco() {
+        val drive = DriveFinto()
+        listOf("a.jpg", "b.jpg", "c.jpg").forEachIndexed { i, k -> drive.file(radice, k, byteArrayOf(i.toByte())) }
+        val diario = DiarioFinto()
+        sincro(drive, diario).run { listOf("a.jpg", "b.jpg").forEach { assicura(it) } }
+
+        // b.jpg sostituita su Drive con lo stesso nome: l'indice e' fresco, il giro normale non se ne accorge
+        drive.file(radice, "b.jpg", byteArrayOf(7, 7, 7))
+        assertTrue(sincro(drive, diario).assicura("b.jpg"))
+        assertEquals(listOf<Byte>(1), File(files, "b.jpg").readBytes().toList())
+
+        val esito = sincro(drive, diario).ricontrolla(listOf("a.jpg", "b.jpg", "c.jpg"))!!
+        assertEquals("solo quelle in cache", 2, esito.controllate)
+        assertEquals(setOf("b.jpg"), esito.cambiate)
+        assertEquals(setOf("b.jpg"), esito.riscaricate)
+        assertEquals(listOf<Byte>(7, 7, 7), File(files, "b.jpg").readBytes().toList())
+        assertEquals("[DRIVE] Aggiornata b.jpg (0 KB)", diario.righe.last())
+        assertFalse("c.jpg non era in cache e resta su Drive", File(files, "c.jpg").exists())
+
+        // Senza rete non c'e' esito, e le immagini restano quelle che c'erano
+        drive.errore = ErroreDrive(TipoErrore.RETE, null, "timeout")
+        assertNull(sincro(drive, diario).ricontrolla(listOf("a.jpg", "b.jpg")))
+    }
+
+    @Test
+    fun ilRicontrolloRimetteLoSfondoSeECambiatoQuelloDiAdesso() {
+        val drive = DriveFinto().apply {
+            file(radice, "config.json", configGiro.toByteArray())
+            immagini.forEachIndexed { i, k -> file(radice, k, byteArrayOf(i.toByte())) }
+        }
+        val diario = DiarioFinto()
+        val sfondo = SfondoFinto()
+        val ora = LocalDate.of(2027, 3, 10).atTime(10, 30)
+        val ciclo = Ciclo(files, interna, "android-prova", "1.0", sfondo, diario, orologio = { ora }, drive = { d -> sincro(drive, d) })
+        val adesso = ((ciclo.giro() as Valutazione.Pronta).decisione as Decisione.Mostra).immagine
+
+        drive.file(radice, adesso, byteArrayOf(42, 42))
+        val riga = ciclo.ricontrolla()
+        assertTrue(riga, riga.startsWith("Ricontrollate ") && "1 cambiate su Drive, 1 riscaricate" in riga)
+        assertEquals(listOf<Byte>(42, 42), File(files, adesso).readBytes().toList())
+        assertTrue(diario.righe.last(), diario.righe.last().startsWith("[OK] Sfondo impostato") && ": $adesso | " in diario.righe.last())
+    }
 }

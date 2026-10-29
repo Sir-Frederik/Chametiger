@@ -88,6 +88,7 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
     var giro by remember { mutableIntStateOf(0) }
     var stato by remember { mutableStateOf<Stato>(Stato.InCorso) }
     var occupato by remember { mutableStateOf(false) }
+    var esitoRicontrollo by remember { mutableStateOf<String?>(null) }
 
     // Ricalcola a ogni minuto, quando cambia un'impostazione e dopo un'azione. Il
     // config si rilegge ogni volta: si aggiorna copiandolo via USB.
@@ -148,6 +149,15 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
             Button(onClick = { esegui { it.giro() } }, enabled = !occupato) { Text("Applica ora") }
             OutlinedButton(onClick = { esegui { it.forza() } }, enabled = !occupato) { Text("Estrazione forzata") }
         }
+        // Dopo aver sostituito su Drive delle immagini con versioni migliori e lo stesso nome
+        OutlinedButton(
+            onClick = {
+                esitoRicontrollo = "Ricontrollo in corso…"
+                esegui { esitoRicontrollo = it.ricontrolla() }
+            },
+            enabled = !occupato,
+        ) { Text("Ricontrolla le immagini") }
+        esitoRicontrollo?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
         Text(
             "Lo sfondo cambia da solo ogni 15 minuti circa. Il log è chametiger.log nella cartella sopra.",
             style = MaterialTheme.typography.bodySmall,
