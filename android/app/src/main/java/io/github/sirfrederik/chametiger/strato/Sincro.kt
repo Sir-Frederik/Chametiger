@@ -189,6 +189,28 @@ class Sincro(
         )
     }
 
+    /** Com'e' andato un ricontrollo: quante immagini in cache, quali cambiate su Drive, quali riscaricate. */
+    data class Ricontrollo(val controllate: Int, val cambiate: Set<String>, val riscaricate: Set<String>)
+
+    /**
+     * Il pulsante "Ricontrolla le immagini": rifa' subito l'indice, a
+     * prescindere dalla sua eta', e riscarica le immagini in cache che su Drive
+     * sono cambiate, per esempio sostituite con una versione a risoluzione
+     * maggiore e lo stesso nome. Null se Drive non risponde.
+     */
+    fun ricontrolla(libreria: Collection<String>): Ricontrollo? {
+        if (bloccato()) return null
+        indiceRinnovato = true
+        val nuovo = costruisciIndice() ?: return null
+        indice = nuovo
+        val inCache = libreria.filter { File(files, it).isFile && nuovo[it] != null }
+        val cambiate = inCache.filterTo(LinkedHashSet()) { !aggiornato(it, File(files, it), nuovo.getValue(it)) }
+        for (chiave in cambiate) assicura(chiave, "Aggiornata")
+        // Riscaricata davvero solo se adesso coincide con Drive: senza rete resta la vecchia
+        val riscaricate = cambiate.filterTo(LinkedHashSet()) { aggiornato(it, File(files, it), nuovo.getValue(it)) }
+        return Ricontrollo(inCache.size, cambiate, riscaricate)
+    }
+
     // ── Indice ───────────────────────────────────────────────────────────────
 
     private fun voceDi(chiave: String): VoceIndice? {

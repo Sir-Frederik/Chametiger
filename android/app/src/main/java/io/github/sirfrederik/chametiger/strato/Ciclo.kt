@@ -124,6 +124,31 @@ class Ciclo(
         return v.copy(decisione = v.decisore.decidi(v.adesso, memoria.leggi()))
     }
 
+    /**
+     * Il pulsante "Ricontrolla le immagini": scarica le versioni nuove delle
+     * immagini in cache cambiate su Drive. Se fra queste c'e' lo sfondo di
+     * adesso lo rimette subito. Ritorna una riga per la schermata.
+     */
+    fun ricontrolla(): String = synchronized(LOCK) {
+        val sincro = drive?.invoke(diario)
+            ?: return "Drive non è configurato: servono la chiave nella build e il link della cartella."
+        sincro.aggiornaConfig()
+        val v = valuta()
+        if (v !is Valutazione.Pronta) return (v as Valutazione.Errore).messaggio
+        val esito = sincro.ricontrolla(v.config.libreria.keys)
+        val traffico = " | Drive ${Sincro.kb(sincro.byteGiro)}"
+        if (esito == null) {
+            diario.scrivi("[DRIVE] Ricontrollo non riuscito: Drive non risponde$traffico")
+            return "Drive non risponde: riprova più tardi (il motivo è nel log)."
+        }
+        val riga = "Ricontrollate ${esito.controllate} immagini in cache: ${esito.cambiate.size} cambiate su Drive, " +
+            "${esito.riscaricate.size} riscaricate"
+        diario.scrivi("[DRIVE] $riga$traffico")
+        val d = v.decisione
+        if (d is Decisione.Mostra && d.immagine in esito.riscaricate) diario.scrivi(mostra(d, rimetti = true))
+        "$riga."
+    }
+
     /** Estrazione forzata: un'altra immagine fino alla fine della finestra corrente, fra quelle in cache. */
     fun forza(): Valutazione = synchronized(LOCK) {
         val v = valuta()
@@ -149,9 +174,10 @@ class Ciclo(
     /**
      * Mette lo sfondo e ritorna la riga del log che lo racconta: il giro la
      * scrive per ultima, col traffico di Drive in coda. Il ripiego lo scrive
-     * subito, prima della riga.
+     * subito, prima della riga. `rimetti`: anche se e' gia' lo sfondo, perche'
+     * il file e' cambiato.
      */
-    private fun mostra(d: Decisione): String = when (d) {
+    private fun mostra(d: Decisione, rimetti: Boolean = false): String = when (d) {
         is Decisione.Niente -> "[CICLO] nessuna immagine: ${d.perche}"
         is Decisione.Mostra -> {
             val f = d.finestra
@@ -161,7 +187,7 @@ class Ciclo(
                         "mostro ${d.immagine} solo adesso, non entra fra le uscite di oggi",
                 )
             }
-            if (sfondo.giaMostrata(d.immagine)) {
+            if (!rimetti && sfondo.giaMostrata(d.immagine)) {
                 "[CICLO] invariato: ${d.immagine}"
             } else {
                 val prefisso = when (d.motivo) {
