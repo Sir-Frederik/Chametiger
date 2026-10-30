@@ -794,17 +794,10 @@ class ChametigerEditor(tk.Tk):
             "Napoli": (40.8518, 14.2681),
             "Portici": (40.8199, 14.3414),
             "Pescopagano": (41.0566, 13.9252),
-            "Castel Volturno": (41.0345, 13.9409),
             "Manduria": (40.4028, 17.6343),
             "Roma": (41.9028, 12.4964),
             "Milano": (45.4642, 9.1900),
-            "Torino": (45.0703, 7.6869),
-            "Firenze": (43.7696, 11.2558),
-            "Bologna": (44.4949, 11.3426),
-            "Venezia": (45.4408, 12.3155),
-            "Bari": (41.1171, 16.8719),
-            "Palermo": (38.1157, 13.3615),
-            "Cagliari": (39.2238, 9.1217),
+            "Padova": (45.0703, 7.6869),
         }
 
         def imposta_citta(_=None):
