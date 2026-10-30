@@ -181,10 +181,9 @@ class Motore(
         }
 
         // Quando piove, un'immagine di pioggia entra anche senza i tag della
-        // fascia, purche' abbia uno dei suoi momenti e i tag del tema
+        // fascia, purche' abbia uno dei suoi momenti: anche in quelle degli eventi
         val piove = regola.meteo?.piove == true && tags.any { it in TAG_METEO }
-        if (piove && tags.any { it in regola.momenti }) return tags.containsAll(regola.tema)
-        return false
+        return piove && tags.any { it in regola.momenti }
     }
 
     /** candidates_for_rule, senza il controllo sul disco: il pool e' la libreria. */
@@ -226,30 +225,23 @@ class Motore(
     }
 
     /** La regola col tempo dell'ora. Una copia, come _con_meteo. */
-    private fun conMeteo(regola: Regola, stato: StatoMeteo?, campi: Pair<List<String>, List<String>>?): Regola {
+    private fun conMeteo(regola: Regola, stato: StatoMeteo?, momenti: List<String>?): Regola {
         stato ?: return regola
-        var r = regola.copy(meteo = stato)
-        if (campi != null) {
-            if (campi.first.isNotEmpty()) r = r.copy(momenti = campi.first)
-            if (campi.second.isNotEmpty()) r = r.copy(tema = campi.second)
-        }
-        return r
+        val r = regola.copy(meteo = stato)
+        return if (momenti.isNullOrEmpty()) r else r.copy(momenti = momenti)
     }
 
     /**
-     * _campi_meteo: quando piove, i momenti della fascia (o della prima sotto di
-     * lei che ne chiede) e i tag di stagione richiesti in AND. `regole` sono
-     * quelle che coprono lo stesso istante, in ordine di priorita'.
+     * _momenti_meteo: quando piove, i momenti della fascia (o della prima sotto
+     * di lei che ne chiede). `regole` sono quelle che coprono lo stesso istante,
+     * in ordine di priorita'.
      */
-    private fun campiMeteo(regole: List<Regola>, pos: Int): Pair<List<String>, List<String>> {
-        var momenti: Set<String> = emptySet()
+    private fun momentiMeteo(regole: List<Regola>, pos: Int): List<String> {
         for (r in regole.subList(pos, regole.size)) {
-            momenti = TAG_ORARI intersect r.include.toSet()
-            if (momenti.isNotEmpty()) break
+            val momenti = TAG_ORARI intersect r.include.toSet()
+            if (momenti.isNotEmpty()) return momenti.ordinate()
         }
-        val regola = regole[pos]
-        val tema = if (!regola.matchAny) vocabolario intersect regola.include.toSet() else emptySet()
-        return momenti.ordinate() to tema.ordinate()
+        return emptyList()
     }
 
     /** _rule_signature: l'identita' della regola, seme del mazzo. */
@@ -411,7 +403,7 @@ class Motore(
         val coprono = regoleDelGiorno(quando.toLocalDate()).filter { copre(it.start, it.end, minuto) }
         if (stato?.piove != true) return coprono.map { conMeteo(it.regola, stato, null) to it.origine }
         val regole = coprono.map { it.regola }
-        return coprono.mapIndexed { i, r -> conMeteo(r.regola, stato, campiMeteo(regole, i)) to r.origine }
+        return coprono.mapIndexed { i, r -> conMeteo(r.regola, stato, momentiMeteo(regole, i)) to r.origine }
     }
 
     // ── La sequenza del giorno ───────────────────────────────────────────────
@@ -440,8 +432,8 @@ class Motore(
             var scelto: Triple<RegolaDelGiorno, Regola, String>? = null
             var pool: List<String> = emptyList()
             for ((pos, rdg) in coprono.withIndex()) {
-                val campi = if (stato?.piove == true) campiMeteo(coprono.map { it.regola }, pos) else null
-                val regola = conMeteo(rdg.regola, stato, campi)
+                val momenti = if (stato?.piove == true) momentiMeteo(coprono.map { it.regola }, pos) else null
+                val regola = conMeteo(rdg.regola, stato, momenti)
                 val firma = firma(regola)
                 pool = pools.getOrPut(firma) { candidate(regola).ordinate() }
                 if (pool.isNotEmpty()) {

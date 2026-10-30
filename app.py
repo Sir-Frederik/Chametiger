@@ -499,10 +499,10 @@ def image_matches_rule(image_tags, rule: dict) -> bool:
     (`smart`, `weekend`...) restano secchi.
 
     Quando piove (`meteo` pioggia o temporale), un'immagine di pioggia entra anche senza i tag che la
-    fascia richiede, purche' abbia uno dei suoi `momenti` (vedi _campi_meteo):
+    fascia richiede, purche' abbia uno dei suoi `momenti` (vedi _momenti_meteo):
     alle 10 del venerdi' la fascia jolly/sport prende le immagini di pioggia
-    del mattino. I tag di evento richiesti (`tema`) restano obbligatori, cosi'
-    la pioggia non porta via il Natale dalle sue fasce.
+    del mattino. Vale anche nelle fasce degli eventi: la pioggia ha la priorita'
+    su Halloween e sul Natale, e le loro immagini tornano col tempo asciutto.
     """
     tags = set(image_tags or [])
 
@@ -532,9 +532,7 @@ def image_matches_rule(image_tags, rule: dict) -> bool:
         return True
 
     piove = rule.get("meteo") in _TAG_METEO and bool(tags & _TAG_METEO)
-    if piove and tags & set(rule.get("momenti") or ()):
-        return set(rule.get("tema") or ()) <= tags
-    return False
+    return piove and bool(tags & set(rule.get("momenti") or ()))
 
 
 # Esistenza dei file, memorizzata per un giro di scheduler. Su una cartella di
@@ -639,39 +637,33 @@ def _secondo_meteo(
     return pool
 
 
-def _con_meteo(rule: dict, stato: str | None, campi: dict | None = None) -> dict:
+def _con_meteo(rule: dict, stato: str | None, momenti: list | None = None) -> dict:
     """La regola col tempo dell'ora. Una COPIA, come in patch_rule."""
     if not stato:
         return rule
     patched = dict(rule)
     patched["meteo"] = stato
-    patched.update({k: v for k, v in (campi or {}).items() if v})
+    if momenti:
+        patched["momenti"] = momenti
     return patched
 
 
-def _campi_meteo(regole: list[dict], pos: int, vocabolario: set) -> dict:
+def _momenti_meteo(regole: list[dict], pos: int) -> list:
     """
-    Quando piove, cosa serve alla regola `regole[pos]` per far entrare le
-    immagini di pioggia che non hanno i suoi tag. `regole` sono quelle che
-    coprono lo stesso istante, in ordine di priorita'.
+    Quando piove, i momenti con cui le immagini di pioggia entrano nella regola
+    `regole[pos]` anche senza i suoi tag. `regole` sono quelle che coprono lo
+    stesso istante, in ordine di priorita'.
 
-      momenti  i tag orari che la fascia richiede. Se non ne richiede (la fascia
-               del venerdi' vuole jolly/sport) quelli della prima regola sotto
-               di lei che ne richiede: e' lei che dice che ora e', senza che il
-               codice debba conoscere gli orari di nessuno
-      tema     i tag di evento o stagione richiesti in AND (`natale` in
-               crepuscolo+natale): restano obbligatori anche per la pioggia
+    Sono i tag orari che la fascia richiede. Se non ne richiede (la fascia del
+    venerdi' vuole jolly/sport, Halloween vuole horror) quelli della prima
+    regola sotto di lei che ne richiede: e' lei che dice che ora e', senza che
+    il codice debba conoscere gli orari di nessuno.
     """
-    momenti: set = set()
     for rule in regole[pos:]:
         momenti = TAG_ORARI & set(rule.get("include") or [])
         if momenti:
-            break
-    rule = regole[pos]
-    tema = set()
-    if rule.get("match", "all") != "any":
-        tema = vocabolario & set(rule.get("include") or [])
-    return {"momenti": sorted(momenti), "tema": sorted(tema)}
+            return sorted(momenti)
+    return []
 
 
 def _rule_signature(rule: dict) -> str:
@@ -1034,9 +1026,8 @@ def regole_candidate(config: dict, quando: datetime) -> list[tuple[dict, str]]:
     if stato not in _TAG_METEO:
         return [(_con_meteo(rule, stato), origine) for rule, origine in coprono]
     regole = [rule for rule, _ in coprono]
-    vocabolario = tag_stagionali(config)
     return [
-        (_con_meteo(rule, stato, _campi_meteo(regole, i, vocabolario)), origine)
+        (_con_meteo(rule, stato, _momenti_meteo(regole, i)), origine)
         for i, (rule, origine) in enumerate(coprono)
     ]
 
@@ -1072,7 +1063,6 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
     # ogni regola ha al piu' una variante per stato, non una per minuto.
     ore_meteo = meteo.del_giorno(config, giorno) or {}
     varianti: dict[tuple, dict] = {}
-    vocabolario = tag_stagionali(config)
 
     pools: dict[str, list[str]] = {}  # una volta per regola, non per finestra
     usate: set[str] = set()
@@ -1095,14 +1085,12 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
         for pos, k in enumerate(coprono):
             rule, origine, _, _ = regole[k]
             if stato:
-                campi = None
+                momenti = None
                 if stato in _TAG_METEO:
-                    campi = _campi_meteo(
-                        [regole[j][0] for j in coprono], pos, vocabolario
-                    )
-                chiave = (k, stato, repr(campi))
+                    momenti = _momenti_meteo([regole[j][0] for j in coprono], pos)
+                chiave = (k, stato, repr(momenti))
                 if chiave not in varianti:
-                    varianti[chiave] = _con_meteo(rule, stato, campi)
+                    varianti[chiave] = _con_meteo(rule, stato, momenti)
                 rule = varianti[chiave]
             sig = _rule_signature(rule)
             if sig not in pools:

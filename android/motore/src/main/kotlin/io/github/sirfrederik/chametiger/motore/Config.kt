@@ -46,7 +46,6 @@ data class Regola(
     val periodo: String? = null,
     val meteo: StatoMeteo? = null,
     val momenti: List<String> = emptyList(),
-    val tema: List<String> = emptyList(),
 ) {
     val matchAny: Boolean get() = match == "any"
 }
