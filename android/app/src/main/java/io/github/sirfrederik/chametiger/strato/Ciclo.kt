@@ -58,9 +58,12 @@ class Ciclo(
     rete: Rete = ReteHttp,
     /** Come raggiungere Drive, o null se non e' configurato: allora valgono solo i file copiati via USB. */
     private val drive: ((Diario) -> Sincro)? = null,
+    /** L'ultima posizione del telefono per il meteo, o null: allora valgono le coordinate del config. */
+    posizioneMeteo: Pair<Double, Double>? = null,
 ) {
     private val memoria = MemoriaForzataFile(File(interna, "forzata.txt"))
-    private val meteo = Meteo(File(cartella, "meteo.json"), File(interna, "meteo_errore.txt"), identita, versione, diario, rete)
+    private val meteo =
+        Meteo(File(cartella, "meteo.json"), File(interna, "meteo_errore.txt"), identita, versione, diario, rete, posizioneMeteo)
 
     /** Cosa si mostrerebbe adesso, per la schermata: non scarica, non scrive il log e non mette sfondi. */
     fun valuta(): Valutazione = valuta(aggiornaMeteo = false)
@@ -147,6 +150,20 @@ class Ciclo(
         val d = v.decisione
         if (d is Decisione.Mostra && d.immagine in esito.riscaricate) diario.scrivi(mostra(d, rimetti = true))
         "$riga."
+    }
+
+    /**
+     * Il pulsante "Carica meteo": riscarica subito le previsioni, anche dopo un
+     * errore recente, poi fa un giro col meteo nuovo. Ritorna una riga per la
+     * schermata.
+     */
+    fun caricaMeteo(): String = synchronized(LOCK) {
+        val v = valuta()
+        if (v !is Valutazione.Pronta) return (v as Valutazione.Errore).messaggio
+        diario.scrivi("[METEO] Carica meteo su ${meteo.origine(v.config)}")
+        val scaricato = meteo.aggiornaSeServe(v.config, v.adesso, forza = true)
+        val descrizione = (giro() as? Valutazione.Pronta)?.meteo ?: v.meteo
+        if (scaricato) "Meteo aggiornato: $descrizione." else "Meteo non scaricato (il motivo è nel log): $descrizione."
     }
 
     /** Estrazione forzata: un'altra immagine fino alla fine della finestra corrente, fra quelle in cache. */

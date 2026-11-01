@@ -53,4 +53,33 @@ object ImpostazioniSfondo {
     }
 }
 
+/**
+ * L'ultima posizione del telefono letta col pulsante "Carica meteo". Vale per
+ * il meteo, anche nei giri in background, finche' un'altra lettura non la
+ * sostituisce; senza, il meteo usa le coordinate del config. Alba e tramonto
+ * restano quelli del config, come sui PC.
+ */
+object PosizioneMeteo {
+    /** `quando` in millisecondi dall'epoca. */
+    data class Salvata(val lat: Double, val lon: Double, val quando: Long)
+
+    fun leggi(context: Context): Salvata? {
+        val p = preferenze(context)
+        if (!p.contains("meteo_lat") || !p.contains("meteo_lon")) return null
+        return Salvata(
+            Double.fromBits(p.getLong("meteo_lat", 0)),
+            Double.fromBits(p.getLong("meteo_lon", 0)),
+            p.getLong("meteo_quando", 0),
+        )
+    }
+
+    fun scrivi(context: Context, lat: Double, lon: Double, quando: Long) {
+        preferenze(context).edit()
+            .putLong("meteo_lat", lat.toRawBits())
+            .putLong("meteo_lon", lon.toRawBits())
+            .putLong("meteo_quando", quando)
+            .apply()
+    }
+}
+
 private fun preferenze(context: Context) = context.getSharedPreferences("impostazioni", Context.MODE_PRIVATE)

@@ -148,12 +148,22 @@ class Meteo(
     private val versione: String,
     private val diario: Diario,
     private val rete: Rete = ReteHttp,
+    /** L'ultima posizione del telefono salvata col pulsante "Carica meteo"; null: valgono quelle del config. */
+    private val posizione: Pair<Double, Double>? = null,
 ) {
     private val userAgent get() = "Chametiger-Android/$versione github.com/Sir-Frederik/Chametiger"
 
-    /** _coords: le coordinate del dispositivo arrotondate, come la griglia delle previsioni. */
+    /**
+     * _coords: le coordinate del meteo arrotondate, come la griglia delle
+     * previsioni. Quelle del telefono se ce ne sono, se no quelle del config.
+     */
     fun coordinate(config: Config): Pair<Double, Double> =
-        config.coordinate(identita).let { (lat, lon) -> arrotonda2(lat) to arrotonda2(lon) }
+        (posizione ?: config.coordinate(identita)).let { (lat, lon) -> arrotonda2(lat) to arrotonda2(lon) }
+
+    /** Da dove vengono le coordinate del meteo, per log e schermata. */
+    fun origine(config: Config): String =
+        coordinate(config).let { (lat, lon) -> "%.2f, %.2f".format(Locale.ROOT, lat, lon) } +
+            if (posizione != null) " (posizione del telefono)" else " (coordinate del config)"
 
     fun leggi(): DatiMeteo? = try {
         val o = Json.parseToJsonElement(file.readText(Charsets.UTF_8)).jsonObject
@@ -244,7 +254,7 @@ class Meteo(
         val dati = leggi()
         if (!valide(dati, config, adesso)) return "nessun dato valido: si sceglie come col sereno"
         val quando = LocalDateTime.ofInstant(Instant.ofEpochMilli((dati!!.scaricato * 1000).toLong()), ZONA)
-        return "${riassunto(dati.ore, adesso)} (Met Norway, scaricato alle ${quando.format(HH_MM)})"
+        return "${riassunto(dati.ore, adesso)} (Met Norway su ${origine(config)}, scaricato alle ${quando.format(HH_MM)})"
     }
 
     private fun secondi(t: LocalDateTime): Double = t.atZone(ZONA).toInstant().toEpochMilli() / 1000.0

@@ -1,13 +1,16 @@
 package io.github.sirfrederik.chametiger
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -51,6 +54,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -89,6 +93,7 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
     var stato by remember { mutableStateOf<Stato>(Stato.InCorso) }
     var occupato by remember { mutableStateOf(false) }
     var esitoRicontrollo by remember { mutableStateOf<String?>(null) }
+    var esitoMeteo by remember { mutableStateOf<String?>(null) }
 
     // Ricalcola a ogni minuto, quando cambia un'impostazione e dopo un'azione. Il
     // config si rilegge ogni volta: si aggiorna copiandolo via USB.
@@ -109,6 +114,25 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
             giro++
         }
     }
+
+    // La posizione del telefono se arriva, se no l'ultima salvata, se no il config; poi il download
+    fun caricaMeteo() {
+        occupato = true
+        esitoMeteo = "Cerco la posizione del telefono…"
+        scope.launch {
+            val fix = posizioneAttuale(context)
+            if (fix != null) PosizioneMeteo.scrivi(context, fix.latitude, fix.longitude, System.currentTimeMillis())
+            val nota = when {
+                fix != null -> ""
+                PosizioneMeteo.leggi(context) != null -> " Posizione del telefono non disponibile: uso l'ultima salvata."
+                else -> " Posizione del telefono non disponibile e nessuna salvata: uso le coordinate del config."
+            }
+            esitoMeteo = "Scarico il meteo…"
+            esegui { esitoMeteo = it.caricaMeteo() + nota }
+        }
+    }
+    // Col permesso negato si va avanti lo stesso, con l'ultima posizione salvata
+    val chiediPosizione = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { caricaMeteo() }
 
     Column(
         modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
@@ -158,6 +182,15 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
             enabled = !occupato,
         ) { Text("Ricontrolla le immagini") }
         esitoRicontrollo?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+        OutlinedButton(
+            onClick = {
+                if (permessoPosizione(context)) caricaMeteo()
+                else chiediPosizione.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+            },
+            enabled = !occupato,
+        ) { Text("Carica meteo") }
+        Text(posizioneSalvata(context), style = MaterialTheme.typography.bodySmall)
+        esitoMeteo?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
         Text(
             "Lo sfondo cambia da solo ogni 15 minuti circa. Il log è chametiger.log nella cartella sopra.",
             style = MaterialTheme.typography.bodySmall,
@@ -229,6 +262,16 @@ private fun statoDrive(context: Context, cartella: File): String {
     val occupati = cartella.walkTopDown().filter { it.isFile && it.name !in esclusi }.sumOf { it.length() }
     return "Drive: cartella ${drive.id.take(8)}…, cache %.0f MB su un tetto di %d MB."
         .format(Locale.ROOT, occupati / 1048576.0, ImpostazioniDrive.tettoMb(context))
+}
+
+private val GIORNO_ORA = DateTimeFormatter.ofPattern("d/M HH:mm")
+
+/** Su quali coordinate scarica il meteo, e da quando. */
+private fun posizioneSalvata(context: Context): String {
+    val p = PosizioneMeteo.leggi(context)
+        ?: return "Meteo sulle coordinate del config: nessuna posizione del telefono salvata."
+    val quando = LocalDateTime.ofInstant(Instant.ofEpochMilli(p.quando), ZONA).format(GIORNO_ORA)
+    return "Meteo sulla posizione del telefono letta il $quando: %.2f, %.2f.".format(Locale.ROOT, p.lat, p.lon)
 }
 
 private fun valuta(context: Context): Stato {

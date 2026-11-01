@@ -117,6 +117,25 @@ class MeteoTest {
     }
 
     @Test
+    fun laPosizioneDelTelefonoVinceSulConfig() {
+        val rete = ReteFinta(risorsa("reale.json"))
+        val adesso = LocalDateTime.of(2026, 10, 28, 11, 10)
+        val milano = 45.4642 to 9.19
+        fun m(posizione: Pair<Double, Double>?) = Meteo(
+            File(tmp.root, "meteo.json"), File(tmp.root, "interna/meteo_errore.txt"),
+            "android-federico", "1.0", DiarioFinto(), rete, posizione,
+        )
+
+        assertTrue(m(milano).aggiornaSeServe(config, adesso))
+        assertEquals("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=45.46&lon=9.19", rete.chiamate.single().first)
+        assertEquals("45.46, 9.19 (posizione del telefono)", m(milano).origine(config))
+        // Scaricati per Milano: valgono finche' il telefono resta li', non sulle coordinate del config
+        assertFalse(m(milano).fonte(config, adesso).ore(adesso.toLocalDate()).isEmpty())
+        assertTrue(m(null).fonte(config, adesso).ore(adesso.toLocalDate()).isEmpty())
+        assertEquals("40.82, 14.34 (coordinate del config)", m(null).origine(config))
+    }
+
+    @Test
     fun senzaReteSiRiprovaDopoMezzOraESiSceglieComeColSereno() {
         val rete = ReteFinta(null)
         val diario = DiarioFinto()
