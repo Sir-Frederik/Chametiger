@@ -19,8 +19,8 @@ data class Anteprima(
     val identita: String,
     val lat: Double,
     val lon: Double,
-    /** False: l'identita' non e' in position_map, valgono latitude/longitude. */
-    val inPositionMap: Boolean,
+    /** Posizione del telefono, position_map o latitude/longitude. */
+    val fonteCoordinate: String,
     /** Lo stato del meteo in una riga: le ore di pioggia, o perche' si sceglie come col sereno. */
     val meteo: String,
     /** Le prime cifre dello SHA-256 del config, da confrontare col log del tray. */
@@ -88,7 +88,7 @@ fun anteprima(v: Valutazione.Pronta, identita: String): Anteprima {
         identita = identita,
         lat = lat,
         lon = lon,
-        inPositionMap = v.config.inPositionMap(identita),
+        fonteCoordinate = v.fonteCoordinate,
         meteo = v.meteo,
         impronta = v.impronta,
         pila = motore.stratiDelGiorno(giorno).reversed().joinToString(" > ") { it.nome },

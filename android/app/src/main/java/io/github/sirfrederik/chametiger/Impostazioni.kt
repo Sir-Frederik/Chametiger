@@ -55,11 +55,11 @@ object ImpostazioniSfondo {
 
 /**
  * L'ultima posizione del telefono letta col pulsante "Carica meteo". Vale per
- * il meteo, anche nei giri in background, finche' un'altra lettura non la
- * sostituisce; senza, il meteo usa le coordinate del config. Alba e tramonto
- * restano quelli del config, come sui PC.
+ * il meteo e per alba e tramonto, anche nei giri in background, finche'
+ * un'altra lettura non la sostituisce; senza, valgono le coordinate del
+ * config. Le chiavi dicono ancora "meteo" per non perdere quella gia' salvata.
  */
-object PosizioneMeteo {
+object PosizioneTelefono {
     /** `quando` in millisecondi dall'epoca. */
     data class Salvata(val lat: Double, val lon: Double, val quando: Long)
 

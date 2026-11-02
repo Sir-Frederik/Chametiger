@@ -28,10 +28,11 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 // Il meteo da Met Norway, come meteo.py: le prossime 10 ore, ora attuale
-// compresa, sulle coordinate del config. Lo stato del meteo entra nella firma
-// della regola, quindi nel mazzo: ogni scelta qui deve essere identica a quella
-// del PC, a cominciare da come si legge un simbolo (vedi MeteoTest, che
-// confronta le due implementazioni sulle stesse risposte).
+// compresa, sulla posizione del telefono o sulle coordinate del config. Lo
+// stato del meteo entra nella firma della regola, quindi nel mazzo: ogni
+// scelta qui deve essere identica a quella del PC, a cominciare da come si
+// legge un simbolo (vedi MeteoTest, che confronta le due implementazioni
+// sulle stesse risposte).
 //
 // Le ore finiscono in meteo.json nella cartella dell'app, nello stesso formato
 // del PC: i due file si confrontano a occhio.

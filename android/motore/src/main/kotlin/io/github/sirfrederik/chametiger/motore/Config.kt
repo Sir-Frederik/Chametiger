@@ -109,6 +109,12 @@ data class Config(
     fun inPositionMap(dispositivo: String): Boolean =
         (positionMap as? JsonObject)?.containsKey(dispositivo) == true
 
+    /** Lo stesso config con queste coordinate come voce del dispositivo in position_map. */
+    fun conPosizione(dispositivo: String, lat: Double, lon: Double): Config {
+        val voce = JsonObject(mapOf("latitude" to JsonPrimitive(lat), "longitude" to JsonPrimitive(lon)))
+        return copy(positionMap = JsonObject((positionMap as? JsonObject).orEmpty() + (dispositivo to voce)))
+    }
+
     /** Tutti i tag dichiarati da stagioni ed eventi: il vocabolario "stagionale". */
     val tagStagionali: Set<String> by lazy {
         (stagioni + eventi).flatMapTo(mutableSetOf()) { it.tags }

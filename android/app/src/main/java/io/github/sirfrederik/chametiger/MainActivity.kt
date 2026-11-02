@@ -1,6 +1,5 @@
 package io.github.sirfrederik.chametiger
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -121,10 +120,10 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
         esitoMeteo = "Cerco la posizione del telefono…"
         scope.launch {
             val fix = posizioneAttuale(context)
-            if (fix != null) PosizioneMeteo.scrivi(context, fix.latitude, fix.longitude, System.currentTimeMillis())
+            if (fix != null) PosizioneTelefono.scrivi(context, fix.latitude, fix.longitude, System.currentTimeMillis())
             val nota = when {
                 fix != null -> ""
-                PosizioneMeteo.leggi(context) != null -> " Posizione del telefono non disponibile: uso l'ultima salvata."
+                PosizioneTelefono.leggi(context) != null -> " Posizione del telefono non disponibile: uso l'ultima salvata."
                 else -> " Posizione del telefono non disponibile e nessuna salvata: uso le coordinate del config."
             }
             esitoMeteo = "Scarico il meteo…"
@@ -132,7 +131,7 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
         }
     }
     // Col permesso negato si va avanti lo stesso, con l'ultima posizione salvata
-    val chiediPosizione = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { caricaMeteo() }
+    val chiediPosizione = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { caricaMeteo() }
 
     Column(
         modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
@@ -184,8 +183,8 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
         esitoRicontrollo?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
         OutlinedButton(
             onClick = {
-                if (permessoPosizione(context)) caricaMeteo()
-                else chiediPosizione.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+                if (permessoGps(context)) caricaMeteo()
+                else chiediPosizione.launch(PERMESSI_POSIZIONE)
             },
             enabled = !occupato,
         ) { Text("Carica meteo") }
@@ -266,12 +265,12 @@ private fun statoDrive(context: Context, cartella: File): String {
 
 private val GIORNO_ORA = DateTimeFormatter.ofPattern("d/M HH:mm")
 
-/** Su quali coordinate scarica il meteo, e da quando. */
+/** Quale posizione usano meteo e sole, e da quando. */
 private fun posizioneSalvata(context: Context): String {
-    val p = PosizioneMeteo.leggi(context)
-        ?: return "Meteo sulle coordinate del config: nessuna posizione del telefono salvata."
+    val p = PosizioneTelefono.leggi(context)
+        ?: return "Meteo e sole sulle coordinate del config: nessuna posizione del telefono salvata."
     val quando = LocalDateTime.ofInstant(Instant.ofEpochMilli(p.quando), ZONA).format(GIORNO_ORA)
-    return "Meteo sulla posizione del telefono letta il $quando: %.2f, %.2f.".format(Locale.ROOT, p.lat, p.lon)
+    return "Meteo e sole sulla posizione del telefono letta il $quando: %.4f, %.4f.".format(Locale.ROOT, p.lat, p.lon)
 }
 
 private fun valuta(context: Context): Stato {
@@ -311,9 +310,7 @@ private fun Dettagli(a: Anteprima) {
     }
     Voce(
         "Coordinate",
-        "%.4f, %.4f ".format(Locale.ROOT, a.lat, a.lon) +
-            if (a.inPositionMap) "(position_map di ${a.identita})"
-            else "(${a.identita} non è in position_map: latitude/longitude del config)",
+        "%.4f, %.4f (%s)".format(Locale.ROOT, a.lat, a.lon, a.fonteCoordinate),
     )
     Voce("Pila del giorno", a.pila)
     Voce("Sole", a.orariSolari.joinToString("  ") { (nome, ora) -> "$nome $ora" })

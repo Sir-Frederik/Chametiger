@@ -27,6 +27,8 @@ sealed interface Valutazione {
         val impronta: String,
         /** Lo stato del meteo in una riga. */
         val meteo: String,
+        /** Da dove vengono le coordinate: posizione del telefono, position_map o latitude/longitude. */
+        val fonteCoordinate: String,
     ) : Valutazione
 
     data class Errore(val messaggio: String) : Valutazione
@@ -58,12 +60,16 @@ class Ciclo(
     rete: Rete = ReteHttp,
     /** Come raggiungere Drive, o null se non e' configurato: allora valgono solo i file copiati via USB. */
     private val drive: ((Diario) -> Sincro)? = null,
-    /** L'ultima posizione del telefono per il meteo, o null: allora valgono le coordinate del config. */
-    posizioneMeteo: Pair<Double, Double>? = null,
+    /**
+     * L'ultima posizione del telefono, o null: allora valgono le coordinate del
+     * config. Vale come la voce del telefono in position_map, per il meteo e
+     * per alba e tramonto.
+     */
+    private val posizione: Pair<Double, Double>? = null,
 ) {
     private val memoria = MemoriaForzataFile(File(interna, "forzata.txt"))
     private val meteo =
-        Meteo(File(cartella, "meteo.json"), File(interna, "meteo_errore.txt"), identita, versione, diario, rete, posizioneMeteo)
+        Meteo(File(cartella, "meteo.json"), File(interna, "meteo_errore.txt"), identita, versione, diario, rete, posizione)
 
     /** Cosa si mostrerebbe adesso, per la schermata: non scarica, non scrive il log e non mette sfondi. */
     fun valuta(): Valutazione = valuta(aggiornaMeteo = false)
@@ -72,14 +78,20 @@ class Ciclo(
         if (identita.isBlank()) return Valutazione.Errore("Imposta l'identità del dispositivo, per esempio android-federico.")
         val lettura = ConfigSicuro(File(cartella, NOME_CONFIG), File(interna, "config.ultimo.json")).leggi()
         if (lettura is ConfigSicuro.Lettura.Nessuna) return Valutazione.Errore(lettura.motivo)
-        val (config, avviso, impronta) = lettura as ConfigSicuro.Lettura.Ok
+        val (letto, avviso, impronta) = lettura as ConfigSicuro.Lettura.Ok
+        val config = posizione?.let { (lat, lon) -> letto.conPosizione(identita, lat, lon) } ?: letto
+        val fonte = when {
+            posizione != null -> "posizione del telefono"
+            letto.inPositionMap(identita) -> "position_map"
+            else -> "latitude/longitude"
+        }
         val adesso = orologio()
         // Come il tray: prima il meteo, poi la scelta. Senza dati validi si sceglie come col sereno
         if (aggiornaMeteo) meteo.aggiornaSeServe(config, adesso)
         val decisore = Decisore(config, identita, ArchivioCartella(config, cartella), meteo.fonte(config, adesso))
         return Valutazione.Pronta(
             config, decisore, adesso, decisore.decidi(adesso, memoria.leggi()), avviso, impronta,
-            meteo.descrizione(config, adesso),
+            meteo.descrizione(config, adesso), fonte,
         )
     }
 
@@ -226,7 +238,7 @@ class Ciclo(
     /** Chi e' e dove si crede il telefono: una volta al giorno, e quando cambia qualcosa. */
     private fun info(v: Valutazione.Pronta) {
         val (lat, lon) = v.config.coordinate(identita)
-        val fonte = if (v.config.inPositionMap(identita)) "position_map" else "latitude/longitude"
+        val fonte = v.fonteCoordinate
         val pila = v.decisore.motore.stratiDelGiorno(v.adesso.toLocalDate()).reversed().joinToString(" > ") { it.nome }
         val riga = "$identita $versione, ${ZONA.id}, " +
             "%.4f,%.4f".format(Locale.ROOT, lat, lon) + " ($fonte), pila $pila, config ${v.impronta}"
