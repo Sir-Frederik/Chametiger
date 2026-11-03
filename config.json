@@ -444,7 +444,7 @@
       {
         "from": "sunset - 58m",
         "to": "min(sunset +2 m, 18:00)",
-        "include": ["tramonto", "lavoro"],
+        "include": ["tramonto"],
         "exclude": ["alba", "mattino", "pranzo", "pomeriggio", "crepuscolo", "sera", "notte", "smart", "weekend", "svago"],
         "match": "all",
         "rotate_minutes": 60
