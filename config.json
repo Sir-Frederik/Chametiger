@@ -453,15 +453,15 @@
         "from": "sunset +2 m",
         "to": "min(dusk +2m, 18:00)",
         "include": ["crepuscolo", "lavoro"],
-        "exclude": ["alba", "mattino", "pranzo", "pomeriggio", "tramonto", "sera", "spettacolo", "notte", "smart", "weekend", "svago"],
-        "match": "any",
+        "exclude": ["alba", "mattino", "pranzo", "pomeriggio", "tramonto", "sera", "notte", "smart", "weekend", "svago"],
+        "match": "all",
         "rotate_minutes": 60
       },
       {
         "from": "sunset - 58m",
         "to": "sunset +2 m",
         "include": ["tramonto"],
-        "exclude": ["weekend"],
+        "exclude": ["weekend", "lavoro"],
         "match": "all",
         "rotate_minutes": 60
       },
@@ -469,7 +469,7 @@
         "from": "sunset +2 m",
         "to": "dusk +2m",
         "include": ["crepuscolo"],
-        "exclude": ["weekend"],
+        "exclude": ["weekend", "lavoro"],
         "match": "all",
         "rotate_minutes": 60
       },
