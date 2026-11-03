@@ -109,6 +109,16 @@ data class Config(
     fun inPositionMap(dispositivo: String): Boolean =
         (positionMap as? JsonObject)?.containsKey(dispositivo) == true
 
+    /** Le coordinate scritte nel config, col loro nome: latitude/longitude e ogni voce di position_map. */
+    fun posizioniNote(): Map<String, Pair<Double, Double>> {
+        val note = LinkedHashMap<String, Pair<Double, Double>>()
+        val lat = latitude?.let { pyFloat(it) }
+        val lon = longitude?.let { pyFloat(it) }
+        if (lat != null && lon != null) note["latitude/longitude"] = lat to lon
+        (positionMap as? JsonObject)?.keys?.forEach { note["position_map $it"] = coordinate(it) }
+        return note
+    }
+
     /** Lo stesso config con queste coordinate come voce del dispositivo in position_map. */
     fun conPosizione(dispositivo: String, lat: Double, lon: Double): Config {
         val voce = JsonObject(mapOf("latitude" to JsonPrimitive(lat), "longitude" to JsonPrimitive(lon)))

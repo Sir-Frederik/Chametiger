@@ -233,4 +233,32 @@ class StratoTest {
         repeat(5000) { diario.scrivi("[CICLO] invariato: " + "x".repeat(40)) }
         assertTrue(file.length() <= DiarioFile.MAX_BYTES + 200)
     }
+
+    @Test
+    fun laPosizioneDelTelefonoSiAgganciaAQuelleDelConfigEntroUnChilometro() {
+        val ufficio = 40.85674 to 14.2835
+        val cartella = tmp.newFolder("files")
+        File(cartella, "config.json").writeText(
+            testo.replace(
+                "\"meteo\": {\"attivo\": false}",
+                "\"meteo\": {\"attivo\": false}, \"latitude\": 41.0566, \"longitude\": 13.9252, " +
+                    "\"position_map\": {\"Federico\": {\"latitude\": 40.85674, \"longitude\": 14.2835}}",
+            ),
+        )
+        val interna = tmp.newFolder("interna")
+        fun valuta(posizione: Pair<Double, Double>) =
+            Ciclo(cartella, interna, "android-prova", "1.0", SfondoFinto(), DiarioFinto(), posizione = posizione)
+                .valuta() as Valutazione.Pronta
+
+        // Circa 200 m dall'ufficio: valgono le coordinate esatte del Lenovo
+        val vicino = valuta(40.8585 to 14.2830)
+        assertEquals(ufficio, vicino.config.coordinate("android-prova"))
+        assertEquals("posizione del telefono, agganciata a position_map Federico", vicino.fonteCoordinate)
+        // Circa 4 km: resta la lettura del telefono
+        val lontano = valuta(40.8193 to 14.3470)
+        assertEquals(40.8193 to 14.3470, lontano.config.coordinate("android-prova"))
+        assertEquals("posizione del telefono", lontano.fonteCoordinate)
+        // Vince la piu' vicina, anche latitude/longitude
+        assertEquals("latitude/longitude" to (41.0566 to 13.9252), aggancia(41.0547, 13.9252, vicino.config.posizioniNote()))
+    }
 }

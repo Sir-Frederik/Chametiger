@@ -4,6 +4,11 @@ import io.github.sirfrederik.chametiger.motore.Config
 import java.io.File
 import java.time.LocalDateTime
 import java.util.Locale
+import kotlin.math.asin
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 /** Chi mette davvero lo sfondo: WallpaperManager sul telefono, un finto nei test. */
 interface Sfondo {
@@ -57,19 +62,24 @@ class Ciclo(
     private val sfondo: Sfondo,
     private val diario: Diario = DiarioFile(File(cartella, NOME_LOG)),
     private val orologio: () -> LocalDateTime = { LocalDateTime.now(ZONA) },
-    rete: Rete = ReteHttp,
+    private val rete: Rete = ReteHttp,
     /** Come raggiungere Drive, o null se non e' configurato: allora valgono solo i file copiati via USB. */
     private val drive: ((Diario) -> Sincro)? = null,
     /**
      * L'ultima posizione del telefono, o null: allora valgono le coordinate del
      * config. Vale come la voce del telefono in position_map, per il meteo e
-     * per alba e tramonto.
+     * per alba e tramonto; entro AGGANCIO_M da una posizione del config prende
+     * quella (vedi aggancia).
      */
     private val posizione: Pair<Double, Double>? = null,
 ) {
     private val memoria = MemoriaForzataFile(File(interna, "forzata.txt"))
-    private val meteo =
-        Meteo(File(cartella, "meteo.json"), File(interna, "meteo_errore.txt"), identita, versione, diario, rete, posizione)
+
+    /** Il meteo sulle coordinate di `config`, gia' passato da conPosizione se c'e' una posizione del telefono. */
+    private fun meteo(config: Config) = Meteo(
+        File(cartella, "meteo.json"), File(interna, "meteo_errore.txt"), identita, versione, diario, rete,
+        posizione?.let { config.coordinate(identita) },
+    )
 
     /** Cosa si mostrerebbe adesso, per la schermata: non scarica, non scrive il log e non mette sfondi. */
     fun valuta(): Valutazione = valuta(aggiornaMeteo = false)
@@ -79,13 +89,16 @@ class Ciclo(
         val lettura = ConfigSicuro(File(cartella, NOME_CONFIG), File(interna, "config.ultimo.json")).leggi()
         if (lettura is ConfigSicuro.Lettura.Nessuna) return Valutazione.Errore(lettura.motivo)
         val (letto, avviso, impronta) = lettura as ConfigSicuro.Lettura.Ok
-        val config = posizione?.let { (lat, lon) -> letto.conPosizione(identita, lat, lon) } ?: letto
+        val aggancio = posizione?.let { (lat, lon) -> aggancia(lat, lon, letto.posizioniNote()) }
+        val config = (aggancio?.second ?: posizione)?.let { (lat, lon) -> letto.conPosizione(identita, lat, lon) } ?: letto
         val fonte = when {
+            aggancio != null -> "posizione del telefono, agganciata a ${aggancio.first}"
             posizione != null -> "posizione del telefono"
             letto.inPositionMap(identita) -> "position_map"
             else -> "latitude/longitude"
         }
         val adesso = orologio()
+        val meteo = meteo(config)
         // Come il tray: prima il meteo, poi la scelta. Senza dati validi si sceglie come col sereno
         if (aggiornaMeteo) meteo.aggiornaSeServe(config, adesso)
         val decisore = Decisore(config, identita, ArchivioCartella(config, cartella), meteo.fonte(config, adesso))
@@ -172,6 +185,7 @@ class Ciclo(
     fun caricaMeteo(): String = synchronized(LOCK) {
         val v = valuta()
         if (v !is Valutazione.Pronta) return (v as Valutazione.Errore).messaggio
+        val meteo = meteo(v.config)
         diario.scrivi("[METEO] Carica meteo su ${meteo.origine(v.config)}")
         val scaricato = meteo.aggiornaSeServe(v.config, v.adesso, forza = true)
         val descrizione = (giro() as? Valutazione.Pronta)?.meteo ?: v.meteo
@@ -256,4 +270,30 @@ class Ciclo(
         /** Lavoro periodico e pulsanti girano nello stesso processo: un giro alla volta. */
         private val LOCK = Any()
     }
+}
+
+/**
+ * Entro questa distanza la posizione del telefono prende le coordinate esatte
+ * di una del config. Il numero della finestra somma le finestre di tutti i
+ * giorni prima, e con le fasce legate al sole dipende dalle coordinate: a
+ * 300 m dal Lenovo il telefono era gia' una finestra avanti. Agganciato, in
+ * ufficio fa gli stessi conti del PC anche se il GPS legge ogni volta un po'
+ * diverso.
+ */
+const val AGGANCIO_M = 1000.0
+
+/** La posizione del config piu' vicina entro AGGANCIO_M, col suo nome, o null. */
+fun aggancia(lat: Double, lon: Double, note: Map<String, Pair<Double, Double>>): Pair<String, Pair<Double, Double>>? =
+    note.entries
+        .map { (nome, p) -> Triple(nome, p, metri(lat, lon, p.first, p.second)) }
+        .filter { it.third <= AGGANCIO_M }
+        .minByOrNull { it.third }
+        ?.let { (nome, p) -> nome to p }
+
+/** Distanza sulla sfera, in metri: per un chilometro basta. */
+private fun metri(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+    val dLat = Math.toRadians(lat2 - lat1)
+    val dLon = Math.toRadians(lon2 - lon1)
+    val a = sin(dLat / 2).pow(2) + cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLon / 2).pow(2)
+    return 2 * 6_371_000.0 * asin(sqrt(a))
 }
