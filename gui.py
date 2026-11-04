@@ -792,7 +792,7 @@ class ChametigerEditor(tk.Tk):
 
         citta = {
             "Napoli": (40.8518, 14.2681),
-            "Portici": (40.8199, 14.3414),
+            "Portici": (40.8196, 14.3470),
             "Pescopagano": (41.0566, 13.9252),
             "Manduria": (40.4028, 17.6343),
             "Roma": (41.9028, 12.4964),
