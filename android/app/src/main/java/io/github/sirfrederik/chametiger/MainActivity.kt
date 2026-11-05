@@ -1,5 +1,6 @@
 package io.github.sirfrederik.chametiger
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -132,6 +133,8 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
     }
     // Col permesso negato si va avanti lo stesso, con l'ultima posizione salvata
     val chiediPosizione = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { caricaMeteo() }
+    // Il ritorno ricalcola la schermata, cosi' il pulsante sparisce se il permesso e' arrivato
+    val chiediSempre = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { giro++ }
 
     Column(
         modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
@@ -188,6 +191,13 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
             },
             enabled = !occupato,
         ) { Text("Carica meteo") }
+        // Su Android 11 la richiesta porta alle impostazioni dell'app: li' va scelto "Consenti sempre"
+        if (permessoPosizione(context) && !permessoSempre(context)) {
+            OutlinedButton(
+                onClick = { chiediSempre.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION) },
+                enabled = !occupato,
+            ) { Text("Posizione anche in background") }
+        }
         Text(posizioneSalvata(context), style = MaterialTheme.typography.bodySmall)
         esitoMeteo?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
         Text(
@@ -270,7 +280,9 @@ private fun posizioneSalvata(context: Context): String {
     val p = PosizioneTelefono.leggi(context)
         ?: return "Meteo e sole sulle coordinate del config: nessuna posizione del telefono salvata."
     val quando = LocalDateTime.ofInstant(Instant.ofEpochMilli(p.quando), ZONA).format(GIORNO_ORA)
-    return "Meteo e sole sulla posizione del telefono letta il $quando: %.4f, %.4f.".format(Locale.ROOT, p.lat, p.lon)
+    val sempre = if (permessoSempre(context)) " Si aggiorna da sola prima di ogni download del meteo."
+    else " Si aggiorna solo con Carica meteo."
+    return "Meteo e sole sulla posizione del telefono letta il $quando: %.4f, %.4f.".format(Locale.ROOT, p.lat, p.lon) + sempre
 }
 
 private fun valuta(context: Context): Stato {

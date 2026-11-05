@@ -6,9 +6,12 @@
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <!-- Le previsioni di Met Norway -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- La posizione per meteo e sole, solo col pulsante Carica meteo: col GPS se l'utente concede quella precisa -->
+    <!-- La posizione per meteo e sole: col pulsante Carica meteo, col GPS se l'utente concede quella precisa -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- E nel lavoro in background, prima di riscaricare il meteo. Finche' l'app e'
+         privata; per il Play Store va giustificato o tolto -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
         android:allowBackup="true"

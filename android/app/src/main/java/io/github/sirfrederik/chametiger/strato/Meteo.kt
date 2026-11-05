@@ -198,6 +198,26 @@ class Meteo(
         }
     }
 
+    private fun ultimoErrore(): Double = try {
+        fileErrore.readText().trim().toDouble()
+    } catch (e: Exception) {
+        0.0
+    }
+
+    /**
+     * Se aggiornaSeServe scaricherebbe adesso: dati vecchi di aggiorna_ore, o di
+     * un'altra posizione, e nessun errore negli ultimi RIPROVA_MINUTI. Il lavoro
+     * in background lo chiede per leggere la posizione del telefono solo quando
+     * serve.
+     */
+    fun daAggiornare(config: Config, adesso: LocalDateTime): Boolean {
+        if (!config.meteoAttivo) return false
+        val ora = secondi(adesso)
+        val dati = leggi()
+        if (valide(dati, config, adesso) && ora - dati!!.scaricato < config.meteoOre * 3600) return false
+        return ora - ultimoErrore() >= RIPROVA_MINUTI * 60
+    }
+
     /**
      * aggiorna_se_serve: riscarica se i dati sono piu' vecchi di aggiorna_ore o
      * la posizione e' cambiata; con forza=true subito, anche dopo un errore
@@ -209,16 +229,8 @@ class Meteo(
             return false
         }
         val ora = secondi(adesso)
-        val ultimoErrore = try {
-            fileErrore.readText().trim().toDouble()
-        } catch (e: Exception) {
-            0.0
-        }
-        if (!forza) {
-            val dati = leggi()
-            if (valide(dati, config, adesso) && ora - dati!!.scaricato < config.meteoOre * 3600) return false
-            if (ora - ultimoErrore < RIPROVA_MINUTI * 60) return false
-        }
+        val ultimoErrore = ultimoErrore()
+        if (!forza && !daAggiornare(config, adesso)) return false
 
         val (lat, lon) = coordinate(config)
         val ore = try {

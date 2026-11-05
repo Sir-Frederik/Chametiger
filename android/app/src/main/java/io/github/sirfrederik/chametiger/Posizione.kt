@@ -1,10 +1,12 @@
 package io.github.sirfrederik.chametiger
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.os.Build
 import android.os.SystemClock
 import androidx.core.content.ContextCompat
 import androidx.core.location.LocationListenerCompat
@@ -14,9 +16,10 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
 
-// La posizione del telefono, chiesta solo col pulsante "Carica meteo" e con
+// La posizione del telefono, chiesta col pulsante "Carica meteo" con
 // l'app aperta: vale per il meteo e per alba e tramonto. Il lavoro in
-// background usa l'ultima salvata e non chiede mai la posizione.
+// background la chiede solo prima di riscaricare il meteo, e solo col
+// permesso "consenti sempre" (vedi LavoroSfondo); se non arriva, l'ultima salvata.
 //
 // Si chiede a tutti i fornitori accesi insieme e vince il primo che risponde:
 // sul Redmi (MIUI, Android 11) il solo "network" spesso non rispondeva, e il
@@ -36,6 +39,15 @@ private fun concesso(context: Context, permesso: String) =
 /** Almeno quella approssimativa: con la sola approssimativa il GPS resta escluso. */
 fun permessoPosizione(context: Context): Boolean =
     PERMESSI_POSIZIONE.any { concesso(context, it) }
+
+/**
+ * "Consenti sempre": senza, dal lavoro in background Android non da' la
+ * posizione, ne' nuova ne' l'ultima nota. Sotto Android 10 non esiste e basta
+ * l'altra.
+ */
+fun permessoSempre(context: Context): Boolean =
+    Build.VERSION.SDK_INT < Build.VERSION_CODES.Q ||
+        concesso(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
 
 /** Quella precisa, col GPS. Se manca il pulsante la richiede: dopo due rifiuti Android non chiede piu'. */
 fun permessoGps(context: Context): Boolean = concesso(context, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -76,6 +88,7 @@ private fun ultimaNota(lm: LocationManager, fornitori: List<String>): Location? 
  * con removeUpdates: su MIUI getCurrentLocation ignorava sia l'annullamento
  * sia la scadenza, e la richiesta del GPS restava attiva per minuti.
  */
+@SuppressLint("MissingPermission") // il permesso lo controlla posizioneAttuale; la richiesta gestisce SecurityException
 private suspend fun primaRisposta(context: Context, lm: LocationManager, fornitori: List<String>): Location? {
     val ascoltatori = mutableListOf<LocationListenerCompat>()
     try {
@@ -88,8 +101,10 @@ private suspend fun primaRisposta(context: Context, lm: LocationManager, fornito
                 try {
                     LocationManagerCompat.requestLocationUpdates(lm, f, richiesta, esecutore, ascoltatore)
                     ascoltatori += ascoltatore
+                } catch (e: SecurityException) {
+                    // permesso tolto nel frattempo, o in background senza "consenti sempre"
                 } catch (e: Exception) {
-                    // fornitore sparito o non permesso nel frattempo
+                    // fornitore sparito nel frattempo
                 }
             }
             if (ascoltatori.isEmpty()) cont.resume(null)

@@ -81,14 +81,8 @@ class Ciclo(
         posizione?.let { config.coordinate(identita) },
     )
 
-    /** Cosa si mostrerebbe adesso, per la schermata: non scarica, non scrive il log e non mette sfondi. */
-    fun valuta(): Valutazione = valuta(aggiornaMeteo = false)
-
-    private fun valuta(aggiornaMeteo: Boolean): Valutazione {
-        if (identita.isBlank()) return Valutazione.Errore("Imposta l'identità del dispositivo, per esempio android-federico.")
-        val lettura = ConfigSicuro(File(cartella, NOME_CONFIG), File(interna, "config.ultimo.json")).leggi()
-        if (lettura is ConfigSicuro.Lettura.Nessuna) return Valutazione.Errore(lettura.motivo)
-        val (letto, avviso, impronta) = lettura as ConfigSicuro.Lettura.Ok
+    /** Il config con la posizione del telefono al posto di quella del dispositivo, e da dove viene. */
+    private fun conLaPosizione(letto: Config): Pair<Config, String> {
         val aggancio = posizione?.let { (lat, lon) -> aggancia(lat, lon, letto.posizioniNote()) }
         val config = (aggancio?.second ?: posizione)?.let { (lat, lon) -> letto.conPosizione(identita, lat, lon) } ?: letto
         val fonte = when {
@@ -97,6 +91,31 @@ class Ciclo(
             letto.inPositionMap(identita) -> "position_map"
             else -> "latitude/longitude"
         }
+        return config to fonte
+    }
+
+    /**
+     * Se il prossimo giro riscaricherebbe il meteo. Il lavoro in background lo
+     * chiede prima del giro, per leggere la posizione del telefono solo allora:
+     * il GPS una volta ogni aggiorna_ore, non ogni quarto d'ora.
+     */
+    fun meteoDaAggiornare(): Boolean = synchronized(LOCK) {
+        if (identita.isBlank()) return false
+        val lettura = ConfigSicuro(File(cartella, NOME_CONFIG), File(interna, "config.ultimo.json")).leggi()
+        val letto = (lettura as? ConfigSicuro.Lettura.Ok)?.config ?: return false
+        val (config, _) = conLaPosizione(letto)
+        meteo(config).daAggiornare(config, orologio())
+    }
+
+    /** Cosa si mostrerebbe adesso, per la schermata: non scarica, non scrive il log e non mette sfondi. */
+    fun valuta(): Valutazione = valuta(aggiornaMeteo = false)
+
+    private fun valuta(aggiornaMeteo: Boolean): Valutazione {
+        if (identita.isBlank()) return Valutazione.Errore("Imposta l'identità del dispositivo, per esempio android-federico.")
+        val lettura = ConfigSicuro(File(cartella, NOME_CONFIG), File(interna, "config.ultimo.json")).leggi()
+        if (lettura is ConfigSicuro.Lettura.Nessuna) return Valutazione.Errore(lettura.motivo)
+        val (letto, avviso, impronta) = lettura as ConfigSicuro.Lettura.Ok
+        val (config, fonte) = conLaPosizione(letto)
         val adesso = orologio()
         val meteo = meteo(config)
         // Come il tray: prima il meteo, poi la scelta. Senza dati validi si sceglie come col sereno
