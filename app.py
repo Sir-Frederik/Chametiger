@@ -1505,20 +1505,27 @@ SPIF_SENDCHANGE = 0x02
 _last_wallpaper: str = ""
 
 
-def set_wallpaper(path: str, category: str = "") -> bool:
+def set_wallpaper(path: str, category: str = "", forza: bool = False) -> bool:
+    """
+    Imposta lo sfondo. Se e' gia' quello impostato da qui non fa niente, cosi'
+    lo scheduler non riscrive il desktop a ogni giro; forza=True lo reimposta
+    comunque, per "Applica adesso": lo sfondo di Windows puo' essere stato
+    cambiato da altro (un tema sincronizzato, a mano) senza che il tray lo sappia.
+    """
     global _last_wallpaper
     if not path or not os.path.isfile(path):
         log(f"[WARN] Immagine non trovata: {path}")
         return False
-    if path == _last_wallpaper:
+    if path == _last_wallpaper and not forza:
         return False  # nessun cambiamento necessario
+    stessa = path == _last_wallpaper
     result = ctypes.windll.user32.SystemParametersInfoW(
         SPI_SETDESKWALLPAPER, 0, path, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE
     )
     if result:
         _last_wallpaper = path
         suffix = f" ({category})" if category else ""
-        log(f"[OK] Sfondo impostato{suffix}: {path}")
+        log(f"[OK] Sfondo {'riapplicato' if stessa else 'impostato'}{suffix}: {path}")
     else:
         log(f"[ERR] Impossibile impostare lo sfondo: {path}")
     return bool(result)
@@ -1787,7 +1794,7 @@ class ChametigerTray:
             wallpaper, category = resolve_wallpaper(self.config)
             if wallpaper:
                 self._no_slot_logged = False
-                set_wallpaper(wallpaper, category)
+                set_wallpaper(wallpaper, category, forza=True)
             else:
                 self._report_no_slot(always=True)
         except Exception as e:
