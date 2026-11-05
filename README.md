@@ -1,13 +1,16 @@
 # 🦎 Chametiger
 
-**v4.7.0** — 27 ottobre 2026
+**v4.8.0** — 5 novembre 2026
 
-> **⚠️ La 4.7.0 non è compatibile con le versioni precedenti: aggiorna tutti i PC insieme e riavvia ogni tray.**
+> **⚠️ La 4.8.0 non è compatibile con le versioni precedenti: aggiorna tutti i PC e il telefono insieme e riavvia ogni tray.**
 >
-> - **Il mazzo si ordina diversamente.** Prima si mescolava con `random.shuffle`, ora l'ordine viene da `sha256("firma|giro|immagine")`, che dà gli stessi byte in qualsiasi linguaggio e versione di Python. Tutti i mazzi si sono spostati, una volta sola.
-> - **`config.json` si legge dalla cartella delle immagini su Drive**, non più da quella del programma (vedi [Dove sta `config.json`](#dove-sta-configjson)).
+> - **Il mazzo è della fascia oraria, non della regola.** Le regole con lo stesso orario (l'override del lunedì, quello del mercoledì, le feriali) pescano dallo stesso mazzo invece di averne uno a testa, e non si ripetono più l'una con l'altra. Vedi [Come viene scelta l'immagine](#come-viene-scelta-limmagine).
+> - **Le immagini nuove non rimescolano più il mazzo.** La GUI segna in `config.json` il giorno in cui un'immagine riceve il primo tag (`"ingressi"`), e da quel giorno l'immagine si accoda al giro in corso.
+> - Tutti i mazzi si sono spostati, una volta sola.
 >
-> Il codice si carica all'avvio, quindi dopo l'aggiornamento **ogni tray va chiuso e riaperto**. Un PC che gira ancora col codice vecchio mostra immagini diverse dagli altri **senza segnalare niente**. Per controllare, guarda la versione nel menu del tray di ogni PC.
+> Il codice si carica all'avvio, quindi dopo l'aggiornamento **ogni tray va chiuso e riaperto**. Un dispositivo che gira ancora col codice vecchio mostra immagini diverse dagli altri **senza segnalare niente**. Per controllare, guarda la versione nel menu del tray di ogni PC.
+>
+> Dalla 4.7.0: il mazzo si ordina con `sha256` invece di `random.shuffle`, e `config.json` si legge dalla cartella delle immagini su Drive (vedi [Dove sta `config.json`](#dove-sta-configjson)).
 
 
 Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno**, al **giorno della settimana**, alla **stagione**, agli **eventi** dell'anno e agli **orari reali di alba e tramonto**.
@@ -94,6 +97,7 @@ Oppure: click destro sull'icona tray → **Apri editor config**
 
   "tags": ["mattino", "lavoro", "notte", "..."],
   "image_library": { "cartella/foto.jpg": ["mattino", "lavoro"] },
+  "ingressi": { "cartella/foto.jpg": "2026-11-05" },
   "random_rules": {
     "weekday":   [ ... ],
     "weekend":   [ ... ],
@@ -222,9 +226,23 @@ Le fasce si escludono a vicenda i momenti, e col divieto secco un'immagine `matt
 
 ### Come viene scelta l'immagine
 
-Non è un sorteggio. Le immagini che soddisfano la regola vengono disposte in un **mazzo**, mescolato in modo deterministico a partire dalla regola stessa; ogni finestra di rotazione pesca la carta successiva. Finito il mazzo si rimescola con un ordine nuovo, e la prima carta non coincide mai con l'ultima del giro precedente. Così tutta la raccolta scorre prima che qualcosa si ripeta, senza bisogno di tenere conteggi.
+Non è un sorteggio. Ogni **fascia oraria** ha un **mazzo**, mescolato in modo deterministico; ogni finestra di rotazione pesca la carta successiva. Così tutta la raccolta scorre prima che qualcosa si ripeta, senza bisogno di tenere conteggi.
 
-Dentro la stessa giornata non ci sono ripetizioni: se la carta che toccherebbe è già uscita oggi, si avanza nel mazzo fino alla prima non ancora vista. Vale anche fra regole diverse — un'immagine vista stamattina non torna nel pomeriggio.
+**Il mazzo è della fascia, non della regola.** Due regole sono la stessa fascia se hanno gli stessi `from`, `to` e `rotate_minutes` (gli spazi non contano: `sunset - 58m` e `sunset -58m` sono uguali). Il mazzo contiene tutte le immagini che una qualunque di quelle regole ammette, in qualunque giorno della settimana: l'override del lunedì `13:00 → 14:00`, quello del mercoledì e le feriali `13:00 → 14:00 -smart` pescano dallo stesso mazzo. Prima ognuna aveva il suo, e tre mazzi con quasi le stesse immagini davano la stessa carta lunedì, mercoledì e giovedì. Se la carta di turno non va bene alla regola del giorno (un'immagine `smart` di martedì), si prende quella a metà mazzo: la successiva sarebbe la carta di domani, che uscirebbe due volte di fila.
+
+Fasce con orari diversi hanno mazzi diversi, anche se pescano le stesse immagini: se il pranzo del weekend è `13:00 → noon+2h` e quello feriale `13:00 → 14:00`, i due mazzi non si conoscono e la stessa immagine può uscire venerdì e sabato.
+
+**Ogni giro è diviso in due metà fisse**, mescolate ciascuna per conto suo: una carta torna dopo almeno mezzo giro, anche a cavallo fra un giro e il successivo. Mescolando tutto insieme, la carta uscita per ultima poteva essere la prima del giro dopo.
+
+**Le immagini nuove si accodano.** Quando un'immagine riceve il suo primo tag, la GUI scrive il giorno in `config.json`:
+
+```json
+"ingressi": { "cartella/nuova.jpg": "2026-11-05" }
+```
+
+Da quel giorno l'immagine entra in fondo al giro in corso, e le altre carte non si spostano. Senza la data, passare da 13 a 14 immagini rimescolava tutto il mazzo: la posizione si ricava dividendo per il numero di carte. Le immagini senza data contano come presenti da sempre. Togliere un'immagine o cambiare i tag di una vecchia rimescola ancora il mazzo delle sue fasce, una volta. Lo fa anche il cambio di stagione, o un evento, quando cambia le immagini ammesse in una fascia.
+
+Dentro la stessa giornata non ci sono ripetizioni: se la carta che toccherebbe è già uscita oggi, si prende la prima non ancora vista, sempre partendo da metà mazzo. Vale anche fra regole diverse — un'immagine vista stamattina non torna nel pomeriggio.
 
 Il calcolo è **deterministico e senza stato**: dipende solo dalla regola, dalla libreria e dalla data. Due PC con la stessa configurazione ottengono la stessa sequenza senza parlarsi, ed è questo che fa funzionare la sincronizzazione multi-PC.
 
@@ -536,7 +554,7 @@ L'eseguibile comparirà in `dist/app.exe`.
 | Icona tray non appare                 | Assicurati di avere Pillow installato                                   |
 | `winreg` non trovato                  | Solo Windows; non funziona su Linux/macOS                               |
 | Esce sempre la stessa                 | La regola ha pochi candidati: usa **Verifica anno** in Stagioni ed eventi |
-| Le immagini si ripetono troppo spesso | Il pool è piccolo: il mazzo si riavvolge presto. Taggane altre, o allarga i tag della regola. `history_days` **non** c'entra |
+| Le immagini si ripetono troppo spesso | Il pool è piccolo: il mazzo si riavvolge presto. Taggane altre, o allarga i tag della regola. Se la stessa immagine esce in giorni vicini, controlla che le regole di quel momento abbiano gli stessi orari: fasce con orari diversi hanno mazzi separati. `history_days` **non** c'entra |
 | Su un altro PC non trova le immagini  | Aggiungi il suo hostname in `path_map`                                  |
 | Due PC mostrano immagini diverse alla stessa ora | Uno dei due gira con codice vecchio: confronta la versione nel menu del tray, aggiorna e riavvia il tray |
 | `config.json non leggibile` nel log    | Drive non ha montato la cartella, o il file è a metà sincronizzazione. Il tray continua con l'ultima configurazione buona; controlla `cartella_config.json` se non passa |

@@ -8,6 +8,7 @@ Richiede: pystray, Pillow, pywin32
 import sys
 import os
 import json
+import re
 import hashlib
 import random
 import ctypes
@@ -553,9 +554,11 @@ def _esiste(percorso: str) -> bool:
     return _esiste_cache[percorso]
 
 
-def candidates_for_rule(config: dict, rule: dict) -> list[str]:
+def candidates_for_rule(config: dict, rule: dict, su_disco: bool = True) -> list[str]:
     """
     Immagini della libreria che soddisfano la regola e che esistono su disco.
+    Con su_disco=False il disco non si guarda: e' il pool come lo vede il
+    telefono, che usa la libreria del config.
 
     `prefer` si applica qui e non in `image_matches_rule` perche' e' una scelta
     sul POOL, non un filtro per immagine: se almeno una candidata ha uno dei tag
@@ -567,7 +570,7 @@ def candidates_for_rule(config: dict, rule: dict) -> list[str]:
     for image, tags in library.items():
         if not image_matches_rule(tags, rule):
             continue
-        if _esiste(resolve_path(config, image)):
+        if not su_disco or _esiste(resolve_path(config, image)):
             out.append(image)
 
     prefer = set(rule.get("prefer", []))
@@ -668,7 +671,8 @@ def _momenti_meteo(regole: list[dict], pos: int) -> list:
 
 def _rule_signature(rule: dict) -> str:
     """
-    Identita' della regola: indicizza i memo in log.json e fa da seme al mazzo.
+    Identita' della regola: indicizza i memo in log.json, e fa da seme al mazzo
+    quando la regola ne usa uno suo (vedi _ricerca_finestra).
 
     `prefer` e il periodo si aggiungono solo se presenti, cosi' le regole che non
     li usano conservano la firma che avevano prima dei periodi e lo storico
@@ -710,7 +714,7 @@ def _rule_signature(rule: dict) -> str:
 #  ATTENZIONE, non e' piu' quello che il nome suggerisce. Una versione precedente
 #  scegliva l'immagine contando quante volte era uscita negli ultimi giorni, e
 #  log.json era la fonte di quel conteggio. Oggi la scelta viene dal mazzo
-#  (_mazzo + ordinale della finestra), che e' deterministico e non guarda lo
+#  (mazzo della fascia + ordinale della finestra), che e' deterministico e non guarda lo
 #  storico: e' questo che permette a due PC di restare allineati senza parlarsi.
 #
 #  Cio' che resta a log.json e' solo:
@@ -889,41 +893,172 @@ def _window_ordinal(rule: dict, now: datetime, rotate: int, config: dict) -> int
     return _finestre_fino_a(rule, giorno, rotate, config) + offset
 
 
-def _ordine(pool: list[str], sig: str, giro: int) -> list[str]:
-    """
-    Il pool ordinato per sha256("firma|giro|immagine"): una permutazione che
-    cambia a ogni giro.
+#  Il mazzo
+#
+#  Il mazzo e' della FASCIA ORARIA, non della regola: tutte le regole con lo
+#  stesso orario e la stessa rotazione (l'override del lunedi', quello del
+#  mercoledi', le feriali, con qualunque tempo) pescano dallo stesso mazzo.
+#  Prima ognuna aveva il suo, e tre mazzi con quasi le stesse immagini davano
+#  la stessa carta lunedi', mercoledi' e giovedi'.
+#
+#  Il mazzo della fascia contiene l'UNIVERSO della fascia: l'unione dei pool di
+#  tutte le sue regole, di ogni giorno della settimana, viste attraverso gli
+#  strati del giorno. Ogni finestra prende la carta di turno se la regola che
+#  vince la ammette, altrimenti una lontana nel mazzo (vedi _ordine_di_ricerca).
+#
+#  I giri si contano dall'inizio (EPOCH), e un'immagine con una data di
+#  ingresso (config["ingressi"]) entra nei giri solo da quel giorno: se arriva a
+#  giro iniziato si accoda in fondo a quel giro, senza spostare le altre carte.
+#  Senza le date, passare da 13 a 14 immagini spostava giro e posizione di
+#  ordinale // n e rimescolava tutto. Le immagini senza data ci sono da sempre.
 
-    Non random.Random: il suo shuffle dipende dagli interni di CPython (seme da
-    stringa, Mersenne Twister, campionamento con rigetto), che nessuno garantisce
-    stabili fra una versione e l'altra. SHA-256 da' gli stessi byte in qualunque
-    linguaggio, ed e' questo che permette all'app Android di calcolare lo stesso
-    mazzo dei PC.
+
+def _chiave_fascia(rule: dict) -> str:
     """
-    return sorted(
-        pool,
-        key=lambda img: hashlib.sha256(f"{sig}|{giro}|{img}".encode("utf-8")).digest(),
+    L'identita' della fascia: orari e rotazione, senza spazi. 'sunset - 58m' e
+    'sunset -58m' sono la stessa fascia e hanno lo stesso mazzo.
+    """
+    da = "".join(str(rule.get("from", "")).split())
+    a = "".join(str(rule.get("to", "")).split())
+    return f"{da}|{a}|{_rotate_of(rule)}"
+
+
+def _hash_carta(seme: str, giro: int, img: str) -> bytes:
+    """
+    sha256("seme|giro|immagine"). Non random.Random: il suo shuffle dipende dagli
+    interni di CPython, che nessuno garantisce stabili fra una versione e
+    l'altra. SHA-256 da' gli stessi byte in qualunque linguaggio, ed e' questo
+    che permette all'app Android di calcolare lo stesso mazzo dei PC.
+    """
+    return hashlib.sha256(f"{seme}|{giro}|{img}".encode("utf-8")).digest()
+
+
+def _ordine_membri(
+    membri: list[str], seme: str, giro: int, in_fondo: list[str] = ()
+) -> list[str]:
+    """
+    Le carte che erano nel mazzo all'inizio del giro, nell'ordine di quel giro.
+
+    Il mazzo e' diviso in due meta' fisse, per sha256("seme|immagine"): a ogni
+    giro si rimescola ciascuna per conto suo e la prima va sempre davanti. Cosi'
+    una carta torna dopo almeno mezzo giro: rimescolando tutto insieme, quella
+    uscita per ultima poteva essere la prima del giro dopo, e una su otto
+    tornava prima di mezzo giro.
+
+    `in_fondo` sono le carte entrate a giro iniziato nel giro prima, quindi
+    uscite per ultime: per questo giro stanno nella seconda meta'.
+
+    Con una o due immagini l'unica sequenza sensata e' l'alternanza.
+    """
+    if len(membri) <= 2:
+        return sorted(membri)
+    per_rango = sorted(
+        membri, key=lambda img: hashlib.sha256(f"{seme}|{img}".encode("utf-8")).digest()
     )
+    davanti = set(per_rango[: (len(membri) + 1) // 2]) - set(in_fondo)
+    prima = [c for c in membri if c in davanti]
+    seconda = [c for c in membri if c not in davanti]
+
+    def chiave(img):
+        return _hash_carta(seme, giro, img)
+
+    return sorted(prima, key=chiave) + sorted(seconda, key=chiave)
 
 
-def _mazzo(pool: list[str], sig: str, giro: int) -> list[str]:
+_RE_DATA = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
+
+
+def _date_ingresso(config: dict) -> dict[str, date]:
     """
-    L'ordine delle immagini per un giro completo. Deterministico: due PC con la
-    stessa libreria e la stessa regola ottengono lo stesso mazzo senza parlarsi.
+    config["ingressi"]: {immagine: "AAAA-MM-GG"}, il giorno in cui l'immagine e'
+    entrata nella libreria. La scrive la GUI. Le date non valide si ignorano.
     """
-    if len(pool) <= 2:
-        return sorted(pool)  # con una o due immagini l'unica sequenza sensata e' l'alternanza
+    voci = config.get("ingressi")
+    if not isinstance(voci, dict):
+        return {}
+    out = {}
+    for img, testo in voci.items():
+        if isinstance(testo, str) and _RE_DATA.fullmatch(testo):
+            try:
+                out[img] = date.fromisoformat(testo)
+            except ValueError:
+                pass
+    return out
 
-    m = _ordine(pool, sig, giro)
 
-    # Evita che l'ultima carta di un giro e la prima del successivo coincidano.
-    # Si scambiano le posizioni 0 e 1 e non 0 e ultima, altrimenti la correzione
-    # cambierebbe la carta finale e il controllo diventerebbe ricorsivo.
-    prec = _ordine(pool, sig, giro - 1)
-    if m[0] == prec[-1]:
-        m[0], m[1] = m[1], m[0]
+def _giro_di(
+    carte: list[str], ingresso: dict[str, int], seme: str, ordinale: int
+) -> tuple[list[str], int]:
+    """
+    Il mazzo del giro che contiene l'ordinale, e la posizione dell'ordinale nel
+    giro.
 
-    return m
+    `ingresso` da' per ogni carta l'ordinale della prima finestra del giorno in
+    cui e' entrata (0 o assente: da sempre). I giri si ripercorrono da EPOCH:
+    un giro dura quante carte ha, e una carta che entra a giro iniziato si
+    accoda in fondo e lo allunga di una finestra. Fra un ingresso e l'altro i
+    giri hanno tutti la stessa durata e si saltano in blocco, quindi il costo
+    dipende dal numero di ingressi, non dal tempo passato.
+    """
+    attese = sorted((ingresso[c], c) for c in carte if ingresso.get(c, 0) > 0)
+    membri = [c for c in carte if ingresso.get(c, 0) <= 0]
+    k = 0
+    giro = inizio = 0
+    recenti: list[str] = []  # entrate a giro iniziato nel giro prima
+
+    while True:
+        while k < len(attese) and attese[k][0] <= inizio:
+            membri.append(attese[k][1])
+            k += 1
+        n = len(membri)
+        if n == 0:
+            if k >= len(attese) or attese[k][0] > ordinale:
+                return [], 0  # nessuna carta ancora entrata
+            inizio = attese[k][0]
+            continue
+
+        # Giri interi senza ingressi, prima di quello dell'ordinale
+        salto = (ordinale - inizio) // n
+        if k < len(attese):
+            salto = min(salto, (attese[k][0] - inizio) // n)
+        if salto > 0:
+            giro += salto
+            inizio += salto * n
+            recenti = []
+            continue
+
+        fine = inizio + n
+        tardive = []
+        while k < len(attese) and attese[k][0] < fine:
+            tardive.append(attese[k][1])
+            k += 1
+            fine += 1
+
+        if ordinale < fine:
+            return _ordine_membri(membri, seme, giro, recenti) + tardive, ordinale - inizio
+
+        membri += tardive
+        recenti = tardive
+        giro += 1
+        inizio = fine
+
+
+def _ordine_di_ricerca(mazzo: list[str], pos: int) -> list[str]:
+    """
+    In che ordine cercare la carta della finestra: prima quella di turno, poi a
+    partire da meta' mazzo.
+
+    Serve quando la carta di turno non va bene (la regola del giorno non la
+    ammette, o e' gia' uscita oggi). Quella subito dopo sarebbe la carta della
+    finestra successiva, e uscirebbe due volte di fila; a meta' mazzo la carta
+    e' uscita, o uscira', a mezzo giro di distanza.
+    """
+    n = len(mazzo)
+    if n == 0:
+        return []
+    meta = (n + 1) // 2
+    altre = [(pos + meta + k) % n for k in range(n)]
+    return [mazzo[pos]] + [mazzo[i] for i in altre if i != pos]
 
 
 def _rotate_of(rule: dict) -> int:
@@ -1000,6 +1135,101 @@ def _regole_del_giorno(config: dict, giorno: date) -> list[tuple[dict, str, int,
     return out
 
 
+def _universi_del_giorno(config: dict, giorno: date) -> dict[str, set[str]]:
+    """
+    Per ogni fascia, l'unione dei pool di tutte le sue regole: di ogni giorno
+    della settimana (feriali, weekend, tutti gli override), viste attraverso gli
+    strati di quel giorno, senza meteo. E' il contenuto del mazzo della fascia.
+
+    Tutti i giorni della settimana e non solo quello di oggi, cosi' l'universo
+    resta lo stesso per l'intera stagione: cambia solo con gli strati (un
+    evento, il cambio di stagione) o col config.
+
+    Dalla libreria, senza guardare il disco: un file che manca su un PC non
+    deve cambiare il mazzo, che e' lo stesso su tutti i dispositivi. La carta di
+    un file mancante semplicemente non entra nel pool, e si passa alla prossima.
+    """
+    strati = strati_del_giorno(config, giorno)
+    out: dict[str, set[str]] = {}
+    pools: dict[str, list[str]] = {}  # molte regole sono uguali in piu' giorni
+
+    def aggiungi(regole: dict, strato: dict):
+        liste = [regole.get("weekday"), regole.get("weekend")]
+        liste += [(regole.get("overrides") or {}).get(g) for g in WEEKDAYS]
+        for lista in liste:
+            for rule in lista or []:
+                patched = patch_rule(rule, strato, config)
+                sig = _rule_signature(patched)
+                if sig not in pools:
+                    pools[sig] = candidates_for_rule(config, patched, su_disco=False)
+                out.setdefault(_chiave_fascia(rule), set()).update(pools[sig])
+
+    for strato in strati:
+        for period in strato["periodi"]:
+            proprie = period.get("random_rules") or {}
+            if proprie:
+                aggiungi(proprie, strato)
+    aggiungi(config.get("random_rules", {}) or {}, strati[-1])
+    return out
+
+
+# Universi gia' calcolati: (impronta del config, strati del giorno) -> universi.
+# Calcolarli costa quanto il resto della giornata, ed e' lo stesso risultato per
+# tutti i giorni di una stagione: senza cache la verifica dell'anno raddoppiava.
+# L'impronta e' sul contenuto, perche' la GUI modifica il config sul posto.
+_universi_cache: dict[tuple, dict[str, set[str]]] = {}
+
+
+def _universi(config: dict, giorno: date) -> dict[str, set[str]]:
+    impronta = hashlib.sha1(
+        json.dumps(config, sort_keys=True, default=str).encode("utf-8")
+    ).digest()
+    chiave = (impronta, tuple(s["nome"] for s in strati_del_giorno(config, giorno)))
+    if chiave not in _universi_cache:
+        if len(_universi_cache) > 64:
+            _universi_cache.clear()
+        _universi_cache[chiave] = _universi_del_giorno(config, giorno)
+    return _universi_cache[chiave]
+
+
+def _ricerca_finestra(
+    config: dict,
+    universi: dict[str, set[str]],
+    rule: dict,
+    sig: str,
+    pool: list[str],
+    ordinale: int,
+) -> list[str]:
+    """
+    Le immagini del pool nell'ordine in cui la finestra le cerca: la prima non
+    ancora uscita oggi e' la sua.
+
+    Il mazzo e' quello della fascia se il pool ci sta dentro. Non ci sta quando
+    piove e la regola ammette immagini di pioggia che nessuna regola della
+    fascia ha nei tag: allora la regola usa un mazzo suo, col seme della firma.
+    In fondo, ordinate per nome, le immagini con una data di ingresso futura.
+    """
+    chiave = _chiave_fascia(rule)
+    universo = universi.get(chiave, set())
+    nel_pool = set(pool)
+    if nel_pool <= universo:
+        seme, carte = chiave, sorted(universo)
+    else:
+        seme, carte = sig, list(pool)
+
+    rotate = _rotate_of(rule)
+    date_ingresso = _date_ingresso(config)
+    ingresso = {
+        c: _finestre_fino_a(rule, date_ingresso[c], rotate, config)
+        for c in carte
+        if c in date_ingresso
+    }
+    mazzo, pos = _giro_di(carte, ingresso, seme, ordinale)
+    ordine = [c for c in _ordine_di_ricerca(mazzo, pos) if c in nel_pool]
+    visti = set(ordine)
+    return ordine + [c for c in pool if c not in visti]
+
+
 def _copre(start: int, end: int, minuto: int) -> bool:
     """
     Se la fascia (in minuti) contiene quel minuto. Gestisce la mezzanotte.
@@ -1065,6 +1295,7 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
     varianti: dict[tuple, dict] = {}
 
     pools: dict[str, list[str]] = {}  # una volta per regola, non per finestra
+    universi = None  # i mazzi delle fasce, alla prima finestra
     usate: set[str] = set()
     sequenza: list[dict] = []
     ultima_finestra = None
@@ -1110,15 +1341,11 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
         ultima_finestra = finestra
 
         n = len(pool)
-        giro, pos = divmod(ordinale, n)
-        mazzo = _mazzo(pool, sig, giro)
-
-        scelta = mazzo[pos]
-        for k in range(n):  # avanza finche' non trovi una non ancora uscita oggi
-            carta = mazzo[(pos + k) % n]
-            if carta not in usate:
-                scelta = carta
-                break
+        if universi is None:
+            universi = _universi(config, giorno)
+        ricerca = _ricerca_finestra(config, universi, rule, sig, pool, ordinale)
+        # la prima non ancora uscita oggi; se sono uscite tutte, la carta di turno
+        scelta = next((c for c in ricerca if c not in usate), ricerca[0])
         usate.add(scelta)
 
         sequenza.append(

@@ -128,6 +128,26 @@ def genera(nome: str, config: dict, dal: date, al: date):
         f.write("\n".join(righe) + "\n")
 
 
+def ingressi_sintetici(config: dict, dal: date, al: date) -> dict[str, str]:
+    """
+    Date di ingresso per qualche immagine con i tag, sparse nell'intervallo,
+    piu' una prima di EPOCH e due non valide: cosi' il riferimento passa dai
+    rami di _giro_di (entrata a giro iniziato, a inizio giro, da sempre) anche
+    se il config vero non ne ha ancora. Si aggiungono a quelle del config.
+    """
+    taggate = sorted(img for img, tags in config["image_library"].items() if tags)
+    passo = max(1, len(taggate) // 9)
+    scelte = taggate[::passo][:8]
+    giorni = (al - dal).days
+    out = dict(config.get("ingressi") or {})
+    for i, img in enumerate(scelte[:6]):
+        out[img] = (dal + timedelta(days=giorni * (i + 1) // 8)).isoformat()
+    out[scelte[6]] = "2025-06-01"
+    out[scelte[7]] = "2027-02-30"
+    out["non_in_libreria.jpg"] = "2027-01-15"
+    return out
+
+
 def main():
     prepara()
     # Lo stesso config.json condiviso che leggono il tray e il telefono.
@@ -135,6 +155,7 @@ def main():
     for nome, (dal, al, attivo) in SCENARI.items():
         config = copy.deepcopy(base)
         config["meteo"]["attivo"] = attivo
+        config["ingressi"] = ingressi_sintetici(config, dal, al)
         genera(nome, config, dal, al)
 
 

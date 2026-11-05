@@ -87,7 +87,11 @@ def regole_minmax(config: dict) -> list[dict]:
 
 def cambi_minmax(config: dict, giorni: list[date]) -> list[date]:
     """I giorni attorno a quelli in cui una fascia min()/max() compare o sparisce."""
-    lat, lon = config["position_map"]["Federico"].values()
+    # Come sun.coords per il dispositivo del riferimento: la sua voce in
+    # position_map, campo per campo, o le coordinate generali del config
+    voce = (config.get("position_map") or {}).get("Federico") or {}
+    lat = float(voce.get("latitude", config.get("latitude", app.DEFAULT_LAT)))
+    lon = float(voce.get("longitude", config.get("longitude", app.DEFAULT_LON)))
     out = []
     for r in regole_minmax(config):
         prima = None

@@ -58,6 +58,8 @@ data class Finestra(
     val ordinale: Int,
     val immagine: String,
     val pool: Int,
+    /** Il giorno della sequenza: per una coda dopo la mezzanotte, quello dopo l'inizio. */
+    val giorno: LocalDate,
 )
 
 class Motore(
@@ -316,23 +318,146 @@ class Motore(
         return finestreFinoA(regola, giorno, rotate) + offset
     }
 
-    /** Il pool ordinato per sha256("firma|giro|immagine"), come _ordine. */
-    private fun ordinePerHash(pool: List<String>, firma: String, giro: Int): List<String> =
-        pool.map { it to sha256.digest("$firma|$giro|$it".toByteArray(Charsets.UTF_8)) }
+    // ── Il mazzo della fascia ────────────────────────────────────────────────
+    //
+    // Come in app.py: il mazzo e' della fascia oraria, non della regola, e
+    // contiene l'unione dei pool delle sue regole. I giri si ripercorrono da
+    // EPOCH e un'immagine con la data di ingresso entra solo da quel giorno,
+    // in fondo al giro in corso.
+
+    /** _chiave_fascia: orari senza spazi e rotazione. */
+    fun chiaveFascia(regola: Regola): String {
+        val da = (regola.from ?: "").filterNot { it.isWhitespace() }
+        val a = (regola.to ?: "").filterNot { it.isWhitespace() }
+        return "$da|$a|${regola.rotate}"
+    }
+
+    private fun digest(testo: String): ByteArray = sha256.digest(testo.toByteArray(Charsets.UTF_8))
+
+    private fun perHash(carte: List<String>, chiave: (String) -> String): List<String> =
+        carte.map { it to digest(chiave(it)) }
             .sortedWith { a, b -> confrontaByte(a.second, b.second) }
             .map { it.first }
 
-    /** L'ordine delle immagini per un giro completo, come _mazzo. */
-    fun mazzo(pool: List<String>, firma: String, giro: Int): List<String> {
-        if (pool.size <= 2) return pool.ordinate() // l'unica sequenza sensata e' l'alternanza
+    /**
+     * _ordine_membri: due meta' fisse per sha256("seme|immagine"), ciascuna
+     * rimescolata a ogni giro per sha256("seme|giro|immagine"). `inFondo` (le
+     * entrate a giro iniziato nel giro prima) stanno nella seconda.
+     */
+    fun ordineMembri(membri: List<String>, seme: String, giro: Int, inFondo: List<String> = emptyList()): List<String> {
+        if (membri.size <= 2) return membri.ordinate() // l'unica sequenza sensata e' l'alternanza
+        val davanti = perHash(membri) { "$seme|$it" }.take((membri.size + 1) / 2).toSet() - inFondo.toSet()
+        val (prima, seconda) = membri.partition { it in davanti }
+        return perHash(prima) { "$seme|$giro|$it" } + perHash(seconda) { "$seme|$giro|$it" }
+    }
 
-        val m = ordinePerHash(pool, firma, giro).toMutableList()
-        // L'ultima carta del giro prima e la prima di questo non coincidono
-        val prec = ordinePerHash(pool, firma, giro - 1)
-        if (m[0] == prec.last()) {
-            m[0] = m[1].also { m[1] = m[0] }
+    /**
+     * _giro_di: il mazzo del giro che contiene l'ordinale e la posizione
+     * dell'ordinale nel giro. `ingresso`: l'ordinale della prima finestra del
+     * giorno di ingresso di ogni carta (assente o <= 0: da sempre).
+     */
+    fun giroDi(carte: List<String>, ingresso: Map<String, Int>, seme: String, ordinale: Int): Pair<List<String>, Int> {
+        val attese = carte.filter { (ingresso[it] ?: 0) > 0 }
+            .sortedWith(compareBy<String> { ingresso.getValue(it) }.then(perCodePoint))
+        val membri = carte.filter { (ingresso[it] ?: 0) <= 0 }.toMutableList()
+        var k = 0
+        var giro = 0
+        var inizio = 0
+        var recenti: List<String> = emptyList()
+
+        while (true) {
+            while (k < attese.size && ingresso.getValue(attese[k]) <= inizio) membri += attese[k++]
+            val n = membri.size
+            if (n == 0) {
+                if (k >= attese.size || ingresso.getValue(attese[k]) > ordinale) return emptyList<String>() to 0
+                inizio = ingresso.getValue(attese[k])
+                continue
+            }
+
+            // Giri interi senza ingressi, prima di quello dell'ordinale
+            var salto = Math.floorDiv(ordinale - inizio, n)
+            if (k < attese.size) salto = minOf(salto, Math.floorDiv(ingresso.getValue(attese[k]) - inizio, n))
+            if (salto > 0) {
+                giro += salto
+                inizio += salto * n
+                recenti = emptyList()
+                continue
+            }
+
+            var fine = inizio + n
+            val tardive = mutableListOf<String>()
+            while (k < attese.size && ingresso.getValue(attese[k]) < fine) {
+                tardive += attese[k++]
+                fine++
+            }
+            if (ordinale < fine) return ordineMembri(membri, seme, giro, recenti) + tardive to ordinale - inizio
+
+            membri += tardive
+            recenti = tardive
+            giro++
+            inizio = fine
         }
-        return m
+    }
+
+    /** _ordine_di_ricerca: la carta di turno, poi da meta' mazzo in avanti. */
+    fun ordineDiRicerca(mazzo: List<String>, pos: Int): List<String> {
+        val n = mazzo.size
+        if (n == 0) return emptyList()
+        val meta = (n + 1) / 2
+        return listOf(mazzo[pos]) + (0 until n).map { (pos + meta + it) % n }.filter { it != pos }.map { mazzo[it] }
+    }
+
+    private val cacheUniversi = HashMap<List<String>, Map<String, Set<String>>>()
+
+    /**
+     * _universi_del_giorno: per ogni fascia l'unione dei pool di tutte le sue
+     * regole, di ogni giorno della settimana, viste attraverso gli strati del
+     * giorno, senza meteo.
+     */
+    fun universi(giorno: LocalDate): Map<String, Set<String>> {
+        val strati = stratiDelGiorno(giorno)
+        return cacheUniversi.getOrPut(strati.map { it.nome }) {
+            val out = HashMap<String, MutableSet<String>>()
+            val pools = HashMap<String, List<String>>()
+            fun aggiungi(regole: RegoleCasuali, strato: Strato) {
+                val liste = listOf(regole.weekday, regole.weekend) + NOMI_GIORNI.values.map { regole.overrides[it] }
+                for (lista in liste) {
+                    for (regola in lista.orEmpty()) {
+                        val vista = applicaStrato(regola, strato)
+                        val pool = pools.getOrPut(firma(vista)) { candidate(vista) }
+                        out.getOrPut(chiaveFascia(regola)) { HashSet() } += pool
+                    }
+                }
+            }
+            for (strato in strati) {
+                for (periodo in strato.periodi) {
+                    if (!periodo.regole.vuote) aggiungi(periodo.regole, strato)
+                }
+            }
+            aggiungi(config.regole, strati.last())
+            out
+        }
+    }
+
+    /**
+     * _ricerca_finestra: le immagini del pool nell'ordine in cui la finestra
+     * le cerca. Il mazzo e' quello della fascia se il pool ci sta dentro,
+     * altrimenti (pioggia con immagini fuori dalla fascia) uno della regola,
+     * col seme della firma. In fondo le immagini con un ingresso futuro.
+     */
+    fun ricercaFinestra(giorno: LocalDate, regola: Regola, firma: String, pool: List<String>, ordinale: Int): List<String> {
+        val chiave = chiaveFascia(regola)
+        val universo = universi(giorno)[chiave].orEmpty()
+        val (seme, carte) = if (universo.containsAll(pool)) chiave to universo.ordinate() else firma to pool
+
+        val ingresso = carte.mapNotNull { c ->
+            config.ingressi[c]?.let { c to finestreFinoA(regola, it, regola.rotate) }
+        }.toMap()
+        val (mazzo, pos) = giroDi(carte, ingresso, seme, ordinale)
+        val nelPool = pool.toSet()
+        val ordine = ordineDiRicerca(mazzo, pos).filter { it in nelPool }
+        val visti = ordine.toSet()
+        return ordine + pool.filter { it !in visti }
     }
 
     // ── Priorita' ────────────────────────────────────────────────────────────
@@ -448,16 +573,12 @@ class Motore(
             if (finestra == ultimaFinestra) continue // stessa finestra del minuto prima
             ultimaFinestra = finestra
 
-            val n = pool.size
-            val giro = Math.floorDiv(ordinale, n)
-            val pos = Math.floorMod(ordinale, n)
-            val mazzo = mazzo(pool, firma, giro)
-
-            // Avanza fino alla prima carta non ancora uscita oggi
-            val scelta = (0 until n).map { mazzo[(pos + it) % n] }.firstOrNull { it !in usate } ?: mazzo[pos]
+            // La prima non ancora uscita oggi; se sono uscite tutte, la carta di turno
+            val ricerca = ricercaFinestra(giorno, regola, firma, pool, ordinale)
+            val scelta = ricerca.firstOrNull { it !in usate } ?: ricerca[0]
             usate += scelta
 
-            sequenza += Finestra(minuto, regola, rdg.origine, firma, ordinale, scelta, n)
+            sequenza += Finestra(minuto, regola, rdg.origine, firma, ordinale, scelta, pool.size, giorno)
         }
         return sequenza
     }
@@ -482,17 +603,15 @@ class Motore(
     }
 
     /**
-     * Il mazzo della finestra a partire dalla sua posizione: il primo elemento
-     * non ancora uscito oggi e' l'immagine della finestra. Serve a chi sta
-     * sopra per scegliere un ripiego senza toccare la sequenza.
+     * Il pool della finestra nell'ordine in cui la finestra lo cerca: il primo
+     * elemento non ancora uscito oggi e' l'immagine della finestra. Serve a chi
+     * sta sopra per scegliere un ripiego senza toccare la sequenza.
      */
-    fun mazzoDi(finestra: Finestra): List<String> {
-        val pool = candidate(finestra.regola).ordinate()
-        val n = pool.size
-        val mazzo = mazzo(pool, finestra.firma, Math.floorDiv(finestra.ordinale, n))
-        val pos = Math.floorMod(finestra.ordinale, n)
-        return (0 until n).map { mazzo[(pos + it) % n] }
-    }
+    fun mazzoDi(finestra: Finestra): List<String> =
+        ricercaFinestra(
+            finestra.giorno, finestra.regola, finestra.firma,
+            candidate(finestra.regola).ordinate(), finestra.ordinale,
+        )
 
     companion object {
         private const val ANNO_BISESTILE = 2024

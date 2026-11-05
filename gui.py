@@ -101,6 +101,31 @@ def is_absolute_path(p: str) -> bool:
     return s.startswith("/") or (len(s) > 1 and s[1] == ":")
 
 
+def segna_ingresso(config: dict, img: str):
+    """
+    Scrive in config["ingressi"] che l'immagine entra nei mazzi oggi.
+
+    Si chiama quando un'immagine riceve il suo primo tag, non quando entra in
+    libreria: una scansione aggiunge immagini senza tag, che non entrano in
+    nessun pool finche' qualcuno non le tagga. Col giorno della scansione,
+    taggarle giorni dopo cambierebbe i giri gia' passati.
+
+    La data dice ai dispositivi da quando contarla nei giri: il giro in corso
+    prosegue e l'immagine si accoda in fondo, invece di rimescolare il mazzo
+    (vedi app._giro_di).
+    """
+    config.setdefault("ingressi", {})[img] = date.today().isoformat()
+
+
+def togli_ingresso(config: dict, img: str):
+    """La data di un'immagine tolta dalla libreria non serve piu'."""
+    ingressi = config.get("ingressi")
+    if isinstance(ingressi, dict):
+        ingressi.pop(img, None)
+        if not ingressi:
+            config.pop("ingressi")
+
+
 def resolve_image_path(config: dict, filename: str) -> str:
     """Stessa logica di app.resolve_path, duplicata per non importare il tray."""
     if not filename:
@@ -1685,6 +1710,8 @@ class LibraryTab(tk.Frame):
 
         for img in images:
             tags = library.setdefault(img, [])
+            if add and not tags:
+                segna_ingresso(self.config_data, img)
             if add and tag not in tags:
                 tags.append(tag)
             elif not add and tag in tags:
@@ -1779,6 +1806,7 @@ class LibraryTab(tk.Frame):
             return
         for img in missing:
             library.pop(img, None)
+            togli_ingresso(self.config_data, img)
         self._refresh_list()
 
     def _remove_selected(self):
@@ -1792,6 +1820,7 @@ class LibraryTab(tk.Frame):
         library = self._library()
         for img in images:
             library.pop(img, None)
+            togli_ingresso(self.config_data, img)
         self._refresh_list()
         self._on_select()
 

@@ -3,6 +3,7 @@ package io.github.sirfrederik.chametiger.motore
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDate
 import java.time.ZoneId
@@ -53,16 +54,41 @@ class PezziTest {
         assertNull(Sole.parseMinmax("min(18:00)"))
     }
 
+    private fun naturali(motore: Motore, carte: List<String>, ingresso: Map<String, Int>, fino: Int) =
+        (0 until fino).map { o -> motore.giroDi(carte, ingresso, "fascia", o).let { (m, p) -> m[p] } }
+
     @Test
-    fun mazzoSenzaRipetizioniAlCambioDiGiro() {
+    fun mazzoSenzaRipetizioniVicine() {
+        // Ogni giro e' una permutazione, e con le due meta' una carta torna
+        // dopo almeno mezzo giro, anche a cavallo fra due giri
         val motore = Motore(Config.leggi("{}"), "x", ZoneId.of("Europe/Rome"))
-        val pool = (1..7).map { "img$it.jpg" }
-        for (giro in 0..200) {
-            val prima = motore.mazzo(pool, "firma", giro)
-            val dopo = motore.mazzo(pool, "firma", giro + 1)
-            assertEquals(pool.toSet(), prima.toSet())
-            assertNotEquals("giro $giro", prima.last(), dopo.first())
+        for (n in listOf(3, 7, 13, 20)) {
+            val carte = (1..n).map { "img$it.jpg" }
+            val seq = naturali(motore, carte, emptyMap(), 60 * n)
+            seq.chunked(n).forEach { assertEquals(carte.toSet(), it.toSet()) }
+            val ultima = HashMap<String, Int>()
+            seq.forEachIndexed { i, c ->
+                ultima[c]?.let { assertTrue("n=$n ordinale $i: $c dopo ${i - it}", i - it > n / 2) }
+                ultima[c] = i
+            }
         }
+    }
+
+    @Test
+    fun ingressoInFondoAlGiro() {
+        // Una carta che entra a giro iniziato non sposta le altre: il giro in
+        // corso resta quello di prima, con lei in fondo
+        val motore = Motore(Config.leggi("{}"), "x", ZoneId.of("Europe/Rome"))
+        val carte = (1..13).map { "img$it.jpg" }
+        val prima = naturali(motore, carte, emptyMap(), 200)
+        val ingresso = mapOf("nuova.jpg" to 135) // giro 10, posizione 5
+        val dopo = naturali(motore, carte + "nuova.jpg", ingresso, 200)
+        assertEquals(prima.take(143), dopo.take(143))
+        assertEquals("nuova.jpg", dopo[143])
+        assertNotEquals(prima.drop(144), dopo.drop(144))
+        assertTrue("nuova.jpg" in dopo.subList(144, 158))
+        // Prima del giorno di ingresso la carta non c'e', dopo si'
+        assertTrue("nuova.jpg" !in dopo.take(143))
     }
 
     @Test

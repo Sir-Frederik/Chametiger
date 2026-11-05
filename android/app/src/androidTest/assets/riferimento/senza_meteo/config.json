@@ -41,12 +41,6 @@
       "sera",
       "crepuscolo"
     ],
-    "sylvester_arrampicata_corda.jpg": [
-      "pomeriggio",
-      "sport",
-      "smart",
-      "alba"
-    ],
     "sylvester_tweety_nido.jpg": [
       "crepuscolo"
     ],
@@ -137,7 +131,9 @@
       "mattino"
     ],
     "coyote_caduta_vuoto.jpg": [
-      "tramonto"
+      "tramonto",
+      "estate",
+      "autunno"
     ],
     "coyote_esplosione_binario.jpg": [
       "mattino",
@@ -612,6 +608,9 @@
       "crepuscolo",
       "notte"
     ],
+    "moon_binary_unruly_hare.png": [
+      "notte"
+    ],
     "casa_stregata_notte_luna.jpg": [
       "horror",
       "notte"
@@ -664,7 +663,6 @@
       "mattino",
       "pomeriggio"
     ],
-    "coyote_caduta_vuoto_hd.jpg": [],
     "amusement_park.png": [
       "estate",
       "primavera",
@@ -755,7 +753,8 @@
       "tramonto",
       "autunno",
       "inverno",
-      "crepuscolo"
+      "crepuscolo",
+      "primavera"
     ],
     "taz_golf.png": [
       "sport"
@@ -1090,7 +1089,8 @@
       "mattino"
     ],
     "daffy_bugs_taz_doctor.jpg": [
-      "lavoro"
+      "lavoro",
+      "smart"
     ],
     "daffy_shoot_faces.jpg": [
       "jolly"
@@ -1293,19 +1293,15 @@
     ],
     "bugs_lightning_storm.jpg": [
       "temporale",
-      "alba",
-      "mattino",
       "pomeriggio",
-      "sera",
-      "crepuscolo"
+      "crepuscolo",
+      "tramonto"
     ],
     "daffy_cloud_rain_desert.jpg": [
       "pioggia",
-      "pomeriggio",
       "mattino"
     ],
-    "bugs_hole_ rainy.png": [
-      "mattino",
+    "bugs_hole_rainy.png": [
       "pioggia",
       "temporale",
       "alba",
@@ -1314,43 +1310,44 @@
     "daffy_bugs_rainy_singing.jpg": [
       "spettacolo",
       "pioggia",
-      "pomeriggio",
       "sera"
     ],
     "lola_window_stalking_rainy_storm.jpg": [
       "notte",
-      "pomeriggio",
       "sera",
       "temporale",
-      "horror"
+      "horror",
+      "pomeriggio"
     ],
     "porky_daffy_storm.jpg": [
       "temporale",
       "spettacolo",
-      "sera"
+      "sera",
+      "svago"
     ],
     "willy_rainy_cloud.jpg": [
-      "pomeriggio",
-      "mattino",
-      "pioggia"
+      "pioggia",
+      "lavoro",
+      "pranzo"
     ],
     "Daffy and Porky/Porky_daffy_storm_that'all_folks.png": [
       "pomeriggio",
       "tramonto",
       "pioggia",
-      "temporale",
       "crepuscolo"
     ],
     "Porky_daffy_rainy_driving.png": [
       "lavoro",
-      "pioggia"
+      "pioggia",
+      "temporale"
     ],
     "bugs_lola_storm_boat.png": [
       "mattino",
       "pomeriggio",
       "temporale",
       "smart",
-      "sanValentino"
+      "sanValentino",
+      "lavoro"
     ],
     "sylvester_storm_inside_house.png": [
       "mattino",
@@ -1439,13 +1436,12 @@
       "sera",
       "crepuscolo",
       "primavera",
-      "autunno",
-      "pomeriggio",
-      "notte"
+      "autunno"
     ],
     "Storm_porky_castel_night.jpg": [
       "notte",
-      "temporale"
+      "temporale",
+      "pioggia"
     ],
     "sunset_forest_pink.jpg": [
       "crepuscolo",
@@ -1585,7 +1581,8 @@
     ],
     "superhero.png": [
       "notte",
-      "lavoro"
+      "lavoro",
+      "smart"
     ],
     "vintage_porky_petunia_gabby.png": [
       "weekend",
@@ -1608,7 +1605,7 @@
     "bugs_bloodcount.jpg": [
       "horror"
     ],
-    "bugs_piramyd.jpg": [
+    "bugs_pyramid.jpg": [
       "horror",
       "mattino"
     ],
@@ -1641,17 +1638,17 @@
     "gossamer_art.jpg": [
       "horror"
     ],
-    "wabbit_season_with_gun_copy.jpg": [],
     "bugs_car_mini_Umbrella.png": [
       "mattino",
-      "temporale"
+      "pioggia",
+      "lavoro"
     ],
     "bugs_door_rainy.jpg": [
       "temporale",
-      "sera",
-      "pomeriggio",
       "crepuscolo",
-      "tramonto"
+      "tramonto",
+      "sera",
+      "pioggia"
     ],
     "daffy_storm_armchair.jpg": [
       "svago",
@@ -1734,7 +1731,7 @@
     ],
     "Daffy and Porky/daffy_bugs_hole_filled_water.png": [
       "mattino",
-      "temporale"
+      "pioggia"
     ],
     "daffy_hot_dry.jpeg": [
       "estate",
@@ -1742,7 +1739,9 @@
     ],
     "sylvester_hector_rainy.jpg": [
       "pioggia",
-      "pomeriggio"
+      "pomeriggio",
+      "temporale",
+      "tramonto"
     ],
     "bugs_gossamer_haircut.jpg": [
       "lavoro",
@@ -1805,13 +1804,102 @@
       "pomeriggio"
     ],
     "tweety_sylvester_autumn_rainy.jpg": [
-      "pomeriggio",
       "mattino",
       "alba",
       "pioggia",
       "smart",
       "autunno",
       "inverno"
+    ],
+    "scarlett_pumpernickel.jpg": [
+      "crepuscolo",
+      "sera",
+      "sanValentino"
+    ],
+    "scarlet_pumpernickel_thunder.png": [
+      "temporale",
+      "notte",
+      "spettacolo"
+    ],
+    "dr_moron_scientist_bugs_sleep.png": [
+      "horror",
+      "svago",
+      "alba",
+      "mattino"
+    ],
+    "daffy_original_sketch.jpg": [
+      "jolly",
+      "mattino"
+    ],
+    "icon.png": [],
+    "michingam_frog_jump.jpg": [
+      "spettacolo"
+    ],
+    "sylvester_slazlo.jpg": [
+      "crepuscolo",
+      "notte",
+      "spettacolo"
+    ],
+    "thunder_plane_sylvester.png": [
+      "temporale",
+      "mattino",
+      "alba",
+      "pranzo"
+    ],
+    "creepy_castle.jpg": [
+      "horror",
+      "notte"
+    ],
+    "library_horror.jpg": [
+      "sera",
+      "horror",
+      "svago"
+    ],
+    "daffy_cemetery.png": [
+      "horror",
+      "svago"
+    ],
+    "Daffy_Porky_ticket_discount.jpg": [
+      "sanValentino",
+      "svago",
+      "pomeriggio",
+      "inverno"
+    ],
+    "easter_bugs_elmer_painting_chicken.jpg": [
+      "primavera",
+      "pasqua",
+      "svago",
+      "mattino"
+    ],
+    "Elmer_waiter_Bogart.jpg": [
+      "svago",
+      "sera",
+      "inverno",
+      "autunno",
+      "primavera",
+      "weekend"
+    ],
+    "looney_Lunchbreak_building_b&w.jpg": [
+      "pioggia",
+      "pranzo",
+      "lavoro"
+    ],
+    "porky_petunia_valentine.jpg": [
+      "sanValentino"
+    ],
+    "porky_picnic_stolen.jpg": [
+      "pranzo",
+      "primavera",
+      "autunno",
+      "weekend",
+      "svago"
+    ],
+    "daffy_cloudy_art_doodle.jpg": [
+      "pioggia",
+      "autunno",
+      "inverno",
+      "primavera",
+      "mattino"
     ]
   },
   "random_rules": {
@@ -1831,7 +1919,7 @@
       },
       {
         "from": "sunrise",
-        "to": "10:00",
+        "to": "sunrise +1h",
         "include": [
           "alba",
           "lavoro"
@@ -1852,7 +1940,7 @@
         "rotate_minutes": 60
       },
       {
-        "from": "10:00",
+        "from": "sunrise + 1h",
         "to": "13:00",
         "include": [
           "mattino",
@@ -1914,8 +2002,7 @@
         "from": "sunset - 58m",
         "to": "min(sunset +2 m, 18:00)",
         "include": [
-          "tramonto",
-          "lavoro"
+          "tramonto"
         ],
         "exclude": [
           "alba",
@@ -1924,13 +2011,12 @@
           "pomeriggio",
           "crepuscolo",
           "sera",
-          "spettacolo",
           "notte",
           "smart",
           "weekend",
           "svago"
         ],
-        "match": "any",
+        "match": "all",
         "rotate_minutes": 60
       },
       {
@@ -1947,13 +2033,12 @@
           "pomeriggio",
           "tramonto",
           "sera",
-          "spettacolo",
           "notte",
           "smart",
           "weekend",
           "svago"
         ],
-        "match": "any",
+        "match": "all",
         "rotate_minutes": 60
       },
       {
@@ -1963,7 +2048,8 @@
           "tramonto"
         ],
         "exclude": [
-          "weekend"
+          "weekend",
+          "lavoro"
         ],
         "match": "all",
         "rotate_minutes": 60
@@ -1975,7 +2061,8 @@
           "crepuscolo"
         ],
         "exclude": [
-          "weekend"
+          "smart",
+          "lavoro"
         ],
         "match": "all",
         "rotate_minutes": 60
@@ -2016,6 +2103,7 @@
           "pranzo",
           "pomeriggio",
           "tramonto",
+          "crepuscolo",
           "notte"
         ],
         "match": "any",
@@ -2056,7 +2144,8 @@
         "from": "dawn -20m",
         "to": "sunrise +60m",
         "include": [
-          "crepuscolo"
+          "crepuscolo",
+          "alba"
         ],
         "exclude": [
           "lavoro"
@@ -2068,11 +2157,10 @@
         "from": "sunrise +60m",
         "to": "10:00",
         "include": [
-          "alba",
+          "mattino",
           "svago"
         ],
         "exclude": [
-          "mattino",
           "pranzo",
           "pomeriggio",
           "tramonto",
@@ -2222,7 +2310,7 @@
         },
         {
           "from": "14:00",
-          "to": "18:00",
+          "to": "sunset -58m",
           "include": [
             "pomeriggio",
             "lavoro",
@@ -2237,6 +2325,29 @@
             "crepuscolo",
             "sera",
             "notte",
+            "svago"
+          ],
+          "match": "any",
+          "rotate_minutes": 60
+        },
+        {
+          "from": "min(dusk +2m, 18:00)",
+          "to": "18:00",
+          "include": [
+            "lavoro",
+            "smart",
+            "jolly"
+          ],
+          "exclude": [
+            "alba",
+            "mattino",
+            "pranzo",
+            "pomeriggio",
+            "tramonto",
+            "crepuscolo",
+            "spettacolo",
+            "notte",
+            "weekend",
             "svago"
           ],
           "match": "any",
@@ -2321,6 +2432,29 @@
           ],
           "match": "any",
           "rotate_minutes": 60
+        },
+        {
+          "from": "min(dusk +2m, 18:00)",
+          "to": "18:00",
+          "include": [
+            "lavoro",
+            "smart",
+            "sport"
+          ],
+          "exclude": [
+            "alba",
+            "mattino",
+            "pranzo",
+            "pomeriggio",
+            "tramonto",
+            "crepuscolo",
+            "spettacolo",
+            "notte",
+            "weekend",
+            "svago"
+          ],
+          "match": "any",
+          "rotate_minutes": 60
         }
       ],
       "thursday": [],
@@ -2370,8 +2504,8 @@
   },
   "history_days": 60,
   "theme": "dark",
-  "latitude": 40.8199,
-  "longitude": 14.3414,
+  "latitude": 40.8196,
+  "longitude": 14.347,
   "meteo": {
     "attivo": false,
     "aggiorna_ore": 3,
@@ -2860,10 +2994,15 @@
             "from": "dusk +2m",
             "to": "21:00",
             "include": [
-              "horror",
-              "sera"
+              "horror"
             ],
-            "exclude": [],
+            "exclude": [
+              "alba",
+              "mattino",
+              "pranzo",
+              "pomeriggio",
+              "notte"
+            ],
             "match": "all",
             "rotate_minutes": 60
           },
@@ -2882,12 +3021,19 @@
             "from": "22:00",
             "to": "2:00",
             "include": [
-              "horror",
-              "notte"
+              "horror"
             ],
-            "exclude": [],
+            "exclude": [
+              "alba",
+              "mattino",
+              "pranzo",
+              "pomeriggio",
+              "tramonto",
+              "crepuscolo",
+              "sera"
+            ],
             "match": "all",
-            "rotate_minutes": 60
+            "rotate_minutes": 30
           }
         ]
       },
@@ -2947,17 +3093,24 @@
     }
   ],
   "position_map": {
-    "Federico": {
-      "latitude": 40.8518,
-      "longitude": 14.2681
-    },
-    "Federico_Lenovo": {
-      "latitude": 40.8199,
-      "longitude": 14.3414
+    "Federico-android": {
+      "latitude": 40.85674,
+      "longitude": 14.2835
     },
     "FedericoAsus": {
-      "latitude": 40.8199,
-      "longitude": 14.3414
+      "latitude": 40.8196,
+      "longitude": 14.347
     }
+  },
+  "ingressi": {
+    "Bugs_Bunny_Ocean_BookOfRhymes.jpeg": "2027-03-08",
+    "Daffy and Porky/porky_daffy_vialetto_casa.jpg": "2027-03-16",
+    "Looney Tunes Sports/wile_roller_xtreme.jpg": "2027-03-23",
+    "bad_wolf_blow.png": "2027-03-31",
+    "carrotBlanca.jpg": "2027-04-07",
+    "daffy_hot_dry.jpeg": "2027-04-15",
+    "foresta_notturna.jpg": "2025-06-01",
+    "personaggi_cerchio_bugs_centro.jpg": "2027-02-30",
+    "non_in_libreria.jpg": "2027-01-15"
   }
 }

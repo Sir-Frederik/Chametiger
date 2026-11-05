@@ -8,6 +8,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.jsonObject
+import java.time.LocalDate
 
 // config.json letto come lo legge app.py: stesse chiavi, stessi default di
 // ensure_defaults, stesse conversioni di str()/int()/bool() sui valori.
@@ -77,6 +78,8 @@ data class Config(
     val pathMap: Map<String, String>,
     /** Nell'ordine del file: conta per i pareggi, come i dict di Python. */
     val libreria: Map<String, List<String>>,
+    /** config["ingressi"]: il giorno in cui ogni immagine e' entrata nei mazzi. */
+    val ingressi: Map<String, LocalDate> = emptyMap(),
     val regole: RegoleCasuali,
     val stagioni: List<Periodo>,
     val eventi: List<Periodo>,
@@ -143,6 +146,7 @@ data class Config(
                 libreria = (cfg["image_library"] as? JsonObject)
                     ?.entries?.associateTo(LinkedHashMap()) { it.key to listaStr(it.value) }
                     ?: LinkedHashMap(),
+                ingressi = dateIngresso(cfg["ingressi"]),
                 regole = regoleCasuali(cfg["random_rules"]),
                 stagioni = listaPeriodi(cfg["seasons"]),
                 eventi = listaPeriodi(cfg["events"]),
@@ -155,6 +159,20 @@ data class Config(
                 longitude = cfg["longitude"],
                 positionMap = cfg["position_map"],
             )
+        }
+
+        private val RE_DATA = Regex("[0-9]{4}-[0-9]{2}-[0-9]{2}")
+
+        /** _date_ingresso: {immagine: "AAAA-MM-GG"}; le date non valide si ignorano. */
+        private fun dateIngresso(e: JsonElement?): Map<String, LocalDate> {
+            val voci = e as? JsonObject ?: return emptyMap()
+            val out = HashMap<String, LocalDate>()
+            for ((img, valore) in voci) {
+                val testo = (valore as? JsonPrimitive)?.takeIf { it.isString }?.content ?: continue
+                if (!RE_DATA.matches(testo)) continue
+                runCatching { LocalDate.parse(testo) }.getOrNull()?.let { out[img] = it }
+            }
+            return out
         }
 
         private fun minimoMeteo(m: JsonObject?): Int {
