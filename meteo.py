@@ -335,7 +335,7 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
         "lat": lat,
         "lon": lon,
         # "osservato": osservato[0] if osservato else None,
-        "ore": dict(sorted(ore_meteo.items())),
+        "ore": dict(sorted({**passate_di_oggi(_carica(), config), **ore_meteo}.items())),
     }
     try:
         with open(METEO_FILE, "w", encoding="utf-8") as f:
@@ -351,6 +351,29 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
     nota = f" Non disponibile: {'; '.join(errori)}." if errori else ""
     log(f"[METEO] Aggiornato ({', '.join(fonti)}): {riassunto(ore_meteo)}.{nota}")
     return True
+
+
+def passate_di_oggi(dati: dict | None, config: dict) -> dict[str, str]:
+    """
+    Le ore di oggi gia' passate nel meteo.json di prima, da tenere nel nuovo.
+
+    Il motore rifa' la sequenza del giorno dalla mezzanotte, ora per ora col
+    suo tempo: se un download butta le ore passate, queste tornano asciutte,
+    le finestre di stamattina cambiano mazzo e la finestra di adesso puo'
+    cambiare immagine anche se il tempo di quest'ora e' lo stesso (alle 12:11
+    la pioggia delle 11 spariva e bugs_car diventava journal_forecast). Il
+    passato resta com'era: solo se i dati di prima valevano ancora, perche'
+    altrimenti il motore le vedeva gia' asciutte.
+    """
+    if not _valide(dati, config):
+        return {}
+    adesso = _chiave(datetime.now())
+    oggi = adesso[:10] + "T"
+    return {
+        chiave: stato
+        for chiave, stato in (dati.get("ore") or {}).items()
+        if chiave.startswith(oggi) and chiave < adesso
+    }
 
 
 def riassunto(ore: dict[str, str]) -> str:

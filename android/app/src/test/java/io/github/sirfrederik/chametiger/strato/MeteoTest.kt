@@ -109,9 +109,10 @@ class MeteoTest {
         assertEquals(2, rete.chiamate.size)
 
         // Le ore scaricate alle 16:10 arrivano al motore giorno per giorno, come
-        // del_giorno legge meteo.json: le 16-23 di oggi e le 00-01 di domani
+        // del_giorno legge meteo.json: le 16-23 di oggi e le 00-01 di domani,
+        // e restano le 11-15 del download di prima
         val fonte = meteo(rete, diario).fonte(config, adesso.plusHours(5))
-        assertEquals((16..23).toSet(), fonte.ore(LocalDate.of(2026, 10, 28)).keys)
+        assertEquals((11..23).toSet(), fonte.ore(LocalDate.of(2026, 10, 28)).keys)
         assertEquals(setOf(0, 1), fonte.ore(LocalDate.of(2026, 10, 29)).keys)
         assertTrue(fonte.ore(LocalDate.of(2026, 10, 28)).values.all { it == StatoMeteo.ASCIUTTO })
     }
@@ -178,6 +179,34 @@ class MeteoTest {
             """{"image_library": {"a.jpg": []}, "random_rules": {"weekday": []}, "latitude": 45.46, "longitude": 9.19}""",
         )
         assertTrue("altrove", m.fonte(altrove, adesso).ore(LocalDate.of(2027, 3, 27)).isEmpty())
+    }
+
+    @Test
+    fun leOrePassateDiOggiRestanoQuelleDiPrima() {
+        // Il caso del 6/11: alle 10:06 pioggia dalle 11, alle 12:11 un download
+        // che parte dalle 12. Se la pioggia delle 11 sparisse, la sequenza del
+        // giorno cambierebbe e con lei la finestra di adesso.
+        val adesso = LocalDateTime.of(2026, 10, 28, 11, 10)
+        fun prima(scaricato: LocalDateTime) = File(tmp.root, "meteo.json").writeText(
+            """{"scaricato": ${scaricato.atZone(ZONA).toEpochSecond()}, "lat": 40.82, "lon": 14.34, "ore": {
+                "2026-10-27T23": "pioggia", "2026-10-28T09": "pioggia", "2026-10-28T10": "temporale",
+                "2026-10-28T11": "pioggia"}}""",
+        )
+
+        prima(adesso.minusHours(2))
+        assertTrue(meteo(ReteFinta(risorsa("reale.json")), DiarioFinto()).aggiornaSeServe(config, adesso, forza = true))
+        val oggi = meteo(ReteFinta(null), DiarioFinto()).fonte(config, adesso).ore(LocalDate.of(2026, 10, 28))
+        assertEquals(StatoMeteo.PIOGGIA, oggi[9])
+        assertEquals(StatoMeteo.TEMPORALE, oggi[10])
+        // L'ora attuale e le seguenti vengono dal download nuovo, ieri non si tiene
+        assertEquals(StatoMeteo.ASCIUTTO, oggi[11])
+        assertEquals((9..20).toSet(), oggi.keys)
+        assertFalse("ieri", "2026-10-27T23" in meteo(ReteFinta(null), DiarioFinto()).leggi()!!.ore)
+
+        // Dati di prima ormai scaduti: il motore vedeva gia' le ore asciutte, restano asciutte
+        prima(adesso.minusHours(13))
+        assertTrue(meteo(ReteFinta(risorsa("reale.json")), DiarioFinto()).aggiornaSeServe(config, adesso, forza = true))
+        assertEquals((11..20).toSet(), meteo(ReteFinta(null), DiarioFinto()).fonte(config, adesso).ore(LocalDate.of(2026, 10, 28)).keys)
     }
 
     @Test

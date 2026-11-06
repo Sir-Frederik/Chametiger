@@ -243,12 +243,13 @@ class Meteo(
             return false
         }
 
+        val tutte = passateDiOggi(leggi(), config, adesso) + ore
         val nuovo = buildJsonObject {
             // Per esteso come lo scrive json.dump sul PC, non 1.79E9: i due file si confrontano a occhio
             put("scaricato", JsonUnquotedLiteral(BigDecimal.valueOf(ora).toPlainString()))
             put("lat", lat)
             put("lon", lon)
-            put("ore", buildJsonObject { ore.toSortedMap().forEach { (k, v) -> put(k, v.tag) } })
+            put("ore", buildJsonObject { tutte.toSortedMap().forEach { (k, v) -> put(k, v.tag) } })
         }
         try {
             scriviIntero(file, JSON_LEGGIBILE.encodeToString(JsonObject.serializer(), nuovo) + "\n")
@@ -259,6 +260,21 @@ class Meteo(
         fileErrore.delete()
         diario.scrivi("[METEO] Aggiornato (Met Norway): ${riassunto(ore, adesso)}.")
         return true
+    }
+
+    /**
+     * passate_di_oggi: le ore di oggi gia' passate nel meteo.json di prima, da
+     * tenere nel nuovo. Il motore rifa' la sequenza del giorno dalla mezzanotte
+     * col tempo di ogni ora: se il download buttasse le ore passate, queste
+     * tornerebbero asciutte e la finestra di adesso potrebbe cambiare immagine
+     * anche col tempo di quest'ora invariato. Solo se i dati di prima valevano
+     * ancora: altrimenti il motore le vedeva gia' asciutte.
+     */
+    private fun passateDiOggi(dati: DatiMeteo?, config: Config, adesso: LocalDateTime): Map<String, StatoMeteo> {
+        if (!valide(dati, config, adesso)) return emptyMap()
+        val ora = chiaveOra(adesso)
+        val oggi = ora.take(10) + "T"
+        return dati!!.ore.filterKeys { it.startsWith(oggi) && it < ora }
     }
 
     /** Lo stato del meteo in una riga, per la schermata. */

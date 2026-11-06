@@ -438,7 +438,7 @@ Un giorno che **nessuna** stagione copre non applica nessun filtro di stagione: 
 
 ## Meteo
 
-All'avvio dell'app, e poi ogni `aggiorna_ore` ore (default 5, da 1 a 10, si cambia in **Impostazioni → Meteo**), lo scheduler scarica il meteo **ora per ora** delle prossime 10 ore, quella attuale compresa, per la latitudine e longitudine del config, e lo salva in `meteo.json`. Fra un download e l'altro non serve la rete: le ore sono già programmate. Per esempio: avvio alle 10, meteo dalle 10:00 alle 20:00; alle 15 nuovo download, meteo dalle 15:00 all'01:00.
+All'avvio dell'app, e poi ogni `aggiorna_ore` ore (default 5, da 1 a 10, si cambia in **Impostazioni → Meteo**), lo scheduler scarica il meteo **ora per ora** delle prossime 10 ore, quella attuale compresa, per la latitudine e longitudine del config, e lo salva in `meteo.json`. Fra un download e l'altro non serve la rete: le ore sono già programmate. Per esempio: avvio alle 10, meteo dalle 10:00 alle 20:00; alle 15 nuovo download, meteo dalle 15:00 all'01:00. Le ore già passate di oggi restano quelle del download di prima: la sequenza del giorno si ricalcola dalla mezzanotte, e se la pioggia delle 11 sparisse alle 12 la finestra di adesso potrebbe cambiare immagine anche col tempo dell'ora invariato.
 Il METAR è stato inserito inizialmente perchè ritenuto affidabile, ma ciò è vero solo nei luoghi vicini all'aereoporto. Successivamente è stato disabilitato per usare invece di dati elaborati di Met Norway.
 
 
