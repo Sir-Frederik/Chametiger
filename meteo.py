@@ -1,15 +1,11 @@
 """
 Meteo per la scelta delle immagini: le prossime 10 ore, ora attuale compresa.
 
-Due fonti, gratuite e senza chiave, sulle stesse coordinate degli orari solari:
+
 
   Met Norway   le previsioni ora per ora (locationforecast). Sostituisce
                Open-Meteo, che l'8/10/2026 dava "coperto" su Napoli mentre a
-               Capodichino c'era il temporale, e lo spostava di due ore dopo
-  METAR        l'ora attuale, dalla stazione meteo piu' vicina entro 30 km
-               (a Napoli Capodichino, LIRN). E' un'osservazione, non una
-               previsione: quando c'e' vince lei. Se manca o e' vecchia
-               resta la previsione
+
 
 Il download lo fa curl.exe, incluso in Windows 10/11, in un processo a parte.
 Con urllib l'app si sarebbe portata dietro per sempre http e ssl (circa 4 MB
@@ -27,7 +23,7 @@ i tag pioggia/temporale contano come tutti gli altri.
 """
 
 import json
-import math
+# import math  # serviva solo a _km, per il METAR
 import os
 import subprocess
 import threading
@@ -44,10 +40,10 @@ URL_PREVISIONI = (
     "https://api.met.no/weatherapi/locationforecast/2.0/compact"
     "?lat={lat:.2f}&lon={lon:.2f}"
 )
-URL_METAR = (
-    "https://aviationweather.gov/api/data/metar"
-    "?bbox={sud:.2f},{ovest:.2f},{nord:.2f},{est:.2f}&format=json"
-)
+# URL_METAR = (
+#     "https://aviationweather.gov/api/data/metar"
+#     "?bbox={sud:.2f},{ovest:.2f},{nord:.2f},{est:.2f}&format=json"
+# )
 # Met Norway rifiuta (403) le richieste senza un'identita' dell'applicazione.
 USER_AGENT = f"Chametiger/{VERSIONE} github.com/Sir-Frederik/Chametiger"
 
@@ -57,8 +53,8 @@ ORE_MIN, ORE_MAX = 1, 10  # limiti di aggiorna_ore, gli stessi della GUI
 MAX_ETA_ORE = 12  # oltre, i dati non si usano piu'
 DEFAULT_MINIMO = 2  # immagini sotto cui il meteo non restringe il pool
 RIPROVA_MINUTI = 30  # dopo un download fallito, prima di riprovare
-METAR_RAGGIO_KM = 30  # stazioni piu' lontane non dicono che tempo fa qui
-METAR_MAX_ETA_MIN = 90  # i METAR escono ogni 30-60 minuti
+# METAR_RAGGIO_KM = 30  # stazioni piu' lontane non dicono che tempo fa qui
+# METAR_MAX_ETA_MIN = 90  # i METAR escono ogni 30-60 minuti
 
 # Stati di un'ora. Senza dati l'ora vale "asciutto": la pioggia si mostra solo
 # quando una fonte la da'.
@@ -230,40 +226,40 @@ def _previsioni(lat: float, lon: float) -> dict[str, str]:
     return ore
 
 
-def _km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    """Distanza approssimata: entro qualche decina di km basta e avanza."""
-    x = math.radians(lon2 - lon1) * math.cos(math.radians((lat1 + lat2) / 2))
-    y = math.radians(lat2 - lat1)
-    return 6371 * math.hypot(x, y)
+# Ho temporaneamente tolto Metar perchè non è affidabile per i luoghi lontani dagli aereoporti.
+# Meglio usare direttamente Met Norway. _km serviva solo a _metar.
+
+# def _km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+#     """Distanza approssimata: entro qualche decina di km basta e avanza."""
+#     x = math.radians(lon2 - lon1) * math.cos(math.radians((lat1 + lat2) / 2))
+#     y = math.radians(lat2 - lat1)
+#     return 6371 * math.hypot(x, y)
 
 
-def _metar(lat: float, lon: float) -> tuple[str, str] | None:
-    """
-    (descrizione, stato) dell'osservazione piu' vicina e recente, per esempio
-    ('LIRN -TSRA', 'temporale'). None se non c'e' una stazione entro
-    METAR_RAGGIO_KM con un METAR degli ultimi METAR_MAX_ETA_MIN minuti.
-    """
-    zona = URL_METAR.format(
-        sud=lat - 0.5, nord=lat + 0.5, ovest=lon - 0.5, est=lon + 0.5
-    )
-    limite = time.time() - METAR_MAX_ETA_MIN * 60
-    candidati = []
-    for m in _scarica(zona):
-        try:
-            distanza = _km(lat, lon, float(m["lat"]), float(m["lon"]))
-            quando = float(m["obsTime"])
-        except (KeyError, TypeError, ValueError):
-            continue
-        if distanza <= METAR_RAGGIO_KM and quando >= limite:
-            candidati.append((distanza, -quando, m))
-    if not candidati:
-        return None
-    m = min(candidati, key=lambda c: c[:2])[2]
-    wx = m.get("wxString") or ""
-    # Ho temporaneamente tolto Metar perchè non è affidabile per i luoghi lontani dagli aereoporti.
-    # Meglio usare direttamente Met Norway
-
-    # return f"{m.get('icaoId', '?')} {wx or 'niente fenomeni'}", stato_da_metar(wx)
+# def _metar(lat: float, lon: float) -> tuple[str, str] | None:
+#     """
+#     (descrizione, stato) dell'osservazione piu' vicina e recente, per esempio
+#     ('LIRN -TSRA', 'temporale'). None se non c'e' una stazione entro
+#     METAR_RAGGIO_KM con un METAR degli ultimi METAR_MAX_ETA_MIN minuti.
+#     """
+#     zona = URL_METAR.format(
+#         sud=lat - 0.5, nord=lat + 0.5, ovest=lon - 0.5, est=lon + 0.5
+#     )
+#     limite = time.time() - METAR_MAX_ETA_MIN * 60
+#     candidati = []
+#     for m in _scarica(zona):
+#         try:
+#             distanza = _km(lat, lon, float(m["lat"]), float(m["lon"]))
+#             quando = float(m["obsTime"])
+#         except (KeyError, TypeError, ValueError):
+#             continue
+#         if distanza <= METAR_RAGGIO_KM and quando >= limite:
+#             candidati.append((distanza, -quando, m))
+#     if not candidati:
+#         return None
+#     m = min(candidati, key=lambda c: c[:2])[2]
+#     wx = m.get("wxString") or ""
+#     return f"{m.get('icaoId', '?')} {wx or 'niente fenomeni'}", stato_da_metar(wx)
 
 
 # Ultimo tentativo fallito, per non lanciare curl a ogni giro quando si e'
@@ -335,7 +331,9 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
         "lat": lat,
         "lon": lon,
         # "osservato": osservato[0] if osservato else None,
-        "ore": dict(sorted({**passate_di_oggi(_carica(), config), **ore_meteo}.items())),
+        "ore": dict(
+            sorted({**passate_di_oggi(_carica(), config), **ore_meteo}.items())
+        ),
     }
     try:
         with open(METEO_FILE, "w", encoding="utf-8") as f:
@@ -360,10 +358,7 @@ def passate_di_oggi(dati: dict | None, config: dict) -> dict[str, str]:
     Il motore rifa' la sequenza del giorno dalla mezzanotte, ora per ora col
     suo tempo: se un download butta le ore passate, queste tornano asciutte,
     le finestre di stamattina cambiano mazzo e la finestra di adesso puo'
-    cambiare immagine anche se il tempo di quest'ora e' lo stesso (alle 12:11
-    la pioggia delle 11 spariva e bugs_car diventava journal_forecast). Il
-    passato resta com'era: solo se i dati di prima valevano ancora, perche'
-    altrimenti il motore le vedeva gia' asciutte.
+    cambiare immagine anche se il tempo di quest'ora e' lo stesso
     """
     if not _valide(dati, config):
         return {}
