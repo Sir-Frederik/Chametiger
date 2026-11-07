@@ -66,11 +66,16 @@ ASCIUTTO = "asciutto"
 def stato_da_simbolo(simbolo: str) -> str:
     """
     Simbolo di Met Norway -> stato: 'heavyrainandthunder' -> temporale,
-    'lightrainshowers_day' -> pioggia. Neve e nebbia contano come asciutto.
+    'rainshowers_day' -> pioggia. La pioggia leggera ('lightrain',
+    'lightrainshowers_day') conta come asciutto, come neve, nebbia e coperto:
+    la pioggia si mostra solo quando si vede davvero. Il tuono vince anche
+    sul leggero.
     """
     s = simbolo.split("_")[0]
     if "thunder" in s:
         return TEMPORALE
+    if s.startswith("light"):
+        return ASCIUTTO
     if "rain" in s or "sleet" in s:
         return PIOGGIA
     return ASCIUTTO

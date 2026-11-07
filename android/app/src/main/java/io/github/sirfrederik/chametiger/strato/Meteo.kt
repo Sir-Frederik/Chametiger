@@ -42,11 +42,12 @@ private const val MAX_ETA_ORE = 12
 private const val RIPROVA_MINUTI = 30
 private const val URL_PREVISIONI = "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=%.2f&lon=%.2f"
 
-/** stato_da_simbolo: 'heavyrainandthunder' -> temporale, 'lightrainshowers_day' -> pioggia. Neve e nebbia: asciutto. */
+/** stato_da_simbolo: 'heavyrainandthunder' -> temporale, 'rainshowers_day' -> pioggia. Pioggia leggera, neve, nebbia: asciutto. */
 fun statoDaSimbolo(simbolo: String): StatoMeteo {
     val s = simbolo.split("_")[0]
     return when {
         "thunder" in s -> StatoMeteo.TEMPORALE
+        s.startsWith("light") -> StatoMeteo.ASCIUTTO
         "rain" in s || "sleet" in s -> StatoMeteo.PIOGGIA
         else -> StatoMeteo.ASCIUTTO
     }
