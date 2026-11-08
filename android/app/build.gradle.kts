@@ -29,6 +29,29 @@ android {
         buildConfigField("String", "DRIVE_API_KEY", "\"${locali.getProperty("CHAMETIGER_DRIVE_API_KEY", "").trim()}\"")
     }
 
+    // La firma di debug uguale su tutti i PC: Google confronta lo SHA-1 del
+    // certificato con la restrizione della chiave API, e Android rifiuta un
+    // aggiornamento firmato con un'altra chiave. In local.properties, con le
+    // barre in avanti: CHAMETIGER_KEYSTORE=G:/Il mio Drive/.../debug.keystore
+    // Senza, vale il debug.keystore di questo PC.
+    signingConfigs {
+        getByName("debug") {
+            locali.getProperty("CHAMETIGER_KEYSTORE")?.trim()?.takeIf { it.isNotEmpty() }?.let { percorso ->
+                val keystore = file(percorso)
+                if (!keystore.isFile) {
+                    throw GradleException(
+                        "CHAMETIGER_KEYSTORE in local.properties punta a $keystore, che non c'e'. " +
+                            "Drive e' montato? Per usare la firma di questo PC, togli la riga."
+                    )
+                }
+                storeFile = keystore
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
+        }
+    }
+
     buildTypes {
         release {
             optimization {
