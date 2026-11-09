@@ -1667,6 +1667,8 @@ class ChametigerTray:
         # L'impronta dell'ultimo config letto: va nel log quando cambia, e il
         # telefono mostra la stessa per lo stesso file
         self._impronta = None
+        # L'ultima posizione scritta nel log: col calendario cambia a mezzanotte
+        self._posizione = None
         self._rileggi_config()
         self._stop_event = threading.Event()
         self._icon = None
@@ -1750,7 +1752,30 @@ class ChametigerTray:
         if impronta != self._impronta:
             log(f"[INFO] Config {impronta}{' (cambiato)' if self._impronta else ''}.")
             self._impronta = impronta
+        self._log_posizione()
         return True
+
+    def _log_posizione(self):
+        """
+        Le coordinate di oggi nel log, quando cambiano: all'avvio, a mezzanotte
+        col calendario settimanale, o quando le cambia il config. Come la riga
+        [INFO] del telefono, per capire a colpo d'occhio se due dispositivi
+        fanno i conti dallo stesso posto.
+        """
+        lat, lon = sun.coords(self.config)
+        voce = sun.posizione_del_calendario(self.config)
+        if voce is not None:
+            giorno = sun.GIORNI_IT[date.today().weekday()]
+            nome = str(voce.get("name") or "").strip()
+            origine = f"calendario, {giorno}" + (f" {nome}" if nome else "")
+        elif sun.HOSTNAME in (self.config.get("position_map") or {}):
+            origine = f"position_map {sun.HOSTNAME}"
+        else:
+            origine = "latitude/longitude"
+        posizione = (lat, lon, origine)
+        if posizione != self._posizione:
+            log(f"[INFO] Posizione {lat:.4f},{lon:.4f} ({origine}).")
+            self._posizione = posizione
 
     # ── Thread principale del polling ────────────────────────────────────────
     def _run_scheduler(self):

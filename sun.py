@@ -245,16 +245,61 @@ def solar_minutes(
 HOSTNAME = socket.gethostname()
 
 
-def coords(config: dict) -> tuple[float, float]:
+# Le chiavi dei giorni in position_schedule, nell'ordine di date.weekday().
+# In inglese come gli override ("monday", "friday").
+GIORNI = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
+GIORNI_IT = ("lunedi'", "martedi'", "mercoledi'", "giovedi'", "venerdi'", "sabato", "domenica")
+
+
+def posizione_del_calendario(config: dict, giorno: date | None = None) -> dict | None:
     """
-    Latitudine e longitudine di questo PC. Default: Napoli.
+    La voce di position_schedule di questo PC per il giorno (default oggi), o
+    None se il calendario e' spento, manca o quel giorno e' vuoto.
+
+        "position_schedule": {
+          "Federico": {
+            "enabled": true,
+            "days": {"thursday": {"latitude": 45.4642, "longitude": 9.19, "name": "Milano"}}
+          }
+        }
+
+    Solo per i PC: il telefono non legge questa chiave e resta sulla sua
+    posizione.
+    """
+    voce = ((config.get("position_schedule") or {}).get(HOSTNAME)) or {}
+    if not isinstance(voce, dict) or not voce.get("enabled"):
+        return None
+    giorno = giorno or date.today()
+    del_giorno = (voce.get("days") or {}).get(GIORNI[giorno.weekday()])
+    return del_giorno if isinstance(del_giorno, dict) and del_giorno else None
+
+
+def coords(config: dict, calendario: bool = True) -> tuple[float, float]:
+    """
+    Latitudine e longitudine di questo PC, oggi. Default: Napoli.
 
     Come la cartella delle immagini (`base_path` + `path_map`): `latitude` e
     `longitude` valgono per tutti, `position_map` le sostituisce sui PC
     elencati, col nome del computer come chiave. Unico posto da cui passano
     orari solari, meteo e GUI, cosi' nessuno legge le coordinate di un altro.
+
+    Sopra tutte vale il calendario settimanale del PC (position_schedule), se
+    acceso e se per oggi ha una voce. Vale per tutti i conti della giornata,
+    anche quelli sui giorni passati: il numero della finestra somma le
+    finestre dei giorni prima con le coordinate di oggi, come fa il telefono
+    con la sua posizione. Cosi' il giovedi' a Milano il PC conta come un
+    dispositivo che sta a Milano da sempre, e due PC nello stesso posto
+    restano allineati anche se gli altri giorni stanno altrove. Si passa alle
+    coordinate del giorno dopo a mezzanotte.
+
+    calendario=False salta il calendario: e' la posizione "normale" del PC,
+    quella che l'editor mostra e modifica in Impostazioni -> Posizione.
     """
-    voce = (config.get("position_map") or {}).get(HOSTNAME) or {}
+    voce = (
+        (posizione_del_calendario(config) if calendario else None)
+        or (config.get("position_map") or {}).get(HOSTNAME)
+        or {}
+    )
     try:
         lat = float(voce.get("latitude", config.get("latitude", 40.8518)))
         lon = float(voce.get("longitude", config.get("longitude", 14.2681)))

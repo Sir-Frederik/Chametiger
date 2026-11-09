@@ -1,6 +1,8 @@
 # 🦎 Chametiger
 
-**v4.8.0** — 5 novembre 2026
+**v4.9.0** — 9 novembre 2026
+
+> **Novità della 4.9.0:** il [calendario delle posizioni](#calendario-delle-posizioni). Un PC può avere una posizione diversa per ogni giorno della settimana (solo PC, non il telefono). Senza `position_schedule` nel config non cambia nulla.
 
 > **⚠️ La 4.8.0 non è compatibile con le versioni precedenti: aggiorna tutti i PC e il telefono insieme e riavvia ogni tray.**
 >
@@ -119,6 +121,7 @@ Oppure: click destro sull'icona tray → **Apri editor config**
 | `history_days`            | Per quanti giorni conservare le righe di `log.json` (default 7). Non è nell'editor: **non** influenza quale immagine esce |
 | `latitude` / `longitude`  | Posizione, per alba, tramonto e meteo. Default: Napoli               |
 | `position_map`            | Posizione per singolo PC (hostname), sopra `latitude`/`longitude`    |
+| `position_schedule`       | Calendario settimanale delle posizioni per singolo PC, sopra `position_map` (vedi [Calendario delle posizioni](#calendario-delle-posizioni)) |
 | `base_path` / `path_map`  | Cartella base delle immagini, con override per singolo PC (hostname) |
 | `seasons` / `events`      | Stagioni ed eventi, che filtrano i tag (vedi sotto)                  |
 | `meteo`                   | `{"attivo": true, "aggiorna_ore": 5, "minimo": 2}`: previsioni sì/no, ogni quante ore riscaricarle (1–10), soglia minima del pool |
@@ -168,6 +171,36 @@ Allo stesso modo `latitude` e `longitude` valgono per tutti, e `position_map` le
 Da lì passano orari solari e meteo. Nell'editor, **Impostazioni → Posizione** mostra le coordinate del PC su cui gira; con *Vale solo per questo PC* le salva in `position_map`, senza la casella cambia quelle comuni.
 
 > Due PC con posizioni diverse **non** mostrano più le stesse immagini: le fasce solari cadono in orari diversi, e il meteo è diverso.
+
+### Calendario delle posizioni
+
+Un PC che cambia posto durante la settimana (ufficio, casa, trasferta) può avere una posizione **per giorno della settimana**. Vale **solo per i PC**: il telefono non legge questa chiave e continua a usare la sua posizione.
+
+```json
+"position_schedule": {
+  "Federico": {
+    "enabled": true,
+    "days": {
+      "monday":   { "latitude": 40.8518, "longitude": 14.2681, "name": "Napoli" },
+      "tuesday":  { "latitude": 40.8196, "longitude": 14.347,  "name": "Portici" },
+      "thursday": { "latitude": 45.4642, "longitude": 9.19,    "name": "Milano" }
+    }
+  }
+}
+```
+
+- La chiave è il **nome del computer**, come in `position_map`. `name` serve solo al log.
+- Per i giorni elencati vale il calendario. Per gli altri, e con `"enabled": false`, vale la posizione normale (`position_map`, altrimenti `latitude`/`longitude`).
+- La posizione del giorno vale per **tutti** i conti della giornata, anche per il numero della finestra, che somma le finestre dei giorni precedenti: il giovedì a Milano il PC conta come un dispositivo che sta a Milano da sempre. Così due dispositivi nello stesso posto, con **le stesse coordinate**, mostrano le stesse immagini, qualunque cosa abbiano fatto gli altri giorni.
+- Il cambio avviene **a mezzanotte**. In quel momento, nelle fasce legate al sole, l'immagine può cambiare.
+
+Nell'editor: **Impostazioni → Calendario delle posizioni (solo PC)**. Per ogni giorno si sceglie una città o si scrivono le coordinate, poi *Applica calendario*. La casella *Usa il calendario su questo PC* lo accende e lo spegne senza perdere i giorni. Il tray scrive nel log la posizione in uso quando cambia:
+
+```
+[INFO] Posizione 40.8196,14.3470 (calendario, martedi' Portici).
+```
+
+> Per restare allineato col telefono, nel calendario usa per ogni luogo **le stesse coordinate** che ha il config: il telefono si aggancia alle posizioni di `latitude`/`longitude` e `position_map` entro 1 km, non a quelle del calendario.
 
 ---
 

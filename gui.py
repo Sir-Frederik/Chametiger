@@ -46,6 +46,17 @@ WEEKDAYS_IT = {
 }
 WEEKDAYS_ORDER = list(WEEKDAYS_IT.keys())
 
+# Le citta' pronte di Impostazioni -> Posizione e del calendario delle posizioni
+CITTA = {
+    "Napoli": (40.8518, 14.2681),
+    "Portici": (40.8196, 14.3470),
+    "Pescopagano": (41.0566, 13.9252),
+    "Manduria": (40.4028, 17.6343),
+    "Roma": (41.9028, 12.4964),
+    "Milano": (45.4642, 9.1900),
+    "Padova": (45.4064, 11.8768),
+}
+
 # ── Colori tema scuro ────────────────────────────────────────────────────────
 BG = "#1e1e2e"
 BG2 = "#2a2a3e"
@@ -782,8 +793,9 @@ class ChametigerEditor(tk.Tk):
         coord = tk.Frame(inner, bg=BG)
         coord.grid(row=14, column=0, columnspan=3, sticky="w")
 
-        # I campi mostrano le coordinate di QUESTO PC, comprese quelle proprie
-        lat_pc, lon_pc = sun.coords(self.config_data)
+        # I campi mostrano le coordinate di QUESTO PC, comprese quelle proprie,
+        # ma non quelle del calendario: applica_coord le salverebbe come fisse
+        lat_pc, lon_pc = sun.coords(self.config_data, calendario=False)
 
         tk.Label(coord, text="Latitudine", bg=BG, fg=FG, font=("Segoe UI", 10)).pack(
             side="left"
@@ -815,15 +827,7 @@ class ChametigerEditor(tk.Tk):
             font=("Segoe UI", 10),
         ).pack(side="left", padx=6)
 
-        citta = {
-            "Napoli": (40.8518, 14.2681),
-            "Portici": (40.8196, 14.3470),
-            "Pescopagano": (41.0566, 13.9252),
-            "Manduria": (40.4028, 17.6343),
-            "Roma": (41.9028, 12.4964),
-            "Milano": (45.4642, 9.1900),
-            "Padova": (45.0703, 7.6869),
-        }
+        citta = CITTA
 
         def imposta_citta(_=None):
             nome = self._citta_var.get()
@@ -919,6 +923,168 @@ class ChametigerEditor(tk.Tk):
 
         applica_coord()
 
+        # ── Calendario delle posizioni (solo PC) ────────────────────────────
+        tk.Label(
+            inner,
+            text="Calendario delle posizioni (solo PC)",
+            bg=BG,
+            fg=ACCENT,
+            font=("Segoe UI Semibold", 11),
+        ).grid(row=18, column=0, columnspan=3, sticky="w", pady=(24, 6))
+
+        cal_salvato = (self.config_data.get("position_schedule") or {}).get(hostname) or {}
+        giorni_salvati = cal_salvato.get("days") or {}
+
+        self._cal_attivo = tk.BooleanVar(value=bool(cal_salvato.get("enabled")))
+        ttk.Checkbutton(
+            inner,
+            text=f"Usa il calendario su questo PC ({hostname})",
+            variable=self._cal_attivo,
+        ).grid(row=19, column=0, columnspan=3, sticky="w")
+
+        griglia = tk.Frame(inner, bg=BG)
+        griglia.grid(row=20, column=0, columnspan=3, sticky="w", pady=(6, 0))
+
+        NORMALE = "(posizione normale)"
+        ALTRA = "Altra (coordinate)"
+        scelte = [NORMALE] + sorted(CITTA) + [ALTRA]
+
+        def nome_di(lat, lon):
+            for nome, (la, lo) in CITTA.items():
+                if abs(la - lat) < 1e-4 and abs(lo - lon) < 1e-4:
+                    return nome
+            return ALTRA
+
+        for col, testo in ((1, "Posizione"), (2, "Latitudine"), (3, "Longitudine")):
+            tk.Label(griglia, text=testo, bg=BG, fg=FG2, font=("Segoe UI", 9)).grid(
+                row=0, column=col, sticky="w", padx=(8, 0)
+            )
+
+        self._cal_righe = {}
+        for i, chiave in enumerate(sun.GIORNI, start=1):
+            voce = giorni_salvati.get(chiave) or {}
+            try:
+                lat0 = float(voce["latitude"])
+                lon0 = float(voce["longitude"])
+                scelta0 = nome_di(lat0, lon0)
+                testo_lat, testo_lon = str(lat0), str(lon0)
+            except (KeyError, TypeError, ValueError):
+                scelta0, testo_lat, testo_lon = NORMALE, "", ""
+
+            tk.Label(
+                griglia, text=WEEKDAYS_IT[chiave], bg=BG, fg=FG, font=("Segoe UI", 10)
+            ).grid(row=i, column=0, sticky="w", pady=2)
+            v_scelta = tk.StringVar(value=scelta0)
+            v_lat = tk.StringVar(value=testo_lat)
+            v_lon = tk.StringVar(value=testo_lon)
+            cb = ttk.Combobox(
+                griglia, textvariable=v_scelta, values=scelte, width=18, state="readonly"
+            )
+            cb.grid(row=i, column=1, sticky="w", padx=(8, 0), pady=2)
+            for col, var in ((2, v_lat), (3, v_lon)):
+                tk.Entry(
+                    griglia,
+                    textvariable=var,
+                    bg=ENTRY_BG,
+                    fg=FG,
+                    insertbackground=FG,
+                    relief="flat",
+                    width=11,
+                    font=("Segoe UI", 10),
+                ).grid(row=i, column=col, sticky="w", padx=(8, 0), pady=2)
+
+            def scelta_cambiata(_=None, v_scelta=v_scelta, v_lat=v_lat, v_lon=v_lon):
+                nome = v_scelta.get()
+                if nome in CITTA:
+                    v_lat.set(str(CITTA[nome][0]))
+                    v_lon.set(str(CITTA[nome][1]))
+                elif nome == NORMALE:
+                    v_lat.set("")
+                    v_lon.set("")
+
+            cb.bind("<<ComboboxSelected>>", scelta_cambiata)
+            self._cal_righe[chiave] = (v_scelta, v_lat, v_lon)
+
+        self._cal_status = tk.Label(
+            inner, bg=BG, fg=FG2, font=("Segoe UI", 9), justify="left", anchor="w"
+        )
+
+        def stato_calendario(prefisso="", colore=FG2):
+            lat, lon = sun.coords(self.config_data)
+            voce = sun.posizione_del_calendario(self.config_data)
+            oggi = WEEKDAYS_IT[sun.GIORNI[date.today().weekday()]].lower()
+            if voce is not None:
+                nome = str(voce.get("name") or "").strip()
+                da_dove = f"dal calendario ({oggi}{' ' + nome if nome else ''})"
+            else:
+                da_dove = "posizione normale"
+            self._cal_status.config(
+                text=f"{prefisso}Oggi questo PC usa {lat:.4f}, {lon:.4f}: {da_dove}.",
+                fg=colore,
+            )
+
+        def applica_calendario():
+            giorni = {}
+            for chiave, (v_scelta, v_lat, v_lon) in self._cal_righe.items():
+                nome = v_scelta.get()
+                testo_lat = v_lat.get().strip().replace(",", ".")
+                testo_lon = v_lon.get().strip().replace(",", ".")
+                if nome == NORMALE or (not testo_lat and not testo_lon):
+                    continue
+                try:
+                    lat, lon = float(testo_lat), float(testo_lon)
+                except ValueError:
+                    self._cal_status.config(
+                        text=f"{WEEKDAYS_IT[chiave]}: coordinate non numeriche.", fg=DANGER
+                    )
+                    return
+                if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+                    self._cal_status.config(
+                        text=f"{WEEKDAYS_IT[chiave]}: latitudine fra -90 e 90, "
+                        "longitudine fra -180 e 180.",
+                        fg=DANGER,
+                    )
+                    return
+                voce = {"latitude": lat, "longitude": lon}
+                # Il nome solo se le coordinate sono ancora quelle della citta'
+                citta = nome_di(lat, lon)
+                if citta != ALTRA:
+                    voce["name"] = citta
+                giorni[chiave] = voce
+
+            calendari = self.config_data.setdefault("position_schedule", {})
+            if giorni or self._cal_attivo.get():
+                calendari[hostname] = {"enabled": self._cal_attivo.get(), "days": giorni}
+            else:
+                calendari.pop(hostname, None)
+            if not calendari:
+                self.config_data.pop("position_schedule")  # niente chiave vuota nel config
+            stato_calendario("Calendario applicato. ", SUCCESS)
+            if hasattr(self, "_preview_tab"):
+                self._preview_tab._calcola()
+
+        riga_cal = tk.Frame(inner, bg=BG)
+        riga_cal.grid(row=21, column=0, columnspan=3, sticky="w", pady=(8, 0))
+        ttk.Button(riga_cal, text="Applica calendario", command=applica_calendario).pack(
+            side="left"
+        )
+        self._cal_status.grid(row=22, column=0, columnspan=3, sticky="w", pady=(6, 0))
+
+        tk.Label(
+            inner,
+            text="Per i giorni scelti vale la posizione del calendario, per gli altri quella\n"
+            "normale qui sopra. Si passa alla posizione del giorno dopo a mezzanotte.\n"
+            "Vale solo per i PC: il telefono usa sempre la sua posizione.\n"
+            "Due dispositivi nello stesso posto mostrano le stesse immagini: metti qui\n"
+            "le stesse coordinate che usano gli altri PC (o il telefono) in quel luogo.",
+            bg=BG,
+            fg=FG2,
+            font=("Segoe UI", 9),
+            justify="left",
+        ).grid(row=23, column=0, columnspan=3, sticky="w", pady=(4, 0))
+
+        stato_calendario()
+
         # ── Meteo ───────────────────────────────────────────────────────────
         tk.Label(
             inner,
@@ -926,7 +1092,7 @@ class ChametigerEditor(tk.Tk):
             bg=BG,
             fg=ACCENT,
             font=("Segoe UI Semibold", 11),
-        ).grid(row=18, column=0, columnspan=3, sticky="w", pady=(24, 6))
+        ).grid(row=28, column=0, columnspan=3, sticky="w", pady=(24, 6))
 
         tk.Label(
             inner,
@@ -934,7 +1100,7 @@ class ChametigerEditor(tk.Tk):
             bg=BG,
             fg=FG,
             font=("Segoe UI", 10),
-        ).grid(row=19, column=0, sticky="w", pady=8)
+        ).grid(row=29, column=0, sticky="w", pady=8)
 
         _, ore = meteo.impostazioni(self.config_data)
         self._meteo_ore_var = tk.IntVar(value=int(ore))
@@ -950,12 +1116,12 @@ class ChametigerEditor(tk.Tk):
             buttonbackground=BG3,
             relief="flat",
             font=("Segoe UI", 10),
-        ).grid(row=19, column=1, padx=12, sticky="w")
+        ).grid(row=29, column=1, padx=12, sticky="w")
 
         self._meteo_status = tk.Label(
             inner, bg=BG, fg=FG2, font=("Segoe UI", 9), justify="left", anchor="w"
         )
-        self._meteo_status.grid(row=22, column=0, columnspan=3, sticky="w", pady=(4, 0))
+        self._meteo_status.grid(row=32, column=0, columnspan=3, sticky="w", pady=(4, 0))
 
         def stato_meteo(prefisso: str = "", colore=FG2):
             ultimo = meteo.ultimo_download()
@@ -973,7 +1139,7 @@ class ChametigerEditor(tk.Tk):
             stato_meteo(f"Previsioni ogni {ore} ore. ", SUCCESS)
 
         ttk.Button(inner, text="Applica", command=applica_meteo).grid(
-            row=19, column=2, padx=4
+            row=29, column=2, padx=4
         )
 
         def carica_meteo():
@@ -996,7 +1162,7 @@ class ChametigerEditor(tk.Tk):
                 messagebox.showerror("Meteo", risposta or "Nessuna risposta dal tray.")
 
         ttk.Button(inner, text="Carica Meteo", command=carica_meteo).grid(
-            row=20, column=2, padx=4
+            row=30, column=2, padx=4
         )
         stato_meteo()
 
