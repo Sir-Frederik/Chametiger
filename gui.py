@@ -48,7 +48,7 @@ WEEKDAYS_ORDER = list(WEEKDAYS_IT.keys())
 
 # Le citta' pronte di Impostazioni -> Posizione e del calendario delle posizioni
 CITTA = {
-    "Napoli": (40.8518, 14.2681),
+    "Napoli": (40.856400, 14.283437),
     "Portici": (40.8196, 14.3470),
     "Pescopagano": (41.0566, 13.9252),
     "Manduria": (40.4028, 17.6343),
