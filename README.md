@@ -14,7 +14,6 @@
 >
 > Dalla 4.7.0: il mazzo si ordina con `sha256` invece di `random.shuffle`, e `config.json` si legge dalla cartella delle immagini su Drive (vedi [Dove sta `config.json`](#dove-sta-configjson)).
 
-
 Wallpaper scheduler per Windows — cambia lo sfondo in base all'**ora del giorno**, al **giorno della settimana**, alla **stagione**, agli **eventi** dell'anno e agli **orari reali di alba e tramonto**.
 
 Ogni fascia oraria pesca fra le immagini che hanno certi **tag**, e le fa scorrere tutte prima di ripeterle.
@@ -115,16 +114,16 @@ Oppure: click destro sull'icona tray → **Apri editor config**
 }
 ```
 
-| Chiave                    | A cosa serve                                                        |
-| ------------------------- | ------------------------------------------------------------------- |
-| `check_interval_minutes`  | Ogni quanto lo scheduler ricontrolla                                 |
-| `history_days`            | Per quanti giorni conservare le righe di `log.json` (default 7). Non è nell'editor: **non** influenza quale immagine esce |
-| `latitude` / `longitude`  | Posizione, per alba, tramonto e meteo. Default: Napoli               |
-| `position_map`            | Posizione per singolo PC (hostname), sopra `latitude`/`longitude`    |
-| `position_schedule`       | Calendario settimanale delle posizioni per singolo PC, sopra `position_map` (vedi [Calendario delle posizioni](#calendario-delle-posizioni)) |
-| `base_path` / `path_map`  | Cartella base delle immagini, con override per singolo PC (hostname) |
-| `seasons` / `events`      | Stagioni ed eventi, che filtrano i tag (vedi sotto)                  |
-| `meteo`                   | `{"attivo": true, "aggiorna_ore": 5, "minimo": 2}`: previsioni sì/no, ogni quante ore riscaricarle (1–10), soglia minima del pool |
+| Chiave                   | A cosa serve                                                                                                                                 |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `check_interval_minutes` | Ogni quanto lo scheduler ricontrolla                                                                                                         |
+| `history_days`           | Per quanti giorni conservare le righe di `log.json` (default 7). Non è nell'editor: **non** influenza quale immagine esce                    |
+| `latitude` / `longitude` | Posizione, per alba, tramonto e meteo. Default: Napoli                                                                                       |
+| `position_map`           | Posizione per singolo PC (hostname), sopra `latitude`/`longitude`                                                                            |
+| `position_schedule`      | Calendario settimanale delle posizioni per singolo PC, sopra `position_map` (vedi [Calendario delle posizioni](#calendario-delle-posizioni)) |
+| `base_path` / `path_map` | Cartella base delle immagini, con override per singolo PC (hostname)                                                                         |
+| `seasons` / `events`     | Stagioni ed eventi, che filtrano i tag (vedi sotto)                                                                                          |
+| `meteo`                  | `{"attivo": true, "aggiorna_ore": 5, "minimo": 2}`: previsioni sì/no, ogni quante ore riscaricarle (1–10), soglia minima del pool            |
 
 ### Dove sta `config.json`
 
@@ -143,9 +142,9 @@ Il config non può dire dove si trova lui stesso, quindi la cartella di ogni PC 
 
 Il tray e l'editor leggono e salvano lo stesso file. Siccome sta su un disco di rete, la lettura può fallire:
 
-| Caso | Tray | Editor |
-| --- | --- | --- |
-| All'avvio la cartella non c'è ancora, per esempio perché Drive non l'ha montata | Parte senza configurazione e riprova ogni 30 secondi | Mostra l'errore e si chiude |
+| Caso                                                                                                                                     | Tray                                                                                                                           | Editor                                                                                |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
+| All'avvio la cartella non c'è ancora, per esempio perché Drive non l'ha montata                                                          | Parte senza configurazione e riprova ogni 30 secondi                                                                           | Mostra l'errore e si chiude                                                           |
 | A tray avviato il file sparisce, è troncato, non è JSON (Drive lo sta scrivendo, un conflitto) o non ha `image_library` / `random_rules` | Continua con **l'ultima configurazione letta con successo** e scrive un avviso nel log, una volta sola finché il problema dura | Mostra l'errore e si chiude, così non lo apre vuoto e non lo salva sopra quello buono |
 
 Il tray non lavora mai con una configurazione vuota o a metà: senza regole resterebbe senza sfondo. Quando il file torna leggibile lo scrive nel log.
@@ -168,7 +167,7 @@ Allo stesso modo `latitude` e `longitude` valgono per tutti, e `position_map` le
 }
 ```
 
-Da lì passano orari solari e meteo. Nell'editor, **Impostazioni → Posizione** mostra le coordinate del PC su cui gira; con *Vale solo per questo PC* le salva in `position_map`, senza la casella cambia quelle comuni.
+Da lì passano orari solari e meteo. Nell'editor, **Impostazioni → Posizione** mostra le coordinate del PC su cui gira; con _Vale solo per questo PC_ le salva in `position_map`, senza la casella cambia quelle comuni.
 
 > Due PC con posizioni diverse **non** mostrano più le stesse immagini: le fasce solari cadono in orari diversi, e il meteo è diverso.
 
@@ -181,7 +180,7 @@ Un PC che cambia posto durante la settimana (ufficio, casa, trasferta) può aver
   "Federico": {
     "enabled": true,
     "days": {
-      "monday":   { "latitude": 40.8518, "longitude": 14.2681, "name": "Napoli" },
+      "monday":   { "latitude": 40.8564, "longitude": 14.2834, "name": "Napoli" },
       "tuesday":  { "latitude": 40.8196, "longitude": 14.347,  "name": "Portici" },
       "thursday": { "latitude": 45.4642, "longitude": 9.19,    "name": "Milano" }
     }
@@ -194,7 +193,7 @@ Un PC che cambia posto durante la settimana (ufficio, casa, trasferta) può aver
 - La posizione del giorno vale per **tutti** i conti della giornata, anche per il numero della finestra, che somma le finestre dei giorni precedenti: il giovedì a Milano il PC conta come un dispositivo che sta a Milano da sempre. Così due dispositivi nello stesso posto, con **le stesse coordinate**, mostrano le stesse immagini, qualunque cosa abbiano fatto gli altri giorni.
 - Il cambio avviene **a mezzanotte**. In quel momento, nelle fasce legate al sole, l'immagine può cambiare.
 
-Nell'editor: **Impostazioni → Calendario delle posizioni (solo PC)**. Per ogni giorno si sceglie una città o si scrivono le coordinate, poi *Applica calendario*. La casella *Usa il calendario su questo PC* lo accende e lo spegne senza perdere i giorni. Il tray scrive nel log la posizione in uso quando cambia:
+Nell'editor: **Impostazioni → Calendario delle posizioni (solo PC)**. Per ogni giorno si sceglie una città o si scrivono le coordinate, poi _Applica calendario_. La casella _Usa il calendario su questo PC_ lo accende e lo spegne senza perdere i giorni. Il tray scrive nel log la posizione in uso quando cambia:
 
 ```
 [INFO] Posizione 40.8196,14.3470 (calendario, martedi' Portici).
@@ -228,14 +227,14 @@ e delle **regole**:
 }
 ```
 
-| Campo            | Significato                                                  |
-| ---------------- | ------------------------------------------------------------ |
-| `include`        | Tag che l'immagine deve avere                                 |
+| Campo            | Significato                                                                                                             |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `include`        | Tag che l'immagine deve avere                                                                                           |
 | `exclude`        | Tag che l'immagine non deve avere (i momenti della giornata [per insieme](#momenti-della-giornata-esclusi-per-insieme)) |
-| `match`          | `"all"` = tutti gli include, `"any"` = ne basta uno           |
-| `rotate_minutes` | Ogni quanto cambiare immagine dentro la fascia (circa: la fascia si divide in parti uguali, senza spezzoni corti) |
-| `prefer`         | Tag preferiti: restringe il pool a quelli, se ne resta abbastanza |
-| `prefer_min`     | Quante immagini devono restare perché `prefer` si applichi (default 1) |
+| `match`          | `"all"` = tutti gli include, `"any"` = ne basta uno                                                                     |
+| `rotate_minutes` | Ogni quanto cambiare immagine dentro la fascia (circa: la fascia si divide in parti uguali, senza spezzoni corti)       |
+| `prefer`         | Tag preferiti: restringe il pool a quelli, se ne resta abbastanza                                                       |
+| `prefer_min`     | Quante immagini devono restare perché `prefer` si applichi (default 1)                                                  |
 
 Se nessuna regola copre l'orario, lo sfondo resta quello che c'è.
 
@@ -255,7 +254,7 @@ exclude: alba, mattino
 
 Le fasce si escludono a vicenda i momenti, e col divieto secco un'immagine `mattino + pomeriggio` non usciva né di mattina né di pomeriggio: ogni immagine doveva avere un momento solo.
 
-> Di conseguenza, **un momento che la fascia non esclude la apre** a tutte le immagini che lo portano. In una fascia `"match": "any"` con un'attività nell'include (`lavoro`, `svago`) conviene escludere *tutti* i momenti che non c'entrano: se la sera esclude `pomeriggio` e `tramonto` ma non `pranzo`, un'immagine `svago + pranzo + tramonto` esce alle 21.
+> Di conseguenza, **un momento che la fascia non esclude la apre** a tutte le immagini che lo portano. In una fascia `"match": "any"` con un'attività nell'include (`lavoro`, `svago`) conviene escludere _tutti_ i momenti che non c'entrano: se la sera esclude `pomeriggio` e `tramonto` ma non `pranzo`, un'immagine `svago + pranzo + tramonto` esce alle 21.
 
 ### Come viene scelta l'immagine
 
@@ -299,13 +298,13 @@ Nei campi `from` e `to` puoi scrivere un'**ancora solare** invece di un orario:
 { "from": "sunset-40m", "to": "dusk+30m", "include": ["tramonto"], "match": "all" }
 ```
 
-| Ancora    | Momento                                              |
-| --------- | ---------------------------------------------------- |
-| `dawn`    | Crepuscolo del mattino (sole 6° sotto l'orizzonte)   |
-| `sunrise` | Alba                                                 |
+| Ancora    | Momento                                                 |
+| --------- | ------------------------------------------------------- |
+| `dawn`    | Crepuscolo del mattino (sole 6° sotto l'orizzonte)      |
+| `sunrise` | Alba                                                    |
 | `noon`    | Mezzogiorno **solare vero**, non le 12:00 dell'orologio |
-| `sunset`  | Tramonto                                             |
-| `dusk`    | Crepuscolo della sera                                |
+| `sunset`  | Tramonto                                                |
+| `dusk`    | Crepuscolo della sera                                   |
 
 Lo scostamento si scrive in minuti (`sunset-40m`, oppure `sunset-40`) o in ore (`dusk+1h`).
 
@@ -328,7 +327,7 @@ Gestita automaticamente e **senza dipendenze**. L'orario dell'evento si calcola 
 
 Va benissimo: le fasce legate al **tuo orario** (lavoro, pranzo) restano a orologio, quelle **astronomiche** vanno al sole. Un solo accorgimento: **le fasce solari vanno prima nella lista**, perché vince la prima che copre l'ora. Così il riempitivo `18:00-21:00` cede il passo quando il tramonto entra nel suo intervallo, senza doverlo spostare per stagione.
 
-> ⚠️ Evita gli estremi misti tipo `"from": "18:00", "to": "sunset-40m"`: d'inverno `sunset-40m` cade *prima* delle 18:00, la fascia si inverte e si mangia tutta la notte. Meglio due estremi solari, o due d'orologio, oppure `min`/`max` (sotto).
+> ⚠️ Evita gli estremi misti tipo `"from": "18:00", "to": "sunset-40m"`: d'inverno `sunset-40m` cade _prima_ delle 18:00, la fascia si inverte e si mangia tutta la notte. Meglio due estremi solari, o due d'orologio, oppure `min`/`max` (sotto).
 
 ### Il primo o l'ultimo di più orari: `min` e `max`
 
@@ -338,16 +337,16 @@ Quando una fascia deve seguire il sole **ma non oltre** (o **non prima di**) un 
 { "from": "sunset-58m", "to": "min(sunset+2m, 18:00)", "include": ["tramonto", "lavoro"], "match": "any" }
 ```
 
-| Scrittura                 | Vale                                     |
-| ------------------------- | ---------------------------------------- |
-| `min(sunset+2m, 18:00)`   | il **primo** dei due: al tramonto, ma non dopo le 18 |
-| `max(dusk+2m, 16:00)`     | l'**ultimo** dei due: dal crepuscolo, ma non prima delle 16 |
+| Scrittura               | Vale                                                        |
+| ----------------------- | ----------------------------------------------------------- |
+| `min(sunset+2m, 18:00)` | il **primo** dei due: al tramonto, ma non dopo le 18        |
+| `max(dusk+2m, 16:00)`   | l'**ultimo** dei due: dal crepuscolo, ma non prima delle 16 |
 
 Dentro le parentesi vanno orari d'orologio o ancore solari, due o più, separati da virgola. Si usano in `from`, in `to` o in entrambi.
 
 **Una fascia con `min`/`max` non scavalca mai la mezzanotte.** Se in un giorno finisce prima di cominciare, o coincide, **quel giorno la fascia non c'è** e si passa alla regola successiva. È proprio ciò che serve: la fascia sopra, "tramonto in orario di lavoro", a gennaio va dalle 16:07 alle 17:07; a marzo si ferma alle 18:00; a giugno diventerebbe 19:38 → 18:00, e sparisce. Senza `min`/`max`, quella stessa inversione verrebbe letta come una fascia a cavallo della mezzanotte e coprirebbe quasi tutto il giorno. Le fasce senza `min`/`max` restano come sempre: `23:00 → dawn-20m` scavalca la mezzanotte.
 
-Nei giorni in cui manca, la fascia non conta nel mazzo: le sue immagini riprendono da dove erano. Nell'editor, l'anteprima dell'orario e la lista delle regole segnalano *"oggi non c'è"*.
+Nei giorni in cui manca, la fascia non conta nel mazzo: le sue immagini riprendono da dove erano. Nell'editor, l'anteprima dell'orario e la lista delle regole segnalano _"oggi non c'è"_.
 
 Lo schema tipico è una coppia di regole, la limitata **prima** della normale:
 
@@ -389,15 +388,15 @@ Due livelli di periodi, entrambi intervalli di date che si ripetono ogni anno:
 ]
 ```
 
-| Campo          | Effetto                                                                   |
-| -------------- | ------------------------------------------------------------------------- |
+| Campo          | Effetto                                                                                                                                                 |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `from` / `to`  | `MM-GG`, **senza anno**: il periodo si ripete ogni anno. Se la fine precede l'inizio scavalca il capodanno. Per le feste mobili: `pasqua-5`, `pasqua+2` |
-| `tags`         | I tag del periodo: valgono solo nei suoi giorni                            |
-| `veto`         | Tag vietati senza appello nei giorni del periodo: basta averne uno e l'immagine è fuori |
-| `random_rules` | Fasce proprie, con la stessa forma di `random_rules`. Si editano col pulsante **Fasce** |
-| `prefer`       | Tag preferiti: il pool si restringe a quelli solo se ne resta abbastanza   |
-| `prefer_min`   | Soglia di `prefer`. Senza, con pochi tag preferiti la fascia resta fissa   |
-| `require`      | Tag obbligatori, si sommano all'`include` (in AND). Raro                   |
+| `tags`         | I tag del periodo: valgono solo nei suoi giorni                                                                                                         |
+| `veto`         | Tag vietati senza appello nei giorni del periodo: basta averne uno e l'immagine è fuori                                                                 |
+| `random_rules` | Fasce proprie, con la stessa forma di `random_rules`. Si editano col pulsante **Fasce**                                                                 |
+| `prefer`       | Tag preferiti: il pool si restringe a quelli solo se ne resta abbastanza                                                                                |
+| `prefer_min`   | Soglia di `prefer`. Senza, con pochi tag preferiti la fascia resta fissa                                                                                |
+| `require`      | Tag obbligatori, si sommano all'`include` (in AND). Raro                                                                                                |
 
 ### Feste mobili
 
@@ -407,11 +406,11 @@ Pasqua cade fra il 22 marzo e il 25 aprile, quindi una data fissa sarebbe giusta
 { "name": "Pasqua", "from": "pasqua-5", "to": "pasqua+2", "tags": ["pasqua"], "veto": ["horror"] }
 ```
 
-| Scrittura      | Giorno                                   |
-| -------------- | ---------------------------------------- |
-| `pasqua`       | La domenica di Pasqua                    |
-| `pasqua-5`     | Cinque giorni prima (anche `pasqua - 5g`) |
-| `pasqua+1`     | Il lunedì dell'Angelo                    |
+| Scrittura  | Giorno                                    |
+| ---------- | ----------------------------------------- |
+| `pasqua`   | La domenica di Pasqua                     |
+| `pasqua-5` | Cinque giorni prima (anche `pasqua - 5g`) |
+| `pasqua+1` | Il lunedì dell'Angelo                     |
 
 La data si ricalcola **ogni anno**, così l'evento dura sempre quanto hai deciso: `pasqua-5 → pasqua+2` sono 8 giorni, dal 31 marzo al 7 aprile nel 2026 e dal 23 al 30 marzo nel 2027. Una data fissa e una mobile si possono anche mescolare (`03-01 → pasqua`). Il dialogo dell'evento mostra dove cadono le date quest'anno e il prossimo; il grafico le disegna nell'anno corrente.
 
@@ -446,7 +445,7 @@ L'`exclude` della singola **regola** resta invece un divieto secco per tag: `-sm
 
 ### Vietati sempre
 
-I tag di stagione ed evento sono un divieto **morbido**: un'immagine cade solo se *tutti* i suoi tag di stagione sono fuori periodo. Per dire invece *"in questo periodo, questo tag no, punto"* c'è il **veto**, la lista **Vietati sempre** nel dialogo della stagione o dell'evento:
+I tag di stagione ed evento sono un divieto **morbido**: un'immagine cade solo se _tutti_ i suoi tag di stagione sono fuori periodo. Per dire invece _"in questo periodo, questo tag no, punto"_ c'è il **veto**, la lista **Vietati sempre** nel dialogo della stagione o dell'evento:
 
 ```json
 { "name": "Natale", "from": "12-01", "to": "01-06", "tags": ["natale"], "veto": ["horror"] }
@@ -465,7 +464,7 @@ In **Anteprima** e nel log un tag vietato dal periodo compare come `!horror`.
 
 ### Le stagioni devono coprire l'anno intero
 
-Un giorno che **nessuna** stagione copre non applica nessun filtro di stagione: a luglio tornerebbero le immagini invernali. La tab **Stagioni ed eventi** lo segnala in fondo (*"12 giorni senza stagione: …"*), e il pulsante **Verifica anno** controlla ogni combinazione di stagioni ed eventi dell'anno e avvisa sulle fasce rimaste con meno di 5 immagini.
+Un giorno che **nessuna** stagione copre non applica nessun filtro di stagione: a luglio tornerebbero le immagini invernali. La tab **Stagioni ed eventi** lo segnala in fondo (_"12 giorni senza stagione: …"_), e il pulsante **Verifica anno** controlla ogni combinazione di stagioni ed eventi dell'anno e avvisa sulle fasce rimaste con meno di 5 immagini.
 
 ---
 
@@ -474,20 +473,17 @@ Un giorno che **nessuna** stagione copre non applica nessun filtro di stagione: 
 All'avvio dell'app, e poi ogni `aggiorna_ore` ore (default 5, da 1 a 10, si cambia in **Impostazioni → Meteo**), lo scheduler scarica il meteo **ora per ora** delle prossime 10 ore, quella attuale compresa, per la latitudine e longitudine del config, e lo salva in `meteo.json`. Fra un download e l'altro non serve la rete: le ore sono già programmate. Per esempio: avvio alle 10, meteo dalle 10:00 alle 20:00; alle 15 nuovo download, meteo dalle 15:00 all'01:00. Le ore già passate di oggi restano quelle del download di prima: la sequenza del giorno si ricalcola dalla mezzanotte, e se la pioggia delle 11 sparisse alle 12 la finestra di adesso potrebbe cambiare immagine anche col tempo dell'ora invariato.
 Il METAR è stato inserito inizialmente perchè ritenuto affidabile, ma ciò è vero solo nei luoghi vicini all'aereoporto. Successivamente è stato disabilitato per usare invece di dati elaborati di Met Norway.
 
-
-| Fonte | Cosa dà |
-| ----- | ------- |
-| [Met Norway](https://api.met.no) (`locationforecast`) | Le previsioni ora per ora |
+| Fonte                                                      | Cosa dà                                                                                                                                       |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Met Norway](https://api.met.no) (`locationforecast`)      | Le previsioni ora per ora                                                                                                                     |
 | METAR ([aviationweather.gov](https://aviationweather.gov)) | Il tempo **osservato** adesso, dalla stazione più vicina entro 30 km e non più vecchio di 90 minuti. Per l'ora attuale vince sulla previsione |
 
-
-
-| Tempo dell'ora | Effetto sul pool della fascia                                       |
-| -------------- | ------------------------------------------------------------------- |
-| temporale      | prima le immagini `temporale`; se non bastano, `temporale` e `pioggia` insieme |
-| pioggia        | prima le immagini `pioggia`                                         |
-| sereno, nuvoloso, neve, nebbia | le immagini `pioggia` e `temporale` si mettono da parte |
-| previsioni assenti | nessun effetto: i due tag contano come tutti gli altri          |
+| Tempo dell'ora                 | Effetto sul pool della fascia                                                  |
+| ------------------------------ | ------------------------------------------------------------------------------ |
+| temporale                      | prima le immagini `temporale`; se non bastano, `temporale` e `pioggia` insieme |
+| pioggia                        | prima le immagini `pioggia`                                                    |
+| sereno, nuvoloso, neve, nebbia | le immagini `pioggia` e `temporale` si mettono da parte                        |
+| previsioni assenti             | nessun effetto: i due tag contano come tutti gli altri                         |
 
 Come `prefer` con `prefer_min`, il meteo **restringe** il pool della fascia solo se restano almeno `minimo` immagini (default 2): se alle 10 piove ma una sola immagine `mattino` ha anche `pioggia`, esce una `mattino` qualsiasi, invece di tenere ferma quella per tutte le ore di pioggia. Un'immagine di pioggia con più momenti esce in ognuno, come tutte le altre: vedi [Momenti della giornata](#momenti-della-giornata-esclusi-per-insieme).
 
@@ -514,20 +510,20 @@ Nel log e in **Anteprima** un'ora di pioggia compare come `@pioggia` (o `@tempor
 
 ## L'editor grafico
 
-| Tab                     | A cosa serve                                                        |
-| ----------------------- | ------------------------------------------------------------------- |
-| Tag                     | Il vocabolario. Rinominare o cancellare un tag lo aggiorna anche in stagioni ed eventi |
-| Libreria                | Assegna i tag alle immagini                                          |
-| **Stagioni ed eventi**  | Il grafico dell'anno e le due tabelle. Avvisa sui giorni senza stagione, e ha **Verifica anno** |
-| Feriali / Weekend       | Le regole di base. Mostrano l'orario reale di oggi accanto alle ancore solari |
-| Override giorno         | Regole di base per un singolo giorno della settimana                 |
-| **Anteprima**           | Una data qualsiasi risolta ora per ora, con il motore vero           |
+| Tab                    | A cosa serve                                                                                    |
+| ---------------------- | ----------------------------------------------------------------------------------------------- |
+| Tag                    | Il vocabolario. Rinominare o cancellare un tag lo aggiorna anche in stagioni ed eventi          |
+| Libreria               | Assegna i tag alle immagini                                                                     |
+| **Stagioni ed eventi** | Il grafico dell'anno e le due tabelle. Avvisa sui giorni senza stagione, e ha **Verifica anno** |
+| Feriali / Weekend      | Le regole di base. Mostrano l'orario reale di oggi accanto alle ancore solari                   |
+| Override giorno        | Regole di base per un singolo giorno della settimana                                            |
+| **Anteprima**          | Una data qualsiasi risolta ora per ora, con il motore vero                                      |
 
 Nel **grafico** ogni stagione ed evento è una riga, coi mesi in colonna: le transizioni e gli eventi annidati si vedono incolonnati, e cliccando una barra si seleziona la riga nella tabella.
 
 **Fasce** apre le fasce orarie proprie della stagione o dell'evento selezionato — feriali, weekend e override di giorno — con lo stesso editor delle regole di base, ancore solari e conteggio immagini compresi. Si aprono anche su un periodo che non ne ha: le liste rimaste vuote vengono tolte alla chiusura, così un periodo senza fasce resta pulito nel `config.json`.
 
-**Anteprima** è lo strumento da usare quando qualcosa non torna: per ogni finestra della giornata mostra la pila del giorno (*Inverno > Natale*), regola vincente, fascia con l'orario solare risolto, tag effettivi, dimensione del pool e immagine scelta. In fondo riporta quante immagini distinte escono e qual è il pool più piccolo.
+**Anteprima** è lo strumento da usare quando qualcosa non torna: per ogni finestra della giornata mostra la pila del giorno (_Inverno > Natale_), regola vincente, fascia con l'orario solare risolto, tag effettivi, dimensione del pool e immagine scelta. In fondo riporta quante immagini distinte escono e qual è il pool più piccolo.
 
 In **Impostazioni → Posizione** si impostano latitudine e longitudine, per tutti i PC o solo per quello su cui gira l'editor, con un elenco delle principali città italiane e gli orari solari di oggi come conferma. In **Impostazioni → Meteo** si sceglie ogni quante ore scaricare le previsioni (da 1 a 10).
 
@@ -535,14 +531,14 @@ In **Impostazioni → Posizione** si impostano latitudine e longitudine, per tut
 
 ## Menu tray (tasto destro sull'icona)
 
-| Voce                    | Descrizione                                      |
-| ----------------------- | ------------------------------------------------ |
-| Applica adesso          | Forza il controllo immediato                     |
-| Cambia immagine adesso  | Nuova estrazione subito                          |
-| Carica meteo            | Riscarica le previsioni e adegua lo sfondo al tempo |
-| Apri editor config      | Apre la GUI di configurazione                    |
-| \* Avvio con Windows    | Toggle avvio automatico                          |
-| Esci                    | Chiude l'applicazione                            |
+| Voce                   | Descrizione                                         |
+| ---------------------- | --------------------------------------------------- |
+| Applica adesso         | Forza il controllo immediato                        |
+| Cambia immagine adesso | Nuova estrazione subito                             |
+| Carica meteo           | Riscarica le previsioni e adegua lo sfondo al tempo |
+| Apri editor config     | Apre la GUI di configurazione                       |
+| \* Avvio con Windows   | Toggle avvio automatico                             |
+| Esci                   | Chiude l'applicazione                               |
 
 ---
 
@@ -580,18 +576,18 @@ L'eseguibile comparirà in `dist/app.exe`.
 
 ## Troubleshooting
 
-| Problema                              | Soluzione                                                              |
-| ------------------------------------- | ---------------------------------------------------------------------- |
-| Lo sfondo non cambia                  | Verifica che il percorso immagine esista                                |
-| `ModuleNotFoundError`                 | Esegui `pip install -r requirements.txt`                                |
-| Icona tray non appare                 | Assicurati di avere Pillow installato                                   |
-| `winreg` non trovato                  | Solo Windows; non funziona su Linux/macOS                               |
-| Esce sempre la stessa                 | La regola ha pochi candidati: usa **Verifica anno** in Stagioni ed eventi |
-| Le immagini si ripetono troppo spesso | Il pool è piccolo: il mazzo si riavvolge presto. Taggane altre, o allarga i tag della regola. Se la stessa immagine esce in giorni vicini, controlla che le regole di quel momento abbiano gli stessi orari: fasce con orari diversi hanno mazzi separati. `history_days` **non** c'entra |
-| Su un altro PC non trova le immagini  | Aggiungi il suo hostname in `path_map`                                  |
-| Due PC mostrano immagini diverse alla stessa ora | Uno dei due gira con codice vecchio: confronta la versione nel menu del tray, aggiorna e riavvia il tray |
-| `config.json non leggibile` nel log    | Drive non ha montato la cartella, o il file è a metà sincronizzazione. Il tray continua con l'ultima configurazione buona; controlla `cartella_config.json` se non passa |
-| Le fasce serali cadono nell'ora sbagliata | Coordinate sbagliate: **Impostazioni → Posizione**                  |
-| Un'immagine stagionale non esce mai   | Tutti i suoi tag di stagione o evento sono fuori periodo, ha un tag vietato (`!tag`), oppure è ammessa solo in uno strato le cui fasce non la pescano: guarda **Anteprima** |
-| A luglio escono immagini invernali    | Un giorno dell'anno non è coperto da nessuna stagione: la tab Stagioni ed eventi lo segnala |
-| Una fascia resta ferma tutto il giorno | Pool troppo piccolo, o `prefer` che stringe troppo: alza `prefer_min`  |
+| Problema                                         | Soluzione                                                                                                                                                                                                                                                                                 |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Lo sfondo non cambia                             | Verifica che il percorso immagine esista                                                                                                                                                                                                                                                  |
+| `ModuleNotFoundError`                            | Esegui `pip install -r requirements.txt`                                                                                                                                                                                                                                                  |
+| Icona tray non appare                            | Assicurati di avere Pillow installato                                                                                                                                                                                                                                                     |
+| `winreg` non trovato                             | Solo Windows; non funziona su Linux/macOS                                                                                                                                                                                                                                                 |
+| Esce sempre la stessa                            | La regola ha pochi candidati: usa **Verifica anno** in Stagioni ed eventi                                                                                                                                                                                                                 |
+| Le immagini si ripetono troppo spesso            | Il pool è piccolo: il mazzo si riavvolge presto. Taggane altre, o allarga i tag della regola. Se la stessa immagine esce in giorni vicini, controlla che le regole di quel momento abbiano gli stessi orari: fasce con orari diversi hanno mazzi separati. `history_days` **non** c'entra |
+| Su un altro PC non trova le immagini             | Aggiungi il suo hostname in `path_map`                                                                                                                                                                                                                                                    |
+| Due PC mostrano immagini diverse alla stessa ora | Uno dei due gira con codice vecchio: confronta la versione nel menu del tray, aggiorna e riavvia il tray                                                                                                                                                                                  |
+| `config.json non leggibile` nel log              | Drive non ha montato la cartella, o il file è a metà sincronizzazione. Il tray continua con l'ultima configurazione buona; controlla `cartella_config.json` se non passa                                                                                                                  |
+| Le fasce serali cadono nell'ora sbagliata        | Coordinate sbagliate: **Impostazioni → Posizione**                                                                                                                                                                                                                                        |
+| Un'immagine stagionale non esce mai              | Tutti i suoi tag di stagione o evento sono fuori periodo, ha un tag vietato (`!tag`), oppure è ammessa solo in uno strato le cui fasce non la pescano: guarda **Anteprima**                                                                                                               |
+| A luglio escono immagini invernali               | Un giorno dell'anno non è coperto da nessuna stagione: la tab Stagioni ed eventi lo segnala                                                                                                                                                                                               |
+| Una fascia resta ferma tutto il giorno           | Pool troppo piccolo, o `prefer` che stringe troppo: alza `prefer_min`                                                                                                                                                                                                                     |
