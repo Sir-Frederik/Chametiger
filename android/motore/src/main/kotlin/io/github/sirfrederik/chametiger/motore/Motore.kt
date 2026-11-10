@@ -16,6 +16,13 @@ import java.time.ZoneId
 /** Origine del conteggio delle finestre. NON cambiarla mai: trasla tutti i mazzi. */
 val EPOCH: LocalDate = LocalDate.of(2026, 1, 1)
 
+/**
+ * In quanti gruppi sono divise le immagini, cioe' dopo quanti giorni
+ * un'immagine puo' tornare (vedi "I gruppi" in app.py). NON cambiarlo mai:
+ * come EPOCH, sposta tutti i mazzi.
+ */
+const val GRUPPI = 4
+
 /** I momenti della giornata: nell'exclude valgono per insieme, come le stagioni. */
 val TAG_ORARI = setOf("alba", "mattino", "pranzo", "pomeriggio", "tramonto", "crepuscolo", "sera", "notte")
 
@@ -69,6 +76,14 @@ class Motore(
     private val fonteMeteo: FonteMeteo = FonteMeteo.NESSUNA,
 ) {
     val sole: Sole = config.coordinate(dispositivo).let { (lat, lon) -> Sole(lat, lon, zona) }
+
+    /**
+     * Il sole alle coordinate comuni del config: con questo si CONTANO le
+     * finestre, uguali su ogni dispositivo. Gli orari delle fasce restano
+     * quelli di `sole`, del posto in cui si trova il dispositivo.
+     */
+    private val soleDiRiferimento: Sole =
+        config.coordinateDiRiferimento().let { (lat, lon) -> Sole(lat, lon, zona) }
 
     private val vocabolario: Set<String> get() = config.tagStagionali
     private val sha256 = MessageDigest.getInstance("SHA-256")
@@ -272,28 +287,81 @@ class Motore(
     /** Durata della fascia in minuti. Inizio e fine uguali: tutto il giorno. */
     private fun lunghezza(start: Int, end: Int): Int = Math.floorMod(end - start, 1440).let { if (it == 0) 1440 else it }
 
-    /** Quante finestre ha la regola quel giorno: parti uguali di durata vicina a rotate. */
+    /**
+     * Quante finestre ha la regola quel giorno: parti uguali di durata vicina a
+     * rotate. Contate alle coordinate di riferimento, non a quelle del
+     * dispositivo: il conteggio decide il numero della finestra, e quindi la
+     * carta del mazzo, e deve essere lo stesso ovunque.
+     */
     private fun finestreDelGiorno(regola: Regola, giorno: LocalDate, rotate: Int): Int {
-        val (start, end) = confini(regola, giorno)
+        val start = soleDiRiferimento.minuti(regola.from ?: "00:00", giorno)
+        val end = soleDiRiferimento.minuti(regola.to ?: "00:00", giorno)
         if (Sole.fasciaAssente(regola.from, regola.to, start, end)) return 0
         return maxOf(1, (lunghezza(start, end).toDouble() / rotate + 0.5).toInt())
     }
 
-    // Somme cumulative delle finestre da EPOCH, per (from, to, rotate): e' tutto
-    // cio' che determina la durata delle finestre. somme[i] = finestre dei
-    // giorni da EPOCH a EPOCH + i - 1.
-    private val somme = HashMap<Triple<String?, String?, Int>, MutableList<Int>>()
+    /**
+     * Le finestre di ogni giorno da EPOCH e le loro somme, come _tabella di
+     * app.py. Indice = giorni da EPOCH:
+     *   per[i]  finestre del giorno i
+     *   cum[i]  finestre dei giorni prima di i
+     *   gru[i]  finestre dei giorni prima di i che hanno il gruppo di i
+     */
+    private class Tabella {
+        val per = ArrayList<Int>()
+        val cum = arrayListOf(0)
+        val gru = arrayListOf(0)
+    }
+
+    // Per (from, to, rotate): e' tutto cio' che determina il numero delle finestre
+    private val tabelle = HashMap<Triple<String?, String?, Int>, Tabella>()
+
+    /** La tabella della regola, calcolata almeno fino all'indice `fino` compreso. */
+    private fun tabella(regola: Regola, rotate: Int, fino: Int): Tabella {
+        val t = tabelle.getOrPut(Triple(regola.from, regola.to, rotate)) { Tabella() }
+        while (t.per.size < fino) {
+            val i = t.per.size
+            t.per.add(finestreDelGiorno(regola, EPOCH.plusDays(i.toLong()), rotate))
+            t.cum.add(t.cum[i] + t.per[i])
+            val k = i + 1
+            t.gru.add(if (k >= GRUPPI) t.gru[k - GRUPPI] + t.per[k - GRUPPI] else 0)
+        }
+        return t
+    }
+
+    private fun indiceDi(giorno: LocalDate): Int = (giorno.toEpochDay() - EPOCH.toEpochDay()).toInt()
 
     /** Quante finestre ha avuto la regola da EPOCH al giorno PRECEDENTE a `giorno`. */
     private fun finestreFinoA(regola: Regola, giorno: LocalDate, rotate: Int): Int {
         if (!giorno.isAfter(EPOCH)) return 0
-        val giorni = (giorno.toEpochDay() - EPOCH.toEpochDay()).toInt()
-        val cum = somme.getOrPut(Triple(regola.from, regola.to, rotate)) { mutableListOf(0) }
-        while (cum.size <= giorni) {
-            val g = EPOCH.plusDays((cum.size - 1).toLong())
-            cum.add(cum.last() + finestreDelGiorno(regola, g, rotate))
+        val indice = indiceDi(giorno)
+        return tabella(regola, rotate, indice).cum[indice]
+    }
+
+    /** Come finestreFinoA, contando solo i giorni di quel gruppo: il numero della finestra nel mazzo del gruppo. */
+    private fun finestreDelGruppoFinoA(regola: Regola, giorno: LocalDate, gruppo: Int, rotate: Int): Int {
+        var indice = maxOf(0, indiceDi(giorno))
+        // il primo giorno del gruppo da `giorno` in poi: prima non ce ne sono altri
+        indice += Math.floorMod(gruppo - indice, GRUPPI)
+        return tabella(regola, rotate, indice).gru[indice]
+    }
+
+    /**
+     * _giorno_dell_ordinale: il giorno a cui appartiene la finestra numero
+     * `ordinale` (in giorni da EPOCH) e il suo posto fra le finestre di quel
+     * giorno. `vicino` e' da dove cominciare a cercare.
+     */
+    private fun giornoDellOrdinale(regola: Regola, ordinale: Int, rotate: Int, vicino: LocalDate): Pair<Int, Int> {
+        var i = maxOf(0, indiceDi(vicino))
+        val cum = tabella(regola, rotate, i + 1).cum
+        while (i > 0 && cum[i] > ordinale) i--
+        // In avanti finche' la finestra non cade nel giorno. Il limite serve solo
+        // a una fascia min/max che dal riferimento non si vede piu' per mesi.
+        for (passo in 0 until 800) {
+            if (tabella(regola, rotate, i + 1).cum[i + 1] > ordinale) break
+            i++
         }
-        return cum[giorni]
+        return i to ordinale - cum[i]
     }
 
     /** _window_ordinal: numero progressivo della finestra, contando solo quelle che la regola copre. */
@@ -313,7 +381,10 @@ class Motore(
             cur = start // fuori fascia: si resta sulla prima finestra
         }
 
-        val perGiorno = finestreDelGiorno(regola, giorno, rotate)
+        // La fascia, coi suoi orari locali, e' divisa in tante parti quante sono
+        // le finestre del giorno alle coordinate di riferimento. Almeno una: se
+        // al riferimento oggi la fascia non c'e' (min/max) ma qui si'.
+        val perGiorno = maxOf(1, finestreDelGiorno(regola, giorno, rotate))
         val offset = minOf(Math.floorDiv((cur - start) * perGiorno, lunghezza(start, end)), perGiorno - 1)
         return finestreFinoA(regola, giorno, rotate) + offset
     }
@@ -333,6 +404,20 @@ class Motore(
     }
 
     private fun digest(testo: String): ByteArray = sha256.digest(testo.toByteArray(Charsets.UTF_8))
+
+    private val cacheGruppi = HashMap<String, Int>()
+
+    /** _gruppo_immagine: il gruppo dell'immagine, fisso, dai primi 4 byte di sha256("gruppo|immagine"). */
+    fun gruppoImmagine(img: String): Int = cacheGruppi.getOrPut(img) {
+        val d = digest("gruppo|$img")
+        var n = 0L
+        for (i in 0 until 4) n = (n shl 8) or (d[i].toLong() and 0xFF)
+        (n % GRUPPI).toInt()
+    }
+
+    /** Quanti giorni separano, in un senso o nell'altro, i giorni di due gruppi. */
+    private fun distanzaGruppi(a: Int, b: Int): Int =
+        minOf(Math.floorMod(a - b, GRUPPI), Math.floorMod(b - a, GRUPPI))
 
     private fun perHash(carte: List<String>, chiave: (String) -> String): List<String> =
         carte.map { it to digest(chiave(it)) }
@@ -443,20 +528,43 @@ class Motore(
      * _ricerca_finestra: le immagini del pool nell'ordine in cui la finestra
      * le cerca. Il mazzo e' quello della fascia se il pool ci sta dentro,
      * altrimenti (pioggia con immagini fuori dalla fascia) uno della regola,
-     * col seme della firma. In fondo le immagini con un ingresso futuro.
+     * col seme della firma.
+     *
+     * Prima le carte del gruppo del giorno, dal mazzo di quel gruppo. Poi le
+     * altre, dal mazzo intero, cominciando dai gruppi piu' lontani da oggi. In
+     * fondo le immagini con un ingresso futuro. `giorno` e' quello della
+     * sequenza.
      */
     fun ricercaFinestra(giorno: LocalDate, regola: Regola, firma: String, pool: List<String>, ordinale: Int): List<String> {
         val chiave = chiaveFascia(regola)
         val universo = universi(giorno)[chiave].orEmpty()
         val (seme, carte) = if (universo.containsAll(pool)) chiave to universo.ordinate() else firma to pool
+        val nelPool = pool.toSet()
+        val rotate = regola.rotate
+
+        // Il gruppo e' quello del giorno di calendario, anche per la coda dopo
+        // la mezzanotte. Il posto nel mazzo del gruppo si conta dal giorno a cui
+        // la finestra appartiene.
+        val gruppo = Math.floorMod(indiceDi(giorno), GRUPPI)
+        val (indice, posto) = giornoDellOrdinale(regola, ordinale, rotate, giorno)
+        val delGruppo = carte.filter { gruppoImmagine(it) == gruppo }
+        val ingressoGruppo = delGruppo.mapNotNull { c ->
+            config.ingressi[c]?.let { c to finestreDelGruppoFinoA(regola, it, gruppo, rotate) }
+        }.toMap()
+        val nelGruppo = posto + finestreDelGruppoFinoA(regola, EPOCH.plusDays(indice.toLong()), gruppo, rotate)
+        val (mazzoGruppo, posGruppo) = giroDi(delGruppo, ingressoGruppo, seme, nelGruppo)
+        val ordine = ordineDiRicerca(mazzoGruppo, posGruppo).filter { it in nelPool }.toMutableList()
+        val visti = ordine.toMutableSet()
 
         val ingresso = carte.mapNotNull { c ->
-            config.ingressi[c]?.let { c to finestreFinoA(regola, it, regola.rotate) }
+            config.ingressi[c]?.let { c to finestreFinoA(regola, it, rotate) }
         }.toMap()
         val (mazzo, pos) = giroDi(carte, ingresso, seme, ordinale)
-        val nelPool = pool.toSet()
-        val ordine = ordineDiRicerca(mazzo, pos).filter { it in nelPool }
-        val visti = ordine.toSet()
+        // sortedByDescending e' stabile: a pari distanza resta l'ordine del mazzo
+        val altre = ordineDiRicerca(mazzo, pos).filter { it in nelPool && it !in visti }
+            .sortedByDescending { distanzaGruppi(gruppoImmagine(it), gruppo) }
+        ordine += altre
+        visti += altre
         return ordine + pool.filter { it !in visti }
     }
 

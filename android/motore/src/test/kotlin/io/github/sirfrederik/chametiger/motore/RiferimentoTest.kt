@@ -19,9 +19,16 @@ class RiferimentoTest {
     @Test
     fun senzaMeteo() = confronta("senza_meteo")
 
+    /**
+     * Il dispositivo a Milano, lontano dalle coordinate comuni del config: le
+     * finestre si contano a quelle comuni, gli orari sono quelli di Milano.
+     */
+    @Test
+    fun altraPosizione() = confronta("altra_posizione", giorniMinimi = 40)
+
     private data class Attesa(val minuto: Int, val ordinale: Int, val immagine: String, val firma: String)
 
-    private fun confronta(scenario: String) {
+    private fun confronta(scenario: String, giorniMinimi: Int = 50) {
         val config = Config.leggi(risorsa("$scenario/config.json"))
 
         val meteo = HashMap<LocalDate, Map<Int, StatoMeteo>>()
@@ -38,7 +45,7 @@ class RiferimentoTest {
                 else -> error("Riga sconosciuta: $riga")
             }
         }
-        assertTrue("Riferimento $scenario troppo piccolo", sequenze.size > 50 && ore.size > 1000)
+        assertTrue("Riferimento $scenario troppo piccolo", sequenze.size > giorniMinimi && ore.size > 1000)
 
         val motore = Motore(config, DISPOSITIVO, ZONA) { giorno -> meteo[giorno].orEmpty() }
         val differenze = mutableListOf<String>()

@@ -914,7 +914,9 @@ class ChametigerEditor(tk.Tk):
             inner,
             text="Servono alle fasce ancorate al sole (sunset-40m, dawn-20m) e al meteo:\n"
             "con le coordinate sbagliate le fasce serali cadono nell'ora sbagliata.\n"
-            "Due PC con posizioni diverse non mostrano piu' le stesse immagini.",
+            "In posti diversi le immagini restano le stesse e cambiano solo gli orari.\n"
+            "Senza la casella si cambiano le coordinate comuni, che sono anche il\n"
+            "riferimento del conteggio: i mazzi di tutti i dispositivi si spostano, una volta.",
             bg=BG,
             fg=FG2,
             font=("Segoe UI", 9),
@@ -1075,8 +1077,8 @@ class ChametigerEditor(tk.Tk):
             text="Per i giorni scelti vale la posizione del calendario, per gli altri quella\n"
             "normale qui sopra. Si passa alla posizione del giorno dopo a mezzanotte.\n"
             "Vale solo per i PC: il telefono usa sempre la sua posizione.\n"
-            "Due dispositivi nello stesso posto mostrano le stesse immagini: metti qui\n"
-            "le stesse coordinate che usano gli altri PC (o il telefono) in quel luogo.",
+            "La posizione cambia gli orari delle fasce solari e il meteo, non le immagini:\n"
+            "quelle sono le stesse in ogni posto.",
             bg=BG,
             fg=FG2,
             font=("Segoe UI", 9),

@@ -308,6 +308,26 @@ def coords(config: dict, calendario: bool = True) -> tuple[float, float]:
     return lat, lon
 
 
+def coords_riferimento(config: dict) -> tuple[float, float]:
+    """
+    Le coordinate comuni del config (`latitude`/`longitude`), uguali su ogni
+    dispositivo: senza position_map, senza calendario, senza la posizione del
+    telefono. Default: Napoli.
+
+    Con queste si CONTANO le finestre di rotazione (vedi app._finestre_del_giorno):
+    il numero della finestra decide la carta del mazzo, e contato alle coordinate
+    del dispositivo cambiava da un posto all'altro. Gli orari delle fasce restano
+    quelli locali di coords.
+    """
+    try:
+        return (
+            float(config.get("latitude", 40.8518)),
+            float(config.get("longitude", 14.2681)),
+        )
+    except (TypeError, ValueError, AttributeError):
+        return 40.8518, 14.2681
+
+
 def describe(t, giorno: date, lat: float, lon: float) -> str:
     """
     'sunset-40m' -> 'sunset-40m (19:12)'. Per il log e per la GUI: senza l'orario

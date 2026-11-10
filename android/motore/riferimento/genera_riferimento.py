@@ -16,11 +16,19 @@ Non tocca i file di Chametiger: li importa e sostituisce da fuori tre cose.
 Il fuso e' quello del sistema operativo, come in app.py: va generato su un PC
 in ora italiana, e il test Kotlin usa Europe/Rome.
 
-Due scenari, ognuno con la sua copia del config:
-  con_meteo    il config com'e', col meteo sintetico
-  senza_meteo  lo stesso config con "attivo": false, su un intervallo piu'
-               corto: le firme perdono la parte m:, e i tag pioggia/temporale
-               contano come gli altri
+Tre scenari, ognuno con la sua copia del config:
+  con_meteo        il config com'e', col meteo sintetico
+  senza_meteo      lo stesso config con "attivo": false, su un intervallo piu'
+                   corto: le firme perdono la parte m:, e i tag
+                   pioggia/temporale contano come gli altri
+  altra_posizione  il dispositivo a Milano, lontano dalle coordinate comuni del
+                   config: le finestre si contano a quelle comuni e gli orari
+                   sono quelli di Milano, quindi numeri e immagini devono
+                   restare quelli degli altri dispositivi
+
+Il calendario delle posizioni (position_schedule) si toglie dal config: vale
+solo per i PC, il telefono non lo legge, e seguirebbe il giorno della settimana
+in cui gira lo script.
 
 Formato (TSV, UTF-8), una riga per voce:
   M  giorno  24 lettere, una per ora: A asciutto, P pioggia, T temporale
@@ -43,9 +51,11 @@ USCITA = QUI.parent / "src" / "test" / "resources" / "riferimento"
 
 DISPOSITIVO = "Federico"
 
+# nome: (dal, al, meteo attivo, posizione del dispositivo o None per quella del config)
 SCENARI = {
-    "con_meteo": (date(2026, 12, 20), date(2028, 1, 10), True),
-    "senza_meteo": (date(2027, 3, 1), date(2027, 4, 30), False),
+    "con_meteo": (date(2026, 12, 20), date(2028, 1, 10), True, None),
+    "senza_meteo": (date(2027, 3, 1), date(2027, 4, 30), False, None),
+    "altra_posizione": (date(2027, 2, 15), date(2027, 4, 10), True, (45.4642, 9.19)),
 }
 
 sys.path.insert(0, str(CHAMETIGER))
@@ -148,15 +158,27 @@ def ingressi_sintetici(config: dict, dal: date, al: date) -> dict[str, str]:
     return out
 
 
+def config_dello_scenario(base: dict, nome: str) -> dict:
+    """Il config dello scenario, a partire da quello condiviso."""
+    dal, al, attivo, posizione = SCENARI[nome]
+    config = copy.deepcopy(base)
+    config.pop("position_schedule", None)
+    config["meteo"]["attivo"] = attivo
+    config["ingressi"] = ingressi_sintetici(config, dal, al)
+    if posizione:
+        config.setdefault("position_map", {})[DISPOSITIVO] = {
+            "latitude": posizione[0],
+            "longitude": posizione[1],
+        }
+    return config
+
+
 def main():
     prepara()
     # Lo stesso config.json condiviso che leggono il tray e il telefono.
     base = app.load_config()
-    for nome, (dal, al, attivo) in SCENARI.items():
-        config = copy.deepcopy(base)
-        config["meteo"]["attivo"] = attivo
-        config["ingressi"] = ingressi_sintetici(config, dal, al)
-        genera(nome, config, dal, al)
+    for nome, (dal, al, _, _) in SCENARI.items():
+        genera(nome, config_dello_scenario(base, nome), dal, al)
 
 
 if __name__ == "__main__":

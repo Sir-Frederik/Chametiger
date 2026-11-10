@@ -108,6 +108,18 @@ data class Config(
         return lat to lon
     }
 
+    /**
+     * Le coordinate comuni del config (latitude/longitude), uguali su ogni
+     * dispositivo, come sun.coords_riferimento: con queste si contano le
+     * finestre. Napoli se i valori non sono numeri.
+     */
+    fun coordinateDiRiferimento(): Pair<Double, Double> {
+        val lat = pyFloat(latitude ?: JsonPrimitive(DEFAULT_LAT))
+        val lon = pyFloat(longitude ?: JsonPrimitive(DEFAULT_LON))
+        if (lat == null || lon == null) return DEFAULT_LAT to DEFAULT_LON
+        return lat to lon
+    }
+
     /** Se il dispositivo ha una sua voce in position_map: senza, valgono latitude/longitude. */
     fun inPositionMap(dispositivo: String): Boolean =
         (positionMap as? JsonObject)?.containsKey(dispositivo) == true

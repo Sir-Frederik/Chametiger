@@ -209,13 +209,17 @@ def _resolve_minuti(t: str, giorno: date, lat: float, lon: float) -> int:
     return (h * 60 + m) % 1440
 
 
-def slot_bounds(slot: dict, giorno: date, config: dict) -> tuple[int, int]:
+def slot_bounds(
+    slot: dict, giorno: date, config: dict, coord: tuple[float, float] | None = None
+) -> tuple[int, int]:
     """
     (inizio, fine) dello slot in minuti dalla mezzanotte, per quel giorno.
     Entrambi normalizzati in [0, 1440): se fine <= inizio la fascia scavalca la
     mezzanotte, come ha sempre fatto "22:00 -> 06:00".
+
+    Alle coordinate di questo dispositivo, o a quelle date in `coord`.
     """
-    lat, lon = sun.coords(config)
+    lat, lon = coord or sun.coords(config)
     return (
         _resolve_minuti(str(slot.get("from", "00:00")), giorno, lat, lon),
         _resolve_minuti(str(slot.get("to", "00:00")), giorno, lat, lon),
@@ -810,20 +814,49 @@ def _finestre_del_giorno(rule: dict, giorno: date, rotate: int, config: dict) ->
     Arrotondato, non per eccesso: la fascia si divide in parti uguali di durata
     vicina a `rotate`. Per eccesso, una fascia solare di 66 minuti con rotate=60
     aveva una seconda finestra di 6 minuti, e lo sfondo cambiava per niente.
+
+    Si contano alle coordinate di RIFERIMENTO (sun.coords_riferimento), non a
+    quelle del dispositivo: il conteggio decide il numero della finestra e
+    quindi la carta del mazzo, e deve essere lo stesso ovunque. Contato sul
+    posto, a 6 km di distanza la fascia della sera era gia' 22 finestre avanti:
+    un PC che cambia sede, o il telefono in giro, saltavano avanti e indietro
+    nel mazzo e rivedevano le stesse carte. Gli orari delle finestre restano
+    locali: vedi _window_ordinal.
     """
-    start, end = slot_bounds(rule, giorno, config)
+    start, end = slot_bounds(rule, giorno, config, sun.coords_riferimento(config))
     if sun.fascia_assente(rule.get("from"), rule.get("to"), start, end):
         return 0  # quel giorno la fascia non c'e': il mazzo non deve avanzare
     return max(1, int(_lunghezza(start, end) / rotate + 0.5))
 
 
-# Somme cumulative delle finestre, per non ripercorrere l'anno a ogni chiamata.
-# Chiave: (from, to, rotate, lat, lon) - e' tutto cio' che determina la durata
-# delle finestre. Non il periodo: le patch sui tag non cambiano gli orari, cosi'
-# un cambio di periodo non invalida la tabella.
-_CUM_TOTALI: dict[tuple, dict[date, int]] = {}
-# Checkpoint ogni 64 giorni, piu' i giorni gia' chiesti (poche centinaia l'anno)
-_CUM_PASSO = 64
+# Le finestre di ogni giorno da EPOCH e le loro somme, per non ripercorrere
+# l'anno a ogni chiamata. Chiave: (from, to, rotate, lat, lon di riferimento) -
+# e' tutto cio' che determina il numero delle finestre. Non il periodo: le patch
+# sui tag non cambiano gli orari, cosi' un cambio di periodo non invalida la
+# tabella. Tre liste, indice = giorni da EPOCH:
+#   per[i]  finestre del giorno i
+#   cum[i]  finestre dei giorni prima di i
+#   gru[i]  finestre dei giorni prima di i che hanno il gruppo di i (vedi GRUPPI)
+_TABELLE: dict[tuple, tuple[list[int], list[int], list[int]]] = {}
+
+
+def _tabella(
+    rule: dict, rotate: int, config: dict, fino: int
+) -> tuple[list[int], list[int], list[int]]:
+    """Le tre liste della regola, calcolate almeno fino all'indice `fino` compreso."""
+    lat, lon = sun.coords_riferimento(config)
+    chiave = (str(rule.get("from", "")), str(rule.get("to", "")), rotate, lat, lon)
+    tabella = _TABELLE.get(chiave)
+    if tabella is None:
+        tabella = _TABELLE[chiave] = ([], [0], [0])
+    per, cum, gru = tabella
+    while len(per) < fino:
+        i = len(per)
+        per.append(_finestre_del_giorno(rule, EPOCH + timedelta(days=i), rotate, config))
+        cum.append(cum[i] + per[i])
+        k = i + 1
+        gru.append(gru[k - GRUPPI] + per[k - GRUPPI] if k >= GRUPPI else 0)
+    return tabella
 
 
 def _finestre_fino_a(rule: dict, giorno: date, rotate: int, config: dict) -> int:
@@ -841,31 +874,43 @@ def _finestre_fino_a(rule: dict, giorno: date, rotate: int, config: dict) -> int
     """
     if giorno <= EPOCH:
         return 0
+    indice = (giorno - EPOCH).days
+    return _tabella(rule, rotate, config, indice)[1][indice]
 
-    lat, lon = sun.coords(config)
-    chiave = (str(rule.get("from", "")), str(rule.get("to", "")), rotate, lat, lon)
-    punti = _CUM_TOTALI.setdefault(chiave, {EPOCH: 0})
 
-    # sequenza_giornaliera chiede lo stesso giorno per ogni minuto: senza questo
-    # ripercorreva fino a 63 giorni 1440 volte, e un anno simulato ci metteva
-    # quaranta secondi. Il giorno si aggiunge ai checkpoint a fine funzione.
-    if giorno in punti:
-        return punti[giorno]
+def _finestre_del_gruppo_fino_a(
+    rule: dict, giorno: date, gruppo: int, rotate: int, config: dict
+) -> int:
+    """
+    Come _finestre_fino_a, contando solo i giorni di quel gruppo: e' il numero
+    della finestra nel mazzo del gruppo (vedi GRUPPI).
+    """
+    indice = max(0, (giorno - EPOCH).days)
+    # il primo giorno del gruppo da `giorno` in poi: prima non ce ne sono altri
+    indice += (gruppo - indice) % GRUPPI
+    return _tabella(rule, rotate, config, indice)[2][indice]
 
-    # Riparte dal checkpoint piu' recente che non superi il giorno richiesto.
-    g = EPOCH + timedelta(days=((giorno - EPOCH).days // _CUM_PASSO) * _CUM_PASSO)
-    while g not in punti:
-        g -= timedelta(days=_CUM_PASSO)
 
-    totale = punti[g]
-    while g < giorno:
-        totale += _finestre_del_giorno(rule, g, rotate, config)
-        g += timedelta(days=1)
-        if (g - EPOCH).days % _CUM_PASSO == 0:
-            punti[g] = totale
-
-    punti[giorno] = totale
-    return totale
+def _giorno_dell_ordinale(
+    rule: dict, ordinale: int, rotate: int, config: dict, vicino: date
+) -> tuple[int, int]:
+    """
+    Il giorno a cui appartiene la finestra numero `ordinale` (in giorni da
+    EPOCH) e la sua posizione fra le finestre di quel giorno. `vicino` e' da
+    dove cominciare a cercare: il giorno stesso, o quello dopo per la coda di
+    una fascia che scavalca la mezzanotte.
+    """
+    i = max(0, (vicino - EPOCH).days)
+    cum = _tabella(rule, rotate, config, i + 1)[1]
+    while i > 0 and cum[i] > ordinale:
+        i -= 1
+    # In avanti finche' la finestra non cade nel giorno. Il limite serve solo a
+    # una fascia min/max che dal riferimento non si vede piu' per mesi.
+    for _ in range(800):
+        if _tabella(rule, rotate, config, i + 1)[1][i + 1] > ordinale:
+            break
+        i += 1
+    return i, ordinale - cum[i]
 
 
 def _window_ordinal(rule: dict, now: datetime, rotate: int, config: dict) -> int:
@@ -887,8 +932,13 @@ def _window_ordinal(rule: dict, now: datetime, rotate: int, config: dict) -> int
     elif cur < start:
         cur = start  # fuori fascia: si resta sulla prima finestra
 
-    # Finestre di uguale durata: la fascia e' divisa in per_giorno parti
-    per_giorno = _finestre_del_giorno(rule, giorno, rotate, config)
+    # Finestre di uguale durata: la fascia, coi suoi orari locali, e' divisa in
+    # tante parti quante sono le finestre del giorno alle coordinate di
+    # riferimento. Cosi' ogni dispositivo ha lo stesso numero di finestre, con
+    # gli stessi numeri, e cambia solo l'ora in cui passa dall'una all'altra.
+    # Almeno una: se al riferimento oggi la fascia non c'e' (min/max) ma qui si',
+    # resta sulla prima finestra di domani.
+    per_giorno = max(1, _finestre_del_giorno(rule, giorno, rotate, config))
     offset = min((cur - start) * per_giorno // _lunghezza(start, end), per_giorno - 1)
     return _finestre_fino_a(rule, giorno, rotate, config) + offset
 
@@ -911,6 +961,47 @@ def _window_ordinal(rule: dict, now: datetime, rotate: int, config: dict) -> int
 #  giro iniziato si accoda in fondo a quel giro, senza spostare le altre carte.
 #  Senza le date, passare da 13 a 14 immagini spostava giro e posizione di
 #  ordinale // n e rimescolava tutto. Le immagini senza data ci sono da sempre.
+
+
+#  I gruppi
+#
+#  Ogni fascia ha il suo mazzo e i mazzi non si conoscono. Le fasce della sera
+#  (16-18, crepuscolo-20, 20-23, quelle del weekend) pescano quasi dalle stesse
+#  immagini: la carta uscita ieri alle 19 in una fascia poteva essere quella di
+#  turno oggi alle 20 in un'altra, e di sera una finestra su quattro mostrava
+#  un'immagine vista nei tre giorni prima.
+#
+#  Per questo le immagini sono divise in GRUPPI gruppi fissi, per
+#  sha256("gruppo|immagine"), e i giorni girano sui gruppi a turno da EPOCH: in
+#  un giorno escono le immagini del suo gruppo, in qualunque fascia. Un'immagine
+#  torna quindi dopo almeno GRUPPI giorni. Ogni fascia ha un mazzo per gruppo,
+#  con le sole carte di quel gruppo e un suo conteggio delle finestre (quelle
+#  dei giorni del gruppo), e per il resto funziona come prima.
+#
+#  E' senza stato come tutto il resto: non serve sapere cosa e' uscito ieri, lo
+#  dicono il giorno e il nome dell'immagine. Per questo vale uguale su ogni
+#  dispositivo, con qualunque tempo e in qualunque posto.
+#
+#  Se il pool della finestra non ha (piu') carte del gruppo di oggi si passa al
+#  mazzo intero della fascia, quello di prima, cominciando dai gruppi piu'
+#  lontani dal giorno di oggi: succede coi pool piccoli e nelle fasce degli
+#  eventi, e li' la distanza fra due uscite non e' garantita.
+
+# In quanti gruppi sono divise le immagini, cioe' dopo quanti giorni un'immagine
+# puo' tornare. NON cambiarlo mai: come EPOCH, sposta tutti i mazzi.
+GRUPPI = 4
+
+
+@lru_cache(maxsize=None)
+def _gruppo_immagine(img: str) -> int:
+    """Il gruppo dell'immagine, fisso: dipende solo dal suo nome."""
+    impronta = hashlib.sha256(f"gruppo|{img}".encode("utf-8")).digest()
+    return int.from_bytes(impronta[:4], "big") % GRUPPI
+
+
+def _distanza_gruppi(a: int, b: int) -> int:
+    """Quanti giorni separano, in un senso o nell'altro, i giorni di due gruppi."""
+    return min((a - b) % GRUPPI, (b - a) % GRUPPI)
 
 
 def _chiave_fascia(rule: dict) -> str:
@@ -1199,15 +1290,20 @@ def _ricerca_finestra(
     sig: str,
     pool: list[str],
     ordinale: int,
+    giorno: date,
 ) -> list[str]:
     """
     Le immagini del pool nell'ordine in cui la finestra le cerca: la prima non
-    ancora uscita oggi e' la sua.
+    ancora uscita oggi e' la sua. `giorno` e' quello della sequenza.
 
     Il mazzo e' quello della fascia se il pool ci sta dentro. Non ci sta quando
     piove e la regola ammette immagini di pioggia che nessuna regola della
     fascia ha nei tag: allora la regola usa un mazzo suo, col seme della firma.
-    In fondo, ordinate per nome, le immagini con una data di ingresso futura.
+
+    Prima le carte del gruppo del giorno, dal mazzo di quel gruppo (vedi
+    GRUPPI). Poi le altre, dal mazzo intero, cominciando dai gruppi piu' lontani
+    da oggi. In fondo, ordinate per nome, le immagini con una data di ingresso
+    futura.
     """
     chiave = _chiave_fascia(rule)
     universo = universi.get(chiave, set())
@@ -1219,14 +1315,39 @@ def _ricerca_finestra(
 
     rotate = _rotate_of(rule)
     date_ingresso = _date_ingresso(config)
+
+    # Il gruppo e' quello del giorno di calendario, anche per la coda dopo la
+    # mezzanotte di una fascia notturna: cosi' tutte le finestre di una
+    # giornata pescano dallo stesso gruppo, e quelle di ieri da un altro. Il
+    # posto nel mazzo del gruppo si conta invece dal giorno a cui la finestra
+    # appartiene: le finestre dei giorni del gruppo prima di quello, piu' il
+    # suo posto nel giorno.
+    gruppo = (giorno - EPOCH).days % GRUPPI
+    indice, posto = _giorno_dell_ordinale(rule, ordinale, rotate, config, giorno)
+    del_gruppo = [c for c in carte if _gruppo_immagine(c) == gruppo]
+    ingresso = {
+        c: _finestre_del_gruppo_fino_a(rule, date_ingresso[c], gruppo, rotate, config)
+        for c in del_gruppo
+        if c in date_ingresso
+    }
+    nel_gruppo = posto + _finestre_del_gruppo_fino_a(
+        rule, EPOCH + timedelta(days=indice), gruppo, rotate, config
+    )
+    mazzo, pos = _giro_di(del_gruppo, ingresso, seme, nel_gruppo)
+    ordine = [c for c in _ordine_di_ricerca(mazzo, pos) if c in nel_pool]
+    visti = set(ordine)
+
     ingresso = {
         c: _finestre_fino_a(rule, date_ingresso[c], rotate, config)
         for c in carte
         if c in date_ingresso
     }
     mazzo, pos = _giro_di(carte, ingresso, seme, ordinale)
-    ordine = [c for c in _ordine_di_ricerca(mazzo, pos) if c in nel_pool]
-    visti = set(ordine)
+    altre = [c for c in _ordine_di_ricerca(mazzo, pos) if c in nel_pool and c not in visti]
+    # sorted e' stabile: a pari distanza resta l'ordine del mazzo
+    altre.sort(key=lambda c: -_distanza_gruppi(_gruppo_immagine(c), gruppo))
+    ordine += altre
+    visti.update(altre)
     return ordine + [c for c in pool if c not in visti]
 
 
@@ -1343,7 +1464,7 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
         n = len(pool)
         if universi is None:
             universi = _universi(config, giorno)
-        ricerca = _ricerca_finestra(config, universi, rule, sig, pool, ordinale)
+        ricerca = _ricerca_finestra(config, universi, rule, sig, pool, ordinale, giorno)
         # la prima non ancora uscita oggi; se sono uscite tutte, la carta di turno
         scelta = next((c for c in ricerca if c not in usate), ricerca[0])
         usate.add(scelta)

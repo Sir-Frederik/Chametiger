@@ -1,10 +1,16 @@
 # 🦎 Chametiger
 
-**v4.9.0** — 9 novembre 2026
+**v4.10.0** — 10 novembre 2026
 
-> **Novità della 4.9.0:** il [calendario delle posizioni](#calendario-delle-posizioni). Un PC può avere una posizione diversa per ogni giorno della settimana (solo PC, non il telefono). Senza `position_schedule` nel config non cambia nulla.
-
-> **⚠️ La 4.8.0 non è compatibile con le versioni precedenti: aggiorna tutti i PC e il telefono insieme e riavvia ogni tray.**
+> **⚠️ La 4.10.0 non è compatibile con le versioni precedenti: aggiorna tutti i PC e il telefono (app 1.1) insieme e riavvia ogni tray.**
+>
+> - **Un'immagine non torna prima di 4 giorni.** Le immagini sono divise in 4 gruppi e ogni giorno escono quelle di un gruppo, in qualunque fascia. Prima le fasce della sera, che pescano quasi dalle stesse immagini, si ripetevano l'una con l'altra da un giorno al successivo. Vedi [I gruppi](#i-gruppi-unimmagine-non-torna-prima-di-4-giorni).
+> - **Le finestre si contano allo stesso modo ovunque**, alle coordinate comuni del config: un dispositivo in un altro posto mostra le stesse immagini, e cambiano solo gli orari. Vedi [Le fasce solari e il mazzo](#le-fasce-solari-e-il-mazzo).
+> - Tutti i mazzi si sono spostati, una volta sola.
+>
+> Dalla 4.9.0: il [calendario delle posizioni](#calendario-delle-posizioni), una posizione per giorno della settimana (solo PC).
+>
+> **Dalla 4.8.0:**
 >
 > - **Il mazzo è della fascia oraria, non della regola.** Le regole con lo stesso orario (l'override del lunedì, quello del mercoledì, le feriali) pescano dallo stesso mazzo invece di averne uno a testa, e non si ripetono più l'una con l'altra. Vedi [Come viene scelta l'immagine](#come-viene-scelta-limmagine).
 > - **Le immagini nuove non rimescolano più il mazzo.** La GUI segna in `config.json` il giorno in cui un'immagine riceve il primo tag (`"ingressi"`), e da quel giorno l'immagine si accoda al giro in corso.
@@ -169,7 +175,9 @@ Allo stesso modo `latitude` e `longitude` valgono per tutti, e `position_map` le
 
 Da lì passano orari solari e meteo. Nell'editor, **Impostazioni → Posizione** mostra le coordinate del PC su cui gira; con _Vale solo per questo PC_ le salva in `position_map`, senza la casella cambia quelle comuni.
 
-> Due PC con posizioni diverse **non** mostrano più le stesse immagini: le fasce solari cadono in orari diversi, e il meteo è diverso.
+> Due dispositivi in posti diversi mostrano **le stesse immagini**, in orari diversi: ognuno ha le fasce solari del suo posto, ma le finestre si contano per tutti alle coordinate comuni (vedi [Le fasce solari e il mazzo](#le-fasce-solari-e-il-mazzo)). Possono differire quando il meteo è diverso, e in qualche finestra a cavallo fra due fasce se la distanza è grande.
+>
+> `latitude` e `longitude` comuni sono quindi anche il **riferimento del conteggio**: cambiarle sposta i mazzi di tutti i dispositivi, una volta. Per spostare un solo PC usa `position_map` o il calendario.
 
 ### Calendario delle posizioni
 
@@ -190,8 +198,8 @@ Un PC che cambia posto durante la settimana (ufficio, casa, trasferta) può aver
 
 - La chiave è il **nome del computer**, come in `position_map`. `name` serve solo al log.
 - Per i giorni elencati vale il calendario. Per gli altri, e con `"enabled": false`, vale la posizione normale (`position_map`, altrimenti `latitude`/`longitude`).
-- La posizione del giorno vale per **tutti** i conti della giornata, anche per il numero della finestra, che somma le finestre dei giorni precedenti: il giovedì a Milano il PC conta come un dispositivo che sta a Milano da sempre. Così due dispositivi nello stesso posto, con **le stesse coordinate**, mostrano le stesse immagini, qualunque cosa abbiano fatto gli altri giorni.
-- Il cambio avviene **a mezzanotte**. In quel momento, nelle fasce legate al sole, l'immagine può cambiare.
+- La posizione del giorno decide **gli orari** delle fasce solari e il meteo. Non decide le immagini: quelle sono le stesse in ogni posto.
+- Il cambio avviene **a mezzanotte**.
 
 Nell'editor: **Impostazioni → Calendario delle posizioni (solo PC)**. Per ogni giorno si sceglie una città o si scrivono le coordinate, poi _Applica calendario_. La casella _Usa il calendario su questo PC_ lo accende e lo spegne senza perdere i giorni. Il tray scrive nel log la posizione in uso quando cambia:
 
@@ -199,7 +207,7 @@ Nell'editor: **Impostazioni → Calendario delle posizioni (solo PC)**. Per ogni
 [INFO] Posizione 40.8196,14.3470 (calendario, martedi' Portici).
 ```
 
-> Per restare allineato col telefono, nel calendario usa per ogni luogo **le stesse coordinate** che ha il config: il telefono si aggancia alle posizioni di `latitude`/`longitude` e `position_map` entro 1 km, non a quelle del calendario.
+> Il telefono non legge il calendario e usa la sua posizione. Mostra comunque le stesse immagini del PC; per avere anche gli stessi orari, e lo stesso meteo, nel calendario usa per ogni luogo le coordinate che ha il config: il telefono si aggancia alle posizioni di `latitude`/`longitude` e `position_map` entro 1 km.
 
 ---
 
@@ -262,7 +270,7 @@ Non è un sorteggio. Ogni **fascia oraria** ha un **mazzo**, mescolato in modo d
 
 **Il mazzo è della fascia, non della regola.** Due regole sono la stessa fascia se hanno gli stessi `from`, `to` e `rotate_minutes` (gli spazi non contano: `sunset - 58m` e `sunset -58m` sono uguali). Il mazzo contiene tutte le immagini che una qualunque di quelle regole ammette, in qualunque giorno della settimana: l'override del lunedì `13:00 → 14:00`, quello del mercoledì e le feriali `13:00 → 14:00 -smart` pescano dallo stesso mazzo. Prima ognuna aveva il suo, e tre mazzi con quasi le stesse immagini davano la stessa carta lunedì, mercoledì e giovedì. Se la carta di turno non va bene alla regola del giorno (un'immagine `smart` di martedì), si prende quella a metà mazzo: la successiva sarebbe la carta di domani, che uscirebbe due volte di fila.
 
-Fasce con orari diversi hanno mazzi diversi, anche se pescano le stesse immagini: se il pranzo del weekend è `13:00 → noon+2h` e quello feriale `13:00 → 14:00`, i due mazzi non si conoscono e la stessa immagine può uscire venerdì e sabato.
+Fasce con orari diversi hanno mazzi diversi, anche se pescano le stesse immagini: il pranzo del weekend `13:00 → noon+2h` e quello feriale `13:00 → 14:00` non si conoscono. A tenerle lontane pensano [i gruppi](#i-gruppi-unimmagine-non-torna-prima-di-4-giorni).
 
 **Ogni giro è diviso in due metà fisse**, mescolate ciascuna per conto suo: una carta torna dopo almeno mezzo giro, anche a cavallo fra un giro e il successivo. Mescolando tutto insieme, la carta uscita per ultima poteva essere la prima del giro dopo.
 
@@ -277,6 +285,18 @@ Da quel giorno l'immagine entra in fondo al giro in corso, e le altre carte non 
 Dentro la stessa giornata non ci sono ripetizioni: se la carta che toccherebbe è già uscita oggi, si prende la prima non ancora vista, sempre partendo da metà mazzo. Vale anche fra regole diverse — un'immagine vista stamattina non torna nel pomeriggio.
 
 Il calcolo è **deterministico e senza stato**: dipende solo dalla regola, dalla libreria e dalla data. Due PC con la stessa configurazione ottengono la stessa sequenza senza parlarsi, ed è questo che fa funzionare la sincronizzazione multi-PC.
+
+#### I gruppi: un'immagine non torna prima di 4 giorni
+
+Le immagini sono divise in **4 gruppi** fissi (dal nome del file, con `sha256`), e i giorni girano sui gruppi a turno: in un giorno escono le immagini del suo gruppo, **in qualunque fascia**. Un'immagine uscita oggi torna quindi fra 4 giorni, o 8, o 12.
+
+Serve perché i mazzi delle fasce non si conoscono. Le fasce della sera (`16:00 → 18:00`, crepuscolo `→ 20:00`, `20:00 → 23:00`, quelle del weekend) pescano quasi dalle stesse immagini, e la carta uscita ieri alle 19 in una fascia poteva essere quella di turno oggi alle 20 in un'altra: di sera una finestra su quattro mostrava un'immagine vista nei tre giorni prima.
+
+Ogni fascia ha un mazzo per gruppo, con le sole carte di quel gruppo e un suo conteggio delle finestre (quelle dei giorni del gruppo). Per il resto vale tutto come sopra: le due metà, gli ingressi, la carta a metà mazzo quando quella di turno non va bene.
+
+Resta **senza stato**: non serve sapere cosa è uscito ieri, lo dicono il giorno e il nome dell'immagine. Per questo vale uguale su ogni dispositivo.
+
+**Quando il gruppo non basta.** Se la finestra non ha (più) immagini del gruppo di oggi, pesca dal mazzo intero della fascia, cominciando dai gruppi più lontani: con 4 gruppi, quello di dopodomani. Succede coi pool piccoli (la fascia `16:00 → 18:00` ha 8 immagini, 2 per gruppo) e nelle fasce degli eventi: a Natale la sera ha una dozzina di immagini per sei finestre, e lì le ripetizioni restano. Per quelle fasce l'unico rimedio è avere più immagini.
 
 `log.json` **non** partecipa alla scelta: serve a ricordare quale immagine è stata assegnata alla finestra corrente, così lo sfondo resta fermo fra un controllo e l'altro dello scheduler, e a far durare un'estrazione forzata fino alla fine della sua finestra.
 
@@ -358,6 +378,8 @@ sunset-58m → sunset+2m               tramonto                         ← il r
 ### Le fasce solari e il mazzo
 
 Con le fasce ancorate al sole la durata cambia ogni giorno: la fascia `notte` ha **6 finestre a giugno e 8 a dicembre**. La posizione nel mazzo si ricava quindi da una **somma cumulativa** delle finestre effettive dall'origine, non da `giorni × finestre_al_giorno` — che al primo giorno in cui il conteggio cambia farebbe saltare il mazzo di centinaia di posizioni, bruciando immagini mai viste.
+
+**Le finestre si contano alle coordinate comuni** (`latitude`/`longitude`), non a quelle del dispositivo. Il numero della finestra decide la carta, e contato sul posto cambiava da un luogo all'altro: fra Napoli e Portici, a 6 km, la fascia della sera era 22 finestre avanti, e un PC che cambia sede o il telefono in giro saltavano avanti e indietro nel mazzo rivedendo le stesse carte. Ora ogni dispositivo ha ogni giorno lo stesso numero di finestre, con gli stessi numeri: la fascia, coi suoi orari locali, viene divisa in tante parti quante ne ha quel giorno alle coordinate comuni.
 
 Il calcolo resta **deterministico e senza stato**: due PC con la stessa libreria ottengono la stessa sequenza senza parlarsi, che è la proprietà su cui si regge la sincronizzazione multi-PC.
 
