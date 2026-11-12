@@ -10,6 +10,14 @@ controlli:
   2. uscite reali: ricostruisce la sequenza di ogni giorno con il mazzo e il
      vincolo di non ripetere nella stessa giornata, e conta le uscite
 
+Il meteo dell'anno simulato e' asciutto: oltre le previsioni scaricate
+meteo.del_giorno da' asciutte tutte le ore, e cosi' le immagini di pioggia e
+temporale non uscirebbero mai. Col meteo attivo le uscite si contano quindi in
+tre scenari: l'anno com'e', poi con pioggia e con temporale tutto il giorno.
+Un'immagine e' "mai uscita" solo se non esce in nessuno dei tre; quelle col tag
+del meteo che non escono nemmeno con la pioggia o il temporale si elencano a
+parte. Col meteo disattivato resta lo scenario unico.
+
 La usa anche la GUI, dal pulsante "Verifica anno" della tab Stagioni ed eventi.
 
 Uso: python verifica_immagini.py [giorni] [soglia_rare]
@@ -17,13 +25,19 @@ Uso: python verifica_immagini.py [giorni] [soglia_rare]
 """
 
 import sys
+import threading
 from collections import Counter, defaultdict
+from contextlib import contextmanager
 from datetime import date, timedelta
 
 import app
+import meteo
 
 GIORNI_DEFAULT = 365
 SOGLIA_DEFAULT = 12
+
+# Gli scenari forzati, dopo l'anno com'e'. Lo stato e' anche il tag del meteo.
+SCENARI_METEO = (meteo.PIOGGIA, meteo.TEMPORALE)
 
 
 def _nessun_progresso(fase: str, fatto: int, totale: int):
@@ -54,6 +68,31 @@ def eleggibili(config: dict, giorni: list[date], progresso=_nessun_progresso) ->
     return out
 
 
+@contextmanager
+def tempo_fisso(stato: str):
+    """
+    Dentro il blocco meteo.del_giorno da' `stato` a tutte le ore di ogni giorno.
+
+    Lo si sostituisce nel modulo, senza toccare meteo.py ne' il motore, ma solo
+    per il thread che verifica: la GUI fa girare la verifica in un thread, e
+    l'anteprima che intanto chiede il meteo deve vedere quello vero. Col meteo
+    disattivato si lascia rispondere l'originale, che da' None.
+    """
+    originale = meteo.del_giorno
+    mio = threading.get_ident()
+
+    def del_giorno(config: dict, giorno: date) -> dict[int, str] | None:
+        if threading.get_ident() != mio or not meteo.impostazioni(config)[0]:
+            return originale(config, giorno)
+        return dict.fromkeys(range(24), stato)
+
+    meteo.del_giorno = del_giorno
+    try:
+        yield
+    finally:
+        meteo.del_giorno = originale
+
+
 def uscite(config: dict, giorni: list[date], progresso=_nessun_progresso) -> Counter:
     """Quante volte esce ogni immagine nelle sequenze giornaliere."""
     conta: Counter = Counter()
@@ -72,8 +111,9 @@ def rapporto(
 ) -> tuple[list[str], int]:
     """
     Le righe del rapporto e il numero di problemi veri: file mancanti, immagini
-    mai eleggibili, immagini mai uscite. Le immagini rare o legate a un solo
-    periodo sono informative e non contano come problema.
+    mai eleggibili, immagini mai uscite in nessuno scenario, immagini col tag
+    del meteo che non escono nemmeno con pioggia o temporale. Le immagini rare
+    o legate a un solo periodo sono informative e non contano come problema.
     """
     app.invalida_cache_file()
     taggate = {i: t for i, t in config.get("image_library", {}).items() if t}
@@ -98,15 +138,64 @@ def rapporto(
         if i in taggate and len(periodi) == 1:
             righe.append(f"  [{next(iter(periodi))}] {i}: {taggate[i]}")
 
-    conta = uscite(config, giorni, progresso)
-    mai_uscite = [i for i in taggate if conta[i] == 0]
+    # Lo scenario di oggi, poi quelli forzati: il progresso li conta come
+    # un'unica fase, cosi' la barra della GUI non riparte da zero.
+    scenari = [None]
+    if meteo.impostazioni(config)[0]:
+        scenari += SCENARI_METEO
+    conte: dict[str | None, Counter] = {}
+    for k, stato in enumerate(scenari):
+        def prog(fase, fatto, totale, k=k):
+            progresso(fase, k * totale + fatto, len(scenari) * totale)
+
+        if stato is None:
+            conte[stato] = uscite(config, giorni, prog)
+        else:
+            with tempo_fisso(stato):
+                conte[stato] = uscite(config, giorni, prog)
+    conta = conte[None]
+
+    mai_uscite = [i for i in taggate if not any(c[i] for c in conte.values())]
     # Una mai eleggibile e' per forza anche mai uscita: non la si conta due volte
     problemi += len([i for i in mai_uscite if i in elig])
-    righe.append(f"\nUscite totali: {sum(conta.values())}")
-    righe.append(f"Mai uscite in {n_giorni} giorni: {len(mai_uscite)}")
+    if len(scenari) == 1:
+        righe.append(f"\nUscite totali: {sum(conta.values())}")
+        righe.append(f"Mai uscite in {n_giorni} giorni: {len(mai_uscite)}")
+    else:
+        righe.append(
+            "\nUscite totali: "
+            + ", ".join(
+                f"{sum(c.values())} {stato or 'col meteo previsto'}"
+                for stato, c in conte.items()
+            )
+        )
+        righe.append(
+            f"Mai uscite in {n_giorni} giorni, in nessuno dei tre scenari: "
+            f"{len(mai_uscite)}"
+        )
     righe += [f"  {i}: {taggate[i]}" for i in mai_uscite]
 
-    righe.append(f"\nUscite al massimo {soglia} volte:")
+    if len(scenari) > 1:
+        # Il problema vero: un'immagine di pioggia che non esce nemmeno quando
+        # piove tutto l'anno. Quelle gia' contate come mai uscite o mai
+        # eleggibili non si contano una seconda volta.
+        ferme = [
+            i
+            for i, tag in taggate.items()
+            if set(tag) & set(SCENARI_METEO)
+            and not any(conte[s][i] for s in SCENARI_METEO)
+        ]
+        problemi += len([i for i in ferme if i not in mai_uscite])
+        righe.append(
+            f"\nCol tag del meteo, mai uscite nemmeno con pioggia o temporale "
+            f"tutto il giorno: {len(ferme)}"
+        )
+        righe += [f"  {i}: {taggate[i]}" for i in ferme]
+
+    titolo = f"\nUscite al massimo {soglia} volte"
+    if len(scenari) > 1:
+        titolo += " (col meteo previsto)"
+    righe.append(titolo + ":")
     for i, n in sorted(conta.items(), key=lambda x: x[1]):
         if n > soglia:
             break
