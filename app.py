@@ -253,7 +253,7 @@ def _tags_of(rule: dict) -> str:
         parts.append("!" + ",!".join(rule["veto"]))
     if rule.get("prefer"):
         parts.append("~" + ",~".join(rule["prefer"]))
-    if rule.get("meteo") in _TAG_METEO:  # il sereno e' la norma, non lo si scrive
+    if rule.get("meteo") in _STATI_METEO:  # il sereno e' la norma, non lo si scrive
         parts.append("@" + rule["meteo"])
     return f" [{' '.join(parts)}]" if parts else ""
 
@@ -505,7 +505,8 @@ def image_matches_rule(image_tags, rule: dict) -> bool:
     (`smart`, `weekend`...) restano secchi.
 
     Quando piove (`meteo` pioggia o temporale), un'immagine di pioggia entra anche senza i tag che la
-    fascia richiede, purche' abbia uno dei suoi `momenti` (vedi _momenti_meteo):
+    fascia richiede, purche' abbia uno dei suoi `momenti` (vedi _momenti_meteo);
+    lo stesso col nuvoloso per le immagini `nuvole`:
     alle 10 del venerdi' la fascia jolly/sport prende le immagini di pioggia
     del mattino. Vale anche nelle fasce degli eventi: la pioggia ha la priorita'
     su Halloween e sul Natale, e le loro immagini tornano col tempo asciutto.
@@ -537,8 +538,12 @@ def image_matches_rule(image_tags, rule: dict) -> bool:
     elif all(t in tags for t in include):
         return True
 
-    piove = rule.get("meteo") in _TAG_METEO and bool(tags & _TAG_METEO)
-    return piove and bool(tags & set(rule.get("momenti") or ()))
+    stato = rule.get("meteo")
+    if stato in _TAG_METEO:
+        entra = bool(tags & _TAG_METEO)
+    else:
+        entra = stato == meteo.NUVOLOSO and _TAG_NUVOLE in tags
+    return entra and bool(tags & set(rule.get("momenti") or ()))
 
 
 # Esistenza dei file, memorizzata per un giro di scheduler. Su una cartella di
@@ -590,10 +595,16 @@ def candidates_for_rule(config: dict, rule: dict, su_disco: bool = True) -> list
         if len(scelti) >= minimo:
             out = scelti
 
-    return _secondo_meteo(out, rule.get("meteo"), library, meteo.minimo(config))
+    return _secondo_meteo(
+        out, rule.get("meteo"), library, meteo.minimo(config), bool(rule.get("nuvole"))
+    )
 
 
 _TAG_METEO = {meteo.TEMPORALE, meteo.PIOGGIA}
+_TAG_NUVOLE = meteo.TAG_NUVOLE
+# Gli stati in cui le immagini del tempo entrano nella fascia coi `momenti`,
+# e che si scrivono accanto alla regola.
+_STATI_METEO = _TAG_METEO | {meteo.NUVOLOSO}
 
 # I momenti della giornata: nell'exclude valgono per insieme, come le stagioni
 # (vedi image_matches_rule).
@@ -610,15 +621,25 @@ TAG_ORARI = {
 
 
 def _secondo_meteo(
-    pool: list[str], stato: str | None, library: dict, minimo: int
+    pool: list[str],
+    stato: str | None,
+    library: dict,
+    minimo: int,
+    solo_nuvole: bool = False,
 ) -> list[str]:
     """
     Il pool visto attraverso il tempo che fa, sopra `prefer`.
 
     Con la pioggia hanno la precedenza le immagini taggate `pioggia`. Col
     temporale quelle `temporale`, e se non bastano quelle `temporale` o
-    `pioggia` insieme. Col bel tempo le immagini di pioggia e temporale si
-    mettono da parte.
+    `pioggia` insieme. Col bel tempo le immagini di pioggia, temporale e
+    nuvole si mettono da parte.
+
+    Il nuvoloso non restringe: mette da parte solo pioggia e temporale, e le
+    immagini `nuvole` stanno nel pool accanto a quelle di sempre. Sono poche,
+    e cosi' in una giornata coperta escono ogni tanto, non a ogni finestra.
+    Con `solo_nuvole` (la priorita' delle prime ore nuvolose, vedi
+    _priorita_nuvole) restano solo quelle, se ce n'e' almeno una.
 
     Come con `prefer_min`, il pool si restringe solo se restano almeno `minimo`
     immagini: con una sola, la fascia resterebbe ferma su quella per tutte le
@@ -631,7 +652,19 @@ def _secondo_meteo(
     if not stato:
         return pool
     if stato == meteo.ASCIUTTO:
-        scelti = [i for i in pool if not _TAG_METEO & set(library.get(i) or [])]
+        da_parte = _TAG_METEO | {_TAG_NUVOLE}
+        scelti = [i for i in pool if not da_parte & set(library.get(i) or [])]
+        return scelti if len(scelti) >= minimo else pool
+    if stato == meteo.NUVOLOSO:
+        if solo_nuvole:
+            scelti = [i for i in pool if _TAG_NUVOLE in (library.get(i) or [])]
+            if scelti:
+                return scelti
+        scelti = [
+            i
+            for i in pool
+            if _TAG_NUVOLE in (tag := set(library.get(i) or [])) or not _TAG_METEO & tag
+        ]
         return scelti if len(scelti) >= minimo else pool
     gruppi = (
         [{meteo.TEMPORALE}, _TAG_METEO]
@@ -645,7 +678,9 @@ def _secondo_meteo(
     return pool
 
 
-def _con_meteo(rule: dict, stato: str | None, momenti: list | None = None) -> dict:
+def _con_meteo(
+    rule: dict, stato: str | None, momenti: list | None = None, nuvole: bool = False
+) -> dict:
     """La regola col tempo dell'ora. Una COPIA, come in patch_rule."""
     if not stato:
         return rule
@@ -653,12 +688,50 @@ def _con_meteo(rule: dict, stato: str | None, momenti: list | None = None) -> di
     patched["meteo"] = stato
     if momenti:
         patched["momenti"] = momenti
+    if nuvole:
+        patched["nuvole"] = True
     return patched
+
+
+def _priorita_nuvole(config: dict, ore_meteo: dict, ora: int) -> int:
+    """
+    La probabilita' (%) che in quell'ora nuvolosa una finestra peschi solo fra
+    le immagini di nuvole: dipende da quante ore nuvolose di fila ci sono fino
+    a quella, lei compresa (meteo.priorita_nuvole). 0 dopo le prime, e se l'ora
+    non e' nuvolosa. Il conto riparte a mezzanotte e dopo ogni ora non nuvolosa.
+    """
+    if ore_meteo.get(ora) != meteo.NUVOLOSO:
+        return 0
+    n = 1
+    while ore_meteo.get(ora - n) == meteo.NUVOLOSO:
+        n += 1
+    percento = meteo.priorita_nuvole(config)
+    return percento[n - 1] if n <= len(percento) else 0
+
+
+def _estratta_nuvole(rule: dict, ordinale: int, percento: int) -> bool:
+    """
+    Il tiro della finestra, fisso: sha256("nuvole|fascia|ordinale") in
+    centesimi, sotto `percento`. Lo stesso su ogni dispositivo, e lo stesso
+    numero per tutta la finestra: se questa passa da un'ora al 100% a una al
+    60% il tiro non cambia.
+    """
+    if percento <= 0:
+        return False
+    testo = f"nuvole|{_chiave_fascia(rule)}|{ordinale}"
+    tiro = int.from_bytes(hashlib.sha256(testo.encode("utf-8")).digest()[:4], "big")
+    return tiro % 100 < percento
+
+
+def _ha_nuvole(config: dict, pool: list[str], usate: set = frozenset()) -> bool:
+    """Se nel pool c'e' un'immagine di nuvole non ancora uscita oggi."""
+    library = config.get("image_library", {})
+    return any(_TAG_NUVOLE in (library.get(i) or []) and i not in usate for i in pool)
 
 
 def _momenti_meteo(regole: list[dict], pos: int) -> list:
     """
-    Quando piove, i momenti con cui le immagini di pioggia entrano nella regola
+    Quando piove o e' nuvoloso, i momenti con cui le immagini del tempo entrano nella regola
     `regole[pos]` anche senza i suoi tag. `regole` sono quelle che coprono lo
     stesso istante, in ordine di priorita'.
 
@@ -706,6 +779,8 @@ def _rule_signature(rule: dict) -> str:
         parti.append("m:" + rule["meteo"])
     if rule.get("momenti"):
         parti.append("mo:" + ",".join(rule["momenti"]))
+    if rule.get("nuvole"):
+        parti.append("nu:1")
     return "|".join(parti)
 
 
@@ -1369,19 +1444,31 @@ def _copre(start: int, end: int, minuto: int) -> bool:
 def regole_candidate(config: dict, quando: datetime) -> list[tuple[dict, str]]:
     """Le regole che coprono quell'istante, in ordine di priorita', col meteo dell'ora."""
     minuto = quando.hour * 60 + quando.minute
-    stato = (meteo.del_giorno(config, quando.date()) or {}).get(quando.hour)
+    ore_meteo = meteo.del_giorno(config, quando.date()) or {}
+    stato = ore_meteo.get(quando.hour)
     coprono = [
         (rule, origine)
         for rule, origine, start, end in _regole_del_giorno(config, quando.date())
         if _copre(start, end, minuto)
     ]
-    if stato not in _TAG_METEO:
+    if stato not in _STATI_METEO:
         return [(_con_meteo(rule, stato), origine) for rule, origine in coprono]
     regole = [rule for rule, _ in coprono]
-    return [
-        (_con_meteo(rule, stato, _momenti_meteo(regole, i)), origine)
-        for i, (rule, origine) in enumerate(coprono)
-    ]
+    percento = _priorita_nuvole(config, ore_meteo, quando.hour)
+    out = []
+    for i, (rule, origine) in enumerate(coprono):
+        momenti = _momenti_meteo(regole, i)
+        variante = _con_meteo(rule, stato, momenti)
+        # La priorita' delle nuvole, come in sequenza_giornaliera ma senza
+        # sapere cosa e' gia' uscito oggi ne' cosa ha deciso la finestra al suo
+        # inizio: l'immagine la decide comunque lei.
+        if percento and _estratta_nuvole(
+            rule, _window_ordinal(rule, quando, _rotate_of(rule), config), percento
+        ):
+            if _ha_nuvole(config, candidates_for_rule(config, variante)):
+                variante = _con_meteo(rule, stato, momenti, nuvole=True)
+        out.append((variante, origine))
+    return out
 
 
 def _regola_attiva(config: dict, quando: datetime) -> dict | None:
@@ -1421,6 +1508,11 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
     usate: set[str] = set()
     sequenza: list[dict] = []
     ultima_finestra = None
+    # La priorita' delle nuvole: se la finestra pesca solo fra le immagini di
+    # nuvole. Lo decide una volta, al suo primo minuto nuvoloso con priorita',
+    # e resta cosi' finche' e' nuvoloso: non cambia idea dopo aver preso
+    # l'ultima immagine di nuvole, ne' quando l'ora dopo ha un'altra percentuale.
+    solo_nuvole: dict[tuple, bool] = {}
 
     for minuto in range(min(fino_a, 1439) + 1):
         t = datetime(giorno.year, giorno.month, giorno.day) + timedelta(minutes=minuto)
@@ -1430,6 +1522,7 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
         # possono divergere su una regola dal pool vuoto.
         scelto = None
         stato = ore_meteo.get(minuto // 60)
+        percento = _priorita_nuvole(config, ore_meteo, minuto // 60)
         coprono = [
             k
             for k, (_, _, start, end) in enumerate(regole)
@@ -1437,9 +1530,10 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
         ]
         for pos, k in enumerate(coprono):
             rule, origine, _, _ = regole[k]
+            base = rule
+            momenti = None
             if stato:
-                momenti = None
-                if stato in _TAG_METEO:
+                if stato in _STATI_METEO:
                     momenti = _momenti_meteo([regole[j][0] for j in coprono], pos)
                 chiave = (k, stato, repr(momenti))
                 if chiave not in varianti:
@@ -1448,9 +1542,27 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
             sig = _rule_signature(rule)
             if sig not in pools:
                 pools[sig] = sorted(candidates_for_rule(config, rule))
-            if pools[sig]:
-                scelto = (rule, origine, sig, pools[sig])
-                break
+            if not pools[sig]:
+                continue
+            if stato == meteo.NUVOLOSO and (percento or solo_nuvole):
+                # Le prime ore nuvolose: la finestra tira, e se le va bene (e
+                # c'e' un'immagine di nuvole non ancora uscita) pesca solo fra
+                # quelle
+                n_finestra = _window_ordinal(base, t, _rotate_of(base), config)
+                if percento and (k, n_finestra) not in solo_nuvole:
+                    solo_nuvole[(k, n_finestra)] = _ha_nuvole(
+                        config, pools[sig], usate
+                    ) and _estratta_nuvole(base, n_finestra, percento)
+                if solo_nuvole.get((k, n_finestra)):
+                    chiave = (k, stato, repr(momenti), True)
+                    if chiave not in varianti:
+                        varianti[chiave] = _con_meteo(base, stato, momenti, nuvole=True)
+                    rule = varianti[chiave]
+                    sig = _rule_signature(rule)
+                    if sig not in pools:
+                        pools[sig] = sorted(candidates_for_rule(config, rule))
+            scelto = (rule, origine, sig, pools[sig])
+            break
         if scelto is None:
             continue
 

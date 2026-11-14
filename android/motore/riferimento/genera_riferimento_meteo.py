@@ -20,7 +20,7 @@ Le risposte, nella cartella di uscita:
 Le risposte di Open-Meteo (ICON-2I), l'altra fonte:
   om_reale.json      una risposta vera per Portici
   om_casi.json       attorno al 28/3/2027: millimetri attorno alla soglia,
-                     codici di temporale, valori null
+                     codici di temporale, cielo coperto, valori null
   om_vuota.json      tutti null, come fuori dall'area del modello: meteo.py
                      solleva
   om_rotta.json      senza hourly: meteo.py solleva
@@ -33,8 +33,8 @@ Formato di atteso.tsv (UTF-8):
   P  risposta  adesso  ore  riassunto              ore = "chiave=stato,..." nell'ordine di meteo.py,
                                                    riassunto = la riga del log di meteo.riassunto
   E  risposta  adesso                              meteo.py solleva
-  O  risposta  adesso  soglia  ore  riassunto      come P, da meteo._previsioni_open_meteo
-  X  risposta  adesso  soglia                      meteo._previsioni_open_meteo solleva
+  O  risposta  adesso  soglia  nuvole  ore  riassunto   come P, da meteo._previsioni_open_meteo
+  X  risposta  adesso  soglia  nuvole                   meteo._previsioni_open_meteo solleva
 
 Uso, dalla cartella di questo file:  py genera_riferimento_meteo.py
 """
@@ -117,23 +117,25 @@ def prepara() -> dict[str, dict]:
 
 
 def risposte_open_meteo() -> dict[str, dict]:
-    def risposta(da: datetime, mm: list, codici: list) -> dict:
+    def risposta(da: datetime, mm: list, codici: list, coperto: list) -> dict:
         tempi = [int(t.timestamp()) for t in ore_utc(da, len(mm))]
-        return {"latitude": 40.82, "longitude": 14.35, "hourly": {"time": tempi, "precipitation": mm, "weather_code": codici}}
+        orari = {"time": tempi, "precipitation": mm, "weather_code": codici, "cloud_cover": coperto}
+        return {"latitude": 40.82, "longitude": 14.35, "hourly": orari}
 
     # Il valore di un orario e' la pioggia dell'ora prima; l'ora legale salta le 02:00 locali
     da = datetime(2027, 3, 27, 18, tzinfo=timezone.utc)
     mm = [0.0, 0.4, 0.5, 3.6, None, 0.1, 0.0, 1.2, 0.49, 0.0, 2.0, 0.0, 0.3, None, 0.0, 0.6, 0.0, 0.0]
     codici = [3, 61, 61, 63, None, 95, 2, None, 51, 96, 65, 99, 3, 95, 1, 61, 94, 0]
+    coperto = [10, 95, 100, 20, 100, 0, 90, 89, None, 100, 30, 60, 100, 100, 91, 0, None, 100]
     return {
         "om_reale.json": json.loads((USCITA / "om_reale.json").read_text(encoding="utf-8")),
-        "om_casi.json": risposta(da, mm, codici),
-        "om_vuota.json": risposta(da, [None] * 12, [None] * 12),
+        "om_casi.json": risposta(da, mm, codici, coperto),
+        "om_vuota.json": risposta(da, [None] * 12, [None] * 12, [None] * 12),
         "om_rotta.json": {"error": True, "reason": "No data is available for this location"},
     }
 
 
-def previsioni_open_meteo(risposta: dict, adesso: datetime, soglia: float) -> tuple[dict[str, str], str]:
+def previsioni_open_meteo(risposta: dict, adesso: datetime, soglia: float, nuvole: float) -> tuple[dict[str, str], str]:
     """meteo._previsioni_open_meteo e meteo.riassunto con la risposta data e l'orologio fermo su `adesso`."""
 
     class Orologio(datetime):
@@ -145,7 +147,7 @@ def previsioni_open_meteo(risposta: dict, adesso: datetime, soglia: float) -> tu
     meteo._scarica = lambda url: risposta
     meteo.datetime = Orologio
     try:
-        ore = meteo._previsioni_open_meteo(40.82, 14.34, soglia)
+        ore = meteo._previsioni_open_meteo(40.82, 14.34, soglia, nuvole)
         return ore, meteo.riassunto(ore)
     finally:
         meteo._scarica, meteo.datetime = vecchio_scarica, vecchio_datetime
@@ -214,15 +216,15 @@ def main():
         if nome != "om_reale.json":
             (USCITA / nome).write_text(json.dumps(r, indent=1), encoding="utf-8", newline="\n")
         for adesso in istanti_open_meteo(r):
-            for soglia in (meteo.DEFAULT_SOGLIA_MM, 0.1, 2.0):
+            for soglia, nuvole in ((meteo.DEFAULT_SOGLIA_MM, meteo.DEFAULT_SOGLIA_NUVOLE), (0.1, 100), (2.0, 50)):
                 quando = adesso.strftime("%Y-%m-%dT%H:%M")
                 try:
-                    ore, riassunto = previsioni_open_meteo(r, adesso, soglia)
+                    ore, riassunto = previsioni_open_meteo(r, adesso, soglia, nuvole)
                 except Exception:
-                    righe.append(f"X\t{nome}\t{quando}\t{soglia}")
+                    righe.append(f"X\t{nome}\t{quando}\t{soglia}\t{nuvole}")
                     continue
                 righe.append(
-                    f"O\t{nome}\t{quando}\t{soglia}\t" + ",".join(f"{k}={v}" for k, v in ore.items()) + f"\t{riassunto}"
+                    f"O\t{nome}\t{quando}\t{soglia}\t{nuvole}\t" + ",".join(f"{k}={v}" for k, v in ore.items()) + f"\t{riassunto}"
                 )
 
     with open(USCITA / "atteso.tsv", "w", encoding="utf-8", newline="\n") as f:

@@ -3,7 +3,7 @@ S	clearsky	asciutto
 S	clearsky_day	asciutto
 S	clearsky_night	asciutto
 S	clearsky_polartwilight	asciutto
-S	cloudy	asciutto
+S	cloudy	nuvoloso
 S	fair	asciutto
 S	fair_day	asciutto
 S	fair_night	asciutto
@@ -39,22 +39,22 @@ S	heavysnowshowersandthunder	temporale
 S	heavysnowshowersandthunder_day	temporale
 S	heavysnowshowersandthunder_night	temporale
 S	heavysnowshowersandthunder_polartwilight	temporale
-S	lightrain	asciutto
+S	lightrain	nuvoloso
 S	lightrainandthunder	temporale
-S	lightrainshowers	asciutto
-S	lightrainshowers_day	asciutto
-S	lightrainshowers_night	asciutto
-S	lightrainshowers_polartwilight	asciutto
+S	lightrainshowers	nuvoloso
+S	lightrainshowers_day	nuvoloso
+S	lightrainshowers_night	nuvoloso
+S	lightrainshowers_polartwilight	nuvoloso
 S	lightrainshowersandthunder	temporale
 S	lightrainshowersandthunder_day	temporale
 S	lightrainshowersandthunder_night	temporale
 S	lightrainshowersandthunder_polartwilight	temporale
-S	lightsleet	asciutto
+S	lightsleet	nuvoloso
 S	lightsleetandthunder	temporale
-S	lightsleetshowers	asciutto
-S	lightsleetshowers_day	asciutto
-S	lightsleetshowers_night	asciutto
-S	lightsleetshowers_polartwilight	asciutto
+S	lightsleetshowers	nuvoloso
+S	lightsleetshowers_day	nuvoloso
+S	lightsleetshowers_night	nuvoloso
+S	lightsleetshowers_polartwilight	nuvoloso
 S	lightsnow	asciutto
 S	lightsnowandthunder	temporale
 S	lightsnowshowers	asciutto
@@ -116,9 +116,9 @@ P	reale.json	2026-10-28T11:00	2026-10-28T11=asciutto,2026-10-28T12=asciutto,2026
 P	reale.json	2026-10-29T16:00	2026-10-29T16=asciutto,2026-10-29T17=asciutto,2026-10-29T18=asciutto,2026-10-29T19=asciutto,2026-10-29T20=asciutto,2026-10-29T21=asciutto,2026-10-29T22=asciutto,2026-10-29T23=asciutto,2026-10-30T00=asciutto,2026-10-30T01=asciutto	niente pioggia nelle prossime 10 ore
 P	reale.json	2026-11-05T19:00		niente pioggia nelle prossime 10 ore
 P	reale.json	2026-11-06T13:00		niente pioggia nelle prossime 10 ore
-P	simboli.json	2027-04-30T23:00	2027-05-01T02=asciutto,2027-05-01T03=asciutto,2027-05-01T04=asciutto,2027-05-01T05=asciutto,2027-05-01T06=asciutto,2027-05-01T07=asciutto,2027-05-01T08=asciutto,2027-05-01T09=asciutto,2027-05-01T10=asciutto,2027-05-01T11=asciutto	niente pioggia nelle prossime 10 ore
-P	simboli.json	2027-05-01T02:00	2027-05-01T02=asciutto,2027-05-01T03=asciutto,2027-05-01T04=asciutto,2027-05-01T05=asciutto,2027-05-01T06=asciutto,2027-05-01T07=asciutto,2027-05-01T08=asciutto,2027-05-01T09=asciutto,2027-05-01T10=asciutto,2027-05-01T11=asciutto	niente pioggia nelle prossime 10 ore
-P	simboli.json	2027-05-02T15:00	2027-05-02T15=temporale,2027-05-02T16=temporale,2027-05-02T17=temporale,2027-05-02T18=asciutto,2027-05-02T19=temporale,2027-05-02T20=asciutto,2027-05-02T21=asciutto,2027-05-02T22=asciutto,2027-05-02T23=asciutto,2027-05-03T00=temporale	temporale 15-18, temporale 19-20, temporale 00-01
+P	simboli.json	2027-04-30T23:00	2027-05-01T02=asciutto,2027-05-01T03=asciutto,2027-05-01T04=asciutto,2027-05-01T05=asciutto,2027-05-01T06=nuvoloso,2027-05-01T07=asciutto,2027-05-01T08=asciutto,2027-05-01T09=asciutto,2027-05-01T10=asciutto,2027-05-01T11=asciutto	nuvoloso 06-07
+P	simboli.json	2027-05-01T02:00	2027-05-01T02=asciutto,2027-05-01T03=asciutto,2027-05-01T04=asciutto,2027-05-01T05=asciutto,2027-05-01T06=nuvoloso,2027-05-01T07=asciutto,2027-05-01T08=asciutto,2027-05-01T09=asciutto,2027-05-01T10=asciutto,2027-05-01T11=asciutto	nuvoloso 06-07
+P	simboli.json	2027-05-02T15:00	2027-05-02T15=temporale,2027-05-02T16=temporale,2027-05-02T17=temporale,2027-05-02T18=nuvoloso,2027-05-02T19=temporale,2027-05-02T20=nuvoloso,2027-05-02T21=nuvoloso,2027-05-02T22=nuvoloso,2027-05-02T23=nuvoloso,2027-05-03T00=temporale	temporale 15-18, nuvoloso 18-19, temporale 19-20, nuvoloso 20-24, temporale 00-01
 P	simboli.json	2027-05-05T14:00	2027-05-05T14=asciutto,2027-05-05T15=asciutto,2027-05-05T16=pioggia,2027-05-05T17=asciutto	pioggia 16-17
 P	simboli.json	2027-05-05T17:00	2027-05-05T17=asciutto	niente pioggia nelle prossime 10 ore
 P	ora_legale.json	2027-03-27T16:00	2027-03-27T19=pioggia,2027-03-27T20=asciutto,2027-03-27T21=temporale,2027-03-27T22=pioggia,2027-03-28T00=asciutto,2027-03-28T03=asciutto,2027-03-28T04=temporale,2027-03-28T06=asciutto,2027-03-28T07=asciutto,2027-03-28T08=pioggia	pioggia 19-20, temporale 21-22, pioggia 22-23, temporale 04-05, pioggia 08-09
@@ -136,42 +136,42 @@ P	ora_solare.json	2027-10-31T02:30	2027-10-31T02=asciutto,2027-10-31T03=pioggia,
 P	ora_solare.json	2027-10-31T09:00	2027-10-31T09=pioggia,2027-10-31T10=asciutto,2027-10-31T11=temporale,2027-10-31T12=pioggia	pioggia 09-10, temporale 11-12, pioggia 12-13
 P	ora_solare.json	2027-10-31T12:00	2027-10-31T12=pioggia	pioggia 12-13
 E	rotta.json	2027-01-01T12:00
-O	om_reale.json	2026-11-14T17:00	1	2026-11-14T19=asciutto,2026-11-14T20=asciutto,2026-11-14T21=asciutto,2026-11-14T22=asciutto,2026-11-14T23=asciutto,2026-11-15T00=asciutto,2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=asciutto,2026-11-15T04=pioggia	pioggia 04-05
-O	om_reale.json	2026-11-14T17:00	0.1	2026-11-14T19=asciutto,2026-11-14T20=asciutto,2026-11-14T21=asciutto,2026-11-14T22=asciutto,2026-11-14T23=asciutto,2026-11-15T00=asciutto,2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=pioggia,2026-11-15T04=pioggia	pioggia 03-05
-O	om_reale.json	2026-11-14T17:00	2.0	2026-11-14T19=asciutto,2026-11-14T20=asciutto,2026-11-14T21=asciutto,2026-11-14T22=asciutto,2026-11-14T23=asciutto,2026-11-15T00=asciutto,2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=asciutto,2026-11-15T04=pioggia	pioggia 04-05
-O	om_reale.json	2026-11-14T20:30	1	2026-11-14T20=asciutto,2026-11-14T21=asciutto,2026-11-14T22=asciutto,2026-11-14T23=asciutto,2026-11-15T00=asciutto,2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=asciutto,2026-11-15T04=pioggia,2026-11-15T05=asciutto	pioggia 04-05
-O	om_reale.json	2026-11-14T20:30	0.1	2026-11-14T20=asciutto,2026-11-14T21=asciutto,2026-11-14T22=asciutto,2026-11-14T23=asciutto,2026-11-15T00=asciutto,2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=pioggia,2026-11-15T04=pioggia,2026-11-15T05=pioggia	pioggia 03-06
-O	om_reale.json	2026-11-14T20:30	2.0	2026-11-14T20=asciutto,2026-11-14T21=asciutto,2026-11-14T22=asciutto,2026-11-14T23=asciutto,2026-11-15T00=asciutto,2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=asciutto,2026-11-15T04=pioggia,2026-11-15T05=asciutto	pioggia 04-05
-O	om_reale.json	2026-11-15T00:00	1	2026-11-15T00=asciutto,2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=asciutto,2026-11-15T04=pioggia,2026-11-15T05=asciutto,2026-11-15T06=pioggia	pioggia 04-05, pioggia 06-07
-O	om_reale.json	2026-11-15T00:00	0.1	2026-11-15T00=asciutto,2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=pioggia,2026-11-15T04=pioggia,2026-11-15T05=pioggia,2026-11-15T06=pioggia	pioggia 03-07
-O	om_reale.json	2026-11-15T00:00	2.0	2026-11-15T00=asciutto,2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=asciutto,2026-11-15T04=pioggia,2026-11-15T05=asciutto,2026-11-15T06=asciutto	pioggia 04-05
-O	om_reale.json	2026-11-15T06:00	1	2026-11-15T06=pioggia	pioggia 06-07
-O	om_reale.json	2026-11-15T06:00	0.1	2026-11-15T06=pioggia	pioggia 06-07
-O	om_reale.json	2026-11-15T06:00	2.0	2026-11-15T06=asciutto	niente pioggia nelle prossime 10 ore
-O	om_casi.json	2027-03-27T16:00	1	2027-03-27T18=asciutto,2027-03-27T19=asciutto,2027-03-27T20=asciutto,2027-03-27T21=pioggia,2027-03-27T23=temporale,2027-03-28T00=asciutto,2027-03-28T02=pioggia,2027-03-28T03=asciutto,2027-03-28T04=temporale,2027-03-28T05=pioggia	pioggia 21-22, temporale 23-24, pioggia 02-03, temporale 04-05, pioggia 05-06
-O	om_casi.json	2027-03-27T16:00	0.1	2027-03-27T18=asciutto,2027-03-27T19=pioggia,2027-03-27T20=pioggia,2027-03-27T21=pioggia,2027-03-27T23=temporale,2027-03-28T00=asciutto,2027-03-28T02=pioggia,2027-03-28T03=pioggia,2027-03-28T04=temporale,2027-03-28T05=pioggia	pioggia 19-22, temporale 23-24, pioggia 02-04, temporale 04-05, pioggia 05-06
-O	om_casi.json	2027-03-27T16:00	2.0	2027-03-27T18=asciutto,2027-03-27T19=asciutto,2027-03-27T20=asciutto,2027-03-27T21=pioggia,2027-03-27T23=temporale,2027-03-28T00=asciutto,2027-03-28T02=asciutto,2027-03-28T03=asciutto,2027-03-28T04=temporale,2027-03-28T05=pioggia	pioggia 21-22, temporale 23-24, temporale 04-05, pioggia 05-06
-O	om_casi.json	2027-03-27T19:30	1	2027-03-27T19=asciutto,2027-03-27T20=asciutto,2027-03-27T21=pioggia,2027-03-27T23=temporale,2027-03-28T00=asciutto,2027-03-28T02=pioggia,2027-03-28T03=asciutto,2027-03-28T04=temporale,2027-03-28T05=pioggia,2027-03-28T06=temporale	pioggia 21-22, temporale 23-24, pioggia 02-03, temporale 04-05, pioggia 05-06, temporale 06-07
-O	om_casi.json	2027-03-27T19:30	0.1	2027-03-27T19=pioggia,2027-03-27T20=pioggia,2027-03-27T21=pioggia,2027-03-27T23=temporale,2027-03-28T00=asciutto,2027-03-28T02=pioggia,2027-03-28T03=pioggia,2027-03-28T04=temporale,2027-03-28T05=pioggia,2027-03-28T06=temporale	pioggia 19-22, temporale 23-24, pioggia 02-04, temporale 04-05, pioggia 05-06, temporale 06-07
-O	om_casi.json	2027-03-27T19:30	2.0	2027-03-27T19=asciutto,2027-03-27T20=asciutto,2027-03-27T21=pioggia,2027-03-27T23=temporale,2027-03-28T00=asciutto,2027-03-28T02=asciutto,2027-03-28T03=asciutto,2027-03-28T04=temporale,2027-03-28T05=pioggia,2027-03-28T06=temporale	pioggia 21-22, temporale 23-24, temporale 04-05, pioggia 05-06, temporale 06-07
-O	om_casi.json	2027-03-28T01:00	1	2027-03-28T02=pioggia,2027-03-28T03=asciutto,2027-03-28T04=temporale,2027-03-28T05=pioggia,2027-03-28T06=temporale,2027-03-28T07=asciutto,2027-03-28T09=asciutto,2027-03-28T10=asciutto,2027-03-28T11=asciutto,2027-03-28T12=asciutto	pioggia 02-03, temporale 04-05, pioggia 05-06, temporale 06-07
-O	om_casi.json	2027-03-28T01:00	0.1	2027-03-28T02=pioggia,2027-03-28T03=pioggia,2027-03-28T04=temporale,2027-03-28T05=pioggia,2027-03-28T06=temporale,2027-03-28T07=pioggia,2027-03-28T09=asciutto,2027-03-28T10=pioggia,2027-03-28T11=asciutto,2027-03-28T12=asciutto	pioggia 02-04, temporale 04-05, pioggia 05-06, temporale 06-07, pioggia 07-08, pioggia 10-11
-O	om_casi.json	2027-03-28T01:00	2.0	2027-03-28T02=asciutto,2027-03-28T03=asciutto,2027-03-28T04=temporale,2027-03-28T05=pioggia,2027-03-28T06=temporale,2027-03-28T07=asciutto,2027-03-28T09=asciutto,2027-03-28T10=asciutto,2027-03-28T11=asciutto,2027-03-28T12=asciutto	temporale 04-05, pioggia 05-06, temporale 06-07
-O	om_casi.json	2027-03-28T12:00	1	2027-03-28T12=asciutto	niente pioggia nelle prossime 10 ore
-O	om_casi.json	2027-03-28T12:00	0.1	2027-03-28T12=asciutto	niente pioggia nelle prossime 10 ore
-O	om_casi.json	2027-03-28T12:00	2.0	2027-03-28T12=asciutto	niente pioggia nelle prossime 10 ore
-X	om_vuota.json	2027-03-27T16:00	1
-X	om_vuota.json	2027-03-27T16:00	0.1
-X	om_vuota.json	2027-03-27T16:00	2.0
-X	om_vuota.json	2027-03-27T19:30	1
-X	om_vuota.json	2027-03-27T19:30	0.1
-X	om_vuota.json	2027-03-27T19:30	2.0
-X	om_vuota.json	2027-03-27T23:00	1
-X	om_vuota.json	2027-03-27T23:00	0.1
-X	om_vuota.json	2027-03-27T23:00	2.0
-X	om_vuota.json	2027-03-28T06:00	1
-X	om_vuota.json	2027-03-28T06:00	0.1
-X	om_vuota.json	2027-03-28T06:00	2.0
-X	om_rotta.json	2027-01-01T12:00	1
-X	om_rotta.json	2027-01-01T12:00	0.1
-X	om_rotta.json	2027-01-01T12:00	2.0
+O	om_reale.json	2026-11-14T18:00	1	90	2026-11-14T20=asciutto,2026-11-14T21=nuvoloso,2026-11-14T22=nuvoloso,2026-11-14T23=nuvoloso,2026-11-15T00=nuvoloso,2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=nuvoloso,2026-11-15T04=pioggia,2026-11-15T05=nuvoloso	nuvoloso 21-01, nuvoloso 03-04, pioggia 04-05, nuvoloso 05-06
+O	om_reale.json	2026-11-14T18:00	0.1	100	2026-11-14T20=asciutto,2026-11-14T21=nuvoloso,2026-11-14T22=nuvoloso,2026-11-14T23=nuvoloso,2026-11-15T00=nuvoloso,2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=pioggia,2026-11-15T04=pioggia,2026-11-15T05=pioggia	nuvoloso 21-01, pioggia 03-06
+O	om_reale.json	2026-11-14T18:00	2.0	50	2026-11-14T20=nuvoloso,2026-11-14T21=nuvoloso,2026-11-14T22=nuvoloso,2026-11-14T23=nuvoloso,2026-11-15T00=nuvoloso,2026-11-15T01=nuvoloso,2026-11-15T02=nuvoloso,2026-11-15T03=nuvoloso,2026-11-15T04=pioggia,2026-11-15T05=nuvoloso	nuvoloso 20-04, pioggia 04-05, nuvoloso 05-06
+O	om_reale.json	2026-11-14T21:30	1	90	2026-11-14T21=nuvoloso,2026-11-14T22=nuvoloso,2026-11-14T23=nuvoloso,2026-11-15T00=nuvoloso,2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=nuvoloso,2026-11-15T04=pioggia,2026-11-15T05=nuvoloso,2026-11-15T06=pioggia	nuvoloso 21-01, nuvoloso 03-04, pioggia 04-05, nuvoloso 05-06, pioggia 06-07
+O	om_reale.json	2026-11-14T21:30	0.1	100	2026-11-14T21=nuvoloso,2026-11-14T22=nuvoloso,2026-11-14T23=nuvoloso,2026-11-15T00=nuvoloso,2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=pioggia,2026-11-15T04=pioggia,2026-11-15T05=pioggia,2026-11-15T06=pioggia	nuvoloso 21-01, pioggia 03-07
+O	om_reale.json	2026-11-14T21:30	2.0	50	2026-11-14T21=nuvoloso,2026-11-14T22=nuvoloso,2026-11-14T23=nuvoloso,2026-11-15T00=nuvoloso,2026-11-15T01=nuvoloso,2026-11-15T02=nuvoloso,2026-11-15T03=nuvoloso,2026-11-15T04=pioggia,2026-11-15T05=nuvoloso,2026-11-15T06=nuvoloso	nuvoloso 21-04, pioggia 04-05, nuvoloso 05-07
+O	om_reale.json	2026-11-15T01:00	1	90	2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=nuvoloso,2026-11-15T04=pioggia,2026-11-15T05=nuvoloso,2026-11-15T06=pioggia,2026-11-15T07=pioggia	nuvoloso 03-04, pioggia 04-05, nuvoloso 05-06, pioggia 06-08
+O	om_reale.json	2026-11-15T01:00	0.1	100	2026-11-15T01=asciutto,2026-11-15T02=asciutto,2026-11-15T03=pioggia,2026-11-15T04=pioggia,2026-11-15T05=pioggia,2026-11-15T06=pioggia,2026-11-15T07=pioggia	pioggia 03-08
+O	om_reale.json	2026-11-15T01:00	2.0	50	2026-11-15T01=nuvoloso,2026-11-15T02=nuvoloso,2026-11-15T03=nuvoloso,2026-11-15T04=pioggia,2026-11-15T05=nuvoloso,2026-11-15T06=nuvoloso,2026-11-15T07=nuvoloso	nuvoloso 01-04, pioggia 04-05, nuvoloso 05-08
+O	om_reale.json	2026-11-15T07:00	1	90	2026-11-15T07=pioggia	pioggia 07-08
+O	om_reale.json	2026-11-15T07:00	0.1	100	2026-11-15T07=pioggia	pioggia 07-08
+O	om_reale.json	2026-11-15T07:00	2.0	50	2026-11-15T07=nuvoloso	nuvoloso 07-08
+O	om_casi.json	2027-03-27T16:00	1	90	2027-03-27T18=asciutto,2027-03-27T19=nuvoloso,2027-03-27T20=nuvoloso,2027-03-27T21=pioggia,2027-03-27T23=temporale,2027-03-28T00=nuvoloso,2027-03-28T02=pioggia,2027-03-28T03=nuvoloso,2027-03-28T04=temporale,2027-03-28T05=pioggia	nuvoloso 19-21, pioggia 21-22, temporale 23-24, nuvoloso 00-01, pioggia 02-03, nuvoloso 03-04, temporale 04-05, pioggia 05-06
+O	om_casi.json	2027-03-27T16:00	0.1	100	2027-03-27T18=asciutto,2027-03-27T19=pioggia,2027-03-27T20=pioggia,2027-03-27T21=pioggia,2027-03-27T23=temporale,2027-03-28T00=asciutto,2027-03-28T02=pioggia,2027-03-28T03=pioggia,2027-03-28T04=temporale,2027-03-28T05=pioggia	pioggia 19-22, temporale 23-24, pioggia 02-04, temporale 04-05, pioggia 05-06
+O	om_casi.json	2027-03-27T16:00	2.0	50	2027-03-27T18=asciutto,2027-03-27T19=nuvoloso,2027-03-27T20=nuvoloso,2027-03-27T21=pioggia,2027-03-27T23=temporale,2027-03-28T00=nuvoloso,2027-03-28T02=nuvoloso,2027-03-28T03=nuvoloso,2027-03-28T04=temporale,2027-03-28T05=pioggia	nuvoloso 19-21, pioggia 21-22, temporale 23-24, nuvoloso 00-01, nuvoloso 02-04, temporale 04-05, pioggia 05-06
+O	om_casi.json	2027-03-27T19:30	1	90	2027-03-27T19=nuvoloso,2027-03-27T20=nuvoloso,2027-03-27T21=pioggia,2027-03-27T23=temporale,2027-03-28T00=nuvoloso,2027-03-28T02=pioggia,2027-03-28T03=nuvoloso,2027-03-28T04=temporale,2027-03-28T05=pioggia,2027-03-28T06=temporale	nuvoloso 19-21, pioggia 21-22, temporale 23-24, nuvoloso 00-01, pioggia 02-03, nuvoloso 03-04, temporale 04-05, pioggia 05-06, temporale 06-07
+O	om_casi.json	2027-03-27T19:30	0.1	100	2027-03-27T19=pioggia,2027-03-27T20=pioggia,2027-03-27T21=pioggia,2027-03-27T23=temporale,2027-03-28T00=asciutto,2027-03-28T02=pioggia,2027-03-28T03=pioggia,2027-03-28T04=temporale,2027-03-28T05=pioggia,2027-03-28T06=temporale	pioggia 19-22, temporale 23-24, pioggia 02-04, temporale 04-05, pioggia 05-06, temporale 06-07
+O	om_casi.json	2027-03-27T19:30	2.0	50	2027-03-27T19=nuvoloso,2027-03-27T20=nuvoloso,2027-03-27T21=pioggia,2027-03-27T23=temporale,2027-03-28T00=nuvoloso,2027-03-28T02=nuvoloso,2027-03-28T03=nuvoloso,2027-03-28T04=temporale,2027-03-28T05=pioggia,2027-03-28T06=temporale	nuvoloso 19-21, pioggia 21-22, temporale 23-24, nuvoloso 00-01, nuvoloso 02-04, temporale 04-05, pioggia 05-06, temporale 06-07
+O	om_casi.json	2027-03-28T01:00	1	90	2027-03-28T02=pioggia,2027-03-28T03=nuvoloso,2027-03-28T04=temporale,2027-03-28T05=pioggia,2027-03-28T06=temporale,2027-03-28T07=nuvoloso,2027-03-28T09=nuvoloso,2027-03-28T10=nuvoloso,2027-03-28T11=asciutto,2027-03-28T12=nuvoloso	pioggia 02-03, nuvoloso 03-04, temporale 04-05, pioggia 05-06, temporale 06-07, nuvoloso 07-08, nuvoloso 09-11, nuvoloso 12-13
+O	om_casi.json	2027-03-28T01:00	0.1	100	2027-03-28T02=pioggia,2027-03-28T03=pioggia,2027-03-28T04=temporale,2027-03-28T05=pioggia,2027-03-28T06=temporale,2027-03-28T07=pioggia,2027-03-28T09=asciutto,2027-03-28T10=pioggia,2027-03-28T11=asciutto,2027-03-28T12=nuvoloso	pioggia 02-04, temporale 04-05, pioggia 05-06, temporale 06-07, pioggia 07-08, pioggia 10-11, nuvoloso 12-13
+O	om_casi.json	2027-03-28T01:00	2.0	50	2027-03-28T02=nuvoloso,2027-03-28T03=nuvoloso,2027-03-28T04=temporale,2027-03-28T05=pioggia,2027-03-28T06=temporale,2027-03-28T07=nuvoloso,2027-03-28T09=nuvoloso,2027-03-28T10=nuvoloso,2027-03-28T11=asciutto,2027-03-28T12=nuvoloso	nuvoloso 02-04, temporale 04-05, pioggia 05-06, temporale 06-07, nuvoloso 07-08, nuvoloso 09-11, nuvoloso 12-13
+O	om_casi.json	2027-03-28T12:00	1	90	2027-03-28T12=nuvoloso	nuvoloso 12-13
+O	om_casi.json	2027-03-28T12:00	0.1	100	2027-03-28T12=nuvoloso	nuvoloso 12-13
+O	om_casi.json	2027-03-28T12:00	2.0	50	2027-03-28T12=nuvoloso	nuvoloso 12-13
+X	om_vuota.json	2027-03-27T16:00	1	90
+X	om_vuota.json	2027-03-27T16:00	0.1	100
+X	om_vuota.json	2027-03-27T16:00	2.0	50
+X	om_vuota.json	2027-03-27T19:30	1	90
+X	om_vuota.json	2027-03-27T19:30	0.1	100
+X	om_vuota.json	2027-03-27T19:30	2.0	50
+X	om_vuota.json	2027-03-27T23:00	1	90
+X	om_vuota.json	2027-03-27T23:00	0.1	100
+X	om_vuota.json	2027-03-27T23:00	2.0	50
+X	om_vuota.json	2027-03-28T06:00	1	90
+X	om_vuota.json	2027-03-28T06:00	0.1	100
+X	om_vuota.json	2027-03-28T06:00	2.0	50
+X	om_rotta.json	2027-01-01T12:00	1	90
+X	om_rotta.json	2027-01-01T12:00	0.1	100
+X	om_rotta.json	2027-01-01T12:00	2.0	50

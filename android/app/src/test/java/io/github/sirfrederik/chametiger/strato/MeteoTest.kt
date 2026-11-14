@@ -66,19 +66,20 @@ class MeteoTest {
         for (c in casi) {
             val adesso = LocalDateTime.parse(c[2])
             val soglia = c[3].toDouble()
+            val nuvole = c[4].toDouble()
             if (c[0] == "X") {
                 try {
-                    previsioniOpenMeteo(risorsa(c[1]), adesso, soglia)
+                    previsioniOpenMeteo(risorsa(c[1]), adesso, soglia, nuvole)
                     fail("${c[1]} ${c[2]}: meteo.py solleva, il telefono no")
                 } catch (e: Exception) {
                     // come meteo.py
                 }
                 continue
             }
-            val ore = previsioniOpenMeteo(risorsa(c[1]), adesso, soglia)
-            val attese = c[4].split(",").filter { it.isNotEmpty() }
-            assertEquals("${c[1]} ${c[2]} soglia $soglia", attese, ore.map { (k, v) -> "$k=${v.tag}" })
-            assertEquals("${c[1]} ${c[2]} riassunto", c[5], riassunto(ore, adesso))
+            val ore = previsioniOpenMeteo(risorsa(c[1]), adesso, soglia, nuvole)
+            val attese = c[5].split(",").filter { it.isNotEmpty() }
+            assertEquals("${c[1]} ${c[2]} soglia $soglia nuvole $nuvole", attese, ore.map { (k, v) -> "$k=${v.tag}" })
+            assertEquals("${c[1]} ${c[2]} riassunto", c[6], riassunto(ore, adesso))
         }
     }
 
@@ -89,6 +90,7 @@ class MeteoTest {
                 "longitude": 14.3414, "meteo": {"attivo": true, "aggiorna_ore": 5, "fonte": "open_meteo"}}""",
         )
         assertEquals(1.0, openMeteo.meteoSogliaMm, 0.0)
+        assertEquals(90.0, openMeteo.meteoSogliaNuvole, 0.0)
         assertEquals("met_norway", config.meteoFonte)
         val adesso = LocalDateTime.of(2027, 3, 27, 20, 30)
         val rete = ReteFinta(risorsa("om_casi.json"))
@@ -96,11 +98,11 @@ class MeteoTest {
 
         assertTrue(meteo(rete, diario).aggiornaSeServe(openMeteo, adesso))
         assertEquals(
-            "https://api.open-meteo.com/v1/forecast?latitude=40.82&longitude=14.34&hourly=precipitation,weather_code" +
+            "https://api.open-meteo.com/v1/forecast?latitude=40.82&longitude=14.34&hourly=precipitation,weather_code,cloud_cover" +
                 "&models=italia_meteo_arpae_icon_2i&forecast_hours=12&timeformat=unixtime&timezone=GMT",
             rete.chiamate.single().first,
         )
-        assertTrue(diario.righe.single(), diario.righe.single().startsWith("[METEO] Aggiornato (Open-Meteo ICON-2I): pioggia 21-22"))
+        assertTrue(diario.righe.single(), diario.righe.single().startsWith("[METEO] Aggiornato (Open-Meteo ICON-2I): ") && "pioggia 21-22" in diario.righe.single())
         assertEquals("open_meteo", meteo(rete, diario).leggi()!!.fonte)
         assertEquals(StatoMeteo.PIOGGIA, meteo(rete, diario).fonte(openMeteo, adesso).ore(LocalDate.of(2027, 3, 27))[21])
         assertFalse(meteo(rete, diario).aggiornaSeServe(openMeteo, adesso.plusHours(1)))
@@ -110,6 +112,22 @@ class MeteoTest {
         rete.risposta = risorsa("reale.json")
         assertTrue(meteo(rete, diario).aggiornaSeServe(config, adesso.plusHours(1)))
         assertEquals("met_norway", meteo(rete, diario).leggi()!!.fonte)
+    }
+
+    @Test
+    fun prioritaDelleNuvoleComePython() {
+        // meteo.priorita_nuvole: gli stessi casi, con le stesse risposte
+        fun letta(valore: String?) = Config.leggi(
+            """{"image_library": {"a.jpg": ["x"]}, "random_rules": {"weekday": []}, "meteo": {""" +
+                (valore?.let { """"nuvole_priorita": $it""" } ?: "") + "}}",
+        ).meteoPrioritaNuvole
+        assertEquals(listOf(100, 60, 40), letta(null))
+        assertEquals(listOf(100, 60, 40), letta("[100, 60, 40]"))
+        assertEquals(emptyList<Int>(), letta("[]"))
+        assertEquals(listOf(100, 60, 40), letta("\"x\""))
+        assertEquals(listOf(100, 0, 60, 59), letta("[150, -3, \"60\", 59.9]"))
+        assertEquals(listOf(100, 60, 40), letta("[1, \"a\"]"))
+        assertEquals(listOf(100, 60, 40), letta("null"))
     }
 
     @Test

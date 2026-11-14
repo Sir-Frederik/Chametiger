@@ -44,11 +44,12 @@ URL_PREVISIONI = (
     "?lat={lat:.2f}&lon={lon:.2f}"
 )
 # ICON-2I: precipitation sono i mm caduti nell'ora PRIMA dell'orario indicato,
-# weather_code serve solo per il temporale. Orari in secondi dall'epoca.
+# weather_code serve solo per il temporale, cloud_cover (%) per il nuvoloso.
+# Orari in secondi dall'epoca.
 URL_OPEN_METEO = (
     "https://api.open-meteo.com/v1/forecast"
     "?latitude={lat:.2f}&longitude={lon:.2f}"
-    "&hourly=precipitation,weather_code&models=italia_meteo_arpae_icon_2i"
+    "&hourly=precipitation,weather_code,cloud_cover&models=italia_meteo_arpae_icon_2i"
     "&forecast_hours={ore}&timeformat=unixtime&timezone=GMT"
 )
 # URL_METAR = (
@@ -69,9 +70,18 @@ RIPROVA_MINUTI = 30  # dopo un download fallito, prima di riprovare
 MET_NORWAY = "met_norway"
 OPEN_METEO = "open_meteo"
 FONTI = {MET_NORWAY: "Met Norway", OPEN_METEO: "Open-Meteo ICON-2I"}
-# Open-Meteo da' millimetri, non simboli: sotto questa soglia l'ora e'
-# asciutta, come la pioggia leggera di Met Norway.
+# Open-Meteo da' millimetri, non simboli: sotto questa soglia l'ora non e' di
+# pioggia ma nuvolosa, come la pioggia leggera di Met Norway.
 DEFAULT_SOGLIA_MM = 1
+# Sotto la soglia della pioggia, da quanti mm l'ora e' nuvolosa anche se la
+# copertura del cielo non lo dice.
+PIOGGIA_LEGGERA_MM = 0.1
+# Copertura del cielo (%) da cui Open-Meteo conta come nuvoloso.
+DEFAULT_SOGLIA_NUVOLE = 90
+# Nelle prime ore nuvolose di fila, la probabilita' (%) che una finestra peschi
+# solo fra le immagini di nuvole: la prima ora, la seconda, la terza. Dopo, il
+# pool e' quello misto.
+DEFAULT_PRIORITA_NUVOLE = (100, 60, 40)
 # METAR_RAGGIO_KM = 30  # stazioni piu' lontane non dicono che tempo fa qui
 # METAR_MAX_ETA_MIN = 90  # i METAR escono ogni 30-60 minuti
 
@@ -79,25 +89,30 @@ DEFAULT_SOGLIA_MM = 1
 # quando una fonte la da'.
 TEMPORALE = "temporale"
 PIOGGIA = "pioggia"
+# Cielo coperto o pioggia leggera. Non restringe il pool come la pioggia:
+# ammette le immagini col tag TAG_NUVOLE accanto a quelle di sempre.
+NUVOLOSO = "nuvoloso"
 ASCIUTTO = "asciutto"
+
+# Il tag delle immagini di cielo coperto. Per pioggia e temporale il tag ha lo
+# stesso nome dello stato.
+TAG_NUVOLE = "nuvole"
 
 
 def stato_da_simbolo(simbolo: str) -> str:
     """
     Simbolo di Met Norway -> stato: 'heavyrainandthunder' -> temporale,
     'rainshowers_day' -> pioggia. La pioggia leggera ('lightrain',
-    'lightrainshowers_day') conta come asciutto, come neve, nebbia e coperto:
-    la pioggia si mostra solo quando si vede davvero. Il tuono vince anche
-    sul leggero.
+    'lightrainshowers_day', 'lightsleet') e il coperto ('cloudy') sono
+    nuvoloso: la pioggia si mostra solo quando si vede davvero. Neve, nebbia
+    e poco nuvoloso restano asciutto. Il tuono vince anche sul leggero.
     """
     s = simbolo.split("_")[0]
     if "thunder" in s:
         return TEMPORALE
-    if s.startswith("light"):
-        return ASCIUTTO
     if "rain" in s or "sleet" in s:
-        return PIOGGIA
-    return ASCIUTTO
+        return NUVOLOSO if s.startswith("light") else PIOGGIA
+    return NUVOLOSO if s == "cloudy" else ASCIUTTO
 
 
 # def stato_da_metar(wx: str | None) -> str:
@@ -136,6 +151,30 @@ def soglia_mm(config: dict) -> float:
     except (TypeError, ValueError):
         return DEFAULT_SOGLIA_MM
     return mm if mm > 0 else DEFAULT_SOGLIA_MM
+
+
+def soglia_nuvole(config: dict) -> float:
+    """La copertura del cielo (%) da cui Open-Meteo conta come nuvoloso (`soglia_nuvole`)."""
+    try:
+        n = float((config.get("meteo") or {}).get("soglia_nuvole", DEFAULT_SOGLIA_NUVOLE))
+    except (TypeError, ValueError):
+        return DEFAULT_SOGLIA_NUVOLE
+    return n if 0 < n <= 100 else DEFAULT_SOGLIA_NUVOLE
+
+
+def priorita_nuvole(config: dict) -> list[int]:
+    """
+    Le percentuali di `nuvole_priorita`, una per ora nuvolosa di fila, intere
+    fra 0 e 100. Se non e' una lista di numeri valgono quelle di default; una
+    lista vuota toglie la priorita'.
+    """
+    valore = (config.get("meteo") or {}).get("nuvole_priorita", DEFAULT_PRIORITA_NUVOLE)
+    if not isinstance(valore, (list, tuple)):
+        return list(DEFAULT_PRIORITA_NUVOLE)
+    try:
+        return [min(100, max(0, int(float(x)))) for x in valore]
+    except (TypeError, ValueError, OverflowError):
+        return list(DEFAULT_PRIORITA_NUVOLE)
 
 
 def minimo(config: dict) -> int:
@@ -268,27 +307,37 @@ def _previsioni(lat: float, lon: float) -> dict[str, str]:
     return ore
 
 
-def _previsioni_open_meteo(lat: float, lon: float, soglia: float) -> dict[str, str]:
+def _previsioni_open_meteo(
+    lat: float, lon: float, soglia: float, nuvole: float = DEFAULT_SOGLIA_NUVOLE
+) -> dict[str, str]:
     """
     {ora locale: stato} da Open-Meteo (ICON-2I), dall'ora attuale per
     ORE_PREVISTE ore. I mm di un orario sono quelli caduti nell'ora prima:
     il valore delle 15:00 e' la pioggia dell'ora 14. Temporale coi codici
-    WMO 95-99, pioggia da `soglia` mm in su. Fuori dall'area del modello i
-    valori sono null: allora solleva, e si sceglie come col sereno.
+    WMO 95-99, pioggia da `soglia` mm in su; sotto, nuvoloso da
+    PIOGGIA_LEGGERA_MM o con la copertura del cielo da `nuvole` % in su.
+    Fuori dall'area del modello i valori sono null: allora solleva, e si
+    sceglie come col sereno.
     """
     # Due ore in piu': la prima risposta e' l'ora attuale, che parla di quella prima
     risposta = _scarica(URL_OPEN_METEO.format(lat=lat, lon=lon, ore=ORE_PREVISTE + 2))
     orari = risposta["hourly"]
     adesso = _chiave(datetime.now())
     ore = {}
-    for t, mm, codice in zip(orari["time"], orari["precipitation"], orari["weather_code"]):
+    for t, mm, codice, coperto in zip(
+        orari["time"], orari["precipitation"], orari["weather_code"], orari["cloud_cover"]
+    ):
         chiave = _chiave(datetime.fromtimestamp(t) - timedelta(hours=1))
         if chiave < adesso or mm is None:
             continue
         if codice is not None and codice >= 95:
             ore[chiave] = TEMPORALE
+        elif mm >= soglia:
+            ore[chiave] = PIOGGIA
+        elif mm >= PIOGGIA_LEGGERA_MM or (coperto is not None and coperto >= nuvole):
+            ore[chiave] = NUVOLOSO
         else:
-            ore[chiave] = PIOGGIA if mm >= soglia else ASCIUTTO
+            ore[chiave] = ASCIUTTO
         if len(ore) == ORE_PREVISTE:
             break
     if not ore:
@@ -374,7 +423,9 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
     errori = []
     try:
         if scelta == OPEN_METEO:
-            ore_meteo = _previsioni_open_meteo(lat, lon, soglia_mm(config))
+            ore_meteo = _previsioni_open_meteo(
+                lat, lon, soglia_mm(config), soglia_nuvole(config)
+            )
         else:
             ore_meteo = _previsioni(lat, lon)
     except Exception as e:

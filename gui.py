@@ -4086,7 +4086,7 @@ class PreviewTab(tk.Frame):
                 tag.append("!" + ",!".join(rule["veto"]))
             if rule.get("prefer"):
                 tag.append("~" + ",~".join(rule["prefer"]))
-            if rule.get("meteo") in ("pioggia", "temporale"):
+            if rule.get("meteo") in ("pioggia", "temporale", "nuvoloso"):
                 tag.append("@" + rule["meteo"])
             self._tree.insert(
                 "",

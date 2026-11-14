@@ -36,8 +36,9 @@ import meteo
 GIORNI_DEFAULT = 365
 SOGLIA_DEFAULT = 12
 
-# Gli scenari forzati, dopo l'anno com'e'. Lo stato e' anche il tag del meteo.
-SCENARI_METEO = (meteo.PIOGGIA, meteo.TEMPORALE)
+# Gli scenari forzati, dopo l'anno com'e', e i tag delle immagini che servono.
+SCENARI_METEO = (meteo.PIOGGIA, meteo.TEMPORALE, meteo.NUVOLOSO)
+TAG_METEO = {meteo.PIOGGIA, meteo.TEMPORALE, meteo.TAG_NUVOLE}
 
 
 def _nessun_progresso(fase: str, fatto: int, totale: int):
@@ -182,12 +183,12 @@ def rapporto(
         ferme = [
             i
             for i, tag in taggate.items()
-            if set(tag) & set(SCENARI_METEO)
+            if set(tag) & TAG_METEO
             and not any(conte[s][i] for s in SCENARI_METEO)
         ]
         problemi += len([i for i in ferme if i not in mai_uscite])
         righe.append(
-            f"\nCol tag del meteo, mai uscite nemmeno con pioggia o temporale "
+            f"\nCol tag del meteo, mai uscite nemmeno con pioggia, temporale o nuvole "
             f"tutto il giorno: {len(ferme)}"
         )
         righe += [f"  {i}: {taggate[i]}" for i in ferme]

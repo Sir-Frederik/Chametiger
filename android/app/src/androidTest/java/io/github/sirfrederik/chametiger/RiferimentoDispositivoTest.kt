@@ -115,6 +115,6 @@ class RiferimentoDispositivoTest {
     companion object {
         private const val TAG = "RiferimentoTest"
         private const val DISPOSITIVO = "Federico"
-        private val STATI = mapOf('A' to StatoMeteo.ASCIUTTO, 'P' to StatoMeteo.PIOGGIA, 'T' to StatoMeteo.TEMPORALE)
+        private val STATI = mapOf('A' to StatoMeteo.ASCIUTTO, 'N' to StatoMeteo.NUVOLOSO, 'P' to StatoMeteo.PIOGGIA, 'T' to StatoMeteo.TEMPORALE)
     }
 }

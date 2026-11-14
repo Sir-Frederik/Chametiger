@@ -199,8 +199,12 @@ class Motore(
 
         // Quando piove, un'immagine di pioggia entra anche senza i tag della
         // fascia, purche' abbia uno dei suoi momenti: anche in quelle degli eventi
-        val piove = regola.meteo?.piove == true && tags.any { it in TAG_METEO }
-        return piove && tags.any { it in regola.momenti }
+        // lo stesso col nuvoloso per le immagini di nuvole
+        val entra = when {
+            regola.meteo?.piove == true -> tags.any { it in TAG_METEO }
+            else -> regola.meteo == StatoMeteo.NUVOLOSO && TAG_NUVOLE in tags
+        }
+        return entra && tags.any { it in regola.momenti }
     }
 
     /** candidates_for_rule, senza il controllo sul disco: il pool e' la libreria. */
@@ -215,18 +219,32 @@ class Motore(
             // Si restringe solo se ne resta abbastanza
             if (scelti.size >= minimo) out = scelti
         }
-        return secondoMeteo(out, regola.meteo)
+        return secondoMeteo(out, regola.meteo, regola.nuvole)
     }
 
     /** _secondo_meteo: il pool visto attraverso il tempo che fa, sopra prefer. */
-    private fun secondoMeteo(pool: List<String>, stato: StatoMeteo?): List<String> {
+    private fun secondoMeteo(pool: List<String>, stato: StatoMeteo?, soloNuvole: Boolean = false): List<String> {
         stato ?: return pool
         val libreria = config.libreria
         val minimo = config.meteoMinimo
         fun conTag(gruppo: Set<String>) = pool.filter { img -> libreria[img].orEmpty().any { it in gruppo } }
 
         if (stato == StatoMeteo.ASCIUTTO) {
-            val scelti = pool.filter { img -> libreria[img].orEmpty().none { it in TAG_METEO } }
+            val scelti = pool.filter { img -> libreria[img].orEmpty().none { it in TAG_METEO || it == TAG_NUVOLE } }
+            return if (scelti.size >= minimo) scelti else pool
+        }
+        // Il nuvoloso non restringe: mette da parte solo pioggia e temporale, e
+        // le immagini di nuvole stanno nel pool accanto a quelle di sempre
+        if (stato == StatoMeteo.NUVOLOSO) {
+            // Con la priorita' delle nuvole restano solo quelle, se ce n'e' almeno una
+            if (soloNuvole) {
+                val nuvole = pool.filter { TAG_NUVOLE in libreria[it].orEmpty() }
+                if (nuvole.isNotEmpty()) return nuvole
+            }
+            val scelti = pool.filter { img ->
+                val tags = libreria[img].orEmpty()
+                TAG_NUVOLE in tags || tags.none { it in TAG_METEO }
+            }
             return if (scelti.size >= minimo) scelti else pool
         }
         val gruppi = if (stato == StatoMeteo.TEMPORALE) {
@@ -242,11 +260,37 @@ class Motore(
     }
 
     /** La regola col tempo dell'ora. Una copia, come _con_meteo. */
-    private fun conMeteo(regola: Regola, stato: StatoMeteo?, momenti: List<String>?): Regola {
+    private fun conMeteo(regola: Regola, stato: StatoMeteo?, momenti: List<String>?, nuvole: Boolean = false): Regola {
         stato ?: return regola
-        val r = regola.copy(meteo = stato)
+        val r = regola.copy(meteo = stato, nuvole = nuvole)
         return if (momenti.isNullOrEmpty()) r else r.copy(momenti = momenti)
     }
+
+    /**
+     * _priorita_nuvole: la probabilita' (%) che in quell'ora nuvolosa una
+     * finestra peschi solo fra le immagini di nuvole, da quante ore nuvolose di
+     * fila ci sono fino a quella, lei compresa. 0 dopo le prime, e se l'ora
+     * non e' nuvolosa.
+     */
+    private fun prioritaNuvole(oreMeteo: Map<Int, StatoMeteo>, ora: Int): Int {
+        if (oreMeteo[ora] != StatoMeteo.NUVOLOSO) return 0
+        var n = 1
+        while (oreMeteo[ora - n] == StatoMeteo.NUVOLOSO) n++
+        return config.meteoPrioritaNuvole.getOrElse(n - 1) { 0 }
+    }
+
+    /** _estratta_nuvole: il tiro della finestra, fisso: sha256("nuvole|fascia|ordinale") in centesimi, sotto `percento`. */
+    private fun estrattaNuvole(regola: Regola, ordinale: Int, percento: Int): Boolean {
+        if (percento <= 0) return false
+        val d = digest("nuvole|${chiaveFascia(regola)}|$ordinale")
+        var n = 0L
+        for (i in 0 until 4) n = (n shl 8) or (d[i].toLong() and 0xFF)
+        return n % 100 < percento
+    }
+
+    /** _ha_nuvole: se nel pool c'e' un'immagine di nuvole non ancora uscita oggi. */
+    private fun haNuvole(pool: List<String>, usate: Set<String> = emptySet()): Boolean =
+        pool.any { TAG_NUVOLE in config.libreria[it].orEmpty() && it !in usate }
 
     /**
      * _momenti_meteo: quando piove, i momenti della fascia (o della prima sotto
@@ -279,6 +323,7 @@ class Motore(
         if (!regola.periodo.isNullOrEmpty()) parti += "s:" + regola.periodo
         regola.meteo?.let { parti += "m:" + it.tag }
         if (regola.momenti.isNotEmpty()) parti += "mo:" + regola.momenti.joinToString(",")
+        if (regola.nuvole) parti += "nu:1"
         return parti.joinToString("|")
     }
 
@@ -632,11 +677,24 @@ class Motore(
     /** regole_candidate: le regole che coprono quell'istante, in priorita', col meteo dell'ora. */
     fun regoleCandidate(quando: LocalDateTime): List<Pair<Regola, String>> {
         val minuto = quando.hour * 60 + quando.minute
-        val stato = meteoDelGiorno(quando.toLocalDate())?.get(quando.hour)
+        val oreMeteo = meteoDelGiorno(quando.toLocalDate())
+        val stato = oreMeteo?.get(quando.hour)
         val coprono = regoleDelGiorno(quando.toLocalDate()).filter { copre(it.start, it.end, minuto) }
-        if (stato?.piove != true) return coprono.map { conMeteo(it.regola, stato, null) to it.origine }
+        if (stato?.colTempo != true) return coprono.map { conMeteo(it.regola, stato, null) to it.origine }
         val regole = coprono.map { it.regola }
-        return coprono.mapIndexed { i, r -> conMeteo(r.regola, stato, momentiMeteo(regole, i)) to r.origine }
+        val percento = prioritaNuvole(oreMeteo.orEmpty(), quando.hour)
+        return coprono.mapIndexed { i, r ->
+            val momenti = momentiMeteo(regole, i)
+            var variante = conMeteo(r.regola, stato, momenti)
+            // La priorita' delle nuvole, come nella sequenza ma senza sapere cosa
+            // e' gia' uscito oggi ne' cosa ha deciso la finestra al suo inizio
+            if (percento > 0 && estrattaNuvole(r.regola, ordinale(r.regola, quando, r.regola.rotate), percento) &&
+                haNuvole(candidate(variante))
+            ) {
+                variante = conMeteo(r.regola, stato, momenti, nuvole = true)
+            }
+            variante to r.origine
+        }
     }
 
     // ── La sequenza del giorno ───────────────────────────────────────────────
@@ -656,23 +714,42 @@ class Motore(
         val usate = HashSet<String>()
         val sequenza = mutableListOf<Finestra>()
         var ultimaFinestra: Pair<String, Int>? = null
+        // La priorita' delle nuvole: se la finestra pesca solo fra le immagini
+        // di nuvole. Lo decide una volta, al suo primo minuto nuvoloso con
+        // priorita', e resta cosi' finche' e' nuvoloso
+        val soloNuvole = HashMap<Pair<Int, Int>, Boolean>()
 
         for (minuto in 0..minOf(finoA, 1439)) {
             val t = giorno.atStartOfDay().plusMinutes(minuto.toLong())
             val stato = oreMeteo[minuto / 60]
-            val coprono = regole.filter { copre(it.start, it.end, minuto) }
+            val percento = prioritaNuvole(oreMeteo, minuto / 60)
+            val coprono = regole.withIndex().filter { (_, r) -> copre(r.start, r.end, minuto) }
 
             var scelto: Triple<RegolaDelGiorno, Regola, String>? = null
             var pool: List<String> = emptyList()
-            for ((pos, rdg) in coprono.withIndex()) {
-                val momenti = if (stato?.piove == true) momentiMeteo(coprono.map { it.regola }, pos) else null
-                val regola = conMeteo(rdg.regola, stato, momenti)
-                val firma = firma(regola)
+            for ((pos, voce) in coprono.withIndex()) {
+                val (k, rdg) = voce
+                val momenti = if (stato?.colTempo == true) momentiMeteo(coprono.map { it.value.regola }, pos) else null
+                var regola = conMeteo(rdg.regola, stato, momenti)
+                var firma = firma(regola)
                 pool = pools.getOrPut(firma) { candidate(regola).ordinate() }
-                if (pool.isNotEmpty()) {
-                    scelto = Triple(rdg, regola, firma)
-                    break
+                if (pool.isEmpty()) continue
+                if (stato == StatoMeteo.NUVOLOSO && (percento > 0 || soloNuvole.isNotEmpty())) {
+                    // Le prime ore nuvolose: la finestra tira, e se le va bene (e
+                    // c'e' un'immagine di nuvole non ancora uscita) pesca solo fra quelle
+                    val nFinestra = ordinale(rdg.regola, t, rdg.regola.rotate)
+                    val chiave = k to nFinestra
+                    if (percento > 0 && chiave !in soloNuvole) {
+                        soloNuvole[chiave] = haNuvole(pool, usate) && estrattaNuvole(rdg.regola, nFinestra, percento)
+                    }
+                    if (soloNuvole[chiave] == true) {
+                        regola = conMeteo(rdg.regola, stato, momenti, nuvole = true)
+                        firma = firma(regola)
+                        pool = pools.getOrPut(firma) { candidate(regola).ordinate() }
+                    }
                 }
+                scelto = Triple(rdg, regola, firma)
+                break
             }
             val (rdg, regola, firma) = scelto ?: continue
 

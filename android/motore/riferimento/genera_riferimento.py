@@ -31,7 +31,7 @@ solo per i PC, il telefono non lo legge, e seguirebbe il giorno della settimana
 in cui gira lo script.
 
 Formato (TSV, UTF-8), una riga per voce:
-  M  giorno  24 lettere, una per ora: A asciutto, P pioggia, T temporale
+  M  giorno  24 lettere, una per ora: A asciutto, N nuvoloso, P pioggia, T temporale
   S  giorno  minuto  ordinale  immagine  firma     una per finestra della giornata
   H  giorno  ora  immagine                         la scelta alle hh:00, vuota se nessuna
 
@@ -64,7 +64,7 @@ import app  # noqa: E402
 import meteo  # noqa: E402
 import sun  # noqa: E402
 
-LETTERE = {meteo.ASCIUTTO: "A", meteo.PIOGGIA: "P", meteo.TEMPORALE: "T"}
+LETTERE = {meteo.ASCIUTTO: "A", meteo.NUVOLOSO: "N", meteo.PIOGGIA: "P", meteo.TEMPORALE: "T"}
 
 
 def meteo_sintetico(giorno: date) -> dict[int, str]:
@@ -75,6 +75,11 @@ def meteo_sintetico(giorno: date) -> dict[int, str]:
     """
     ore = dict.fromkeys(range(24), meteo.ASCIUTTO)
     n = giorno.toordinal()
+    # Il nuvoloso per primo: pioggia e temporale gli passano sopra
+    if n % 4 == 1:
+        ore.update(dict.fromkeys(range(9, 19), meteo.NUVOLOSO))
+    if n % 13 == 2:
+        ore.update(dict.fromkeys(range(24), meteo.NUVOLOSO))
     if n % 5 == 0:
         ore.update(dict.fromkeys(range(7, 13), meteo.PIOGGIA))
     if n % 7 == 3:
@@ -158,6 +163,22 @@ def ingressi_sintetici(config: dict, dal: date, al: date) -> dict[str, str]:
     return out
 
 
+def nuvole_sintetiche(config: dict):
+    """
+    Il tag delle nuvole su qualche immagine con un momento della giornata, e
+    su un paio di quelle di pioggia: cosi' il riferimento passa dai rami del
+    nuvoloso anche se il config vero ne ha poche o nessuna. Si aggiungono a
+    quelle del config.
+    """
+    libreria = config["image_library"]
+    con_momento = sorted(img for img, tags in libreria.items() if app.TAG_ORARI & set(tags or []))
+    di_pioggia = [img for img in con_momento if meteo.PIOGGIA in libreria[img]]
+    passo = max(1, len(con_momento) // 12)
+    for img in con_momento[::passo][:12] + di_pioggia[:2]:
+        if meteo.TAG_NUVOLE not in libreria[img]:
+            libreria[img] = list(libreria[img]) + [meteo.TAG_NUVOLE]
+
+
 def config_dello_scenario(base: dict, nome: str) -> dict:
     """Il config dello scenario, a partire da quello condiviso."""
     dal, al, attivo, posizione = SCENARI[nome]
@@ -165,6 +186,7 @@ def config_dello_scenario(base: dict, nome: str) -> dict:
     config.pop("position_schedule", None)
     config["meteo"]["attivo"] = attivo
     config["ingressi"] = ingressi_sintetici(config, dal, al)
+    nuvole_sintetiche(config)
     if posizione:
         config.setdefault("position_map", {})[DISPOSITIVO] = {
             "latitude": posizione[0],

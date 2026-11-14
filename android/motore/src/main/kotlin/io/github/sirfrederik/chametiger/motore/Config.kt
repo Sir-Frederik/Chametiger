@@ -23,14 +23,29 @@ const val FONTE_MET_NORWAY = "met_norway"
 const val FONTE_OPEN_METEO = "open_meteo"
 /** I mm in un'ora da cui Open-Meteo conta come pioggia, come meteo.DEFAULT_SOGLIA_MM. */
 const val DEFAULT_SOGLIA_MM = 1.0
+/** La copertura del cielo (%) da cui Open-Meteo conta come nuvoloso, come meteo.DEFAULT_SOGLIA_NUVOLE. */
+const val DEFAULT_SOGLIA_NUVOLE = 90.0
+/**
+ * Nelle prime ore nuvolose di fila, la probabilita' (%) che una finestra peschi
+ * solo fra le immagini di nuvole, come meteo.DEFAULT_PRIORITA_NUVOLE.
+ */
+val DEFAULT_PRIORITA_NUVOLE = listOf(100, 60, 40)
+
+/** Il tag delle immagini di cielo coperto, come meteo.TAG_NUVOLE. Per pioggia e temporale il tag e' il nome dello stato. */
+const val TAG_NUVOLE = "nuvole"
 
 enum class StatoMeteo(val tag: String) {
     ASCIUTTO("asciutto"),
+    /** Cielo coperto o pioggia leggera: ammette le immagini TAG_NUVOLE accanto a quelle di sempre. */
+    NUVOLOSO("nuvoloso"),
     PIOGGIA("pioggia"),
     TEMPORALE("temporale");
 
-    /** Pioggia o temporale: gli stati che cambiano il pool, come _TAG_METEO. */
-    val piove: Boolean get() = this != ASCIUTTO
+    /** Pioggia o temporale: gli stati che restringono il pool, come _TAG_METEO. */
+    val piove: Boolean get() = this == PIOGGIA || this == TEMPORALE
+
+    /** Gli stati in cui le immagini del tempo entrano nella fascia coi momenti, come _STATI_METEO. */
+    val colTempo: Boolean get() = this != ASCIUTTO
 }
 
 /**
@@ -53,6 +68,8 @@ data class Regola(
     val periodo: String? = null,
     val meteo: StatoMeteo? = null,
     val momenti: List<String> = emptyList(),
+    /** La priorita' delle nuvole: la finestra pesca solo fra le immagini TAG_NUVOLE. */
+    val nuvole: Boolean = false,
 ) {
     val matchAny: Boolean get() = match == "any"
 }
@@ -97,6 +114,10 @@ data class Config(
     val meteoFonte: String = FONTE_MET_NORWAY,
     /** meteo.soglia_mm: vale solo per Open-Meteo. */
     val meteoSogliaMm: Double = DEFAULT_SOGLIA_MM,
+    /** meteo.soglia_nuvole: vale solo per Open-Meteo. */
+    val meteoSogliaNuvole: Double = DEFAULT_SOGLIA_NUVOLE,
+    /** meteo.priorita_nuvole: una percentuale per ora nuvolosa di fila; vuota, nessuna priorita'. */
+    val meteoPrioritaNuvole: List<Int> = DEFAULT_PRIORITA_NUVOLE,
     private val latitude: JsonElement?,
     private val longitude: JsonElement?,
     private val positionMap: JsonElement?,
@@ -181,6 +202,9 @@ data class Config(
                     ?.takeIf { it == FONTE_OPEN_METEO } ?: FONTE_MET_NORWAY,
                 meteoSogliaMm = (m?.get("soglia_mm")?.let { pyFloat(it) } ?: DEFAULT_SOGLIA_MM)
                     .let { if (it > 0) it else DEFAULT_SOGLIA_MM },
+                meteoSogliaNuvole = (m?.get("soglia_nuvole")?.let { pyFloat(it) } ?: DEFAULT_SOGLIA_NUVOLE)
+                    .let { if (it > 0 && it <= 100) it else DEFAULT_SOGLIA_NUVOLE },
+                meteoPrioritaNuvole = prioritaNuvole(m),
                 latitude = cfg["latitude"],
                 longitude = cfg["longitude"],
                 positionMap = cfg["position_map"],
@@ -199,6 +223,16 @@ data class Config(
                 runCatching { LocalDate.parse(testo) }.getOrNull()?.let { out[img] = it }
             }
             return out
+        }
+
+        /** meteo.priorita_nuvole: se non e' una lista di numeri valgono quelle di default. */
+        private fun prioritaNuvole(m: JsonObject?): List<Int> {
+            val lista = (m?.get("nuvole_priorita") ?: return DEFAULT_PRIORITA_NUVOLE) as? JsonArray
+                ?: return DEFAULT_PRIORITA_NUVOLE
+            return lista.map { e ->
+                val x = pyFloat(e)?.takeIf { it.isFinite() } ?: return DEFAULT_PRIORITA_NUVOLE
+                x.toInt().coerceIn(0, 100) // int(float(x)): verso lo zero
+            }
         }
 
         private fun minimoMeteo(m: JsonObject?): Int {

@@ -41,7 +41,7 @@ fun descriviTag(regola: Regola): String {
     if (regola.exclude.isNotEmpty()) tag += regola.exclude.joinToString(",") { "-$it" }
     if (regola.veto.isNotEmpty()) tag += regola.veto.joinToString(",") { "!$it" }
     if (regola.prefer.isNotEmpty()) tag += regola.prefer.joinToString(",") { "~$it" }
-    regola.meteo?.takeIf { it.piove }?.let { tag += "@${it.tag}" }
+    regola.meteo?.takeIf { it.colTempo }?.let { tag += "@${it.tag}" }
     return tag.joinToString(" ")
 }
 
