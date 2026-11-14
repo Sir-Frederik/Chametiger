@@ -18,6 +18,12 @@ const val DEFAULT_LON = 14.2681
 const val DEFAULT_MINIMO_METEO = 2
 const val DEFAULT_ORE_METEO = 5.0
 
+/** Le fonti delle previsioni, come meteo.FONTI: la chiave nel config. */
+const val FONTE_MET_NORWAY = "met_norway"
+const val FONTE_OPEN_METEO = "open_meteo"
+/** I mm in un'ora da cui Open-Meteo conta come pioggia, come meteo.DEFAULT_SOGLIA_MM. */
+const val DEFAULT_SOGLIA_MM = 1.0
+
 enum class StatoMeteo(val tag: String) {
     ASCIUTTO("asciutto"),
     PIOGGIA("pioggia"),
@@ -87,6 +93,10 @@ data class Config(
     val meteoMinimo: Int,
     /** meteo.impostazioni: ogni quante ore riscaricare le previsioni, fra 1 e 10. */
     val meteoOre: Double,
+    /** meteo.fonte: FONTE_MET_NORWAY se manca o non e' una fonte nota. */
+    val meteoFonte: String = FONTE_MET_NORWAY,
+    /** meteo.soglia_mm: vale solo per Open-Meteo. */
+    val meteoSogliaMm: Double = DEFAULT_SOGLIA_MM,
     private val latitude: JsonElement?,
     private val longitude: JsonElement?,
     private val positionMap: JsonElement?,
@@ -167,6 +177,10 @@ data class Config(
                 meteoMinimo = minimoMeteo(m),
                 meteoOre = (m?.get("aggiorna_ore")?.let { pyFloat(it) } ?: DEFAULT_ORE_METEO)
                     .let { minOf(maxOf(it, 1.0), 10.0) },
+                meteoFonte = (m?.get("fonte") as? JsonPrimitive)?.takeIf { it.isString }?.content
+                    ?.takeIf { it == FONTE_OPEN_METEO } ?: FONTE_MET_NORWAY,
+                meteoSogliaMm = (m?.get("soglia_mm")?.let { pyFloat(it) } ?: DEFAULT_SOGLIA_MM)
+                    .let { if (it > 0) it else DEFAULT_SOGLIA_MM },
                 latitude = cfg["latitude"],
                 longitude = cfg["longitude"],
                 positionMap = cfg["position_map"],

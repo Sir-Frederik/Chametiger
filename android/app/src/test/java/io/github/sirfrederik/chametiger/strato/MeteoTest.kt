@@ -60,6 +60,59 @@ class MeteoTest {
     }
 
     @Test
+    fun stesseOreDaOpenMeteo() {
+        val casi = righe.filter { it[0] == "O" || it[0] == "X" }
+        assertTrue(casi.size > 20)
+        for (c in casi) {
+            val adesso = LocalDateTime.parse(c[2])
+            val soglia = c[3].toDouble()
+            if (c[0] == "X") {
+                try {
+                    previsioniOpenMeteo(risorsa(c[1]), adesso, soglia)
+                    fail("${c[1]} ${c[2]}: meteo.py solleva, il telefono no")
+                } catch (e: Exception) {
+                    // come meteo.py
+                }
+                continue
+            }
+            val ore = previsioniOpenMeteo(risorsa(c[1]), adesso, soglia)
+            val attese = c[4].split(",").filter { it.isNotEmpty() }
+            assertEquals("${c[1]} ${c[2]} soglia $soglia", attese, ore.map { (k, v) -> "$k=${v.tag}" })
+            assertEquals("${c[1]} ${c[2]} riassunto", c[5], riassunto(ore, adesso))
+        }
+    }
+
+    @Test
+    fun laFonteSiSceglieNelConfig() {
+        val openMeteo = Config.leggi(
+            """{"image_library": {"a.jpg": ["x"]}, "random_rules": {"weekday": []}, "latitude": 40.8199,
+                "longitude": 14.3414, "meteo": {"attivo": true, "aggiorna_ore": 5, "fonte": "open_meteo"}}""",
+        )
+        assertEquals(1.0, openMeteo.meteoSogliaMm, 0.0)
+        assertEquals("met_norway", config.meteoFonte)
+        val adesso = LocalDateTime.of(2027, 3, 27, 20, 30)
+        val rete = ReteFinta(risorsa("om_casi.json"))
+        val diario = DiarioFinto()
+
+        assertTrue(meteo(rete, diario).aggiornaSeServe(openMeteo, adesso))
+        assertEquals(
+            "https://api.open-meteo.com/v1/forecast?latitude=40.82&longitude=14.34&hourly=precipitation,weather_code" +
+                "&models=italia_meteo_arpae_icon_2i&forecast_hours=12&timeformat=unixtime&timezone=GMT",
+            rete.chiamate.single().first,
+        )
+        assertTrue(diario.righe.single(), diario.righe.single().startsWith("[METEO] Aggiornato (Open-Meteo ICON-2I): pioggia 21-22"))
+        assertEquals("open_meteo", meteo(rete, diario).leggi()!!.fonte)
+        assertEquals(StatoMeteo.PIOGGIA, meteo(rete, diario).fonte(openMeteo, adesso).ore(LocalDate.of(2027, 3, 27))[21])
+        assertFalse(meteo(rete, diario).aggiornaSeServe(openMeteo, adesso.plusHours(1)))
+
+        // Cambiata la fonte, i dati dell'altra non valgono piu' e si riscarica
+        assertTrue(meteo(rete, diario).fonte(config, adesso).ore(LocalDate.of(2027, 3, 27)).isEmpty())
+        rete.risposta = risorsa("reale.json")
+        assertTrue(meteo(rete, diario).aggiornaSeServe(config, adesso.plusHours(1)))
+        assertEquals("met_norway", meteo(rete, diario).leggi()!!.fonte)
+    }
+
+    @Test
     fun coordinateArrotondateComePython() {
         // round(x, 2) di Python, compresi i casi in cui il double sta appena sotto o sopra la meta'
         val attesi = mapOf(40.8199 to 40.82, 14.3414 to 14.34, 2.675 to 2.67, 0.125 to 0.12, 0.375 to 0.38, -14.345 to -14.35)

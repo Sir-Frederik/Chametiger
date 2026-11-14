@@ -129,7 +129,7 @@ Oppure: click destro sull'icona tray → **Apri editor config**
 | `position_schedule`      | Calendario settimanale delle posizioni per singolo PC, sopra `position_map` (vedi [Calendario delle posizioni](#calendario-delle-posizioni)) |
 | `base_path` / `path_map` | Cartella base delle immagini, con override per singolo PC (hostname)                                                                         |
 | `seasons` / `events`     | Stagioni ed eventi, che filtrano i tag (vedi sotto)                                                                                          |
-| `meteo`                  | `{"attivo": true, "aggiorna_ore": 5, "minimo": 2}`: previsioni sì/no, ogni quante ore riscaricarle (1–10), soglia minima del pool            |
+| `meteo`                  | `{"attivo": true, "aggiorna_ore": 5, "minimo": 2, "fonte": "met_norway"}`: previsioni sì/no, ogni quante ore riscaricarle (1–10), soglia minima del pool, fonte (`met_norway` / `open_meteo`)            |
 
 ### Dove sta `config.json`
 
@@ -519,6 +519,8 @@ Le esclusioni restano (i momenti per insieme, il resto secco), e restano obbliga
 Il meteo è l'**ultimo setaccio**: sceglie fra le immagini che fascia, stagione, evento e veto hanno già ammesso, e non ne aggiunge. A Natale, col temporale, la sera escono le immagini `natale` con `temporale`; un'immagine `estate + temporale` o `horror + temporale` resta fuori come sempre. Per vedere la pioggia in ogni momento della giornata servono quindi almeno due immagini `pioggia` per fascia: di mattina, di pomeriggio, di sera…
 
 **Carica meteo**, dal pulsante nella GUI o dal menu del tray, scarica subito le previsioni senza aspettare l'intervallo. Se il tempo dell'ora cambia, lo sfondo passa all'immagine che quel tempo assegna alla finestra, la stessa degli altri PC; resta solo un'immagine estratta a mano.
+
+**Fonte.** In **Impostazioni → Meteo** si sceglie da dove arrivano le previsioni (`"fonte"` nel config): `met_norway` (default) oppure `open_meteo`, cioè Open-Meteo col modello **ICON-2I** di ItaliaMeteo/ARPAE (griglia di 2,2 km, 72 ore, solo Italia e dintorni). Da Open-Meteo si leggono i millimetri di pioggia ora per ora: un'ora conta come pioggia da `soglia_mm` in su (default 1 mm), come temporale coi codici WMO 95–99. Cambiando fonte i dati scaricati dall'altra non valgono più: al giro dopo, o con **Carica meteo**, si riscarica. La scelta vale anche per il telefono, che legge lo stesso config.
 
 **Ripiego.** Senza connessione si riprova ogni 30 minuti e intanto si sceglie come col sereno: le immagini di pioggia e temporale restano da parte finché una fonte non dà pioggia. Lo stesso succede se i dati hanno più di 12 ore o se le coordinate sono cambiate. Solo con `"attivo": false` si sceglie come se il meteo non esistesse, e i tag `pioggia`/`temporale` contano come tutti gli altri.
 

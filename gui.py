@@ -1120,6 +1120,27 @@ class ChametigerEditor(tk.Tk):
             font=("Segoe UI", 10),
         ).grid(row=29, column=1, padx=12, sticky="w")
 
+        tk.Label(
+            inner,
+            text="Fonte delle previsioni:",
+            bg=BG,
+            fg=FG,
+            font=("Segoe UI", 10),
+        ).grid(row=30, column=0, sticky="w", pady=8)
+
+        # Il nome a schermo, la chiave nel config
+        self._meteo_fonte_var = tk.StringVar(
+            value=meteo.FONTI[meteo.fonte(self.config_data)]
+        )
+        cb_fonte = ttk.Combobox(
+            inner,
+            textvariable=self._meteo_fonte_var,
+            values=list(meteo.FONTI.values()),
+            width=20,
+            state="readonly",
+        )
+        cb_fonte.grid(row=30, column=1, padx=12, sticky="w")
+
         self._meteo_status = tk.Label(
             inner, bg=BG, fg=FG2, font=("Segoe UI", 9), justify="left", anchor="w"
         )
@@ -1137,8 +1158,14 @@ class ChametigerEditor(tk.Tk):
 
         def applica_meteo():
             ore = self._meteo_ore_var.get()
-            self.config_data.setdefault("meteo", {})["aggiorna_ore"] = ore
-            stato_meteo(f"Previsioni ogni {ore} ore. ", SUCCESS)
+            nome = self._meteo_fonte_var.get()
+            fonte = next(k for k, v in meteo.FONTI.items() if v == nome)
+            self.config_data.setdefault("meteo", {}).update(
+                aggiorna_ore=ore, fonte=fonte
+            )
+            stato_meteo(f"Previsioni da {nome} ogni {ore} ore. ", SUCCESS)
+
+        cb_fonte.bind("<<ComboboxSelected>>", lambda _=None: applica_meteo())
 
         ttk.Button(inner, text="Applica", command=applica_meteo).grid(
             row=29, column=2, padx=4

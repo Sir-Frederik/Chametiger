@@ -1,0 +1,48 @@
+{
+ "latitude": 40.82,
+ "longitude": 14.35,
+ "hourly": {
+  "time": [
+   1806170400,
+   1806174000,
+   1806177600,
+   1806181200,
+   1806184800,
+   1806188400,
+   1806192000,
+   1806195600,
+   1806199200,
+   1806202800,
+   1806206400,
+   1806210000
+  ],
+  "precipitation": [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  "weather_code": [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ]
+ }
+}

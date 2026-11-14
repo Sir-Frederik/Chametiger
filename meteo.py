@@ -6,6 +6,9 @@ Meteo per la scelta delle immagini: le prossime 10 ore, ora attuale compresa.
   Met Norway   le previsioni ora per ora (locationforecast). Sostituisce
                Open-Meteo, che l'8/10/2026 dava "coperto" su Napoli mentre a
 
+  Open-Meteo   in alternativa, col modello ICON-2I di ItaliaMeteo/ARPAE
+               (2,2 km, 72 ore, solo Italia e dintorni): i millimetri di
+               pioggia ora per ora. Si sceglie con "fonte" nel config.
 
 Il download lo fa curl.exe, incluso in Windows 10/11, in un processo a parte.
 Con urllib l'app si sarebbe portata dietro per sempre http e ssl (circa 4 MB
@@ -40,6 +43,14 @@ URL_PREVISIONI = (
     "https://api.met.no/weatherapi/locationforecast/2.0/compact"
     "?lat={lat:.2f}&lon={lon:.2f}"
 )
+# ICON-2I: precipitation sono i mm caduti nell'ora PRIMA dell'orario indicato,
+# weather_code serve solo per il temporale. Orari in secondi dall'epoca.
+URL_OPEN_METEO = (
+    "https://api.open-meteo.com/v1/forecast"
+    "?latitude={lat:.2f}&longitude={lon:.2f}"
+    "&hourly=precipitation,weather_code&models=italia_meteo_arpae_icon_2i"
+    "&forecast_hours={ore}&timeformat=unixtime&timezone=GMT"
+)
 # URL_METAR = (
 #     "https://aviationweather.gov/api/data/metar"
 #     "?bbox={sud:.2f},{ovest:.2f},{nord:.2f},{est:.2f}&format=json"
@@ -53,6 +64,14 @@ ORE_MIN, ORE_MAX = 1, 10  # limiti di aggiorna_ore, gli stessi della GUI
 MAX_ETA_ORE = 12  # oltre, i dati non si usano piu'
 DEFAULT_MINIMO = 2  # immagini sotto cui il meteo non restringe il pool
 RIPROVA_MINUTI = 30  # dopo un download fallito, prima di riprovare
+
+# Le fonti delle previsioni: chiave nel config -> nome per log e GUI.
+MET_NORWAY = "met_norway"
+OPEN_METEO = "open_meteo"
+FONTI = {MET_NORWAY: "Met Norway", OPEN_METEO: "Open-Meteo ICON-2I"}
+# Open-Meteo da' millimetri, non simboli: sotto questa soglia l'ora e'
+# asciutta, come la pioggia leggera di Met Norway.
+DEFAULT_SOGLIA_MM = 1
 # METAR_RAGGIO_KM = 30  # stazioni piu' lontane non dicono che tempo fa qui
 # METAR_MAX_ETA_MIN = 90  # i METAR escono ogni 30-60 minuti
 
@@ -104,6 +123,21 @@ def impostazioni(config: dict) -> tuple[bool, float]:
     return bool(m.get("attivo", True)), min(max(ore, ORE_MIN), ORE_MAX)
 
 
+def fonte(config: dict) -> str:
+    """La fonte scelta nel config; Met Norway se manca o non e' una di FONTI."""
+    f = (config.get("meteo") or {}).get("fonte")
+    return f if f in FONTI else MET_NORWAY
+
+
+def soglia_mm(config: dict) -> float:
+    """I mm in un'ora da cui Open-Meteo conta come pioggia (`soglia_mm`)."""
+    try:
+        mm = float((config.get("meteo") or {}).get("soglia_mm", DEFAULT_SOGLIA_MM))
+    except (TypeError, ValueError):
+        return DEFAULT_SOGLIA_MM
+    return mm if mm > 0 else DEFAULT_SOGLIA_MM
+
+
 def minimo(config: dict) -> int:
     """
     Quante immagini devono restare perche' il meteo restringa il pool, come
@@ -146,8 +180,11 @@ def _carica() -> dict | None:
 
 
 def _valide(dati: dict | None, config: dict) -> bool:
-    """Dati recenti e scaricati per la posizione attuale."""
+    """Dati recenti, scaricati per la posizione attuale dalla fonte scelta."""
     if not dati or not impostazioni(config)[0]:
+        return False
+    # I meteo.json di prima non hanno "fonte": erano di Met Norway
+    if dati.get("fonte", MET_NORWAY) != fonte(config):
         return False
     if [dati.get("lat"), dati.get("lon")] != list(_coords(config)):
         return False
@@ -231,6 +268,34 @@ def _previsioni(lat: float, lon: float) -> dict[str, str]:
     return ore
 
 
+def _previsioni_open_meteo(lat: float, lon: float, soglia: float) -> dict[str, str]:
+    """
+    {ora locale: stato} da Open-Meteo (ICON-2I), dall'ora attuale per
+    ORE_PREVISTE ore. I mm di un orario sono quelli caduti nell'ora prima:
+    il valore delle 15:00 e' la pioggia dell'ora 14. Temporale coi codici
+    WMO 95-99, pioggia da `soglia` mm in su. Fuori dall'area del modello i
+    valori sono null: allora solleva, e si sceglie come col sereno.
+    """
+    # Due ore in piu': la prima risposta e' l'ora attuale, che parla di quella prima
+    risposta = _scarica(URL_OPEN_METEO.format(lat=lat, lon=lon, ore=ORE_PREVISTE + 2))
+    orari = risposta["hourly"]
+    adesso = _chiave(datetime.now())
+    ore = {}
+    for t, mm, codice in zip(orari["time"], orari["precipitation"], orari["weather_code"]):
+        chiave = _chiave(datetime.fromtimestamp(t) - timedelta(hours=1))
+        if chiave < adesso or mm is None:
+            continue
+        if codice is not None and codice >= 95:
+            ore[chiave] = TEMPORALE
+        else:
+            ore[chiave] = PIOGGIA if mm >= soglia else ASCIUTTO
+        if len(ore) == ORE_PREVISTE:
+            break
+    if not ore:
+        raise RuntimeError("nessuna ora nella risposta (fuori dall'area di ICON-2I?)")
+    return ore
+
+
 # Ho temporaneamente tolto Metar perchè non è affidabile per i luoghi lontani dagli aereoporti.
 # Meglio usare direttamente Met Norway. _km serviva solo a _metar.
 
@@ -305,12 +370,16 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
             return False
 
     lat, lon = _coords(config)
+    scelta = fonte(config)
     errori = []
     try:
-        ore_meteo = _previsioni(lat, lon)
+        if scelta == OPEN_METEO:
+            ore_meteo = _previsioni_open_meteo(lat, lon, soglia_mm(config))
+        else:
+            ore_meteo = _previsioni(lat, lon)
     except Exception as e:
         ore_meteo = {}
-        errori.append(f"Met Norway: {e}")
+        errori.append(f"{FONTI[scelta]}: {e}")
         # try:
         #     osservato = _metar(lat, lon)
         # except Exception as e:
@@ -335,6 +404,7 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
         "scaricato": time.time(),
         "lat": lat,
         "lon": lon,
+        "fonte": scelta,
         # "osservato": osservato[0] if osservato else None,
         "ore": dict(
             sorted({**passate_di_oggi(_carica(), config), **ore_meteo}.items())
@@ -348,7 +418,7 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
         return False
 
     _ultimo_errore = 0.0
-    fonti = [] if any(e.startswith("Met Norway") for e in errori) else ["Met Norway"]
+    fonti = [FONTI[scelta]]
     # if osservato:
     #     fonti.append(f"adesso METAR {osservato[0]}")
     nota = f" Non disponibile: {'; '.join(errori)}." if errori else ""

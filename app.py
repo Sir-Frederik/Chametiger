@@ -110,6 +110,7 @@ def ensure_defaults(cfg: dict) -> dict:
             "attivo": True,
             "aggiorna_ore": meteo.DEFAULT_ORE,
             "minimo": meteo.DEFAULT_MINIMO,
+            "fonte": meteo.MET_NORWAY,
         },
     )
 

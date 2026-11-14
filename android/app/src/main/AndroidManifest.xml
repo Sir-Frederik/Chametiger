@@ -4,7 +4,7 @@
 
     <!-- Lo sfondo della schermata principale; il blocco schermo si decide dopo -->
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
-    <!-- Le previsioni di Met Norway -->
+    <!-- Le previsioni di Met Norway o di Open-Meteo -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- La posizione per meteo e sole: col pulsante Carica meteo, col GPS se l'utente concede quella precisa -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />

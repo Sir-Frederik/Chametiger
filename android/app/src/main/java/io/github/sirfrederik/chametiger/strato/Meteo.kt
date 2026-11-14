@@ -3,6 +3,8 @@
 package io.github.sirfrederik.chametiger.strato
 
 import io.github.sirfrederik.chametiger.motore.Config
+import io.github.sirfrederik.chametiger.motore.FONTE_MET_NORWAY
+import io.github.sirfrederik.chametiger.motore.FONTE_OPEN_METEO
 import io.github.sirfrederik.chametiger.motore.FonteMeteo
 import io.github.sirfrederik.chametiger.motore.StatoMeteo
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -13,6 +15,8 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.doubleOrNull
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.long
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -27,7 +31,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-// Il meteo da Met Norway, come meteo.py: le prossime 10 ore, ora attuale
+// Il meteo da Met Norway o da Open-Meteo (ICON-2I), secondo "fonte" nel
+// config, come meteo.py: le prossime 10 ore, ora attuale
 // compresa, sulla posizione del telefono o sulle coordinate del config. Lo
 // stato del meteo entra nella firma della regola, quindi nel mazzo: ogni
 // scelta qui deve essere identica a quella del PC, a cominciare da come si
@@ -41,6 +46,14 @@ const val ORE_PREVISTE = 10
 private const val MAX_ETA_ORE = 12
 private const val RIPROVA_MINUTI = 30
 private const val URL_PREVISIONI = "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=%.2f&lon=%.2f"
+// ICON-2I: precipitation sono i mm caduti nell'ora PRIMA dell'orario indicato,
+// weather_code serve solo per il temporale. Orari in secondi dall'epoca.
+private const val URL_OPEN_METEO = "https://api.open-meteo.com/v1/forecast?latitude=%.2f&longitude=%.2f" +
+    "&hourly=precipitation,weather_code&models=italia_meteo_arpae_icon_2i" +
+    "&forecast_hours=%d&timeformat=unixtime&timezone=GMT"
+
+/** meteo.FONTI: il nome della fonte per log e schermata. */
+fun nomeFonte(fonte: String): String = if (fonte == FONTE_OPEN_METEO) "Open-Meteo ICON-2I" else "Met Norway"
 
 /** stato_da_simbolo: 'heavyrainandthunder' -> temporale, 'rainshowers_day' -> pioggia. Pioggia leggera, neve, nebbia: asciutto. */
 fun statoDaSimbolo(simbolo: String): StatoMeteo {
@@ -80,6 +93,38 @@ fun previsioni(risposta: String, adesso: LocalDateTime): LinkedHashMap<String, S
         if (chiave >= ora) ore[chiave] = statoDaSimbolo(simbolo)
         if (ore.size == ORE_PREVISTE) break
     }
+    return ore
+}
+
+/**
+ * _previsioni_open_meteo: {ora locale: stato} dalla risposta di Open-Meteo,
+ * dall'ora di `adesso` per ORE_PREVISTE ore. I mm di un orario sono quelli
+ * caduti nell'ora prima: il valore delle 15:00 e' la pioggia dell'ora 14.
+ * Temporale coi codici WMO 95-99, pioggia da `soglia` mm in su. Solleva se la
+ * risposta non ha la forma attesa o non ha ore (fuori dall'area del modello i
+ * valori sono null), come meteo.py.
+ */
+fun previsioniOpenMeteo(risposta: String, adesso: LocalDateTime, soglia: Double): LinkedHashMap<String, StatoMeteo> {
+    val orari = Json.parseToJsonElement(risposta).jsonObject.getValue("hourly").jsonObject
+    val tempi = orari.getValue("time").jsonArray
+    val pioggia = orari.getValue("precipitation").jsonArray
+    val codici = orari.getValue("weather_code").jsonArray
+    val ora = chiaveOra(adesso)
+    val ore = LinkedHashMap<String, StatoMeteo>()
+    for (i in 0 until minOf(tempi.size, pioggia.size, codici.size)) { // come zip
+        val t = LocalDateTime.ofInstant(Instant.ofEpochSecond(tempi[i].jsonPrimitive.long), ZONA)
+        val chiave = chiaveOra(t.minusHours(1))
+        val mm = pioggia[i].jsonPrimitive.doubleOrNull
+        if (chiave < ora || mm == null) continue
+        val codice = codici[i].jsonPrimitive.intOrNull
+        ore[chiave] = when {
+            codice != null && codice >= 95 -> StatoMeteo.TEMPORALE
+            mm >= soglia -> StatoMeteo.PIOGGIA
+            else -> StatoMeteo.ASCIUTTO
+        }
+        if (ore.size == ORE_PREVISTE) break
+    }
+    check(ore.isNotEmpty()) { "nessuna ora nella risposta (fuori dall'area di ICON-2I?)" }
     return ore
 }
 
@@ -132,7 +177,14 @@ object ReteHttp : Rete {
 }
 
 /** Il contenuto di meteo.json. `scaricato` in secondi dall'epoca, come time.time(). */
-data class DatiMeteo(val scaricato: Double, val lat: Double, val lon: Double, val ore: Map<String, StatoMeteo>)
+data class DatiMeteo(
+    val scaricato: Double,
+    val lat: Double,
+    val lon: Double,
+    val ore: Map<String, StatoMeteo>,
+    /** I meteo.json di prima non hanno "fonte": erano di Met Norway. */
+    val fonte: String = FONTE_MET_NORWAY,
+)
 
 /**
  * Il meteo del telefono: download, meteo.json e ripiego, come meteo.py.
@@ -176,14 +228,16 @@ class Meteo(
             ore = (o["ore"] as? JsonObject).orEmpty().mapNotNull { (k, v) ->
                 StatoMeteo.entries.firstOrNull { it.tag == (v as? JsonPrimitive)?.contentOrNull }?.let { k to it }
             }.toMap(),
+            fonte = (o["fonte"] as? JsonPrimitive)?.contentOrNull ?: FONTE_MET_NORWAY,
         )
     } catch (e: Exception) {
         null
     }
 
-    /** _valide: dati recenti e scaricati per la posizione attuale. */
+    /** _valide: dati recenti, scaricati per la posizione attuale dalla fonte scelta. */
     fun valide(dati: DatiMeteo?, config: Config, adesso: LocalDateTime): Boolean {
         if (dati == null || !config.meteoAttivo) return false
+        if (dati.fonte != config.meteoFonte) return false
         val (lat, lon) = coordinate(config)
         if (dati.lat != lat || dati.lon != lon) return false
         val eta = secondi(adesso) - dati.scaricato
@@ -234,11 +288,18 @@ class Meteo(
         if (!forza && !daAggiornare(config, adesso)) return false
 
         val (lat, lon) = coordinate(config)
+        val fonte = config.meteoFonte
         val ore = try {
-            previsioni(rete.scarica(URL_PREVISIONI.format(Locale.ROOT, lat, lon), userAgent), adesso)
+            if (fonte == FONTE_OPEN_METEO) {
+                // Due ore in piu': la prima risposta e' l'ora attuale, che parla di quella prima
+                val url = URL_OPEN_METEO.format(Locale.ROOT, lat, lon, ORE_PREVISTE + 2)
+                previsioniOpenMeteo(rete.scarica(url, userAgent), adesso, config.meteoSogliaMm)
+            } else {
+                previsioni(rete.scarica(URL_PREVISIONI.format(Locale.ROOT, lat, lon), userAgent), adesso)
+            }
         } catch (e: Exception) {
             if (forza || ultimoErrore == 0.0) {
-                diario.scrivi("[METEO] Meteo non disponibile (Met Norway: ${e.message ?: e}): scelgo come col sereno.")
+                diario.scrivi("[METEO] Meteo non disponibile (${nomeFonte(fonte)}: ${e.message ?: e}): scelgo come col sereno.")
             }
             runCatching { scriviIntero(fileErrore, "$ora\n") }
             return false
@@ -250,6 +311,7 @@ class Meteo(
             put("scaricato", JsonUnquotedLiteral(BigDecimal.valueOf(ora).toPlainString()))
             put("lat", lat)
             put("lon", lon)
+            put("fonte", fonte)
             put("ore", buildJsonObject { tutte.toSortedMap().forEach { (k, v) -> put(k, v.tag) } })
         }
         try {
@@ -259,7 +321,7 @@ class Meteo(
             return false
         }
         fileErrore.delete()
-        diario.scrivi("[METEO] Aggiornato (Met Norway): ${riassunto(ore, adesso)}.")
+        diario.scrivi("[METEO] Aggiornato (${nomeFonte(fonte)}): ${riassunto(ore, adesso)}.")
         return true
     }
 
@@ -284,7 +346,7 @@ class Meteo(
         val dati = leggi()
         if (!valide(dati, config, adesso)) return "nessun dato valido: si sceglie come col sereno"
         val quando = LocalDateTime.ofInstant(Instant.ofEpochMilli((dati!!.scaricato * 1000).toLong()), ZONA)
-        return "${riassunto(dati.ore, adesso)} (Met Norway su ${origine(config)}, scaricato alle ${quando.format(HH_MM)})"
+        return "${riassunto(dati.ore, adesso)} (${nomeFonte(dati.fonte)} su ${origine(config)}, scaricato alle ${quando.format(HH_MM)})"
     }
 
     private fun secondi(t: LocalDateTime): Double = t.atZone(ZONA).toInstant().toEpochMilli() / 1000.0
