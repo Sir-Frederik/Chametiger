@@ -222,7 +222,12 @@ class Meteo(
     private val rete: Rete = ReteHttp,
     /** L'ultima posizione del telefono salvata col pulsante "Carica meteo"; null: valgono quelle del config. */
     private val posizione: Pair<Double, Double>? = null,
+    /** La fonte scelta sul telefono (FONTE_MET_NORWAY o FONTE_OPEN_METEO); null: quella del config. */
+    private val fonteTelefono: String? = null,
 ) {
+    /** La fonte delle previsioni: quella scelta sul telefono, se no quella del config. */
+    fun fonteDi(config: Config): String = fonteTelefono ?: config.meteoFonte
+
     private val userAgent get() = "Chametiger-Android/$versione github.com/Sir-Frederik/Chametiger"
 
     /**
@@ -255,7 +260,7 @@ class Meteo(
     /** _valide: dati recenti, scaricati per la posizione attuale dalla fonte scelta. */
     fun valide(dati: DatiMeteo?, config: Config, adesso: LocalDateTime): Boolean {
         if (dati == null || !config.meteoAttivo) return false
-        if (dati.fonte != config.meteoFonte) return false
+        if (dati.fonte != fonteDi(config)) return false
         val (lat, lon) = coordinate(config)
         if (dati.lat != lat || dati.lon != lon) return false
         val eta = secondi(adesso) - dati.scaricato
@@ -306,7 +311,7 @@ class Meteo(
         if (!forza && !daAggiornare(config, adesso)) return false
 
         val (lat, lon) = coordinate(config)
-        val fonte = config.meteoFonte
+        val fonte = fonteDi(config)
         val ore = try {
             if (fonte == FONTE_OPEN_METEO) {
                 // Due ore in piu': la prima risposta e' l'ora attuale, che parla di quella prima

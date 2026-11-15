@@ -54,6 +54,20 @@ object ImpostazioniSfondo {
 }
 
 /**
+ * Da dove il telefono scarica le previsioni: Met Norway, Open-Meteo, o quello
+ * che dice "fonte" nel config (null). Scegliendo qui il telefono puo' usare
+ * una fonte diversa dai PC, e allora vedere un tempo diverso dal loro.
+ */
+object ImpostazioniMeteo {
+    fun fonte(context: Context): String? =
+        preferenze(context).getString("meteo_fonte", "").orEmpty().ifEmpty { null }
+
+    fun scriviFonte(context: Context, fonte: String?) {
+        preferenze(context).edit().putString("meteo_fonte", fonte.orEmpty()).apply()
+    }
+}
+
+/**
  * L'ultima posizione del telefono letta col pulsante "Carica meteo". Vale per
  * il meteo e per alba e tramonto, anche nei giri in background, finche'
  * un'altra lettura non la sostituisce; senza, valgono le coordinate del

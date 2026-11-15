@@ -72,6 +72,8 @@ class Ciclo(
      * quella (vedi aggancia).
      */
     private val posizione: Pair<Double, Double>? = null,
+    /** La fonte del meteo scelta sul telefono, o null: allora vale quella del config. */
+    private val fonteMeteo: String? = null,
 ) {
     private val memoria = MemoriaForzataFile(File(interna, "forzata.txt"))
 
@@ -79,6 +81,7 @@ class Ciclo(
     private fun meteo(config: Config) = Meteo(
         File(cartella, "meteo.json"), File(interna, "meteo_errore.txt"), identita, versione, diario, rete,
         posizione?.let { config.coordinate(identita) },
+        fonteMeteo,
     )
 
     /** Il config con la posizione del telefono al posto di quella del dispositivo, e da dove viene. */

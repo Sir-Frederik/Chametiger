@@ -21,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -43,6 +44,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import io.github.sirfrederik.chametiger.motore.FONTE_MET_NORWAY
+import io.github.sirfrederik.chametiger.motore.FONTE_OPEN_METEO
 import io.github.sirfrederik.chametiger.strato.CartellaDrive
 import io.github.sirfrederik.chametiger.strato.Ciclo
 import io.github.sirfrederik.chametiger.strato.Motivo
@@ -184,6 +187,7 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
             enabled = !occupato,
         ) { Text("Ricontrolla le immagini") }
         esitoRicontrollo?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+        FonteMeteo(context, abilitato = !occupato) { giro++ }
         OutlinedButton(
             onClick = {
                 if (permessoGps(context)) caricaMeteo()
@@ -231,6 +235,40 @@ private fun Campo(etichetta: String, esempio: String, iniziale: String, numerico
             enabled = bozza.trim() != salvato,
             modifier = Modifier.padding(start = 8.dp),
         ) { Text("Salva") }
+    }
+}
+
+/**
+ * Da dove arrivano le previsioni: come dice il config, o una fonte scelta qui
+ * solo per questo telefono. I dati dell'altra fonte non valgono piu': si
+ * riscarica al giro dopo, o subito con Carica meteo.
+ */
+@Composable
+private fun FonteMeteo(context: Context, abilitato: Boolean, cambiata: () -> Unit) {
+    var scelta by remember { mutableStateOf(ImpostazioniMeteo.fonte(context)) }
+    val voci = listOf(null to "Dal config", FONTE_MET_NORWAY to "Met Norway", FONTE_OPEN_METEO to "Open-Meteo")
+    Column(Modifier.fillMaxWidth()) {
+        Text("Fonte del meteo", style = MaterialTheme.typography.labelLarge)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            for ((fonte, nome) in voci) {
+                FilterChip(
+                    selected = scelta == fonte,
+                    onClick = {
+                        scelta = fonte
+                        ImpostazioniMeteo.scriviFonte(context, fonte)
+                        cambiata()
+                    },
+                    label = { Text(nome) },
+                    enabled = abilitato,
+                )
+            }
+        }
+        if (scelta != null) {
+            Text(
+                "Vale solo per questo telefono: se i PC usano l'altra fonte possono vedere un tempo diverso.",
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
     }
 }
 

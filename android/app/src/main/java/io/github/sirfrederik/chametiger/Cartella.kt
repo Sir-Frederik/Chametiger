@@ -33,6 +33,7 @@ fun ciclo(context: Context, sfondo: Sfondo): Ciclo {
         sfondo = sfondo,
         drive = drive(context),
         posizione = PosizioneTelefono.leggi(context)?.let { it.lat to it.lon },
+        fonteMeteo = ImpostazioniMeteo.fonte(context),
     )
 }
 

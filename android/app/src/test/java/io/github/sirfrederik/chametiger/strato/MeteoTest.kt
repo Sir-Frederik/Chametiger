@@ -107,6 +107,14 @@ class MeteoTest {
         assertEquals(StatoMeteo.PIOGGIA, meteo(rete, diario).fonte(openMeteo, adesso).ore(LocalDate.of(2027, 3, 27))[21])
         assertFalse(meteo(rete, diario).aggiornaSeServe(openMeteo, adesso.plusHours(1)))
 
+        // La fonte scelta sul telefono vince su quella del config
+        val forzato = Meteo(
+            File(tmp.root, "meteo.json"), File(tmp.root, "interna/meteo_errore.txt"),
+            "android-federico", "1.0", diario, rete, null, "open_meteo",
+        )
+        assertEquals("open_meteo", forzato.fonteDi(config))
+        assertFalse(forzato.fonte(config, adesso).ore(LocalDate.of(2027, 3, 27)).isEmpty())
+
         // Cambiata la fonte, i dati dell'altra non valgono piu' e si riscarica
         assertTrue(meteo(rete, diario).fonte(config, adesso).ore(LocalDate.of(2027, 3, 27)).isEmpty())
         rete.risposta = risorsa("reale.json")
