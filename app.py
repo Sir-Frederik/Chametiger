@@ -1491,17 +1491,62 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
     senza che debbano parlarsi. E' questa proprieta' che vieta di memorizzare la
     posizione nel mazzo: va sempre ricalcolata.
 
+    Il meteo delle ore passate NON e' fra quegli ingressi: ogni dispositivo ne
+    ha un ricordo suo (chi era spento non ce l'ha, chi era acceso ha le
+    previsioni scaricate a un'altra ora). Per questo le immagini "gia' uscite"
+    prima di una finestra non sono quelle uscite davvero col tempo che ha
+    fatto, ma quelle di una giornata di riferimento che ha da mezzanotte il
+    tempo di quest'ora: tutta asciutta per una finestra asciutta, tutta di
+    pioggia per una di pioggia. E' uguale per tutti, e dentro lo stesso tempo
+    le immagini continuano a non ripetersi; puo' tornarne una solo a cavallo
+    di un cambio di tempo. Prima un PC acceso a mezzogiorno rifaceva la mattina
+    asciutta, il telefono l'aveva vissuta con la pioggia, e alle 12 mostravano
+    due immagini diverse.
+
     La usa sia lo scheduler (che ne vuole solo l'ultima) sia l'anteprima della
     GUI (che le vuole tutte): una passata sola invece di una per fascia.
+    """
+    ore_meteo = meteo.del_giorno(config, giorno) or {}
+    stati = {ore_meteo.get(ora) for ora in range(min(fino_a, 1439) // 60 + 1)}
+    riferimenti = {
+        stato: _sequenza(config, giorno, fino_a, dict.fromkeys(range(24), stato))
+        for stato in stati
+        if stato
+    }
+    if not riferimenti:
+        return _sequenza(config, giorno, fino_a, ore_meteo)
+    if len(riferimenti) == 1 and len(set(ore_meteo.values())) == 1 and len(ore_meteo) == 24:
+        return next(iter(riferimenti.values()))
+    return _sequenza(config, giorno, fino_a, ore_meteo, riferimenti)
+
+
+def _sequenza(
+    config: dict,
+    giorno: date,
+    fino_a: int,
+    ore_meteo: dict[int, str],
+    riferimenti: dict[str, list[dict]] | None = None,
+) -> list[dict]:
+    """
+    La passata di sequenza_giornaliera col meteo `ore_meteo`, ora per ora.
+
+    Senza `riferimenti` ogni finestra salta le immagini uscite in quelle prima:
+    cosi' si fanno le giornate di riferimento, con lo stesso tempo a tutte le
+    ore. Con `riferimenti` (stato -> la sua giornata) una finestra salta le
+    immagini che la giornata del suo stato ha dato alle finestre gia' finite,
+    e quello che esce qui non conta per le finestre dopo.
     """
     regole = _regole_del_giorno(config, giorno)
     if not regole:
         return []
 
-    # Il meteo e' per ora: le previsioni si leggono una volta per giornata, e
-    # ogni regola ha al piu' una variante per stato, non una per minuto.
-    ore_meteo = meteo.del_giorno(config, giorno) or {}
+    # Il meteo e' per ora: ogni regola ha al piu' una variante per stato, non
+    # una per minuto.
     varianti: dict[tuple, dict] = {}
+    # Per stato: le finestre della sua giornata di riferimento cominciate fin
+    # qui, e le immagini di quelle gia' finite
+    iniziate: dict[str, int] = dict.fromkeys(riferimenti or {}, 0)
+    uscite: dict[str, set[str]] = {stato: set() for stato in riferimenti or {}}
 
     pools: dict[str, list[str]] = {}  # una volta per regola, non per finestra
     universi = None  # i mazzi delle fasce, alla prima finestra
@@ -1517,11 +1562,23 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
     for minuto in range(min(fino_a, 1439) + 1):
         t = datetime(giorno.year, giorno.month, giorno.day) + timedelta(minutes=minuto)
 
+        stato = ore_meteo.get(minuto // 60)
+        if riferimenti is not None:
+            # Uscita, nella giornata di riferimento, e' l'immagine di una
+            # finestra finita: quella della finestra in corso resta libera
+            for s, giornata in riferimenti.items():
+                i = iniziate[s]
+                while i < len(giornata) and giornata[i]["minuto"] <= minuto:
+                    if i:
+                        uscite[s].add(giornata[i - 1]["image"])
+                    i += 1
+                iniziate[s] = i
+            usate = uscite.get(stato, set())
+
         # Prima regola per priorita' che copra il minuto E abbia immagini: lo
         # stesso criterio di resolve_random, cosi' l'anteprima e lo scheduler non
         # possono divergere su una regola dal pool vuoto.
         scelto = None
-        stato = ore_meteo.get(minuto // 60)
         percento = _priorita_nuvole(config, ore_meteo, minuto // 60)
         coprono = [
             k
@@ -1580,7 +1637,8 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
         ricerca = _ricerca_finestra(config, universi, rule, sig, pool, ordinale, giorno)
         # la prima non ancora uscita oggi; se sono uscite tutte, la carta di turno
         scelta = next((c for c in ricerca if c not in usate), ricerca[0])
-        usate.add(scelta)
+        if riferimenti is None:
+            usate.add(scelta)
 
         sequenza.append(
             {

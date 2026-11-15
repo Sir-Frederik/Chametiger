@@ -704,14 +704,47 @@ class Motore(
      * con l'immagine assegnata a ognuna: in ogni minuto vince la prima regola
      * che lo copre e ha immagini, e ogni finestra nuova pesca dal mazzo la prima
      * carta non ancora uscita oggi. Non legge e non scrive nulla.
+     *
+     * Il meteo delle ore passate non entra nel conto di cosa e' gia' uscito:
+     * ogni dispositivo ne ha un ricordo suo (chi era spento non ce l'ha). Le
+     * immagini gia' uscite prima di una finestra sono quelle di una giornata
+     * di riferimento che ha da mezzanotte il tempo di quest'ora: e' uguale per
+     * tutti, e dentro lo stesso tempo le immagini continuano a non ripetersi.
      */
     fun sequenzaGiornaliera(giorno: LocalDate, finoA: Int = 1439): List<Finestra> {
+        val oreMeteo = meteoDelGiorno(giorno).orEmpty()
+        val stati = (0..minOf(finoA, 1439) / 60).mapNotNull { oreMeteo[it] }.toSet()
+        val riferimenti = stati.associateWith { stato -> sequenza(giorno, finoA, (0 until 24).associateWith { stato }) }
+        if (riferimenti.isEmpty()) return sequenza(giorno, finoA, oreMeteo)
+        if (riferimenti.size == 1 && oreMeteo.size == 24 && oreMeteo.values.toSet().size == 1) {
+            return riferimenti.values.first()
+        }
+        return sequenza(giorno, finoA, oreMeteo, riferimenti)
+    }
+
+    /**
+     * La passata di sequenzaGiornaliera col meteo `oreMeteo`. Senza
+     * `riferimenti` ogni finestra salta le immagini uscite in quelle prima:
+     * cosi' si fanno le giornate di riferimento, con lo stesso tempo a tutte
+     * le ore. Con `riferimenti` una finestra salta le immagini che la giornata
+     * del suo stato ha dato alle finestre gia' finite, e quello che esce qui
+     * non conta per le finestre dopo.
+     */
+    private fun sequenza(
+        giorno: LocalDate,
+        finoA: Int,
+        oreMeteo: Map<Int, StatoMeteo>,
+        riferimenti: Map<StatoMeteo, List<Finestra>>? = null,
+    ): List<Finestra> {
         val regole = regoleDelGiorno(giorno)
         if (regole.isEmpty()) return emptyList()
 
-        val oreMeteo = meteoDelGiorno(giorno).orEmpty()
         val pools = HashMap<String, List<String>>() // una volta per firma, non per finestra
-        val usate = HashSet<String>()
+        var usate: MutableSet<String> = HashSet()
+        // Per stato: le finestre della sua giornata di riferimento cominciate
+        // fin qui, e le immagini di quelle gia' finite
+        val iniziate = HashMap<StatoMeteo, Int>()
+        val uscite = HashMap<StatoMeteo, MutableSet<String>>()
         val sequenza = mutableListOf<Finestra>()
         var ultimaFinestra: Pair<String, Int>? = null
         // La priorita' delle nuvole: se la finestra pesca solo fra le immagini
@@ -722,6 +755,19 @@ class Motore(
         for (minuto in 0..minOf(finoA, 1439)) {
             val t = giorno.atStartOfDay().plusMinutes(minuto.toLong())
             val stato = oreMeteo[minuto / 60]
+            if (riferimenti != null) {
+                // Uscita, nella giornata di riferimento, e' l'immagine di una
+                // finestra finita: quella della finestra in corso resta libera
+                for ((s, giornata) in riferimenti) {
+                    var i = iniziate[s] ?: 0
+                    while (i < giornata.size && giornata[i].minuto <= minuto) {
+                        if (i > 0) uscite.getOrPut(s) { HashSet() } += giornata[i - 1].immagine
+                        i++
+                    }
+                    iniziate[s] = i
+                }
+                usate = uscite[stato] ?: HashSet()
+            }
             val percento = prioritaNuvole(oreMeteo, minuto / 60)
             val coprono = regole.withIndex().filter { (_, r) -> copre(r.start, r.end, minuto) }
 
@@ -761,7 +807,7 @@ class Motore(
             // La prima non ancora uscita oggi; se sono uscite tutte, la carta di turno
             val ricerca = ricercaFinestra(giorno, regola, firma, pool, ordinale)
             val scelta = ricerca.firstOrNull { it !in usate } ?: ricerca[0]
-            usate += scelta
+            if (riferimenti == null) usate += scelta
 
             sequenza += Finestra(minuto, regola, rdg.origine, firma, ordinale, scelta, pool.size, giorno)
         }
