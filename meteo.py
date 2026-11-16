@@ -39,17 +39,20 @@ from versione import VERSIONE
 
 METEO_FILE = Path(__file__).parent.resolve() / "meteo.json"
 
+# "complete" e non "compact": solo lui ha le nubi per strato, che servono al
+# nuvoloso (vedi copertura_bassa).
 URL_PREVISIONI = (
-    "https://api.met.no/weatherapi/locationforecast/2.0/compact"
+    "https://api.met.no/weatherapi/locationforecast/2.0/complete"
     "?lat={lat:.2f}&lon={lon:.2f}"
 )
 # ICON-2I: precipitation sono i mm caduti nell'ora PRIMA dell'orario indicato,
-# weather_code serve solo per il temporale, cloud_cover (%) per il nuvoloso.
-# Orari in secondi dall'epoca.
+# weather_code serve solo per il temporale, le nubi basse e medie (%) per il
+# nuvoloso. Orari in secondi dall'epoca.
 URL_OPEN_METEO = (
     "https://api.open-meteo.com/v1/forecast"
     "?latitude={lat:.2f}&longitude={lon:.2f}"
-    "&hourly=precipitation,weather_code,cloud_cover&models=italia_meteo_arpae_icon_2i"
+    "&hourly=precipitation,weather_code,cloud_cover_low,cloud_cover_mid"
+    "&models=italia_meteo_arpae_icon_2i"
     "&forecast_hours={ore}&timeformat=unixtime&timezone=GMT"
 )
 # URL_METAR = (
@@ -76,7 +79,7 @@ DEFAULT_SOGLIA_MM = 1
 # Sotto la soglia della pioggia, da quanti mm l'ora e' nuvolosa anche se la
 # copertura del cielo non lo dice.
 PIOGGIA_LEGGERA_MM = 0.1
-# Copertura del cielo (%) da cui Open-Meteo conta come nuvoloso.
+# Copertura di nubi basse e medie (%) da cui il cielo conta come nuvoloso.
 DEFAULT_SOGLIA_NUVOLE = 90
 # Nelle prime ore nuvolose di fila, la probabilita' (%) che una finestra peschi
 # solo fra le immagini di nuvole: la prima ora, la seconda, la terza. Dopo, il
@@ -99,6 +102,21 @@ ASCIUTTO = "asciutto"
 TAG_NUVOLE = "nuvole"
 
 
+def copertura_bassa(basse, medie) -> float | None:
+    """
+    Quanto cielo coprono le nubi basse e medie insieme (%), come se gli strati
+    fossero indipendenti: 60% basse e 80% medie lasciano scoperto il 40% del
+    20%, cioe' coprono il 92%. Le nubi alte (cirri, velature) non contano: il
+    cielo resta chiaro anche al 100%, e col solo totale ore cosi' passavano
+    per nuvolose. None se mancano tutti e due gli strati.
+    """
+    if basse is None and medie is None:
+        return None
+    b = 0.0 if basse is None else float(basse)
+    m = 0.0 if medie is None else float(medie)
+    return 100 - (100 - b) * (100 - m) / 100
+
+
 def stato_da_simbolo(simbolo: str) -> str:
     """
     Simbolo di Met Norway -> stato: 'heavyrainandthunder' -> temporale,
@@ -106,6 +124,8 @@ def stato_da_simbolo(simbolo: str) -> str:
     'lightrainshowers_day', 'lightsleet') e il coperto ('cloudy') sono
     nuvoloso: la pioggia si mostra solo quando si vede davvero. Neve, nebbia
     e poco nuvoloso restano asciutto. Il tuono vince anche sul leggero.
+    Il coperto puo' essere solo un velo di nubi alte: lo corregge _previsioni
+    con gli strati.
     """
     s = simbolo.split("_")[0]
     if "thunder" in s:
@@ -154,7 +174,7 @@ def soglia_mm(config: dict) -> float:
 
 
 def soglia_nuvole(config: dict) -> float:
-    """La copertura del cielo (%) da cui Open-Meteo conta come nuvoloso (`soglia_nuvole`)."""
+    """La copertura di nubi basse e medie (%) da cui il cielo conta come nuvoloso (`soglia_nuvole`)."""
     try:
         n = float((config.get("meteo") or {}).get("soglia_nuvole", DEFAULT_SOGLIA_NUVOLE))
     except (TypeError, ValueError):
@@ -283,11 +303,16 @@ def _chiave(t: datetime) -> str:
     return t.strftime("%Y-%m-%dT%H")
 
 
-def _previsioni(lat: float, lon: float) -> dict[str, str]:
+def _previsioni(lat: float, lon: float, nuvole: float = DEFAULT_SOGLIA_NUVOLE) -> dict[str, str]:
     """
     {ora locale: stato} da Met Norway, dall'ora attuale per ORE_PREVISTE ore.
     Gli orari arrivano in UTC: fromtimestamp applica il fuso e l'ora legale
     del sistema, come per gli orari solari.
+
+    Un 'cloudy' e' nuvoloso solo se le nubi basse e medie coprono almeno
+    `nuvole` %; se no e' un velo di nubi alte, e l'ora e' asciutta. Senza gli
+    strati (una risposta "compact") resta nuvoloso. La pioggia leggera e'
+    nuvoloso sempre.
     """
     risposta = _scarica(URL_PREVISIONI.format(lat=lat, lon=lon))
     adesso = _chiave(datetime.now())
@@ -301,7 +326,16 @@ def _previsioni(lat: float, lon: float) -> dict[str, str]:
         utc = datetime.fromisoformat(passo["time"].replace("Z", "+00:00"))
         chiave = _chiave(datetime.fromtimestamp(utc.timestamp()))
         if chiave >= adesso:
-            ore[chiave] = stato_da_simbolo(simbolo)
+            stato = stato_da_simbolo(simbolo)
+            if simbolo.split("_")[0] == "cloudy":
+                strati = passo["data"].get("instant", {}).get("details", {})
+                coperto = copertura_bassa(
+                    strati.get("cloud_area_fraction_low"),
+                    strati.get("cloud_area_fraction_medium"),
+                )
+                if coperto is not None and coperto < nuvole:
+                    stato = ASCIUTTO
+            ore[chiave] = stato
         if len(ore) == ORE_PREVISTE:
             break
     return ore
@@ -315,7 +349,8 @@ def _previsioni_open_meteo(
     ORE_PREVISTE ore. I mm di un orario sono quelli caduti nell'ora prima:
     il valore delle 15:00 e' la pioggia dell'ora 14. Temporale coi codici
     WMO 95-99, pioggia da `soglia` mm in su; sotto, nuvoloso da
-    PIOGGIA_LEGGERA_MM o con la copertura del cielo da `nuvole` % in su.
+    PIOGGIA_LEGGERA_MM o con le nubi basse e medie da `nuvole` % in su
+    (copertura_bassa: le nubi alte non contano).
     Fuori dall'area del modello i valori sono null: allora solleva, e si
     sceglie come col sereno.
     """
@@ -324,12 +359,17 @@ def _previsioni_open_meteo(
     orari = risposta["hourly"]
     adesso = _chiave(datetime.now())
     ore = {}
-    for t, mm, codice, coperto in zip(
-        orari["time"], orari["precipitation"], orari["weather_code"], orari["cloud_cover"]
+    for t, mm, codice, basse, medie in zip(
+        orari["time"],
+        orari["precipitation"],
+        orari["weather_code"],
+        orari["cloud_cover_low"],
+        orari["cloud_cover_mid"],
     ):
         chiave = _chiave(datetime.fromtimestamp(t) - timedelta(hours=1))
         if chiave < adesso or mm is None:
             continue
+        coperto = copertura_bassa(basse, medie)
         if codice is not None and codice >= 95:
             ore[chiave] = TEMPORALE
         elif mm >= soglia:
@@ -427,7 +467,7 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
                 lat, lon, soglia_mm(config), soglia_nuvole(config)
             )
         else:
-            ore_meteo = _previsioni(lat, lon)
+            ore_meteo = _previsioni(lat, lon, soglia_nuvole(config))
     except Exception as e:
         ore_meteo = {}
         errori.append(f"{FONTI[scelta]}: {e}")

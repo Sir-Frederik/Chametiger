@@ -14,6 +14,9 @@ Le risposte, nella cartella di uscita:
   ora_legale.json    attorno al 28/3/2027, con passi senza next_1_hours
   ora_solare.json    attorno al 31/10/2027: due ore UTC finiscono nella
                      stessa ora locale
+  completa.json      una risposta vera "complete", con le nubi per strato
+  nubi.json          'cloudy' con nubi basse e medie sopra e sotto la soglia,
+                     un solo strato o nessuno
   rotta.json         senza timeseries: meteo.py solleva, e il telefono deve
                      fallire allo stesso modo
 
@@ -79,11 +82,20 @@ def simboli() -> list[str]:
     return out + INSOLITI
 
 
-def risposta(passi: list[tuple[datetime, str | None]]) -> dict:
-    """Una risposta di locationforecast coi passi dati; None = solo next_6_hours."""
+def risposta(passi: list[tuple]) -> dict:
+    """
+    Una risposta di locationforecast coi passi (ora, simbolo) o (ora, simbolo,
+    nubi basse, nubi medie); simbolo None = solo next_6_hours. Uno strato None
+    manca dalla risposta, come in "compact".
+    """
     serie = []
-    for t, simbolo in passi:
-        dati = {"instant": {"details": {"air_temperature": 15.0}}}
+    for t, simbolo, *strati in passi:
+        dettagli = {"air_temperature": 15.0}
+        if strati:
+            for chiave, valore in zip(("cloud_area_fraction_low", "cloud_area_fraction_medium"), strati):
+                if valore is not None:
+                    dettagli[chiave] = valore
+        dati = {"instant": {"details": dettagli}}
         if simbolo is None:
             dati["next_6_hours"] = {"summary": {"symbol_code": "cloudy"}}
         else:
@@ -97,7 +109,9 @@ def ore_utc(da: datetime, n: int) -> list[datetime]:
 
 
 def prepara() -> dict[str, dict]:
-    risposte = {"reale.json": json.loads((USCITA / "reale.json").read_text(encoding="utf-8"))}
+    risposte = {
+        nome: json.loads((USCITA / nome).read_text(encoding="utf-8")) for nome in ("reale.json", "completa.json")
+    }
 
     s = simboli()
     risposte["simboli.json"] = risposta(list(zip(ore_utc(datetime(2027, 5, 1, tzinfo=timezone.utc), len(s)), s)))
@@ -112,25 +126,42 @@ def prepara() -> dict[str, dict]:
     passi = [(t, giro[i % len(giro)]) for i, t in enumerate(ore_utc(datetime(2027, 10, 30, 20, tzinfo=timezone.utc), 16))]
     risposte["ora_solare.json"] = risposta(passi)
 
+    # Il coperto con gli strati: velo di nubi alte, basse fitte, basse e medie
+    # che insieme passano la soglia, appena sotto, un solo strato, nessuno
+    strati = [
+        ("cloudy", 16.4, 0.0), ("cloudy", 95.0, 0.0), ("cloudy", 60.0, 80.0), ("cloudy", 89.9, 0.0),
+        ("cloudy", None, 95.0), ("cloudy", None, None), ("lightrain", 0.0, 0.0), ("cloudy_night", 90.0, 0.0),
+        ("partlycloudy_day", 99.0, 99.0), ("rain", 5.0, 0.0), ("cloudy", 50.0, 50.0), ("cloudy", 75.0, 60.0),
+    ]
+    passi = [(t, *s) for t, s in zip(ore_utc(datetime(2027, 6, 10, 6, tzinfo=timezone.utc), len(strati)), strati)]
+    risposte["nubi.json"] = risposta(passi)
+
     risposte["rotta.json"] = {"type": "Feature", "properties": {"meta": {}}}
     return risposte
 
 
 def risposte_open_meteo() -> dict[str, dict]:
-    def risposta(da: datetime, mm: list, codici: list, coperto: list) -> dict:
+    def risposta(da: datetime, mm: list, codici: list, basse: list, medie: list) -> dict:
         tempi = [int(t.timestamp()) for t in ore_utc(da, len(mm))]
-        orari = {"time": tempi, "precipitation": mm, "weather_code": codici, "cloud_cover": coperto}
+        orari = {
+            "time": tempi,
+            "precipitation": mm,
+            "weather_code": codici,
+            "cloud_cover_low": basse,
+            "cloud_cover_mid": medie,
+        }
         return {"latitude": 40.82, "longitude": 14.35, "hourly": orari}
 
     # Il valore di un orario e' la pioggia dell'ora prima; l'ora legale salta le 02:00 locali
     da = datetime(2027, 3, 27, 18, tzinfo=timezone.utc)
     mm = [0.0, 0.4, 0.5, 3.6, None, 0.1, 0.0, 1.2, 0.49, 0.0, 2.0, 0.0, 0.3, None, 0.0, 0.6, 0.0, 0.0]
     codici = [3, 61, 61, 63, None, 95, 2, None, 51, 96, 65, 99, 3, 95, 1, 61, 94, 0]
-    coperto = [10, 95, 100, 20, 100, 0, 90, 89, None, 100, 30, 60, 100, 100, 91, 0, None, 100]
+    basse = [10, 95, 100, 20, 100, 0, 90, 89, None, 100, 30, 60, 100, 100, 91, 0, None, 50]
+    medie = [0, 0, 0, 0, 40, 0, 0, 10, 95, None, 30, 80, 0, 0, 0, 0, None, 50]
     return {
         "om_reale.json": json.loads((USCITA / "om_reale.json").read_text(encoding="utf-8")),
-        "om_casi.json": risposta(da, mm, codici, coperto),
-        "om_vuota.json": risposta(da, [None] * 12, [None] * 12, [None] * 12),
+        "om_casi.json": risposta(da, mm, codici, basse, medie),
+        "om_vuota.json": risposta(da, [None] * 12, [None] * 12, [None] * 12, [None] * 12),
         "om_rotta.json": {"error": True, "reason": "No data is available for this location"},
     }
 
@@ -192,7 +223,7 @@ def istanti(nome: str, risposta: dict) -> list[datetime]:
         scelti |= {datetime(2027, 10, 31, 1, 30), datetime(2027, 10, 31, 2, 30)}
     if nome == "ora_legale.json":
         scelti |= {datetime(2027, 3, 28, 1, 59), datetime(2027, 3, 28, 3, 0)}
-    return sorted(t.replace(minute=0, second=0) if nome == "reale.json" else t for t in scelti)
+    return sorted(t.replace(minute=0, second=0) if nome in ("reale.json", "completa.json") else t for t in scelti)
 
 
 def main():
@@ -201,7 +232,7 @@ def main():
     for s in simboli():
         righe.append(f"S\t{s}\t{meteo.stato_da_simbolo(s)}")
     for nome, r in risposte.items():
-        if nome != "reale.json":
+        if nome not in ("reale.json", "completa.json"):
             (USCITA / nome).write_text(json.dumps(r, indent=1), encoding="utf-8", newline="\n")
         for adesso in istanti(nome, r):
             quando = adesso.strftime("%Y-%m-%dT%H:%M")

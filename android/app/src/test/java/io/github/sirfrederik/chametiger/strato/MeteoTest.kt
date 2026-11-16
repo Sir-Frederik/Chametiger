@@ -98,7 +98,7 @@ class MeteoTest {
 
         assertTrue(meteo(rete, diario).aggiornaSeServe(openMeteo, adesso))
         assertEquals(
-            "https://api.open-meteo.com/v1/forecast?latitude=40.82&longitude=14.34&hourly=precipitation,weather_code,cloud_cover" +
+            "https://api.open-meteo.com/v1/forecast?latitude=40.82&longitude=14.34&hourly=precipitation,weather_code,cloud_cover_low,cloud_cover_mid" +
                 "&models=italia_meteo_arpae_icon_2i&forecast_hours=12&timeformat=unixtime&timezone=GMT",
             rete.chiamate.single().first,
         )
@@ -178,7 +178,7 @@ class MeteoTest {
 
         assertTrue(meteo(rete, diario).aggiornaSeServe(config, adesso))
         val (url, ua) = rete.chiamate.single()
-        assertEquals("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=40.82&lon=14.34", url)
+        assertEquals("https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=40.82&lon=14.34", url)
         assertTrue(ua, ua.startsWith("Chametiger-Android/1.0 ") && "github.com" in ua)
         assertEquals("[METEO] Aggiornato (Met Norway): niente pioggia nelle prossime 10 ore.", diario.righe.single())
 
@@ -207,7 +207,7 @@ class MeteoTest {
         )
 
         assertTrue(m(milano).aggiornaSeServe(config, adesso))
-        assertEquals("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=45.46&lon=9.19", rete.chiamate.single().first)
+        assertEquals("https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=45.46&lon=9.19", rete.chiamate.single().first)
         assertEquals("45.46, 9.19 (posizione del telefono)", m(milano).origine(config))
         // Scaricati per Milano: valgono finche' il telefono resta li', non sulle coordinate del config
         assertFalse(m(milano).fonte(config, adesso).ore(adesso.toLocalDate()).isEmpty())

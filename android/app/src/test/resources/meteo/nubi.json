@@ -1,0 +1,221 @@
+{
+ "type": "Feature",
+ "properties": {
+  "meta": {},
+  "timeseries": [
+   {
+    "time": "2027-06-10T06:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0,
+       "cloud_area_fraction_low": 16.4,
+       "cloud_area_fraction_medium": 0.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "cloudy"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-06-10T07:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0,
+       "cloud_area_fraction_low": 95.0,
+       "cloud_area_fraction_medium": 0.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "cloudy"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-06-10T08:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0,
+       "cloud_area_fraction_low": 60.0,
+       "cloud_area_fraction_medium": 80.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "cloudy"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-06-10T09:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0,
+       "cloud_area_fraction_low": 89.9,
+       "cloud_area_fraction_medium": 0.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "cloudy"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-06-10T10:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0,
+       "cloud_area_fraction_medium": 95.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "cloudy"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-06-10T11:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "cloudy"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-06-10T12:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0,
+       "cloud_area_fraction_low": 0.0,
+       "cloud_area_fraction_medium": 0.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "lightrain"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-06-10T13:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0,
+       "cloud_area_fraction_low": 90.0,
+       "cloud_area_fraction_medium": 0.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "cloudy_night"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-06-10T14:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0,
+       "cloud_area_fraction_low": 99.0,
+       "cloud_area_fraction_medium": 99.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "partlycloudy_day"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-06-10T15:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0,
+       "cloud_area_fraction_low": 5.0,
+       "cloud_area_fraction_medium": 0.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "rain"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-06-10T16:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0,
+       "cloud_area_fraction_low": 50.0,
+       "cloud_area_fraction_medium": 50.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "cloudy"
+      },
+      "details": {}
+     }
+    }
+   },
+   {
+    "time": "2027-06-10T17:00:00Z",
+    "data": {
+     "instant": {
+      "details": {
+       "air_temperature": 15.0,
+       "cloud_area_fraction_low": 75.0,
+       "cloud_area_fraction_medium": 60.0
+      }
+     },
+     "next_1_hours": {
+      "summary": {
+       "symbol_code": "cloudy"
+      },
+      "details": {}
+     }
+    }
+   }
+  ]
+ }
+}

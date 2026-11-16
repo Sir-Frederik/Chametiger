@@ -3,6 +3,7 @@
 package io.github.sirfrederik.chametiger.strato
 
 import io.github.sirfrederik.chametiger.motore.Config
+import io.github.sirfrederik.chametiger.motore.DEFAULT_SOGLIA_NUVOLE
 import io.github.sirfrederik.chametiger.motore.FONTE_MET_NORWAY
 import io.github.sirfrederik.chametiger.motore.FONTE_OPEN_METEO
 import io.github.sirfrederik.chametiger.motore.FonteMeteo
@@ -45,12 +46,14 @@ import java.util.Locale
 const val ORE_PREVISTE = 10
 private const val MAX_ETA_ORE = 12
 private const val RIPROVA_MINUTI = 30
-private const val URL_PREVISIONI = "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=%.2f&lon=%.2f"
+// "complete" e non "compact": solo lui ha le nubi per strato, che servono al nuvoloso
+private const val URL_PREVISIONI = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=%.2f&lon=%.2f"
 // ICON-2I: precipitation sono i mm caduti nell'ora PRIMA dell'orario indicato,
-// weather_code serve solo per il temporale, cloud_cover (%) per il nuvoloso.
-// Orari in secondi dall'epoca.
+// weather_code serve solo per il temporale, le nubi basse e medie (%) per il
+// nuvoloso. Orari in secondi dall'epoca.
 private const val URL_OPEN_METEO = "https://api.open-meteo.com/v1/forecast?latitude=%.2f&longitude=%.2f" +
-    "&hourly=precipitation,weather_code,cloud_cover&models=italia_meteo_arpae_icon_2i" +
+    "&hourly=precipitation,weather_code,cloud_cover_low,cloud_cover_mid" +
+    "&models=italia_meteo_arpae_icon_2i" +
     "&forecast_hours=%d&timeformat=unixtime&timezone=GMT"
 
 /** meteo.FONTI: il nome della fonte per log e schermata. */
@@ -58,6 +61,18 @@ private const val URL_OPEN_METEO = "https://api.open-meteo.com/v1/forecast?latit
 private const val PIOGGIA_LEGGERA_MM = 0.1
 
 fun nomeFonte(fonte: String): String = if (fonte == FONTE_OPEN_METEO) "Open-Meteo ICON-2I" else "Met Norway"
+
+/**
+ * copertura_bassa: quanto cielo coprono le nubi basse e medie insieme (%),
+ * come strati indipendenti. Le nubi alte non contano. Null se mancano tutti e
+ * due gli strati. Stesse operazioni di meteo.py, nello stesso ordine.
+ */
+fun coperturaBassa(basse: Double?, medie: Double?): Double? {
+    if (basse == null && medie == null) return null
+    val b = basse ?: 0.0
+    val m = medie ?: 0.0
+    return 100 - (100 - b) * (100 - m) / 100
+}
 
 /**
  * stato_da_simbolo: 'heavyrainandthunder' -> temporale, 'rainshowers_day' ->
@@ -83,9 +98,14 @@ fun chiaveOra(t: LocalDateTime): String = t.format(CHIAVE)
  * _previsioni: {ora locale: stato} dalla risposta di locationforecast,
  * dall'ora di `adesso` per ORE_PREVISTE ore. Gli orari arrivano in UTC e
  * passano a ZONA, come fromtimestamp sul PC. Solleva se la risposta non ha la
- * forma attesa, come meteo.py.
+ * forma attesa, come meteo.py. Un 'cloudy' e' nuvoloso solo se le nubi basse
+ * e medie coprono almeno `nuvole` %; senza gli strati resta nuvoloso.
  */
-fun previsioni(risposta: String, adesso: LocalDateTime): LinkedHashMap<String, StatoMeteo> {
+fun previsioni(
+    risposta: String,
+    adesso: LocalDateTime,
+    nuvole: Double = DEFAULT_SOGLIA_NUVOLE,
+): LinkedHashMap<String, StatoMeteo> {
     val serie = Json.parseToJsonElement(risposta).jsonObject
         .getValue("properties").jsonObject.getValue("timeseries").jsonArray
     val ora = chiaveOra(adesso)
@@ -98,7 +118,18 @@ fun previsioni(risposta: String, adesso: LocalDateTime): LinkedHashMap<String, S
         if (simbolo.isNullOrEmpty()) continue // oltre le prime ~60 ore si passa a passi di 6 ore
         val utc = Instant.parse(passo.jsonObject.getValue("time").jsonPrimitive.content)
         val chiave = chiaveOra(LocalDateTime.ofInstant(utc, ZONA))
-        if (chiave >= ora) ore[chiave] = statoDaSimbolo(simbolo)
+        if (chiave >= ora) {
+            var stato = statoDaSimbolo(simbolo)
+            if (simbolo.split("_")[0] == "cloudy") {
+                val strati = dati["instant"]?.jsonObject?.get("details")?.jsonObject
+                val coperto = coperturaBassa(
+                    strati?.get("cloud_area_fraction_low")?.jsonPrimitive?.doubleOrNull,
+                    strati?.get("cloud_area_fraction_medium")?.jsonPrimitive?.doubleOrNull,
+                )
+                if (coperto != null && coperto < nuvole) stato = StatoMeteo.ASCIUTTO
+            }
+            ore[chiave] = stato
+        }
         if (ore.size == ORE_PREVISTE) break
     }
     return ore
@@ -109,8 +140,8 @@ fun previsioni(risposta: String, adesso: LocalDateTime): LinkedHashMap<String, S
  * dall'ora di `adesso` per ORE_PREVISTE ore. I mm di un orario sono quelli
  * caduti nell'ora prima: il valore delle 15:00 e' la pioggia dell'ora 14.
  * Temporale coi codici WMO 95-99, pioggia da `soglia` mm in su; sotto,
- * nuvoloso da PIOGGIA_LEGGERA_MM o con la copertura del cielo da `nuvole` % in
- * su. Solleva se la
+ * nuvoloso da PIOGGIA_LEGGERA_MM o con le nubi basse e medie da `nuvole` % in
+ * su (coperturaBassa). Solleva se la
  * risposta non ha la forma attesa o non ha ore (fuori dall'area del modello i
  * valori sono null), come meteo.py.
  */
@@ -124,16 +155,17 @@ fun previsioniOpenMeteo(
     val tempi = orari.getValue("time").jsonArray
     val pioggia = orari.getValue("precipitation").jsonArray
     val codici = orari.getValue("weather_code").jsonArray
-    val coperture = orari.getValue("cloud_cover").jsonArray
+    val basse = orari.getValue("cloud_cover_low").jsonArray
+    val medie = orari.getValue("cloud_cover_mid").jsonArray
     val ora = chiaveOra(adesso)
     val ore = LinkedHashMap<String, StatoMeteo>()
-    for (i in 0 until minOf(minOf(tempi.size, pioggia.size), minOf(codici.size, coperture.size))) { // come zip
+    for (i in 0 until listOf(tempi.size, pioggia.size, codici.size, basse.size, medie.size).min()) { // come zip
         val t = LocalDateTime.ofInstant(Instant.ofEpochSecond(tempi[i].jsonPrimitive.long), ZONA)
         val chiave = chiaveOra(t.minusHours(1))
         val mm = pioggia[i].jsonPrimitive.doubleOrNull
         if (chiave < ora || mm == null) continue
         val codice = codici[i].jsonPrimitive.intOrNull
-        val coperto = coperture[i].jsonPrimitive.doubleOrNull
+        val coperto = coperturaBassa(basse[i].jsonPrimitive.doubleOrNull, medie[i].jsonPrimitive.doubleOrNull)
         ore[chiave] = when {
             codice != null && codice >= 95 -> StatoMeteo.TEMPORALE
             mm >= soglia -> StatoMeteo.PIOGGIA
@@ -318,7 +350,7 @@ class Meteo(
                 val url = URL_OPEN_METEO.format(Locale.ROOT, lat, lon, ORE_PREVISTE + 2)
                 previsioniOpenMeteo(rete.scarica(url, userAgent), adesso, config.meteoSogliaMm, config.meteoSogliaNuvole)
             } else {
-                previsioni(rete.scarica(URL_PREVISIONI.format(Locale.ROOT, lat, lon), userAgent), adesso)
+                previsioni(rete.scarica(URL_PREVISIONI.format(Locale.ROOT, lat, lon), userAgent), adesso, config.meteoSogliaNuvole)
             }
         } catch (e: Exception) {
             if (forza || ultimoErrore == 0.0) {

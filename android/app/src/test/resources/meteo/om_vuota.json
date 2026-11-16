@@ -44,7 +44,21 @@
    null,
    null
   ],
-  "cloud_cover": [
+  "cloud_cover_low": [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  "cloud_cover_mid": [
    null,
    null,
    null,
