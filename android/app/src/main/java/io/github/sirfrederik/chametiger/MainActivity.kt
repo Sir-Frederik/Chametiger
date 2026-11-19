@@ -144,6 +144,8 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("Chametiger", style = MaterialTheme.typography.headlineSmall)
+        // La stessa del log ("android-federico 1.3"): dice quale APK e' installato
+        Text("Versione ${BuildConfig.VERSION_NAME}", style = MaterialTheme.typography.bodySmall)
 
         Campo("Identità del dispositivo", "android-federico", Identita.leggi(context)) {
             Identita.scrivi(context, it)
