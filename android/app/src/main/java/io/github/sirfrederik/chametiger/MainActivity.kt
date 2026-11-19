@@ -11,8 +11,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +39,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -139,75 +142,131 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
     // Il ritorno ricalcola la schermata, cosi' il pulsante sparisce se il permesso e' arrivato
     val chiediSempre = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { giro++ }
 
+    val a = (stato as? Stato.Pronta)?.anteprima
+    val identita = Identita.leggi(context)
+
     Column(
         modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("Chametiger", style = MaterialTheme.typography.headlineSmall)
-
-        Campo("Identità del dispositivo", "android-federico", Identita.leggi(context)) {
-            Identita.scrivi(context, it)
-            giro++
-        }
-        Campo("Cartella Drive (link)", "https://drive.google.com/drive/folders/…", ImpostazioniDrive.link(context)) {
-            ImpostazioniDrive.scriviLink(context, it)
-            giro++
-        }
-        Campo(
-            "Tetto della cache (MB)", ImpostazioniDrive.TETTO_MB_DEFAULT.toString(),
-            ImpostazioniDrive.tettoMb(context).toString(), numerico = true,
-        ) {
-            it.toIntOrNull()?.let { mb -> ImpostazioniDrive.scriviTettoMb(context, mb) }
-            giro++
-        }
-        Text(statoDrive(context, cartella), style = MaterialTheme.typography.bodySmall)
-        Velo(context, abilitato = !occupato) { esegui { it.giro() } }
-
-        Text("Cartella: ${cartella.path}", style = MaterialTheme.typography.bodySmall, fontFamily = FontFamily.Monospace)
-        Batteria(context)
-        HorizontalDivider()
-
-        when (val s = stato) {
-            Stato.InCorso -> Text("Calcolo in corso…")
-            is Stato.Errore -> Text(s.messaggio, color = MaterialTheme.colorScheme.error)
-            is Stato.Pronta -> Dettagli(s.anteprima)
-        }
-
-        HorizontalDivider()
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { esegui { it.giro() } }, enabled = !occupato) { Text("Applica ora") }
-            OutlinedButton(onClick = { esegui { it.forza() } }, enabled = !occupato) { Text("Estrazione forzata") }
-        }
-        // Dopo aver sostituito su Drive delle immagini con versioni migliori e lo stesso nome
-        OutlinedButton(
-            onClick = {
-                esitoRicontrollo = "Ricontrollo in corso…"
-                esegui { esitoRicontrollo = it.ricontrolla() }
-            },
-            enabled = !occupato,
-        ) { Text("Ricontrolla le immagini") }
-        esitoRicontrollo?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
-        FonteMeteo(context, abilitato = !occupato) { giro++ }
-        OutlinedButton(
-            onClick = {
-                if (permessoGps(context)) caricaMeteo()
-                else chiediPosizione.launch(PERMESSI_POSIZIONE)
-            },
-            enabled = !occupato,
-        ) { Text("Carica meteo") }
-        // Su Android 11 la richiesta porta alle impostazioni dell'app: li' va scelto "Consenti sempre"
-        if (permessoPosizione(context) && !permessoSempre(context)) {
-            OutlinedButton(
-                onClick = { chiediSempre.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION) },
-                enabled = !occupato,
-            ) { Text("Posizione anche in background") }
-        }
-        Text(posizioneSalvata(context), style = MaterialTheme.typography.bodySmall)
-        esitoMeteo?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+        // La versione e' la stessa del log ("android-federico 1.3"): dice quale APK e' installato
         Text(
-            "Lo sfondo cambia da solo ogni 15 minuti circa. Il log è chametiger.log nella cartella sopra.",
+            "Versione ${BuildConfig.VERSION_NAME} · " + identita.ifBlank { "identità non impostata" },
             style = MaterialTheme.typography.bodySmall,
         )
+        Batteria(context)
+
+        Sezione("Sfondo adesso") {
+            when (val s = stato) {
+                Stato.InCorso -> Text("Calcolo in corso…")
+                is Stato.Errore -> Text(s.messaggio, color = MaterialTheme.colorScheme.error)
+                is Stato.Pronta -> SfondoAdesso(s.anteprima)
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = { esegui { it.giro() } }, enabled = !occupato) { Text("Applica ora") }
+                OutlinedButton(onClick = { esegui { it.forza() } }, enabled = !occupato) { Text("Estrazione forzata") }
+            }
+            Text("Lo sfondo cambia da solo ogni 15 minuti circa.", style = MaterialTheme.typography.bodySmall)
+        }
+
+        if (a != null) {
+            Sezione("Oggi") { Oggi(a) }
+        }
+
+        Sezione("Meteo e posizione") {
+            if (a != null) {
+                Voce("Meteo", a.meteo)
+                Voce(
+                    "Posizione per meteo e sole",
+                    "%.4f, %.4f (%s)".format(Locale.ROOT, a.lat, a.lon, a.fonteCoordinate) +
+                        (notaPosizione(context)?.let { "\n$it" } ?: ""),
+                )
+            }
+            FonteMeteo(context, abilitato = !occupato) { giro++ }
+            OutlinedButton(
+                onClick = {
+                    if (permessoGps(context)) caricaMeteo()
+                    else chiediPosizione.launch(PERMESSI_POSIZIONE)
+                },
+                enabled = !occupato,
+            ) { Text("Carica meteo") }
+            // Su Android 11 la richiesta porta alle impostazioni dell'app: li' va scelto "Consenti sempre"
+            if (permessoPosizione(context) && !permessoSempre(context)) {
+                OutlinedButton(
+                    onClick = { chiediSempre.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION) },
+                    enabled = !occupato,
+                ) { Text("Posizione anche in background") }
+            }
+            esitoMeteo?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+        }
+
+        Sezione("Drive") {
+            Text(statoDrive(context, cartella), style = MaterialTheme.typography.bodyMedium)
+            // Dopo aver sostituito su Drive delle immagini con versioni migliori e lo stesso nome
+            OutlinedButton(
+                onClick = {
+                    esitoRicontrollo = "Ricontrollo in corso…"
+                    esegui { esitoRicontrollo = it.ricontrolla() }
+                },
+                enabled = !occupato,
+            ) { Text("Ricontrolla le immagini") }
+            esitoRicontrollo?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+        }
+
+        // Aperte da sole finche' manca qualcosa da impostare
+        Sezione("Impostazioni", apertaAllInizio = identita.isBlank() || ImpostazioniDrive.link(context).isBlank()) {
+            Campo("Identità del dispositivo", "android-federico", identita) {
+                Identita.scrivi(context, it)
+                giro++
+            }
+            Campo("Cartella Drive (link)", "https://drive.google.com/drive/folders/…", ImpostazioniDrive.link(context)) {
+                ImpostazioniDrive.scriviLink(context, it)
+                giro++
+            }
+            Campo(
+                "Tetto della cache (MB)", ImpostazioniDrive.TETTO_MB_DEFAULT.toString(),
+                ImpostazioniDrive.tettoMb(context).toString(), numerico = true,
+            ) {
+                it.toIntOrNull()?.let { mb -> ImpostazioniDrive.scriviTettoMb(context, mb) }
+                giro++
+            }
+            Velo(context, abilitato = !occupato) { esegui { it.giro() } }
+        }
+
+        Sezione("Dettagli tecnici", apertaAllInizio = false) {
+            a?.let { DettagliTecnici(it) }
+            Voce("Cartella", cartella.path, mono = true)
+            Voce("Log", "chametiger.log, in questa cartella")
+        }
+    }
+}
+
+/**
+ * Un gruppo della schermata col suo titolo. `apertaAllInizio` non nullo: si
+ * apre e si chiude toccando il titolo.
+ */
+@Composable
+private fun Sezione(titolo: String, apertaAllInizio: Boolean? = null, contenuto: @Composable ColumnScope.() -> Unit) {
+    var aperta by rememberSaveable(titolo) { mutableStateOf(apertaAllInizio ?: true) }
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        HorizontalDivider()
+        if (apertaAllInizio == null) {
+            Text(titolo, style = MaterialTheme.typography.titleMedium)
+        } else {
+            Row(
+                Modifier.fillMaxWidth().clickable { aperta = !aperta }.padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(titolo, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                Text(
+                    if (aperta) "Nascondi" else "Mostra",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+        }
+        if (aperta) contenuto()
     }
 }
 
@@ -301,26 +360,25 @@ private fun Velo(context: Context, abilitato: Boolean, applica: () -> Unit) {
 
 /** Se Drive e' in uso, e quanto occupa la cache. */
 private fun statoDrive(context: Context, cartella: File): String {
-    if (BuildConfig.DRIVE_API_KEY.isBlank()) return "Drive: nessuna chiave API in questa build, valgono i file copiati via USB."
+    if (BuildConfig.DRIVE_API_KEY.isBlank()) return "Nessuna chiave API in questa build: valgono i file copiati via USB."
     val link = ImpostazioniDrive.link(context)
-    if (link.isBlank()) return "Drive: incolla il link della cartella per scaricare config e immagini."
-    val drive = CartellaDrive.daLink(link) ?: return "Drive: il link non è di una cartella Drive."
+    if (link.isBlank()) return "Incolla il link della cartella nelle impostazioni per scaricare config e immagini."
+    val drive = CartellaDrive.daLink(link) ?: return "Il link nelle impostazioni non è di una cartella Drive."
     val esclusi = setOf(Ciclo.NOME_CONFIG, Ciclo.NOME_LOG, "meteo.json")
     val occupati = cartella.walkTopDown().filter { it.isFile && it.name !in esclusi }.sumOf { it.length() }
-    return "Drive: cartella ${drive.id.take(8)}…, cache %.0f MB su un tetto di %d MB."
+    return "Cartella ${drive.id.take(8)}…, cache %.0f MB su un tetto di %d MB."
         .format(Locale.ROOT, occupati / 1048576.0, ImpostazioniDrive.tettoMb(context))
 }
 
 private val GIORNO_ORA = DateTimeFormatter.ofPattern("d/M HH:mm")
 
-/** Quale posizione usano meteo e sole, e da quando. */
-private fun posizioneSalvata(context: Context): String {
-    val p = PosizioneTelefono.leggi(context)
-        ?: return "Meteo e sole sulle coordinate del config: nessuna posizione del telefono salvata."
+/** Da quando c'e' la posizione del telefono e come si aggiorna; null se non ce n'e' una salvata. */
+private fun notaPosizione(context: Context): String? {
+    val p = PosizioneTelefono.leggi(context) ?: return null
     val quando = LocalDateTime.ofInstant(Instant.ofEpochMilli(p.quando), ZONA).format(GIORNO_ORA)
-    val sempre = if (permessoSempre(context)) " Si aggiorna da sola prima di ogni download del meteo."
-    else " Si aggiorna solo con Carica meteo."
-    return "Meteo e sole sulla posizione del telefono letta il $quando: %.4f, %.4f.".format(Locale.ROOT, p.lat, p.lon) + sempre
+    val come = if (permessoSempre(context)) "si aggiorna da sola prima di ogni download del meteo"
+    else "si aggiorna solo con Carica meteo"
+    return "Letta dal telefono il $quando, $come."
 }
 
 private fun valuta(context: Context): Stato {
@@ -353,21 +411,8 @@ private fun Batteria(context: Context) {
 private val DATA_ORA = DateTimeFormatter.ofPattern("EEEE d/M/yyyy HH:mm", Locale.ITALIAN)
 
 @Composable
-private fun Dettagli(a: Anteprima) {
-    Voce("Adesso", "${a.adesso.format(DATA_ORA)} (${ZONA.id})")
-    if (ZoneId.systemDefault() != ZONA) {
-        Voce("Fuso del telefono", "${ZoneId.systemDefault().id}: ignorato, vale ${ZONA.id} come sui PC")
-    }
-    Voce(
-        "Coordinate",
-        "%.4f, %.4f (%s)".format(Locale.ROOT, a.lat, a.lon, a.fonteCoordinate),
-    )
-    Voce("Pila del giorno", a.pila)
-    Voce("Sole", a.orariSolari.joinToString("  ") { (nome, ora) -> "$nome $ora" })
-    Voce("Meteo", a.meteo)
-    Voce("Config", a.impronta + (a.avvisoConfig?.let { " (ultimo letto: $it)" } ?: ""), errore = a.avvisoConfig != null, mono = a.avvisoConfig == null)
-    HorizontalDivider()
-
+private fun SfondoAdesso(a: Anteprima) {
+    if (a.avvisoConfig != null) Voce("Config", "non si legge, uso l'ultimo letto: ${a.avvisoConfig}", errore = true)
     val s = a.scelta
     if (s == null) {
         Text("${a.niente ?: "Nessuna immagine"}: lo sfondo resta quello che c'è.")
@@ -379,12 +424,28 @@ private fun Dettagli(a: Anteprima) {
         Motivo.RIPIEGO -> Voce("Ripiego", "manca ${s.canonica}: questa vale solo adesso", errore = true)
         Motivo.FORZATA -> Voce("Estrazione forzata", "fino a fine finestra, al posto di ${s.canonica}")
     }
-    Voce("Regola", s.origine)
-    Voce("Fascia", s.fascia)
+    Voce("Regola", "${s.origine}\n${s.fascia}")
     if (s.tag.isNotEmpty()) Voce("Tag", s.tag)
-    Voce("Pool", "${s.pool} immagini")
-    Voce("Finestra", "dalle ${s.inizio}, ordinale ${s.ordinale}")
-    Voce("Firma", s.firma, mono = true)
+    Voce("Pool", "${s.pool} immagini, finestra dalle ${s.inizio}")
+}
+
+@Composable
+private fun Oggi(a: Anteprima) {
+    Voce("Adesso", "${a.adesso.format(DATA_ORA)} (${ZONA.id})")
+    if (ZoneId.systemDefault() != ZONA) {
+        Voce("Fuso del telefono", "${ZoneId.systemDefault().id}: ignorato, vale ${ZONA.id} come sui PC")
+    }
+    Voce("Pila del giorno", a.pila)
+    Voce("Sole", a.orariSolari.joinToString("  ") { (nome, ora) -> "$nome $ora" })
+}
+
+@Composable
+private fun DettagliTecnici(a: Anteprima) {
+    Voce("Config", a.impronta, mono = true)
+    a.scelta?.let {
+        Voce("Finestra", "ordinale ${it.ordinale}")
+        Voce("Firma", it.firma, mono = true)
+    }
 }
 
 @Composable

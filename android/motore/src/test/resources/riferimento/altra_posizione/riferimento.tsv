@@ -1,7 +1,7 @@
 # Riferimento altra_posizione: app.py 4.10.0, dispositivo Federico, dal 2027-02-15 al 2027-04-10. Generato da genera_riferimento.py, non modificare.
 M	2027-02-15	NNNNNNNNNNNNNNNNNNNNNNNN
 S	2027-02-15	0	1864	sylvester_slazlo.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|v:horror|s:Inverno|m:nuvoloso|mo:notte|nu:1
-S	2027-02-15	32	1865	tweety_house_night_moon.png	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|v:horror|s:Inverno|m:nuvoloso|mo:notte
+S	2027-02-15	32	1865	sylvester_slazlo.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|v:horror|s:Inverno|m:nuvoloso|mo:notte|nu:1
 S	2027-02-15	123	1866	daffy_elmer_sleep.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|v:horror|s:Inverno|m:nuvoloso|mo:notte
 S	2027-02-15	214	1867	moon_binary_unruly_hare.png	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|v:horror|s:Inverno|m:nuvoloso|mo:notte
 S	2027-02-15	305	1868	porky_tamburo.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|v:horror|s:Inverno|m:nuvoloso|mo:notte
@@ -26,8 +26,8 @@ S	2027-02-15	1328	1641	pepe_valentine.jpg	dusk +60|00:00|sanValentino|alba,crepu
 S	2027-02-15	1380	1641	scarlett_pumpernickel.jpg	dusk +60|00:00|sanValentino|alba,crepuscolo,mattino,pomeriggio,pranzo,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera|v:horror|s:San Valentino|m:nuvoloso|mo:notte
 S	2027-02-15	1384	1642	elmer_daffy_cupid.jpg	dusk +60|00:00|sanValentino|alba,crepuscolo,mattino,pomeriggio,pranzo,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera|v:horror|s:San Valentino|m:nuvoloso|mo:notte
 H	2027-02-15	0	sylvester_slazlo.jpg
-H	2027-02-15	1	tweety_house_night_moon.png
-H	2027-02-15	2	tweety_house_night_moon.png
+H	2027-02-15	1	sylvester_slazlo.jpg
+H	2027-02-15	2	sylvester_slazlo.jpg
 H	2027-02-15	3	daffy_elmer_sleep.jpg
 H	2027-02-15	4	moon_binary_unruly_hare.png
 H	2027-02-15	5	moon_binary_unruly_hare.png
@@ -109,9 +109,9 @@ S	2027-02-17	303	1878	space_opera.png	23:00|dawn -20m|notte||all|se:autunno,capo
 S	2027-02-17	392	412	Looney Tunes Sports/daffy_mountain_bike_falling_extreme.jpeg	dawn -20m|sunrise|crepuscolo|smart,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:asciutto
 S	2027-02-17	442	824	Daffy and Porky/pedicure.jpg	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:asciutto
 S	2027-02-17	502	825	Daffy and Porky/porky_daffy_colazione_cucina.jpg	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:asciutto
-S	2027-02-17	540	825	ocean11_tweety_fighting_martial.png	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:alba|nu:1
-S	2027-02-17	562	1835	journal_forecast_rainy.jpg	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:mattino|nu:1
-S	2027-02-17	617	1836	journal_forecast_rainy.jpg	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:mattino|nu:1
+S	2027-02-17	540	825	Daffy and Porky/scala_buia_guardiano_zombie.jpg	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:alba|nu:1
+S	2027-02-17	562	1835	Daffy and Porky/porky_daffy_ballo_palco_art_deco.jpg	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:mattino|nu:1
+S	2027-02-17	617	1836	daffy_cloud_rain_desert.jpg	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:mattino|nu:1
 S	2027-02-17	671	1837	Duck_dodgers_plan_sketch.png	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:mattino
 S	2027-02-17	726	1838	daffy_shoot_faces.jpg	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:mattino
 S	2027-02-17	780	412	sylvester_lunch_succotash.png	13:00|14:00|pranzo||all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:pranzo
@@ -137,9 +137,9 @@ H	2027-02-17	5	duck_tracy.jpg
 H	2027-02-17	6	space_opera.png
 H	2027-02-17	7	Looney Tunes Sports/daffy_mountain_bike_falling_extreme.jpeg
 H	2027-02-17	8	Daffy and Porky/pedicure.jpg
-H	2027-02-17	9	ocean11_tweety_fighting_martial.png
-H	2027-02-17	10	journal_forecast_rainy.jpg
-H	2027-02-17	11	journal_forecast_rainy.jpg
+H	2027-02-17	9	Daffy and Porky/scala_buia_guardiano_zombie.jpg
+H	2027-02-17	10	Daffy and Porky/porky_daffy_ballo_palco_art_deco.jpg
+H	2027-02-17	11	daffy_cloud_rain_desert.jpg
 H	2027-02-17	12	Duck_dodgers_plan_sketch.png
 H	2027-02-17	13	sylvester_lunch_succotash.png
 H	2027-02-17	14	Daffy and Porky/daffy_leva_gomme_super_stretchy.png
@@ -311,8 +311,8 @@ S	2027-02-21	298	1898	duck_tracy_gangster.jpg	23:00|dawn -20m|notte||all|se:autu
 S	2027-02-21	386	832	Daffy and Porky/porky_daffy_lavano_denti.jpg	dawn -20m|sunrise +60m|alba|lavoro|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:asciutto
 S	2027-02-21	441	833	Daffy and Porky/porky_daffy_colazione_cucina.jpg	dawn -20m|sunrise +60m|alba|lavoro|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:asciutto
 S	2027-02-21	496	1019	Looney tunes christmas/bugs_lola_pattinaggio_ghiaccio.jpg	sunrise +60m|10:00|mattino,svago|crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:asciutto
-S	2027-02-21	540	1019	journal_forecast_rainy.jpg	sunrise +60m|10:00|mattino,svago|crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:mattino|nu:1
-S	2027-02-21	548	1020	daffy_cloud_rain_desert.jpg	sunrise +60m|10:00|mattino,svago|crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:mattino|nu:1
+S	2027-02-21	540	1019	daffy_cloud_rain_desert.jpg	sunrise +60m|10:00|mattino,svago|crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:mattino|nu:1
+S	2027-02-21	548	1020	journal_forecast_rainy.jpg	sunrise +60m|10:00|mattino,svago|crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:mattino|nu:1
 S	2027-02-21	600	1248	daffy_shoot_faces.jpg	10:00|13:00|jolly,mattino,sport,svago,weekend|alba,crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:mattino
 S	2027-02-21	660	1249	Looney Tunes Sports/pepè_scii_inverno.png	10:00|13:00|jolly,mattino,sport,svago,weekend|alba,crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:mattino
 S	2027-02-21	720	1250	Foghorn_Barnyard_Henery.jpg	10:00|13:00|jolly,mattino,sport,svago,weekend|alba,crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,primavera,sanValentino|s:Inverno|m:nuvoloso|mo:mattino
@@ -338,7 +338,7 @@ H	2027-02-21	5	duck_tracy_gangster.jpg
 H	2027-02-21	6	duck_tracy_gangster.jpg
 H	2027-02-21	7	Daffy and Porky/porky_daffy_lavano_denti.jpg
 H	2027-02-21	8	Daffy and Porky/porky_daffy_colazione_cucina.jpg
-H	2027-02-21	9	journal_forecast_rainy.jpg
+H	2027-02-21	9	daffy_cloud_rain_desert.jpg
 H	2027-02-21	10	daffy_shoot_faces.jpg
 H	2027-02-21	11	Looney Tunes Sports/pepè_scii_inverno.png
 H	2027-02-21	12	Foghorn_Barnyard_Henery.jpg
@@ -514,9 +514,9 @@ S	2027-02-25	293	1918	duck_tracy.jpg	23:00|dawn -20m|notte||all|se:autunno,capod
 S	2027-02-25	379	420	Looney Tunes Sports/daffy_mountain_bike_falling_extreme.jpeg	dawn -20m|sunrise|crepuscolo|smart,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:asciutto
 S	2027-02-25	429	840	wile_coyote_falling_phone.png	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:asciutto
 S	2027-02-25	489	841	Daffy and Porky/chrome/daffy_leva_gomme_super_stretchy_hd.png	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:asciutto
-S	2027-02-25	540	841	journal_forecast_rainy.jpg	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:alba|nu:1
+S	2027-02-25	540	841	ocean11_tweety_fighting_martial.png	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:alba|nu:1
 S	2027-02-25	549	1867	journal_forecast_rainy.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:mattino|nu:1
-S	2027-02-25	607	1868	journal_forecast_rainy.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-02-25	607	1868	daffy_venditore.png	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:mattino|nu:1
 S	2027-02-25	665	1869	journal_forecast_rainy.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:mattino
 S	2027-02-25	723	1870	duck_amuck.png	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:mattino
 S	2027-02-25	780	420	looney_Lunchbreak_building_b&w.jpg	13:00|14:00|pranzo|smart|all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:pranzo
@@ -542,9 +542,9 @@ H	2027-02-25	5	duck_tracy.jpg
 H	2027-02-25	6	duck_tracy.jpg
 H	2027-02-25	7	Looney Tunes Sports/daffy_mountain_bike_falling_extreme.jpeg
 H	2027-02-25	8	wile_coyote_falling_phone.png
-H	2027-02-25	9	journal_forecast_rainy.jpg
+H	2027-02-25	9	ocean11_tweety_fighting_martial.png
 H	2027-02-25	10	journal_forecast_rainy.jpg
-H	2027-02-25	11	journal_forecast_rainy.jpg
+H	2027-02-25	11	daffy_venditore.png
 H	2027-02-25	12	journal_forecast_rainy.jpg
 H	2027-02-25	13	looney_Lunchbreak_building_b&w.jpg
 H	2027-02-25	14	Looney Tunes Sports/football_americano_mischia_bugs_foghorn.jpg
@@ -659,7 +659,7 @@ H	2027-02-27	22	thats_all_folks_personaggi_palco.jpg
 H	2027-02-27	23	dorlock_holmes.jpg
 M	2027-02-28	NNNNNNNPPPPPPNNNNNNNNNNN
 S	2027-02-28	0	1929	sylvester_slazlo.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:notte|nu:1
-S	2027-02-28	28	1930	marvin_guarda_terra_spazio.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:notte
+S	2027-02-28	28	1930	sylvester_slazlo.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:notte|nu:1
 S	2027-02-28	115	1931	night_castel_pumpernickel.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:notte
 S	2027-02-28	202	1932	coyote_sagoma_salto_luna.jpeg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:notte
 S	2027-02-28	289	1933	bugs_daffy_bar_notte.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:notte
@@ -684,7 +684,7 @@ S	2027-02-28	1270	1271	sylvester_tweety_forbici_filo_luna.jpg	dusk +2m|22:00|ser
 S	2027-02-28	1320	847	bugs_porky_tamburo_thatsallfolks.jpg	21:00|23:00|spettacolo,svago|alba,crepuscolo,mattino,pomeriggio,pranzo,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso
 S	2027-02-28	1380	1934	superhero.png	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:notte
 H	2027-02-28	0	sylvester_slazlo.jpg
-H	2027-02-28	1	marvin_guarda_terra_spazio.jpg
+H	2027-02-28	1	sylvester_slazlo.jpg
 H	2027-02-28	2	night_castel_pumpernickel.jpg
 H	2027-02-28	3	night_castel_pumpernickel.jpg
 H	2027-02-28	4	coyote_sagoma_salto_luna.jpeg
@@ -717,7 +717,7 @@ S	2027-03-01	372	424	Looney Tunes Sports/daffy_taz_rafting_xtreme.jpeg	dawn -20m
 S	2027-03-01	422	848	coyote_travestito_pecora_gregge.jpg	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:asciutto
 S	2027-03-01	482	849	subway.jpg	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:asciutto
 S	2027-03-01	540	849	journal_forecast_rainy.jpg	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:alba|nu:1
-S	2027-03-01	542	1883	journal_forecast_rainy.jpg	sunrise +2h|13:00|lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-03-01	542	1883	Daffy and Porky/scala_buia_guardiano_zombie.jpg	sunrise +2h|13:00|lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:mattino|nu:1
 S	2027-03-01	602	1884	journal_forecast_rainy.jpg	sunrise +2h|13:00|lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:mattino|nu:1
 S	2027-03-01	661	1885	bugs_daffy_scrivania_ufficio.jpg	sunrise +2h|13:00|lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:mattino
 S	2027-03-01	721	1886	Looney Tunes Sports/pepè_scii_inverno.png	sunrise +2h|13:00|lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,natale,pasqua,sanValentino|s:Inverno/Primavera|m:nuvoloso|mo:mattino
@@ -745,7 +745,7 @@ H	2027-03-01	6	winter_house_porky.jpg
 H	2027-03-01	7	Looney Tunes Sports/daffy_taz_rafting_xtreme.jpeg
 H	2027-03-01	8	coyote_travestito_pecora_gregge.jpg
 H	2027-03-01	9	journal_forecast_rainy.jpg
-H	2027-03-01	10	journal_forecast_rainy.jpg
+H	2027-03-01	10	Daffy and Porky/scala_buia_guardiano_zombie.jpg
 H	2027-03-01	11	journal_forecast_rainy.jpg
 H	2027-03-01	12	bugs_daffy_scrivania_ufficio.jpg
 H	2027-03-01	13	sylvester_lunch_succotash.png
@@ -1119,10 +1119,10 @@ S	2027-03-09	358	432	daffy_season_dream.jpg	dawn -20m|sunrise|crepuscolo|smart,w
 S	2027-03-09	408	864	Daffy and Porky/chrome/daffy_leva_gomme_super_stretchy_hd.png	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
 S	2027-03-09	468	865	Daffy and Porky/porky_daffy_colazione_cucina.jpg	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
 S	2027-03-09	528	1918	looney-tunes-art-opening.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
-S	2027-03-09	540	1918	journal_forecast_rainy.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
-S	2027-03-09	579	1919	journal_forecast_rainy.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
-S	2027-03-09	629	1920	journal_forecast_rainy.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
-S	2027-03-09	680	1921	journal_forecast_rainy.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-03-09	540	1918	daffy_cloud_rain_desert.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-03-09	579	1919	Daffy and Porky/scala_buia_guardiano_zombie.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-03-09	629	1920	daffy_cloudy_art_doodle.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-03-09	680	1921	bad_wolf_blow.png	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
 S	2027-03-09	730	1922	bugs_daffy_scrivania_ufficio.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino
 S	2027-03-09	780	432	daffy_porky_picnic.jpg	13:00|14:00|pranzo|smart|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:pranzo
 S	2027-03-09	840	1557	Looney Tunes Sports/wile_roller_xtreme.jpg	14:00|sunset - 58m|lavoro,pomeriggio,sport|alba,crepuscolo,mattino,notte,pranzo,sera,smart,spettacolo,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:pomeriggio
@@ -1146,10 +1146,10 @@ H	2027-03-09	5	foresta_notturna.jpg
 H	2027-03-09	6	daffy_season_dream.jpg
 H	2027-03-09	7	Daffy and Porky/chrome/daffy_leva_gomme_super_stretchy_hd.png
 H	2027-03-09	8	Daffy and Porky/porky_daffy_colazione_cucina.jpg
-H	2027-03-09	9	journal_forecast_rainy.jpg
-H	2027-03-09	10	journal_forecast_rainy.jpg
-H	2027-03-09	11	journal_forecast_rainy.jpg
-H	2027-03-09	12	journal_forecast_rainy.jpg
+H	2027-03-09	9	daffy_cloud_rain_desert.jpg
+H	2027-03-09	10	Daffy and Porky/scala_buia_guardiano_zombie.jpg
+H	2027-03-09	11	daffy_cloudy_art_doodle.jpg
+H	2027-03-09	12	bad_wolf_blow.png
 H	2027-03-09	13	daffy_porky_picnic.jpg
 H	2027-03-09	14	Looney Tunes Sports/wile_roller_xtreme.jpg
 H	2027-03-09	15	Looney Tunes Sports/football_americano_mischia_bugs_foghorn.jpg
@@ -1515,9 +1515,9 @@ S	2027-03-17	343	440	sylvester_tweety_nido.jpg	dawn -20m|sunrise|crepuscolo|smar
 S	2027-03-17	393	880	coyote_travestito_pecora_gregge.jpg	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
 S	2027-03-17	453	881	Foghorn_Barnyard_Henery.jpg	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
 S	2027-03-17	513	1958	mosaico_personaggi_1.jpg	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
-S	2027-03-17	540	1958	journal_forecast_rainy.jpg	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
-S	2027-03-17	567	1959	journal_forecast_rainy.jpg	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
-S	2027-03-17	620	1960	journal_forecast_rainy.jpg	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-03-17	540	1958	Daffy and Porky/porky_daffy_ballo_palco_art_deco.jpg	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-03-17	567	1959	Daffy and Porky/scala_buia_guardiano_zombie.jpg	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-03-17	620	1960	bad_wolf_blow.png	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
 S	2027-03-17	674	1961	Daffy and Porky/chrome/daffy_leva_gomme_super_stretchy_hd.png	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino
 S	2027-03-17	727	1962	Mosaico 3.jpg	sunrise +2h|13:00|jolly,lavoro,mattino,smart|alba,crepuscolo,notte,pomeriggio,pranzo,sera,svago,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino
 S	2027-03-17	780	440	bugs_elmer_birthday_dynamite.jpg	13:00|14:00|pranzo||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:pranzo
@@ -1542,9 +1542,9 @@ H	2027-03-17	5	space_opera.png
 H	2027-03-17	6	sylvester_tweety_nido.jpg
 H	2027-03-17	7	coyote_travestito_pecora_gregge.jpg
 H	2027-03-17	8	Foghorn_Barnyard_Henery.jpg
-H	2027-03-17	9	journal_forecast_rainy.jpg
-H	2027-03-17	10	journal_forecast_rainy.jpg
-H	2027-03-17	11	journal_forecast_rainy.jpg
+H	2027-03-17	9	Daffy and Porky/porky_daffy_ballo_palco_art_deco.jpg
+H	2027-03-17	10	Daffy and Porky/scala_buia_guardiano_zombie.jpg
+H	2027-03-17	11	bad_wolf_blow.png
 H	2027-03-17	12	Daffy and Porky/chrome/daffy_leva_gomme_super_stretchy_hd.png
 H	2027-03-17	13	bugs_elmer_birthday_dynamite.jpg
 H	2027-03-17	14	LOONEY_TUNES_PARATA_HOLLYWOOD.png
@@ -1714,10 +1714,10 @@ S	2027-03-21	335	888	wile_coyote_falling_phone.png	dawn -20m|sunrise +60m|alba|l
 S	2027-03-21	390	889	Daffy and Porky/porky_daffy_colazione_cucina.jpg	dawn -20m|sunrise +60m|alba|lavoro|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
 S	2027-03-21	445	1090	Daffy_duck_moments_sea.jpg	sunrise +60m|10:00|mattino,svago|crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
 S	2027-03-21	497	1091	daffy_bugs_running_prairie.jpg	sunrise +60m|10:00|mattino,svago|crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
-S	2027-03-21	540	1091	daffy_cloud_rain_desert.jpg	sunrise +60m|10:00|mattino,svago|crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-03-21	540	1091	daffy_cloudy_art_doodle.jpg	sunrise +60m|10:00|mattino,svago|crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
 S	2027-03-21	549	1092	daffy_cloud_rain_desert.jpg	sunrise +60m|10:00|mattino,svago|crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
 S	2027-03-21	600	1332	daffy_paperclip.jpg	10:00|13:00|jolly,mattino,sport,svago,weekend|alba,crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino
-S	2027-03-21	660	1333	Daffy and Porky/daffy_bugs_hole_filled_water.png	10:00|13:00|jolly,mattino,sport,svago,weekend|alba,crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-03-21	660	1333	daffy_cloud_rain_desert.jpg	10:00|13:00|jolly,mattino,sport,svago,weekend|alba,crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
 S	2027-03-21	720	1334	Silvestro_balzo.png	10:00|13:00|jolly,mattino,sport,svago,weekend|alba,crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino
 S	2027-03-21	780	654	sylvester_tweety_gabbia_anonymous.png	13:00|noon+2h|pranzo|lavoro|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:pranzo
 S	2027-03-21	870	1350	LOONEY_TUNES_PARATA_HOLLYWOOD.png	noon +2h|sunset - 58m|pomeriggio,pranzo,sport,svago,weekend|alba,crepuscolo,lavoro,mattino,notte,sera,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:pomeriggio,pranzo
@@ -1740,9 +1740,9 @@ H	2027-03-21	5	palafitta_bidoni_notte.jpg
 H	2027-03-21	6	wile_coyote_falling_phone.png
 H	2027-03-21	7	Daffy and Porky/porky_daffy_colazione_cucina.jpg
 H	2027-03-21	8	Daffy_duck_moments_sea.jpg
-H	2027-03-21	9	daffy_cloud_rain_desert.jpg
+H	2027-03-21	9	daffy_cloudy_art_doodle.jpg
 H	2027-03-21	10	daffy_paperclip.jpg
-H	2027-03-21	11	Daffy and Porky/daffy_bugs_hole_filled_water.png
+H	2027-03-21	11	daffy_cloud_rain_desert.jpg
 H	2027-03-21	12	Silvestro_balzo.png
 H	2027-03-21	13	sylvester_tweety_gabbia_anonymous.png
 H	2027-03-21	14	sylvester_tweety_gabbia_anonymous.png
@@ -1917,7 +1917,7 @@ S	2027-03-25	540	1344	bugs_car_mini_Umbrella.png	09:00|12:00|pasqua|crepuscolo,n
 S	2027-03-25	600	1345	daffy_cloud_rain_desert.jpg	09:00|12:00|pasqua|crepuscolo,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:pioggia|mo:mattino
 S	2027-03-25	660	1346	Daffy and Porky/daffy_bugs_hole_filled_water.png	09:00|12:00|pasqua|crepuscolo,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:pioggia|mo:mattino
 S	2027-03-25	720	2501	willy_rainy_cloud.jpg	12:00|sunset-58|pasqua,pomeriggio||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:pioggia|mo:pomeriggio
-S	2027-03-25	780	2501	amusement_park.png	12:00|sunset-58|pasqua,pomeriggio||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:nuvoloso|mo:pomeriggio|nu:1
+S	2027-03-25	780	2501	paris.png	12:00|sunset-58|pasqua,pomeriggio||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:nuvoloso|mo:pomeriggio|nu:1
 S	2027-03-25	789	2502	Daffy and Porky/Porky_daffy_storm_that'all_folks.png	12:00|sunset-58|pasqua,pomeriggio||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:nuvoloso|mo:pomeriggio|nu:1
 S	2027-03-25	858	2503	amusement_park.png	12:00|sunset-58|pasqua,pomeriggio||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:nuvoloso|mo:pomeriggio
 S	2027-03-25	926	2504	easter_bunny.jpg	12:00|sunset-58|pasqua,pomeriggio||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:nuvoloso|mo:pomeriggio
@@ -1944,7 +1944,7 @@ H	2027-03-25	9	bugs_car_mini_Umbrella.png
 H	2027-03-25	10	daffy_cloud_rain_desert.jpg
 H	2027-03-25	11	Daffy and Porky/daffy_bugs_hole_filled_water.png
 H	2027-03-25	12	willy_rainy_cloud.jpg
-H	2027-03-25	13	amusement_park.png
+H	2027-03-25	13	paris.png
 H	2027-03-25	14	Daffy and Porky/Porky_daffy_storm_that'all_folks.png
 H	2027-03-25	15	amusement_park.png
 H	2027-03-25	16	easter_bunny.jpg
@@ -1957,7 +1957,7 @@ H	2027-03-25	22	Daffy and Porky/porky_daffy_petunia_fuga_gomma_aliena.jpg
 H	2027-03-25	23	daffy_elmer_sleep.jpg
 M	2027-03-26	NNNNNNNNNNNNNNNNNNNNNNNN
 S	2027-03-26	0	2039	sylvester_slazlo.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|v:horror|s:Primavera|m:nuvoloso|mo:notte|nu:1
-S	2027-03-26	37	2040	Daffy and Porky/porky_daffy_finale_cerchi_rossi.png	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|v:horror|s:Primavera|m:nuvoloso|mo:notte
+S	2027-03-26	37	2040	sylvester_slazlo.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|v:horror|s:Primavera|m:nuvoloso|mo:notte|nu:1
 S	2027-03-26	134	2041	thats_all_folks_testo_rosso.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|v:horror|s:Primavera|m:nuvoloso|mo:notte
 S	2027-03-26	231	2042	marv_space_extended2.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|v:horror|s:Primavera|m:nuvoloso|mo:notte
 S	2027-03-26	326	449	Looney Tunes Sports/bugs_bunny_baseball.jpg	dawn -20m|sunrise|crepuscolo|smart,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|v:horror|s:Primavera|m:nuvoloso|mo:crepuscolo
@@ -1981,8 +1981,8 @@ S	2027-03-26	1260	898	porky_bar_apple_juice.jpg	21:00|23:00|sera,weekend|alba,ma
 S	2027-03-26	1320	899	Looney Tunes Sports/team_usa_personaggi_divise.jpg	21:00|23:00|sera,weekend|alba,mattino,pomeriggio,pranzo,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|v:horror|s:Primavera|m:nuvoloso|mo:sera
 S	2027-03-26	1380	2043	sylvester_sings_moonlight.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|v:horror|s:Primavera|m:nuvoloso|mo:notte
 H	2027-03-26	0	sylvester_slazlo.jpg
-H	2027-03-26	1	Daffy and Porky/porky_daffy_finale_cerchi_rossi.png
-H	2027-03-26	2	Daffy and Porky/porky_daffy_finale_cerchi_rossi.png
+H	2027-03-26	1	sylvester_slazlo.jpg
+H	2027-03-26	2	sylvester_slazlo.jpg
 H	2027-03-26	3	thats_all_folks_testo_rosso.jpg
 H	2027-03-26	4	marv_space_extended2.jpg
 H	2027-03-26	5	marv_space_extended2.jpg
@@ -2108,9 +2108,9 @@ S	2027-03-29	294	2055	porky_tamburo.jpg	23:00|dawn -20m|notte||all|se:autunno,ca
 S	2027-03-29	380	452	sylvester_tweety_nido.jpg	dawn -20m|sunrise|crepuscolo|smart,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|v:horror|s:Primavera|m:asciutto
 S	2027-03-29	430	904	Daffy and Porky/pedicure.jpg	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|v:horror|s:Primavera|m:asciutto
 S	2027-03-29	490	905	Daffy and Porky/porky_daffy_colazione_cucina.jpg	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|v:horror|s:Primavera|m:asciutto
-S	2027-03-29	540	1356	ocean11_tweety_fighting_martial.png	09:00|12:00|pasqua|crepuscolo,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:nuvoloso|mo:alba|nu:1
-S	2027-03-29	550	1356	daffy_cloud_rain_desert.jpg	09:00|12:00|pasqua|crepuscolo,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:nuvoloso|mo:mattino|nu:1
-S	2027-03-29	600	1357	daffy_cloud_rain_desert.jpg	09:00|12:00|pasqua|crepuscolo,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:nuvoloso|mo:mattino|nu:1
+S	2027-03-29	540	1356	Bugs_Bunny_Ocean_BookOfRhymes.jpeg	09:00|12:00|pasqua|crepuscolo,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:nuvoloso|mo:alba|nu:1
+S	2027-03-29	550	1356	journal_forecast_rainy.jpg	09:00|12:00|pasqua|crepuscolo,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:nuvoloso|mo:mattino|nu:1
+S	2027-03-29	600	1357	daffy_cloudy_art_doodle.jpg	09:00|12:00|pasqua|crepuscolo,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:nuvoloso|mo:mattino|nu:1
 S	2027-03-29	660	1358	daffy_cloud_rain_desert.jpg	09:00|12:00|pasqua|crepuscolo,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:nuvoloso|mo:mattino
 S	2027-03-29	720	2522	Daffy and Porky/Porky_daffy_storm_that'all_folks.png	12:00|sunset-58|pasqua,pomeriggio||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:nuvoloso|mo:pomeriggio
 S	2027-03-29	788	2523	daffy_porky_lay_egg.jpg	12:00|sunset-58|pasqua,pomeriggio||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,sanValentino|v:horror|s:Pasqua|m:nuvoloso|mo:pomeriggio
@@ -2134,8 +2134,8 @@ H	2027-03-29	5	porky_tamburo.jpg
 H	2027-03-29	6	porky_tamburo.jpg
 H	2027-03-29	7	sylvester_tweety_nido.jpg
 H	2027-03-29	8	Daffy and Porky/pedicure.jpg
-H	2027-03-29	9	ocean11_tweety_fighting_martial.png
-H	2027-03-29	10	daffy_cloud_rain_desert.jpg
+H	2027-03-29	9	Bugs_Bunny_Ocean_BookOfRhymes.jpeg
+H	2027-03-29	10	daffy_cloudy_art_doodle.jpg
 H	2027-03-29	11	daffy_cloud_rain_desert.jpg
 H	2027-03-29	12	Daffy and Porky/Porky_daffy_storm_that'all_folks.png
 H	2027-03-29	13	Daffy and Porky/Porky_daffy_storm_that'all_folks.png
@@ -2307,11 +2307,11 @@ S	2027-04-02	288	2075	duck_tracy_gangster.jpg	23:00|dawn -20m|notte||all|se:autu
 S	2027-04-02	372	456	Looney Tunes Sports/baseball_stadio_battitore_bugs_taz.jpg	dawn -20m|sunrise|crepuscolo|smart,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
 S	2027-04-02	422	912	Looney Tunes Sports/daffy_shark_scooter.jpg	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
 S	2027-04-02	482	913	Daffy and Porky/chrome/daffy_leva_gomme_super_stretchy_hd.png	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
-S	2027-04-02	540	913	journal_forecast_rainy.jpg	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:alba|nu:1
-S	2027-04-02	542	1121	daffy_cloud_rain_desert.jpg	sunrise +2h|11:00|jolly,sport|crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
-S	2027-04-02	601	1122	daffy_cloud_rain_desert.jpg	sunrise +2h|11:00|jolly,sport|crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
-S	2027-04-02	660	2034	daffy_cloud_rain_desert.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
-S	2027-04-02	661	2035	daffy_cloud_rain_desert.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-04-02	540	913	ocean11_tweety_fighting_martial.png	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:alba|nu:1
+S	2027-04-02	542	1121	daffy_cloudy_art_doodle.jpg	sunrise +2h|11:00|jolly,sport|crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-04-02	601	1122	journal_forecast_rainy.jpg	sunrise +2h|11:00|jolly,sport|crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-04-02	660	2034	Daffy and Porky/porky_daffy_ballo_palco_art_deco.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-04-02	661	2035	Daffy and Porky/daffy_bugs_hole_filled_water.png	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
 S	2027-04-02	721	2036	daffy_shoot_faces.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino
 S	2027-04-02	780	456	daffyduck_auto_forchetta.png	13:00|14:00|pranzo|smart|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:pranzo
 S	2027-04-02	840	1634	Looney Tunes Sports/daffy_goal_calcio_stivali_acme.jpg	14:00|sunset - 58m|lavoro,pomeriggio,sport|alba,crepuscolo,mattino,notte,pranzo,sera,smart,spettacolo,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:pomeriggio
@@ -2335,10 +2335,10 @@ H	2027-04-02	5	duck_tracy_gangster.jpg
 H	2027-04-02	6	duck_tracy_gangster.jpg
 H	2027-04-02	7	Looney Tunes Sports/baseball_stadio_battitore_bugs_taz.jpg
 H	2027-04-02	8	Looney Tunes Sports/daffy_shark_scooter.jpg
-H	2027-04-02	9	journal_forecast_rainy.jpg
-H	2027-04-02	10	daffy_cloud_rain_desert.jpg
-H	2027-04-02	11	daffy_cloud_rain_desert.jpg
-H	2027-04-02	12	daffy_cloud_rain_desert.jpg
+H	2027-04-02	9	ocean11_tweety_fighting_martial.png
+H	2027-04-02	10	daffy_cloudy_art_doodle.jpg
+H	2027-04-02	11	Daffy and Porky/porky_daffy_ballo_palco_art_deco.jpg
+H	2027-04-02	12	Daffy and Porky/daffy_bugs_hole_filled_water.png
 H	2027-04-02	13	daffyduck_auto_forchetta.png
 H	2027-04-02	14	Looney Tunes Sports/daffy_goal_calcio_stivali_acme.jpg
 H	2027-04-02	15	Looney Tunes Sports/wile_roller_xtreme.jpg
@@ -2506,8 +2506,8 @@ S	2027-04-06	415	920	coyote_travestito_pecora_gregge.jpg	sunrise|sunrise +2h|alb
 S	2027-04-06	475	921	wile_coyote_falling_phone.png	sunrise|sunrise +2h|alba,lavoro|crepuscolo,mattino,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
 S	2027-04-06	535	2049	daffy_original_sketch.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
 S	2027-04-06	540	2049	journal_forecast_rainy.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
-S	2027-04-06	597	2050	journal_forecast_rainy.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
-S	2027-04-06	658	2051	journal_forecast_rainy.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-04-06	597	2050	Daffy and Porky/daffy_bugs_hole_filled_water.png	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-04-06	658	2051	Daffy and Porky/scala_buia_guardiano_zombie.jpg	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
 S	2027-04-06	719	2052	duck_amuck.png	sunrise + 2h|13:00|jolly,lavoro,mattino|alba,crepuscolo,notte,pomeriggio,pranzo,sera,smart,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino
 S	2027-04-06	780	460	daffy_porky_picnic.jpg	13:00|14:00|pranzo|smart|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:pranzo
 S	2027-04-06	840	1654	robin_hood_friar_porky.jpeg	14:00|sunset - 58m|lavoro,pomeriggio,sport|alba,crepuscolo,mattino,notte,pranzo,sera,smart,spettacolo,svago,tramonto,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:pomeriggio
@@ -2532,8 +2532,8 @@ H	2027-04-06	6	duck_tracy.jpg
 H	2027-04-06	7	coyote_travestito_pecora_gregge.jpg
 H	2027-04-06	8	wile_coyote_falling_phone.png
 H	2027-04-06	9	journal_forecast_rainy.jpg
-H	2027-04-06	10	journal_forecast_rainy.jpg
-H	2027-04-06	11	journal_forecast_rainy.jpg
+H	2027-04-06	10	Daffy and Porky/daffy_bugs_hole_filled_water.png
+H	2027-04-06	11	Daffy and Porky/scala_buia_guardiano_zombie.jpg
 H	2027-04-06	12	duck_amuck.png
 H	2027-04-06	13	daffy_porky_picnic.jpg
 H	2027-04-06	14	robin_hood_friar_porky.jpeg
@@ -2597,8 +2597,8 @@ H	2027-04-07	22	daffy_bugs_rainy_singing.jpg
 H	2027-04-07	23	tweety_rain_window.jpeg
 M	2027-04-08	NNNNNNNNNNNNNNNNNNNNNNNN
 S	2027-04-08	0	2101	sylvester_slazlo.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:notte|nu:1
-S	2027-04-08	25	2102	daffy_elmer_sleep.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:notte
-S	2027-04-08	110	2103	tweety_house_night_moon.png	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:notte
+S	2027-04-08	25	2102	sylvester_slazlo.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:notte|nu:1
+S	2027-04-08	110	2103	sylvester_slazlo.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:notte|nu:1
 S	2027-04-08	194	2104	porky_tamburo.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:notte
 S	2027-04-08	279	2105	moon_binary_unruly_hare.png	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:notte
 S	2027-04-08	361	462	psicologo_beep_beep.png	dawn -20m|sunrise|crepuscolo|smart,weekend|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:crepuscolo
@@ -2619,11 +2619,11 @@ S	2027-04-08	1201	462	whats_opera_doc.jpg	sunset +2 m|dusk +2m|crepuscolo||all|s
 S	2027-04-08	1232	2316	Daffy and Porky/porky_daffy_petunia_tavola_calda.png	dusk +2m|21:00|sera,svago|alba,crepuscolo,mattino,notte,pomeriggio,pranzo,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:sera
 S	2027-04-08	1260	924	melblanc.png	21:00|23:00|spettacolo,svago|alba,crepuscolo,mattino,pomeriggio,pranzo,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso
 S	2027-04-08	1320	925	thats_all_folks_personaggi_palco.jpg	21:00|23:00|spettacolo,svago|alba,crepuscolo,mattino,pomeriggio,pranzo,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso
-S	2027-04-08	1380	2106	palafitta_bidoni_notte.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:notte
+S	2027-04-08	1380	2106	daffy_elmer_sleep.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:notte
 H	2027-04-08	0	sylvester_slazlo.jpg
-H	2027-04-08	1	daffy_elmer_sleep.jpg
-H	2027-04-08	2	tweety_house_night_moon.png
-H	2027-04-08	3	tweety_house_night_moon.png
+H	2027-04-08	1	sylvester_slazlo.jpg
+H	2027-04-08	2	sylvester_slazlo.jpg
+H	2027-04-08	3	sylvester_slazlo.jpg
 H	2027-04-08	4	porky_tamburo.jpg
 H	2027-04-08	5	moon_binary_unruly_hare.png
 H	2027-04-08	6	moon_binary_unruly_hare.png
@@ -2643,7 +2643,7 @@ H	2027-04-08	19	daffy_bugs_faccia_a_faccia.jpg
 H	2027-04-08	20	Daffy and Porky/Porky_daffy_storm_that'all_folks.png
 H	2027-04-08	21	melblanc.png
 H	2027-04-08	22	thats_all_folks_personaggi_palco.jpg
-H	2027-04-08	23	palafitta_bidoni_notte.jpg
+H	2027-04-08	23	daffy_elmer_sleep.jpg
 M	2027-04-09	AAAAAAAPPPPPPAAAAAAAAAAA
 S	2027-04-09	0	2106	bugs_porky_tamburo_thatsallfolks.jpg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
 S	2027-04-09	25	2107	dogs_poker.jpeg	23:00|dawn -20m|notte||all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
@@ -2704,7 +2704,7 @@ S	2027-04-10	357	928	Looney Tunes Sports/daffy_bugs_golf_esplosivo_bunker.jpg	da
 S	2027-04-10	412	929	Daffy and Porky/porky_daffy_lavano_denti.jpg	dawn -20m|sunrise +60m|alba|lavoro|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
 S	2027-04-10	467	1137	Daffy_duck_moments_sea.jpg	sunrise +60m|10:00|mattino,svago|crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
 S	2027-04-10	534	1138	daffy_bugs_running_prairie.jpg	sunrise +60m|10:00|mattino,svago|crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:asciutto
-S	2027-04-10	540	1138	daffy_cloud_rain_desert.jpg	sunrise +60m|10:00|mattino,svago|crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
+S	2027-04-10	540	1138	daffy_cloudy_art_doodle.jpg	sunrise +60m|10:00|mattino,svago|crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|all|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
 S	2027-04-10	600	1392	daffy_shoot_faces.jpg	10:00|13:00|jolly,mattino,sport,svago,weekend|alba,crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino
 S	2027-04-10	660	1393	daffy_cloud_rain_desert.jpg	10:00|13:00|jolly,mattino,sport,svago,weekend|alba,crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino|nu:1
 S	2027-04-10	720	1394	Looney Tunes Sports/daffy_goal_calcio_stivali_acme.jpg	10:00|13:00|jolly,mattino,sport,svago,weekend|alba,crepuscolo,lavoro,notte,pomeriggio,pranzo,sera,tramonto|any|se:autunno,capodanno,compleanno,estate,horror,inverno,natale,pasqua,sanValentino|s:Primavera|m:nuvoloso|mo:mattino
@@ -2730,7 +2730,7 @@ H	2027-04-10	5	space_opera.png
 H	2027-04-10	6	Looney Tunes Sports/daffy_bugs_golf_esplosivo_bunker.jpg
 H	2027-04-10	7	Daffy and Porky/porky_daffy_lavano_denti.jpg
 H	2027-04-10	8	Daffy_duck_moments_sea.jpg
-H	2027-04-10	9	daffy_cloud_rain_desert.jpg
+H	2027-04-10	9	daffy_cloudy_art_doodle.jpg
 H	2027-04-10	10	daffy_shoot_faces.jpg
 H	2027-04-10	11	daffy_cloud_rain_desert.jpg
 H	2027-04-10	12	Looney Tunes Sports/daffy_goal_calcio_stivali_acme.jpg

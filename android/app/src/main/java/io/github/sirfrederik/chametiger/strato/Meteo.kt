@@ -395,13 +395,13 @@ class Meteo(
         return dati!!.ore.filterKeys { it.startsWith(oggi) && it < ora }
     }
 
-    /** Lo stato del meteo in una riga, per la schermata. */
+    /** Lo stato del meteo in una riga, per la schermata. La posizione la mostra la schermata a parte. */
     fun descrizione(config: Config, adesso: LocalDateTime): String {
         if (!config.meteoAttivo) return "disattivato nel config: i tag pioggia/temporale contano come gli altri"
         val dati = leggi()
         if (!valide(dati, config, adesso)) return "nessun dato valido: si sceglie come col sereno"
         val quando = LocalDateTime.ofInstant(Instant.ofEpochMilli((dati!!.scaricato * 1000).toLong()), ZONA)
-        return "${riassunto(dati.ore, adesso)} (${nomeFonte(dati.fonte)} su ${origine(config)}, scaricato alle ${quando.format(HH_MM)})"
+        return "${riassunto(dati.ore, adesso)} (${nomeFonte(dati.fonte)}, scaricato alle ${quando.format(HH_MM)})"
     }
 
     private fun secondi(t: LocalDateTime): Double = t.atZone(ZONA).toInstant().toEpochMilli() / 1000.0
