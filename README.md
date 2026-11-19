@@ -284,7 +284,7 @@ Da quel giorno l'immagine entra in fondo al giro in corso, e le altre carte non 
 
 Dentro la stessa giornata non ci sono ripetizioni: se la carta che toccherebbe è già uscita oggi, si prende la prima non ancora vista, sempre partendo da metà mazzo. Vale anche fra regole diverse — un'immagine vista stamattina non torna nel pomeriggio.
 
-Col meteo attivo, "già uscita" si conta su una giornata che ha da mezzanotte il tempo di quest'ora (tutta asciutta per una finestra asciutta, tutta di pioggia per una di pioggia), non sul tempo che ha fatto davvero nelle ore passate: quello ogni dispositivo lo ricorda a modo suo, e un PC acceso a mezzogiorno sceglieva un'immagine diversa dal telefono acceso dall'alba. Dentro lo stesso tempo non ci sono ripetizioni; può tornare un'immagine solo a cavallo di un cambio di tempo.
+Col meteo attivo, "già uscita" si conta su una giornata che ha da mezzanotte il tempo di quest'ora (tutta asciutta per una finestra asciutta, tutta di pioggia per una di pioggia), non sul tempo che ha fatto davvero nelle ore passate: quello ogni dispositivo lo ricorda a modo suo, e un PC acceso a mezzogiorno sceglieva un'immagine diversa dal telefono acceso dall'alba. In più una finestra salta anche le immagini uscite davvero oggi col meteo che il dispositivo conosce, così dopo un cambio di tempo non tornano quelle di prima. Due dispositivi con lo stesso meteo danno sempre la stessa immagine; con un passato diverso possono divergere solo quando la carta di turno era già uscita su uno dei due.
 
 Il calcolo è **deterministico e senza stato**: dipende solo dalla regola, dalla libreria e dalla data. Due PC con la stessa configurazione ottengono la stessa sequenza senza parlarsi, ed è questo che fa funzionare la sincronizzazione multi-PC.
 

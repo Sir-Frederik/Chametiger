@@ -722,7 +722,11 @@ class Motore(
      * ogni dispositivo ne ha un ricordo suo (chi era spento non ce l'ha). Le
      * immagini gia' uscite prima di una finestra sono quelle di una giornata
      * di riferimento che ha da mezzanotte il tempo di quest'ora: e' uguale per
-     * tutti, e dentro lo stesso tempo le immagini continuano a non ripetersi.
+     * tutti. In piu' una finestra salta le immagini uscite davvero oggi col
+     * meteo che il dispositivo conosce, perche' dopo un cambio di tempo non
+     * tornino quelle di prima: con lo stesso meteo due dispositivi danno
+     * sempre la stessa immagine, con un passato diverso possono divergere solo
+     * quando la carta di turno era gia' uscita su uno dei due.
      */
     fun sequenzaGiornaliera(giorno: LocalDate, finoA: Int = 1439): List<Finestra> {
         val oreMeteo = meteoDelGiorno(giorno).orEmpty()
@@ -740,8 +744,11 @@ class Motore(
      * `riferimenti` ogni finestra salta le immagini uscite in quelle prima:
      * cosi' si fanno le giornate di riferimento, con lo stesso tempo a tutte
      * le ore. Con `riferimenti` una finestra salta le immagini che la giornata
-     * del suo stato ha dato alle finestre gia' finite, e quello che esce qui
-     * non conta per le finestre dopo.
+     * del suo stato ha dato alle finestre gia' finite, e anche quelle uscite
+     * davvero, qui, nelle finestre prima: senza, un'immagine mostrata col sole
+     * tornava nella finestra di pioggia dopo (atletica_ostacoli il 14/11). Se
+     * le libere finiscono si rinuncia prima a quelle uscite qui, poi a tutte.
+     * Come _sequenza in app.py.
      */
     private fun sequenza(
         giorno: LocalDate,
@@ -754,6 +761,10 @@ class Motore(
 
         val pools = HashMap<String, List<String>>() // una volta per firma, non per finestra
         var usate: MutableSet<String> = HashSet()
+        // Con `riferimenti`: le immagini date qui alle finestre gia' assegnate,
+        // e quelle che la giornata del proprio stato ha dato alle finestre finite
+        val vere = HashSet<String>()
+        var proprie: Set<String> = emptySet()
         // Per stato: le finestre della sua giornata di riferimento cominciate
         // fin qui, e le immagini di quelle gia' finite
         val iniziate = HashMap<StatoMeteo, Int>()
@@ -779,7 +790,8 @@ class Motore(
                     }
                     iniziate[s] = i
                 }
-                usate = uscite[stato] ?: HashSet()
+                proprie = uscite[stato] ?: emptySet()
+                usate = (proprie + vere).toMutableSet()
             }
             val percento = prioritaNuvole(oreMeteo, minuto / 60)
             val coprono = regole.withIndex().filter { (_, r) -> copre(r.start, r.end, minuto) }
@@ -822,8 +834,12 @@ class Motore(
             // giorni misti le "uscite" sono quelle della giornata di riferimento,
             // che le nuvole le ha date nelle sue prime ore, non in queste.
             val ricerca = ricercaFinestra(giorno, regola, firma, pool, ordinale)
-            val scelta = if (regola.nuvole) ricerca[0] else ricerca.firstOrNull { it !in usate } ?: ricerca[0]
-            if (riferimenti == null) usate += scelta
+            val scelta = if (regola.nuvole) {
+                ricerca[0]
+            } else {
+                ricerca.firstOrNull { it !in usate } ?: ricerca.firstOrNull { it !in proprie } ?: ricerca[0]
+            }
+            if (riferimenti == null) usate += scelta else vere += scelta
 
             sequenza += Finestra(minuto, regola, rdg.origine, firma, ordinale, scelta, pool.size, giorno)
         }

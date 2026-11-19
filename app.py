@@ -1515,11 +1515,16 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
     prima di una finestra non sono quelle uscite davvero col tempo che ha
     fatto, ma quelle di una giornata di riferimento che ha da mezzanotte il
     tempo di quest'ora: tutta asciutta per una finestra asciutta, tutta di
-    pioggia per una di pioggia. E' uguale per tutti, e dentro lo stesso tempo
-    le immagini continuano a non ripetersi; puo' tornarne una solo a cavallo
-    di un cambio di tempo. Prima un PC acceso a mezzogiorno rifaceva la mattina
-    asciutta, il telefono l'aveva vissuta con la pioggia, e alle 12 mostravano
-    due immagini diverse.
+    pioggia per una di pioggia. E' uguale per tutti. Prima un PC acceso a
+    mezzogiorno rifaceva la mattina asciutta, il telefono l'aveva vissuta con
+    la pioggia, e alle 12 mostravano due immagini diverse.
+
+    Da sola pero' lasciava tornare, dopo un cambio di tempo, le immagini uscite
+    col tempo di prima. Allora una finestra salta anche le immagini uscite
+    davvero oggi col meteo che il dispositivo conosce (vedi _sequenza). Due
+    dispositivi con lo stesso meteo danno sempre la stessa immagine; con un
+    passato diverso possono divergere, ma solo quando la carta di turno era
+    gia' uscita su uno dei due.
 
     La usa sia lo scheduler (che ne vuole solo l'ultima) sia l'anteprima della
     GUI (che le vuole tutte): una passata sola invece di una per fascia.
@@ -1552,7 +1557,12 @@ def _sequenza(
     cosi' si fanno le giornate di riferimento, con lo stesso tempo a tutte le
     ore. Con `riferimenti` (stato -> la sua giornata) una finestra salta le
     immagini che la giornata del suo stato ha dato alle finestre gia' finite,
-    e quello che esce qui non conta per le finestre dopo.
+    e anche quelle uscite davvero, qui, nelle finestre prima. Senza queste,
+    un'immagine mostrata col sole tornava nella finestra di pioggia o di
+    nuvoloso dopo (atletica_ostacoli il 14/11): la giornata di pioggia non
+    l'aveva mai data. Se le immagini libere finiscono, si rinuncia prima a
+    quelle uscite qui, poi a tutte: la giornata del proprio stato decide, ed
+    e' la stessa su ogni dispositivo.
     """
     regole = _regole_del_giorno(config, giorno)
     if not regole:
@@ -1569,6 +1579,10 @@ def _sequenza(
     pools: dict[str, list[str]] = {}  # una volta per regola, non per finestra
     universi = None  # i mazzi delle fasce, alla prima finestra
     usate: set[str] = set()
+    # Con `riferimenti`: le immagini date qui alle finestre gia' assegnate, e
+    # quelle che la giornata del proprio stato ha dato alle finestre finite
+    vere: set[str] = set()
+    proprie: set[str] = set()
     sequenza: list[dict] = []
     ultima_finestra = None
     # La priorita' delle nuvole: se la finestra pesca solo fra le immagini di
@@ -1591,7 +1605,8 @@ def _sequenza(
                         uscite[s].add(giornata[i - 1]["image"])
                     i += 1
                 iniziate[s] = i
-            usate = uscite.get(stato, set())
+            proprie = uscite.get(stato, set())
+            usate = proprie | vere
 
         # Prima regola per priorita' che copra il minuto E abbia immagini: lo
         # stesso criterio di resolve_random, cosi' l'anteprima e lo scheduler non
@@ -1660,9 +1675,13 @@ def _sequenza(
         if rule.get("nuvole"):
             scelta = ricerca[0]
         else:
-            scelta = next((c for c in ricerca if c not in usate), ricerca[0])
+            scelta = next((c for c in ricerca if c not in usate), None) or next(
+                (c for c in ricerca if c not in proprie), ricerca[0]
+            )
         if riferimenti is None:
             usate.add(scelta)
+        else:
+            vere.add(scelta)
 
         sequenza.append(
             {
