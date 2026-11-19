@@ -723,10 +723,10 @@ def _estratta_nuvole(rule: dict, ordinale: int, percento: int) -> bool:
     return tiro % 100 < percento
 
 
-def _ha_nuvole(config: dict, pool: list[str], usate: set = frozenset()) -> bool:
-    """Se nel pool c'e' un'immagine di nuvole non ancora uscita oggi."""
+def _ha_nuvole(config: dict, pool: list[str]) -> bool:
+    """Se nel pool c'e' un'immagine di nuvole."""
     library = config.get("image_library", {})
-    return any(_TAG_NUVOLE in (library.get(i) or []) and i not in usate for i in pool)
+    return any(_TAG_NUVOLE in (library.get(i) or []) for i in pool)
 
 
 def _momenti_meteo(regole: list[dict], pos: int) -> list:
@@ -1380,7 +1380,28 @@ def _ricerca_finestra(
     GRUPPI). Poi le altre, dal mazzo intero, cominciando dai gruppi piu' lontani
     da oggi. In fondo, ordinate per nome, le immagini con una data di ingresso
     futura.
+
+    Con la priorita' delle nuvole (`nuvole`) il pool e' di poche immagini in
+    un mazzo di decine, e di solito una sola sta nel gruppo del giorno: sarebbe
+    sempre la prima, e nei giorni misti, dove le "gia' uscite" sono quelle
+    della giornata di riferimento, usciva a ogni finestra. Allora il mazzo e'
+    solo quello delle nuvole, col seme della firma e senza gruppi: le finestre
+    di fila prendono carte diverse, e una torna solo a giro finito.
     """
+    rotate = _rotate_of(rule)
+    date_ingresso = _date_ingresso(config)
+
+    if rule.get("nuvole"):
+        ingresso = {
+            c: _finestre_fino_a(rule, date_ingresso[c], rotate, config)
+            for c in pool
+            if c in date_ingresso
+        }
+        mazzo, pos = _giro_di(list(pool), ingresso, sig, ordinale)
+        ordine = _ordine_di_ricerca(mazzo, pos)
+        visti = set(ordine)
+        return ordine + [c for c in pool if c not in visti]
+
     chiave = _chiave_fascia(rule)
     universo = universi.get(chiave, set())
     nel_pool = set(pool)
@@ -1388,9 +1409,6 @@ def _ricerca_finestra(
         seme, carte = chiave, sorted(universo)
     else:
         seme, carte = sig, list(pool)
-
-    rotate = _rotate_of(rule)
-    date_ingresso = _date_ingresso(config)
 
     # Il gruppo e' quello del giorno di calendario, anche per la coda dopo la
     # mezzanotte di una fascia notturna: cosi' tutte le finestre di una
@@ -1603,12 +1621,11 @@ def _sequenza(
                 continue
             if stato == meteo.NUVOLOSO and (percento or solo_nuvole):
                 # Le prime ore nuvolose: la finestra tira, e se le va bene (e
-                # c'e' un'immagine di nuvole non ancora uscita) pesca solo fra
-                # quelle
+                # nel pool c'e' un'immagine di nuvole) pesca solo fra quelle
                 n_finestra = _window_ordinal(base, t, _rotate_of(base), config)
                 if percento and (k, n_finestra) not in solo_nuvole:
                     solo_nuvole[(k, n_finestra)] = _ha_nuvole(
-                        config, pools[sig], usate
+                        config, pools[sig]
                     ) and _estratta_nuvole(base, n_finestra, percento)
                 if solo_nuvole.get((k, n_finestra)):
                     chiave = (k, stato, repr(momenti), True)
@@ -1635,8 +1652,15 @@ def _sequenza(
         if universi is None:
             universi = _universi(config, giorno)
         ricerca = _ricerca_finestra(config, universi, rule, sig, pool, ordinale, giorno)
-        # la prima non ancora uscita oggi; se sono uscite tutte, la carta di turno
-        scelta = next((c for c in ricerca if c not in usate), ricerca[0])
+        # la prima non ancora uscita oggi; se sono uscite tutte, la carta di turno.
+        # Con la priorita' delle nuvole decide solo il loro mazzo (vedi
+        # _ricerca_finestra): nei giorni misti le "uscite" sono quelle della
+        # giornata di riferimento, che le nuvole le ha date nelle sue prime ore,
+        # non in queste, e lasciava libera sempre la stessa.
+        if rule.get("nuvole"):
+            scelta = ricerca[0]
+        else:
+            scelta = next((c for c in ricerca if c not in usate), ricerca[0])
         if riferimenti is None:
             usate.add(scelta)
 

@@ -288,9 +288,9 @@ class Motore(
         return n % 100 < percento
     }
 
-    /** _ha_nuvole: se nel pool c'e' un'immagine di nuvole non ancora uscita oggi. */
-    private fun haNuvole(pool: List<String>, usate: Set<String> = emptySet()): Boolean =
-        pool.any { TAG_NUVOLE in config.libreria[it].orEmpty() && it !in usate }
+    /** _ha_nuvole: se nel pool c'e' un'immagine di nuvole. */
+    private fun haNuvole(pool: List<String>): Boolean =
+        pool.any { TAG_NUVOLE in config.libreria[it].orEmpty() }
 
     /**
      * _momenti_meteo: quando piove, i momenti della fascia (o della prima sotto
@@ -579,8 +579,21 @@ class Motore(
      * altre, dal mazzo intero, cominciando dai gruppi piu' lontani da oggi. In
      * fondo le immagini con un ingresso futuro. `giorno` e' quello della
      * sequenza.
+     *
+     * Con la priorita' delle nuvole il mazzo e' solo quello delle nuvole, col
+     * seme della firma e senza gruppi: nel mazzo della fascia una sola di loro
+     * stava di solito nel gruppo del giorno, e usciva a ogni finestra.
      */
     fun ricercaFinestra(giorno: LocalDate, regola: Regola, firma: String, pool: List<String>, ordinale: Int): List<String> {
+        if (regola.nuvole) {
+            val ingresso = pool.mapNotNull { c ->
+                config.ingressi[c]?.let { c to finestreFinoA(regola, it, regola.rotate) }
+            }.toMap()
+            val (mazzo, pos) = giroDi(pool, ingresso, firma, ordinale)
+            val ordine = ordineDiRicerca(mazzo, pos)
+            val visti = ordine.toSet()
+            return ordine + pool.filter { it !in visti }
+        }
         val chiave = chiaveFascia(regola)
         val universo = universi(giorno)[chiave].orEmpty()
         val (seme, carte) = if (universo.containsAll(pool)) chiave to universo.ordinate() else firma to pool
@@ -782,11 +795,11 @@ class Motore(
                 if (pool.isEmpty()) continue
                 if (stato == StatoMeteo.NUVOLOSO && (percento > 0 || soloNuvole.isNotEmpty())) {
                     // Le prime ore nuvolose: la finestra tira, e se le va bene (e
-                    // c'e' un'immagine di nuvole non ancora uscita) pesca solo fra quelle
+                    // nel pool c'e' un'immagine di nuvole) pesca solo fra quelle
                     val nFinestra = ordinale(rdg.regola, t, rdg.regola.rotate)
                     val chiave = k to nFinestra
                     if (percento > 0 && chiave !in soloNuvole) {
-                        soloNuvole[chiave] = haNuvole(pool, usate) && estrattaNuvole(rdg.regola, nFinestra, percento)
+                        soloNuvole[chiave] = haNuvole(pool) && estrattaNuvole(rdg.regola, nFinestra, percento)
                     }
                     if (soloNuvole[chiave] == true) {
                         regola = conMeteo(rdg.regola, stato, momenti, nuvole = true)
@@ -804,9 +817,12 @@ class Motore(
             if (finestra == ultimaFinestra) continue // stessa finestra del minuto prima
             ultimaFinestra = finestra
 
-            // La prima non ancora uscita oggi; se sono uscite tutte, la carta di turno
+            // La prima non ancora uscita oggi; se sono uscite tutte, la carta di
+            // turno. Con la priorita' delle nuvole decide solo il loro mazzo: nei
+            // giorni misti le "uscite" sono quelle della giornata di riferimento,
+            // che le nuvole le ha date nelle sue prime ore, non in queste.
             val ricerca = ricercaFinestra(giorno, regola, firma, pool, ordinale)
-            val scelta = ricerca.firstOrNull { it !in usate } ?: ricerca[0]
+            val scelta = if (regola.nuvole) ricerca[0] else ricerca.firstOrNull { it !in usate } ?: ricerca[0]
             if (riferimenti == null) usate += scelta
 
             sequenza += Finestra(minuto, regola, rdg.origine, firma, ordinale, scelta, pool.size, giorno)
