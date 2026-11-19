@@ -210,8 +210,9 @@ class Ciclo(
         val meteo = meteo(v.config)
         diario.scrivi("[METEO] Carica meteo su ${meteo.origine(v.config)}")
         val scaricato = meteo.aggiornaSeServe(v.config, v.adesso, forza = true)
-        val descrizione = (giro() as? Valutazione.Pronta)?.meteo ?: v.meteo
-        if (scaricato) "Meteo aggiornato: $descrizione." else "Meteo non scaricato (il motivo è nel log): $descrizione."
+        // Le ore di pioggia le mostra gia' la schermata, ricalcolata dopo il giro
+        giro()
+        if (scaricato) "Meteo aggiornato." else "Meteo non scaricato: il motivo è nel log."
     }
 
     /** Estrazione forzata: un'altra immagine fino alla fine della finestra corrente, fra quelle in cache. */
