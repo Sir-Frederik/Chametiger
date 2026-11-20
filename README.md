@@ -129,7 +129,7 @@ Oppure: click destro sull'icona tray → **Apri editor config**
 | `position_schedule`      | Calendario settimanale delle posizioni per singolo PC, sopra `position_map` (vedi [Calendario delle posizioni](#calendario-delle-posizioni)) |
 | `base_path` / `path_map` | Cartella base delle immagini, con override per singolo PC (hostname)                                                                         |
 | `seasons` / `events`     | Stagioni ed eventi, che filtrano i tag (vedi sotto)                                                                                          |
-| `meteo`                  | `{"attivo": true, "aggiorna_ore": 5, "minimo": 2, "fonte": "met_norway"}`: previsioni sì/no, ogni quante ore riscaricarle (1–10), soglia minima del pool, fonte (`met_norway` / `open_meteo`)            |
+| `meteo`                  | `{"attivo": true, "aggiorna_ore": 5, "minimo": 2, "fonte": "met_norway"}`: previsioni sì/no, ogni quante ore riscaricarle (1–10, a orari fissi dalla mezzanotte), soglia minima del pool, fonte (`met_norway` / `open_meteo`)            |
 
 ### Dove sta `config.json`
 
@@ -494,7 +494,7 @@ Un giorno che **nessuna** stagione copre non applica nessun filtro di stagione: 
 
 ## Meteo
 
-All'avvio dell'app, e poi ogni `aggiorna_ore` ore (default 5, da 1 a 10, si cambia in **Impostazioni → Meteo**), lo scheduler scarica il meteo **ora per ora** delle prossime 10 ore, quella attuale compresa, per la latitudine e longitudine del config, e lo salva in `meteo.json`. Fra un download e l'altro non serve la rete: le ore sono già programmate. Per esempio: avvio alle 10, meteo dalle 10:00 alle 20:00; alle 15 nuovo download, meteo dalle 15:00 all'01:00. Le ore già passate di oggi restano quelle del download di prima: la sequenza del giorno si ricalcola dalla mezzanotte, e se la pioggia delle 11 sparisse alle 12 la finestra di adesso potrebbe cambiare immagine anche col tempo dell'ora invariato.
+Lo scheduler scarica il meteo **ora per ora** delle prossime 10 ore, quella attuale compresa, per la latitudine e longitudine del config, e lo salva in `meteo.json`. I download vanno a **orari fissi** contati dalla mezzanotte, ogni `aggiorna_ore` ore (default 5, da 1 a 10, si cambia in **Impostazioni → Meteo**), con 5 minuti di margine: con 3 ore alle 00:05, 03:05, 06:05 e così via fino alle 21:05. Il PC e il telefono usano gli stessi orari, quindi scaricano nello stesso quarto d'ora e scelgono con la stessa previsione. All'avvio si scarica solo se `meteo.json` è di prima dell'ultimo orario fisso; il pulsante **Carica meteo** scarica subito, ma fino all'orario dopo quel dispositivo avrà una previsione diversa dagli altri. Fra un download e l'altro non serve la rete: le ore sono già programmate. Per esempio, con 5 ore: download alle 10:05, meteo dalle 10:00 alle 19:00; alle 15:05 nuovo download, meteo dalle 15:00 alle 00:00. Le ore già passate di oggi restano quelle del download di prima: la sequenza del giorno si ricalcola dalla mezzanotte, e se la pioggia delle 11 sparisse alle 12 la finestra di adesso potrebbe cambiare immagine anche col tempo dell'ora invariato.
 Il METAR è stato inserito inizialmente perchè ritenuto affidabile, ma ciò è vero solo nei luoghi vicini all'aereoporto. Successivamente è stato disabilitato per usare invece di dati elaborati di Met Norway.
 
 | Fonte                                                      | Cosa dà                                                                                                                                       |

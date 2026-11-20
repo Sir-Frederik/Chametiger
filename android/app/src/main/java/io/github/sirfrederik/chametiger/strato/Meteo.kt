@@ -46,6 +46,23 @@ import java.util.Locale
 const val ORE_PREVISTE = 10
 private const val MAX_ETA_ORE = 12
 private const val RIPROVA_MINUTI = 30
+/** meteo.MARGINE_MINUTI: i download a orari fissi dalla mezzanotte, ogni aggiorna_ore, piu' questi minuti. */
+const val MARGINE_MINUTI = 5
+
+/**
+ * meteo.ultimo_orario: l'ultimo orario fisso di download non dopo `adesso`,
+ * dalla mezzanotte ogni `ore` ore piu' MARGINE_MINUTI; prima del primo orario
+ * del giorno vale l'ultimo di ieri. Su ore di orologio come sul PC, cosi' PC e
+ * telefono scaricano nello stesso quarto d'ora e usano la stessa previsione.
+ */
+fun ultimoOrario(ore: Double, adesso: LocalDateTime): LocalDateTime {
+    val passo = maxOf(1, (ore * 60 + 0.5).toInt())
+    val ultimoDelGiorno = (24 * 60 - 1 - MARGINE_MINUTI) / passo
+    val minuti = adesso.hour * 60 + adesso.minute - MARGINE_MINUTI
+    val (giorno, k) = if (minuti < 0) adesso.toLocalDate().minusDays(1) to ultimoDelGiorno
+    else adesso.toLocalDate() to minOf(minuti / passo, ultimoDelGiorno)
+    return giorno.atStartOfDay().plusMinutes((k * passo + MARGINE_MINUTI).toLong())
+}
 // "complete" e non "compact": solo lui ha le nubi per strato, che servono al nuvoloso
 private const val URL_PREVISIONI = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=%.2f&lon=%.2f"
 // ICON-2I: precipitation sono i mm caduti nell'ora PRIMA dell'orario indicato,
@@ -315,7 +332,8 @@ class Meteo(
     }
 
     /**
-     * Se aggiornaSeServe scaricherebbe adesso: dati vecchi di aggiorna_ore, o di
+     * Se aggiornaSeServe scaricherebbe adesso: dati di prima dell'ultimo orario
+     * fisso (ultimoOrario), o di
      * un'altra posizione, e nessun errore negli ultimi RIPROVA_MINUTI. Il lavoro
      * in background lo chiede per leggere la posizione del telefono solo quando
      * serve.
@@ -324,12 +342,12 @@ class Meteo(
         if (!config.meteoAttivo) return false
         val ora = secondi(adesso)
         val dati = leggi()
-        if (valide(dati, config, adesso) && ora - dati!!.scaricato < config.meteoOre * 3600) return false
+        if (valide(dati, config, adesso) && dati!!.scaricato >= secondi(ultimoOrario(config.meteoOre, adesso))) return false
         return ora - ultimoErrore() >= RIPROVA_MINUTI * 60
     }
 
     /**
-     * aggiorna_se_serve: riscarica se i dati sono piu' vecchi di aggiorna_ore o
+     * aggiorna_se_serve: riscarica se i dati sono di prima dell'ultimo orario fisso o
      * la posizione e' cambiata; con forza=true subito, anche dopo un errore
      * recente. True se ha scaricato. Non solleva mai.
      */
