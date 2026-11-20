@@ -68,6 +68,10 @@ ORE_MIN, ORE_MAX = 1, 10  # limiti di aggiorna_ore, gli stessi della GUI
 MAX_ETA_ORE = 12  # oltre, i dati non si usano piu'
 DEFAULT_MINIMO = 2  # immagini sotto cui il meteo non restringe il pool
 RIPROVA_MINUTI = 30  # dopo un download fallito, prima di riprovare
+# I download vanno a orari fissi contati dalla mezzanotte, ogni `aggiorna_ore`,
+# con questo margine in minuti (00:05, 03:05, ... con 3 ore): PC e telefono
+# scaricano cosi' nello stesso quarto d'ora e usano la stessa previsione.
+MARGINE_MINUTI = 5
 
 # Le fonti delle previsioni: chiave nel config -> nome per log e GUI.
 MET_NORWAY = "met_norway"
@@ -431,13 +435,34 @@ _download_lock = threading.Lock()
 
 def aggiorna_se_serve(config: dict, log, forza: bool = False) -> bool:
     """
-    Riscarica il meteo se e' piu' vecchio di `aggiorna_ore` o se la posizione
-    e' cambiata; con forza=True subito, anche dopo un errore recente.
+    Riscarica il meteo se l'ultimo download e' di prima dell'ultimo orario
+    fisso (ultimo_orario) o se la posizione e' cambiata; con forza=True subito, anche dopo un errore recente.
     True se ha scaricato. Non solleva mai: un errore vuol dire solo niente
     meteo fino al prossimo tentativo.
     """
     with _download_lock:
         return _aggiorna(config, log, forza)
+
+
+def ultimo_orario(ore: float, adesso: datetime) -> datetime:
+    """
+    L'ultimo orario fisso di download non dopo `adesso`: dalla mezzanotte ogni
+    `ore` ore, piu' MARGINE_MINUTI. Prima del primo orario del giorno vale
+    l'ultimo di ieri. Su ore di orologio, come ultimoOrario in Meteo.kt sul
+    telefono: i due devono dare gli stessi orari.
+    """
+    passo = max(1, int(ore * 60 + 0.5))
+    ultimo_del_giorno = (24 * 60 - 1 - MARGINE_MINUTI) // passo
+    giorno = adesso.date()
+    minuti = adesso.hour * 60 + adesso.minute - MARGINE_MINUTI
+    if minuti < 0:
+        giorno -= timedelta(days=1)
+        k = ultimo_del_giorno
+    else:
+        k = min(minuti // passo, ultimo_del_giorno)
+    return datetime.combine(giorno, datetime.min.time()) + timedelta(
+        minutes=k * passo + MARGINE_MINUTI
+    )
 
 
 def _aggiorna(config: dict, log, forza: bool) -> bool:
@@ -452,7 +477,8 @@ def _aggiorna(config: dict, log, forza: bool) -> bool:
         dati = _carica()
         if (
             _valide(dati, config)
-            and time.time() - float(dati["scaricato"]) < ore * 3600
+            and float(dati["scaricato"])
+            >= ultimo_orario(ore, datetime.now()).timestamp()
         ):
             return False
         if time.time() - _ultimo_errore < RIPROVA_MINUTI * 60:

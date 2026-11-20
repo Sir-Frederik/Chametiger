@@ -182,18 +182,38 @@ class MeteoTest {
         assertTrue(ua, ua.startsWith("Chametiger-Android/1.0 ") && "github.com" in ua)
         assertEquals("[METEO] Aggiornato (Met Norway): niente pioggia nelle prossime 10 ore.", diario.righe.single())
 
-        // Ogni processo nuovo, come un risveglio: entro aggiorna_ore non riscarica
-        assertFalse(meteo(rete, diario).aggiornaSeServe(config, adesso.plusHours(4)))
-        assertTrue(meteo(rete, diario).aggiornaSeServe(config, adesso.plusHours(5)))
+        // Ogni processo nuovo, come un risveglio: con aggiorna_ore 5 gli orari
+        // fissi sono 10:05, 15:05, 20:05... Fino alle 15:05 non riscarica, poi si'
+        assertFalse(meteo(rete, diario).aggiornaSeServe(config, LocalDateTime.of(2026, 10, 28, 15, 4)))
+        assertTrue(meteo(rete, diario).aggiornaSeServe(config, LocalDateTime.of(2026, 10, 28, 15, 5)))
+        assertFalse(meteo(rete, diario).aggiornaSeServe(config, LocalDateTime.of(2026, 10, 28, 20, 0)))
         assertEquals(2, rete.chiamate.size)
 
-        // Le ore scaricate alle 16:10 arrivano al motore giorno per giorno, come
-        // del_giorno legge meteo.json: le 16-23 di oggi e le 00-01 di domani,
-        // e restano le 11-15 del download di prima
-        val fonte = meteo(rete, diario).fonte(config, adesso.plusHours(5))
+        // Le ore scaricate alle 15:05 arrivano al motore giorno per giorno, come
+        // del_giorno legge meteo.json: le 15-23 di oggi e le 00 di domani,
+        // e restano le 11-14 del download di prima
+        val fonte = meteo(rete, diario).fonte(config, LocalDateTime.of(2026, 10, 28, 15, 5))
         assertEquals((11..23).toSet(), fonte.ore(LocalDate.of(2026, 10, 28)).keys)
-        assertEquals(setOf(0, 1), fonte.ore(LocalDate.of(2026, 10, 29)).keys)
+        assertEquals(setOf(0), fonte.ore(LocalDate.of(2026, 10, 29)).keys)
         assertTrue(fonte.ore(LocalDate.of(2026, 10, 28)).values.all { it == StatoMeteo.ASCIUTTO })
+    }
+
+    @Test
+    fun orariFissiComeIlPc() {
+        // Gli stessi casi di meteo.ultimo_orario: PC e telefono devono scaricare agli stessi orari
+        fun t(g: Int, h: Int, m: Int) = LocalDateTime.of(2026, 11, g, h, m)
+        val casi = listOf(
+            Triple(3.0, t(20, 0, 3), t(19, 21, 5)),
+            Triple(3.0, t(20, 0, 5), t(20, 0, 5)),
+            Triple(3.0, t(20, 3, 4), t(20, 0, 5)),
+            Triple(3.0, t(20, 14, 40), t(20, 12, 5)),
+            Triple(3.0, t(20, 15, 59), t(20, 15, 5)),
+            Triple(3.0, t(20, 17, 12), t(20, 15, 5)),
+            Triple(5.0, t(20, 23, 59), t(20, 20, 5)),
+            Triple(5.0, t(20, 0, 1), t(19, 20, 5)),
+            Triple(1.5, t(20, 22, 40), t(20, 22, 35)),
+        )
+        for ((ore, adesso, atteso) in casi) assertEquals("$ore ore alle $adesso", atteso, ultimoOrario(ore, adesso))
     }
 
     @Test

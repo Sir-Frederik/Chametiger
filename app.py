@@ -2114,21 +2114,21 @@ class ChametigerTray:
 
     # ── Thread principale del polling ────────────────────────────────────────
     def _run_scheduler(self):
-        primo_giro = True
         while not self._stop_event.is_set():
             if not self._rileggi_config():  # rilegge la config ad ogni ciclo
                 self._stop_event.wait(RIPROVA_CONFIG_S)
                 continue
             try:
                 invalida_cache_file()
-                # Al primo giro scarica sempre, anche se meteo.json e' recente:
-                # l'ora attuale va osservata adesso, non presa da un download
-                # di ore fa. Poi solo ogni `aggiorna_ore`. Qui nel thread e non
-                # prima del tray, cosi' l'icona compare subito anche con la
-                # rete lenta. Il primo sfondo aspetta il download (al massimo
-                # i timeout di curl): senza rete si sceglie come col sereno.
-                meteo.aggiorna_se_serve(self.config, log, forza=primo_giro)
-                primo_giro = False
+                # Si scarica agli orari fissi (meteo.ultimo_orario), anche al
+                # primo giro: un download all'avvio darebbe al PC una
+                # previsione diversa da quella del telefono fino all'orario
+                # dopo. Se all'avvio meteo.json e' di prima dell'ultimo orario
+                # scarica subito. Qui nel thread e non prima del tray, cosi'
+                # l'icona compare subito anche con la rete lenta. Il primo
+                # sfondo aspetta il download (al massimo i timeout di curl):
+                # senza rete si sceglie come col sereno.
+                meteo.aggiorna_se_serve(self.config, log)
                 wallpaper, category = resolve_wallpaper(self.config)
                 if wallpaper:
                     self._no_slot_logged = False
