@@ -61,6 +61,7 @@ class Sincro(
     private val fileIndice = File(interna, "drive_indice.json")
     private val fileCache = File(interna, "drive_cache.json")
     private val fileErrore = File(interna, "drive_errore.txt")
+    private val fileAnticipo = File(interna, "drive_anticipo.txt")
 
     private var indice: Map<String, VoceIndice>? = null
     private var indiceRinnovato = false
@@ -151,6 +152,52 @@ class Sincro(
         } finally {
             tmp.delete()
         }
+    }
+
+    /**
+     * Scarica in anticipo le immagini delle prossime finestre, in ordine,
+     * finche' ci stanno nel tetto insieme a `protette` (la sequenza di oggi e
+     * quella di adesso): le altre in cache le libera poi pulisci. La prima
+     * si scarica comunque, come prima del tetto. Ritorna quelle che adesso
+     * sono sul telefono, da proteggere a loro volta.
+     */
+    fun anticipa(prossime: List<String>, protette: Set<String>): Set<String> {
+        val contate = HashSet<String>()
+        var occupati = 0L
+        fun conta(chiave: String) {
+            val f = File(files, chiave)
+            if (f.isFile && contate.add(chiave)) occupati += f.length()
+        }
+        protette.forEach(::conta)
+        val pronte = LinkedHashSet<String>()
+        var mancanti = 0
+        for ((i, chiave) in prossime.distinct().withIndex()) {
+            val f = File(files, chiave)
+            if (!f.isFile && i > 0) {
+                if (bloccato()) break
+                val dimensione = voceDi(chiave)?.dimensione ?: 0L
+                if (occupati + dimensione > tettoByte) {
+                    mancanti = prossime.distinct().size - i
+                    break
+                }
+            }
+            if (assicura(chiave, "Anticipata")) {
+                pronte += chiave
+                conta(chiave)
+            }
+        }
+        // Una riga quando il tetto comincia a fermare l'anticipo, non a ogni giro
+        val fermato = mancanti > 0
+        val prima = fileAnticipo.exists()
+        if (fermato && !prima) {
+            diario.scrivi(
+                "[DRIVE] Anticipo fermato dal tetto di ${mb(tettoByte)}: $mancanti immagini delle prossime ore restano su Drive",
+            )
+            runCatching { scriviIntero(fileAnticipo, "$mancanti\n") }
+        } else if (!fermato && prima) {
+            fileAnticipo.delete()
+        }
+        return pronte
     }
 
     /** L'immagine e' appena stata mostrata: per il tetto, e' fra le piu' recenti. */

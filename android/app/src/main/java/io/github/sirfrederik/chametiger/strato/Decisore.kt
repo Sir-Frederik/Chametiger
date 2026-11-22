@@ -62,6 +62,23 @@ class Decisore(
             ?: giornata(adesso.toLocalDate().plusDays(1)).firstOrNull()
     }
 
+    /**
+     * Le finestre che cominciano entro `ore` ore da adesso, in ordine, oggi e
+     * domani: le stesse dell'Anteprima della GUI, col meteo previsto che il
+     * telefono conosce (le ore oltre la previsione contano asciutte). Almeno
+     * la prossima, anche con `ore` a zero o se comincia piu' tardi.
+     */
+    fun prossime(adesso: LocalDateTime, ore: Int): List<Finestra> {
+        val minuto = adesso.hour * 60 + adesso.minute
+        val fine = minuto + ore.coerceAtLeast(0) * 60
+        val oggi = giornata(adesso.toLocalDate()).filter { it.minuto > minuto }
+        val domani = if (fine >= 1440 || oggi.isEmpty()) giornata(adesso.toLocalDate().plusDays(1)) else emptyList()
+        // Con l'inizio contato da stamattina: quelle di domani 1440 minuti dopo
+        val tutte = oggi.map { it to it.minuto } + domani.map { it to it.minuto + 1440 }
+        val entro = tutte.filter { it.second < fine }.map { it.first }
+        return entro.ifEmpty { listOfNotNull(tutte.firstOrNull()?.first) }
+    }
+
     /** Cosa mostrare adesso, tenendo conto di un'eventuale forzata per questa finestra. */
     fun decidi(adesso: LocalDateTime, forzata: Forzata? = null): Decisione {
         val giornata = giornata(adesso.toLocalDate())

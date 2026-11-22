@@ -328,6 +328,51 @@ class SincroTest {
         assertTrue(d2.immagine in setOf(d.immagine, prossima))
     }
 
+    @Test
+    fun leProssimeOreSiScaricanoInOrdineFinoAlTetto() {
+        val drive = DriveFinto().apply {
+            file(radice, "config.json", configGiro.toByteArray())
+            immagini.forEach { k -> file(radice, k, ByteArray(1000)) }
+        }
+        val ora = LocalDate.of(2027, 3, 10).atTime(10, 30)
+        fun ciclo(diario: Diario, ore: Int, tetto: Long) = Ciclo(
+            files, interna, "android-prova", "1.0", SfondoFinto(), diario,
+            orologio = { ora },
+            drive = { d -> sincro(drive, d, tetto) },
+            oreAnticipo = ore,
+        )
+
+        // Rotazione di un'ora: alle 10:30 le prossime 3 ore sono le finestre delle 11, 12 e 13
+        val diario = DiarioFinto()
+        val v = ciclo(diario, 3, Long.MAX_VALUE).giro() as Valutazione.Pronta
+        val prossime = v.decisore.prossime(ora, 3)
+        assertEquals(listOf(11 * 60, 12 * 60, 13 * 60), prossime.map { it.minuto })
+        for (f in prossime) assertTrue(f.immagine, File(files, f.immagine).isFile)
+        assertEquals(prossime.map { "[DRIVE] Anticipata ${it.immagine} (1 KB)" }, diario.righe.filter { "Anticipata" in it })
+
+        // Con 0 ore resta solo la prossima, come prima
+        assertEquals(listOf(11 * 60), v.decisore.prossime(ora, 0).map { it.minuto })
+
+        // A cavallo della mezzanotte prende anche quelle di domani
+        val sera = v.decisore.prossime(LocalDate.of(2027, 3, 10).atTime(22, 30), 3)
+        assertEquals(listOf(23 * 60, 0, 60), sera.map { it.minuto })
+        assertEquals(LocalDate.of(2027, 3, 11), sera.last().giorno)
+
+        // Con un tetto di tre immagini: quella di adesso, la prossima e una sola in piu'
+        files.listFiles()!!.filter { it.name.startsWith("img") }.forEach { it.delete() }
+        File(interna, "drive_cache.json").delete()
+        val stretto = DiarioFinto()
+        val dodici = ciclo(stretto, 12, 3000).giro() as Valutazione.Pronta
+        val attese = dodici.decisore.prossime(ora, 12).map { it.immagine }
+        assertEquals(attese.take(2), stretto.righe.filter { "Anticipata" in it }.map { it.substringAfter("Anticipata ").substringBefore(" (") })
+        assertFalse(File(files, attese[2]).isFile)
+        assertEquals(1, stretto.righe.count { it.startsWith("[DRIVE] Anticipo fermato dal tetto") })
+        // Al giro dopo e' ancora fermo, ma non lo riscrive
+        val ancora = DiarioFinto()
+        ciclo(ancora, 12, 3000).giro()
+        assertFalse(ancora.righe.any { "Anticipo fermato" in it || "Anticipata" in it })
+    }
+
     // ── Il pulsante "Ricontrolla le immagini" ────────────────────────────────
 
     @Test

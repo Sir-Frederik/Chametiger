@@ -36,6 +36,19 @@ object ImpostazioniDrive {
     fun scriviTettoMb(context: Context, mb: Int) {
         preferenze(context).edit().putInt("tetto_mb", mb.coerceAtLeast(10)).apply()
     }
+
+    /** Le scelte per l'anticipo, in ore: 0 e' solo la prossima finestra, come prima. */
+    val ORE_ANTICIPO = listOf(0, 3, 6, 12, 24)
+
+    /**
+     * Quante ore avanti scaricare le immagini delle prossime finestre, sempre
+     * entro il tetto. Oltre ORE_PREVISTE il meteo non e' noto e conta asciutto.
+     */
+    fun oreAnticipo(context: Context): Int = preferenze(context).getInt("ore_anticipo", 0)
+
+    fun scriviOreAnticipo(context: Context, ore: Int) {
+        preferenze(context).edit().putInt("ore_anticipo", ore.coerceIn(0, 48)).apply()
+    }
 }
 
 /**
