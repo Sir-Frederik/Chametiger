@@ -52,7 +52,8 @@ sealed interface Valutazione {
  *
  * Con Drive configurato (`drive` non nullo) il giro prima aggiorna il config
  * da Drive, poi si assicura l'immagine della finestra, la mostra, scarica in
- * anticipo quella della finestra dopo e tiene la cache sotto il tetto.
+ * anticipo quelle delle prossime `oreAnticipo` ore (almeno la finestra dopo)
+ * finche' stanno nel tetto, e tiene la cache sotto il tetto.
  */
 class Ciclo(
     private val cartella: File,
@@ -74,6 +75,11 @@ class Ciclo(
     private val posizione: Pair<Double, Double>? = null,
     /** La fonte del meteo scelta sul telefono, o null: allora vale quella del config. */
     private val fonteMeteo: String? = null,
+    /**
+     * Quante ore avanti scaricare le immagini da Drive, entro il tetto della
+     * cache: 0 solo quella della prossima finestra, come prima.
+     */
+    private val oreAnticipo: Int = 0,
 ) {
     private val memoria = MemoriaForzataFile(File(interna, "forzata.txt"))
 
@@ -148,11 +154,12 @@ class Ciclo(
         val riga = mostra(d)
         if (sincro != null) {
             (d as? Decisione.Mostra)?.let { sincro.usata(it.immagine) }
-            val prossima = v.decisore.prossima(v.adesso)?.immagine
-            prossima?.let { sincro.assicura(it, "Anticipata") }
-            val protette = v.decisore.giornata(v.adesso.toLocalDate()).mapTo(HashSet()) { it.immagine } +
-                listOfNotNull((d as? Decisione.Mostra)?.immagine, prossima)
-            sincro.pulisci(v.config.libreria.keys, protette)
+            // Le prossime finestre come le calcola l'Anteprima, col meteo previsto
+            val prossime = v.decisore.prossime(v.adesso, oreAnticipo).map { it.immagine }
+            val base = v.decisore.giornata(v.adesso.toLocalDate()).mapTo(HashSet()) { it.immagine } +
+                listOfNotNull((d as? Decisione.Mostra)?.immagine)
+            val anticipate = sincro.anticipa(prossime, base)
+            sincro.pulisci(v.config.libreria.keys, base + anticipate + prossime.take(1))
         }
         diario.scrivi(riga + (sincro?.let { " | Drive ${Sincro.kb(it.byteGiro)}" } ?: ""))
         v

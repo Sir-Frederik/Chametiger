@@ -52,6 +52,7 @@ import io.github.sirfrederik.chametiger.motore.FONTE_OPEN_METEO
 import io.github.sirfrederik.chametiger.strato.CartellaDrive
 import io.github.sirfrederik.chametiger.strato.Ciclo
 import io.github.sirfrederik.chametiger.strato.Motivo
+import io.github.sirfrederik.chametiger.strato.ORE_PREVISTE
 import io.github.sirfrederik.chametiger.strato.Valutazione
 import io.github.sirfrederik.chametiger.strato.ZONA
 import io.github.sirfrederik.chametiger.ui.theme.ChametigerMobileTheme
@@ -231,6 +232,7 @@ private fun SchermataAnteprima(modifier: Modifier = Modifier) {
                 it.toIntOrNull()?.let { mb -> ImpostazioniDrive.scriviTettoMb(context, mb) }
                 giro++
             }
+            Anticipo(context, abilitato = !occupato) { esegui { it.giro() } }
             Velo(context, abilitato = !occupato) { esegui { it.giro() } }
         }
 
@@ -328,6 +330,42 @@ private fun FonteMeteo(context: Context, abilitato: Boolean, cambiata: () -> Uni
                 style = MaterialTheme.typography.bodySmall,
             )
         }
+    }
+}
+
+/**
+ * Quante ore avanti scaricare le immagini da Drive: le prossime finestre come
+ * le calcola l'Anteprima, col meteo previsto, finche' stanno nel tetto.
+ * Cambiandola parte subito un giro, che scarica quelle che mancano.
+ */
+@Composable
+private fun Anticipo(context: Context, abilitato: Boolean, cambiata: () -> Unit) {
+    var scelta by remember { mutableIntStateOf(ImpostazioniDrive.oreAnticipo(context)) }
+    Column(Modifier.fillMaxWidth()) {
+        Text("Scarica in anticipo", style = MaterialTheme.typography.labelLarge)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            for (ore in ImpostazioniDrive.ORE_ANTICIPO) {
+                FilterChip(
+                    selected = scelta == ore,
+                    onClick = {
+                        scelta = ore
+                        ImpostazioniDrive.scriviOreAnticipo(context, ore)
+                        cambiata()
+                    },
+                    label = { Text(if (ore == 0) "Prossima" else "${ore}h") },
+                    enabled = abilitato,
+                )
+            }
+        }
+        Text(
+            if (scelta == 0) {
+                "Solo l'immagine della prossima finestra."
+            } else {
+                "Le immagini delle prossime $scelta ore, finché stanno nel tetto della cache. " +
+                    "Il meteo conta per le prime $ORE_PREVISTE ore, dopo si prevede come col sereno."
+            },
+            style = MaterialTheme.typography.bodySmall,
+        )
     }
 }
 
