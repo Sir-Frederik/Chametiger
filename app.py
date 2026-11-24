@@ -928,7 +928,9 @@ def _tabella(
     per, cum, gru = tabella
     while len(per) < fino:
         i = len(per)
-        per.append(_finestre_del_giorno(rule, EPOCH + timedelta(days=i), rotate, config))
+        per.append(
+            _finestre_del_giorno(rule, EPOCH + timedelta(days=i), rotate, config)
+        )
         cum.append(cum[i] + per[i])
         k = i + 1
         gru.append(gru[k - GRUPPI] + per[k - GRUPPI] if k >= GRUPPI else 0)
@@ -1065,7 +1067,7 @@ def _window_ordinal(rule: dict, now: datetime, rotate: int, config: dict) -> int
 
 # In quanti gruppi sono divise le immagini, cioe' dopo quanti giorni un'immagine
 # puo' tornare. NON cambiarlo mai: come EPOCH, sposta tutti i mazzi.
-GRUPPI = 4
+GRUPPI = 1
 
 
 @lru_cache(maxsize=None)
@@ -1202,7 +1204,10 @@ def _giro_di(
             fine += 1
 
         if ordinale < fine:
-            return _ordine_membri(membri, seme, giro, recenti) + tardive, ordinale - inizio
+            return (
+                _ordine_membri(membri, seme, giro, recenti) + tardive,
+                ordinale - inizio,
+            )
 
         membri += tardive
         recenti = tardive
@@ -1437,7 +1442,9 @@ def _ricerca_finestra(
         if c in date_ingresso
     }
     mazzo, pos = _giro_di(carte, ingresso, seme, ordinale)
-    altre = [c for c in _ordine_di_ricerca(mazzo, pos) if c in nel_pool and c not in visti]
+    altre = [
+        c for c in _ordine_di_ricerca(mazzo, pos) if c in nel_pool and c not in visti
+    ]
     # sorted e' stabile: a pari distanza resta l'ordine del mazzo
     altre.sort(key=lambda c: -_distanza_gruppi(_gruppo_immagine(c), gruppo))
     ordine += altre
@@ -1538,7 +1545,11 @@ def sequenza_giornaliera(config: dict, giorno: date, fino_a: int = 1439) -> list
     }
     if not riferimenti:
         return _sequenza(config, giorno, fino_a, ore_meteo)
-    if len(riferimenti) == 1 and len(set(ore_meteo.values())) == 1 and len(ore_meteo) == 24:
+    if (
+        len(riferimenti) == 1
+        and len(set(ore_meteo.values())) == 1
+        and len(ore_meteo) == 24
+    ):
         return next(iter(riferimenti.values()))
     return _sequenza(config, giorno, fino_a, ore_meteo, riferimenti)
 
@@ -2074,11 +2085,15 @@ class ChametigerTray:
         except Exception as e:
             if not self._config_illeggibile:
                 if self.config is None:
-                    log(f"[WARN] config.json non leggibile, riprovo ogni "
-                        f"{RIPROVA_CONFIG_S} s: {e}")
+                    log(
+                        f"[WARN] config.json non leggibile, riprovo ogni "
+                        f"{RIPROVA_CONFIG_S} s: {e}"
+                    )
                 else:
-                    log(f"[WARN] config.json non leggibile, continuo con "
-                        f"l'ultima configurazione letta: {e}")
+                    log(
+                        f"[WARN] config.json non leggibile, continuo con "
+                        f"l'ultima configurazione letta: {e}"
+                    )
             self._config_illeggibile = True
             return self.config is not None
         if self._config_illeggibile:

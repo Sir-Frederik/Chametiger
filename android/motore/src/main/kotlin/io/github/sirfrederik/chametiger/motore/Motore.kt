@@ -21,7 +21,7 @@ val EPOCH: LocalDate = LocalDate.of(2026, 1, 1)
  * un'immagine puo' tornare (vedi "I gruppi" in app.py). NON cambiarlo mai:
  * come EPOCH, sposta tutti i mazzi.
  */
-const val GRUPPI = 4
+const val GRUPPI = 1
 
 /** I momenti della giornata: nell'exclude valgono per insieme, come le stagioni. */
 val TAG_ORARI = setOf("alba", "mattino", "pranzo", "pomeriggio", "tramonto", "crepuscolo", "sera", "notte")
