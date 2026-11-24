@@ -247,6 +247,10 @@ class SincroTest {
         assertEquals(TipoErrore.SERVER, tipo(403, """{"error": {"code": 403, "errors": [{"reason": "userRateLimitExceeded"}]}}"""))
         assertEquals(TipoErrore.SERVER, tipo(503, "Service Unavailable"))
         assertEquals(TipoErrore.SERVER, tipo(429, ""))
+        assertEquals(
+            TipoErrore.SERVER,
+            tipo(403, """<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"/><title>Sorry...</title></head></html>"""),
+        )
         assertEquals(TipoErrore.ACCESSO, tipo(404, """{"error": {"code": 404, "errors": [{"reason": "notFound"}], "message": "File not found: x."}}"""))
         assertEquals(TipoErrore.ACCESSO, tipo(403, """{"error": {"code": 403, "errors": [{"reason": "forbidden"}], "message": "forbidden"}}"""))
     }

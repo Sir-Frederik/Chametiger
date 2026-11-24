@@ -197,6 +197,11 @@ class ApiDriveHttp(
          * seconda dell'API e della restrizione che ha bloccato la richiesta.
          */
         fun classifica(codice: Int, corpo: String): ErroreDrive {
+            // Non e' Drive a rispondere ma la pagina anti-robot di Google: blocca
+            // l'indirizzo di rete, spesso quello condiviso dei dati mobili. Passa da sola
+            if (PAGINA_SORRY.containsMatchIn(corpo)) {
+                return ErroreDrive(TipoErrore.SERVER, codice, "Google blocca per ora le richieste da questa rete (traffico insolito)")
+            }
             val errore = runCatching { Json.parseToJsonElement(corpo).jsonObject["error"]?.jsonObject }.getOrNull()
             val messaggio = errore?.get("message")?.jsonPrimitive?.contentOrNull ?: corpo.take(200)
             val motivi = buildList {
@@ -225,6 +230,7 @@ class ApiDriveHttp(
             "keyInvalid", "keyExpired", "accessNotConfigured", "ipRefererBlocked", "forbiddenByRestrictions",
             "API_KEY_INVALID", "API_KEY_ANDROID_APP_BLOCKED", "API_KEY_SERVICE_BLOCKED", "SERVICE_DISABLED",
         )
+        private val PAGINA_SORRY = Regex("""<title>\s*Sorry\.\.\.\s*</title>|google\.com/sorry""", RegexOption.IGNORE_CASE)
         private val MOTIVI_QUOTA = listOf("rateLimitExceeded", "userRateLimitExceeded", "dailyLimitExceeded", "RESOURCE_EXHAUSTED")
     }
 }
