@@ -250,7 +250,7 @@ Se nessuna regola copre l'orario, lo sfondo resta quello che c'è.
 
 ### Momenti della giornata: esclusi per insieme
 
-I momenti sono `alba`, `mattino`, `pranzo`, `pomeriggio`, `tramonto`, `crepuscolo`, `sera`, `notte` (`TAG_ORARI` in `app.py`). Nell'`exclude` non sono un divieto per tag ma **per insieme**, come le stagioni: un'immagine cade solo se **tutti** i suoi momenti sono esclusi. Gli altri tag esclusi (`smart`, `svago`…) restano un divieto secco.
+I momenti sono `alba`, `mattino`, `giorno`, `pranzo`, `pomeriggio`, `tramonto`, `crepuscolo`, `sera`, `notte` (`TAG_ORARI` in `app.py`). Nell'`exclude` non sono un divieto per tag ma **per insieme**, come le stagioni: un'immagine cade solo se **tutti** i suoi momenti sono esclusi. Gli altri tag esclusi (`smart`, `svago`…) restano un divieto secco.
 
 ```
 exclude: alba, mattino
