@@ -24,7 +24,7 @@ val EPOCH: LocalDate = LocalDate.of(2026, 1, 1)
 const val GRUPPI = 1
 
 /** I momenti della giornata: nell'exclude valgono per insieme, come le stagioni. */
-val TAG_ORARI = setOf("alba", "mattino", "pranzo", "pomeriggio", "tramonto", "crepuscolo", "sera", "notte")
+val TAG_ORARI = setOf("alba", "mattino", "giorno", "pranzo", "pomeriggio", "tramonto", "crepuscolo", "sera", "notte")
 
 private val TAG_METEO = setOf(StatoMeteo.TEMPORALE.tag, StatoMeteo.PIOGGIA.tag)
 

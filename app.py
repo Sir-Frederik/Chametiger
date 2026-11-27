@@ -611,6 +611,7 @@ _STATI_METEO = _TAG_METEO | {meteo.NUVOLOSO}
 TAG_ORARI = {
     "alba",
     "mattino",
+    "giorno",
     "pranzo",
     "pomeriggio",
     "tramonto",
